@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.9 2003-08-18 19:29:36 achu Exp $
+## $Id: configure.ac,v 1.10 2003-09-10 22:09:31 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -160,6 +160,7 @@ AC_CHECK_LIB(gendersllnl, genders_string_to_altnames_preserve)
 ##
 AC_CONFIG_FILES( \
   Makefile \
+  whatsup.spec \
   src/Makefile \
   src/libnodeupdown/Makefile \
   src/whatsup/Makefile \

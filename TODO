@@ -1,3 +1,1 @@
-Clean up autoconf of manpages
-Need autoconf to output proper configuration file location into manpage
 Allow multiple servers/IP addresses in conf file
