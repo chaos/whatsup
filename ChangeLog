@@ -20,6 +20,11 @@
 	error output to fit GNU coding standards more closely.  Renamed
 	numerous functions.
 
+	Cleaned up nodeupdown code
+
+	* src/libnodeupdown/nodeupdown.c: Modify code style and error
+	output to fit GNU coding standards more closely.
+
 2003-01-12  Albert Chu  <chu11@llnl.gov>
 
 	* src/libcommon/conffile.h, src/libcommon/conffile.c: Significant
@@ -31,8 +36,8 @@
 	* src/libnodeupdown/nodeupdown.c (_cb_intval, _cb_string):
 	Removed functions.
 
-	* src/libnodeupdown/nodeupdown.c (_cb_gmond_hostnames): Renamed to
-	_gmond_hostnames.  Fixed up for conffile changes.
+	* src/libnodeupdown/nodeupdown.c (_cb_gmond_hostnames): Fixed up
+	for conffile changes.
 
 	* man/nodeupdown.conf.5.in: Cleaned up.
 
