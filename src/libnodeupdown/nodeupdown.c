@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.46 2003-05-16 23:13:24 achu Exp $
+ * $Id: nodeupdown.c,v 1.47 2003-05-19 18:14:52 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -368,6 +368,7 @@ int nodeupdown_load_data(nodeupdown_t handle,
 
     struct hostent *hptr;
 
+    /* valgrind will report a mem-leak in gethostbyname() */
     if ((hptr = gethostbyname(gmond_hostname)) == NULL) {
       handle->errnum = NODEUPDOWN_ERR_INTERNAL;
       goto cleanup;
