@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.15 2003-03-11 17:00:49 achu Exp $
+ * $Id: nodeupdown.c,v 1.16 2003-03-11 20:20:32 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -1086,7 +1086,7 @@ int nodeupdown_get_down_nodes_string(nodeupdown_t handle, char *buf, int buflen)
   }
 
   if ((str = get_hostlist_ranged_string(handle, 
-					handle->nodeupdown_up_nodes)) == NULL) {
+					handle->nodeupdown_down_nodes)) == NULL) {
     return -1;
   }
 
@@ -1104,6 +1104,8 @@ int nodeupdown_get_down_nodes_string(nodeupdown_t handle, char *buf, int buflen)
 }
 
 int nodeupdown_get_up_nodes_list(nodeupdown_t handle, char **list, int len) {
+
+  int ret;
 
   if (handle == NULL) {
     return -1;
@@ -1126,19 +1128,21 @@ int nodeupdown_get_up_nodes_list(nodeupdown_t handle, char **list, int len) {
     }
   }
   
-  if (nodeupdown_copy_nodes_into_list(handle, 
+  if ((ret = nodeupdown_copy_nodes_into_list(handle, 
 				      handle->nodeupdown_up_nodes, 
 				      list,
-				      len) == -1) {
+				      len)) == -1) {
     return -1;
   }
  
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
-  return 0;
+  return ret;
 }
 
 int nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len) {
   
+  int ret;
+
   if (handle == NULL) {
     return -1;
   }
@@ -1160,15 +1164,15 @@ int nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len) {
     }
   }
 
-  if (nodeupdown_copy_nodes_into_list(handle, 
+  if ((ret = nodeupdown_copy_nodes_into_list(handle, 
 				      handle->nodeupdown_down_nodes, 
 				      list,
-				      len) == -1) {
+				      len)) == -1) {
     return -1;
   }
   
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
-  return 0;
+  return ret;
 }
 
 int nodeupdown_copy_nodes_into_list(nodeupdown_t handle,
@@ -1202,7 +1206,7 @@ int nodeupdown_copy_nodes_into_list(nodeupdown_t handle,
   
   hostlist_iterator_destroy(iter);
   
-  return 0;
+  return count;
 }
 
 #ifdef NODEUPDOWN_HOSTLIST_API
@@ -1393,7 +1397,7 @@ int nodeupdown_get_down_nodes_string_altnames(nodeupdown_t handle,
 int nodeupdown_get_up_nodes_list_altnames(nodeupdown_t handle,
                                           char **dest,
                                           int dest_len) {
-  int src_len;
+  int src_len, num_nodes, temp;
   char **src = NULL;
 
   if (handle == NULL) {
@@ -1414,11 +1418,16 @@ int nodeupdown_get_up_nodes_list_altnames(nodeupdown_t handle,
     goto cleanup;
   }
 
-  if (nodeupdown_get_up_nodes_list(handle, src, src_len) == -1) {
+  if ((num_nodes = nodeupdown_get_up_nodes_list(handle, src, dest_len)) == -1) {
     goto cleanup;
   }
 
-  if (nodeupdown_convert_list_to_altnames(handle, src, dest, dest_len) == -1) {
+  if (num_nodes > dest_len) {
+    handle->errnum = NODEUPDOWN_ERR_OVERFLOW;
+    goto cleanup;
+  }
+
+  if (nodeupdown_convert_list_to_altnames(handle, src, dest, num_nodes) == -1) {
     goto cleanup;
   }
 		
@@ -1426,14 +1435,17 @@ int nodeupdown_get_up_nodes_list_altnames(nodeupdown_t handle,
     goto cleanup;
   }
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
-  return 0;
+  return num_nodes;
 
  cleanup:
+
+  temp = handle->errnum;
 
   if (src != NULL) {
     (void)nodeupdown_nodelist_destroy(handle, src);
   }
 
+  handle->errnum = temp;
   return -1;
   
 }
@@ -1441,7 +1453,7 @@ int nodeupdown_get_up_nodes_list_altnames(nodeupdown_t handle,
 int nodeupdown_get_down_nodes_list_altnames(nodeupdown_t handle,
                                             char **dest,
                                             int dest_len) {
-  int src_len;
+  int src_len, num_nodes, temp;
   char **src = NULL;
 
   if (handle == NULL) {
@@ -1462,11 +1474,16 @@ int nodeupdown_get_down_nodes_list_altnames(nodeupdown_t handle,
     goto cleanup;
   }
 
-  if (nodeupdown_get_down_nodes_list(handle, src, src_len) == -1) {
+  if ((num_nodes = nodeupdown_get_down_nodes_list(handle, src, dest_len)) == -1) {
     goto cleanup;
   }
 
-  if (nodeupdown_convert_list_to_altnames(handle, src, dest, dest_len) == -1) {
+  if (num_nodes > dest_len) {
+    handle->errnum = NODEUPDOWN_ERR_OVERFLOW;
+    goto cleanup;
+  }
+
+  if (nodeupdown_convert_list_to_altnames(handle, src, dest, num_nodes) == -1) {
     goto cleanup;
   }
 		
@@ -1474,14 +1491,17 @@ int nodeupdown_get_down_nodes_list_altnames(nodeupdown_t handle,
     goto cleanup;
   }
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
-  return 0;
+  return num_nodes;
 
  cleanup:
+
+  temp = handle->errnum;
 
   if (src != NULL) {
     (void)nodeupdown_nodelist_destroy(handle, src);
   }
 
+  handle->errnum = temp;
   return -1;
   
 }
@@ -1513,7 +1533,7 @@ int nodeupdown_get_up_nodes_hostlist_altnames(nodeupdown_t handle,
     goto cleanup;
   }
 
-  if (nodeupdown_convert_list_to_altnames(handle, src, dest) == -1) {
+  if (nodeupdown_convert_hostlist_to_altnames(handle, src, dest) == -1) {
     goto cleanup;
   }
 		
@@ -1556,7 +1576,7 @@ int nodeupdown_get_down_nodes_hostlist_altnames(nodeupdown_t handle,
     goto cleanup;
   }
 
-  if (nodeupdown_convert_list_to_altnames(handle, src, dest) == -1) {
+  if (nodeupdown_convert_hostlist_to_altnames(handle, src, dest) == -1) {
     goto cleanup;
   }
 		
@@ -1736,7 +1756,7 @@ int nodeupdown_convert_string_to_altnames(nodeupdown_t handle,
     return -1;
   }
 
-  if (src == NULL || dest == NULL) {
+  if (src == NULL || dest == NULL || buflen <= 0) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
   }
