@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.42 2003-05-23 18:31:18 achu Exp $
+ * $Id: whatsup.c,v 1.43 2003-05-23 21:33:23 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -35,16 +35,14 @@ extern int optind, opterr, optopt;
 #define RANGED_STRING        0
 #define DERANGED_STRING      1
 
-/* whatsup_output_type
- * - indicates if output should be nodes that are up or down
- */
-enum output_type {UP_AND_DOWN, UP, DOWN};
+#define UP_AND_DOWN          0
+#define UP_ONLY              1
+#define DOWN_ONLY            2
 
-/* whatsup_list_type
- * - indicates how output should be listed, in hostlist, comma separated, 
- *   neweline separated, or space separated listing.
- */
-enum list_type {HOSTLIST, COMMA, NEWLINE, SPACE};
+#define HOSTLIST             '\0'
+#define COMMA                ','
+#define NEWLINE              '\n'
+#define SPACE                ' '
 
 /* struct arginfo
  * - carries information about args passed in from the command line
@@ -62,8 +60,8 @@ struct arginfo {
   char *gmond_hostname;
   char *gmond_ip;         
   int gmond_port;         
-  enum output_type output_type;
-  enum list_type list_type;    
+  int output_type;
+  char list_type;    
   int list_altnames;
   hostlist_t nodes;
 };
@@ -73,40 +71,19 @@ struct arginfo {
  ********************************/
 
 static void usage(void);
-
 static void version(void);
-
-static void err_usage(char *);
-
 static void err_msg(char *, char *);
-
 static void cleanup_struct_arginfo(struct arginfo *);
-
 static int cmdline_parse(struct arginfo *, int, char **);
-
-static char * get_hostlist_string(hostlist_t, int);
-
-static int get_specified_nodes_common(struct arginfo *,
-                                      enum output_type,
-                                      nodeupdown_t, 
-                                      char **); 
-
-static int get_all_nodes_common(struct arginfo *, 
-                                enum output_type,
-                                nodeupdown_t, 
-                                char **);
-
+static char *get_hostlist_string(hostlist_t, int);
+static int get_arg_nodes_common(struct arginfo *, int, nodeupdown_t, char **); 
+static int get_all_nodes_common(struct arginfo *, int, nodeupdown_t, char **);
 static int convert_to_altnames(struct arginfo *, char **);
-
-static int get_nodes_common(struct arginfo *, 
-                            enum output_type, 
-                            nodeupdown_t, 
-                            char **);
-
+static int get_nodes_common(struct arginfo *, int, nodeupdown_t, char **);
 static int output_nodes(struct arginfo *, char *nodes);
 
 /* usage
- * - output usage and exit
+ * - output usage
  */
 static void usage(void) {
   fprintf(stderr,
@@ -126,25 +103,13 @@ static void usage(void) {
     "  -s         --space             List nodes in space separated list\n"
     "  -a         --altnames          List nodes by alternate name\n"
     "\n");
-  exit(1);
 }
 
 /* version
- * - output version and exit
+ * - output version
  */
 static void version(void) {
   fprintf(stderr, "whatsup 1.0-6\n");
-  exit(1);
-}
-
-/* err_usage
- * - print error statement and output usage and exit
- */
-static void err_usage(char *msg) {
-  if (msg)
-    fprintf(stderr, "command line error: %s\n\n", msg);
-
-  usage();
 }
 
 /* err_msg
@@ -187,12 +152,8 @@ static void cleanup_struct_arginfo(struct arginfo *arginfo) {
  * - store info in a struct arginfo strcuture
  */
 static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
-  int hopt = 0, Vopt = 0, fopt = 0, oopt = 0, iopt = 0, popt = 0, bopt = 0;
-  int uopt = 0, dopt = 0, lopt = 0, copt = 0, nopt = 0, sopt = 0, aopt = 0;
-  int c, index, i, ret;
-
+  int c, fopt = 0, oopt = 0, iopt = 0, index;
   char *filename, *hostname, *ip;
-  int port;
 
   char *options = "hVf:o:i:p:budlcnsag:";
   struct option long_options[] = {
@@ -219,10 +180,12 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
   while ((c = getopt_long(argc, argv, options, long_options, NULL)) != -1) {
     switch(c) {
     case 'h':
-      hopt++;
+      usage();
+      return -1;
       break;
     case 'V':
-      Vopt++;
+      version();
+      return -1;
       break;
     case 'f':
       fopt++;
@@ -237,35 +200,35 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
       ip = optarg;
       break;
     case 'p':
-      popt++;
-      port = atoi(optarg);
+      arginfo->gmond_port = atoi(optarg);
       break;
     case 'b':
-      bopt++;
+      arginfo->output_type = UP_AND_DOWN;
       break;
     case 'u':
-      uopt++;
+      arginfo->output_type = UP_ONLY;
       break;
     case 'd':
-      dopt++;
+      arginfo->output_type = DOWN_ONLY;
       break;
     case 'l':
-      lopt++;
+      arginfo->list_type = HOSTLIST;
       break;
     case 'c':
-      copt++;
+      arginfo->list_type = COMMA;
       break;
     case 'n':
-      nopt++;
+      arginfo->list_type = NEWLINE;
       break;
     case 's':
-      sopt++;
+      arginfo->list_type = SPACE;
       break;
     case 'a':
-      aopt++;
+      arginfo->list_altnames = WHATSUP_ON;
       break;
     case '?':
-      err_usage("invalid command line option entered");
+      err_msg("invalid command line option entered", NULL);
+      return -1;
       break;
     default:
       err_msg("getopt() error", NULL);
@@ -274,15 +237,7 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
     }
   }
 
-  if (hopt > 0)
-    usage();
-
-  if (Vopt > 0)
-    version();
-
-  if (fopt > 1)
-    err_usage("you can only specify --filename option once");
-  else if (fopt == 1) { 
+  if (fopt > 0) { 
     if ((arginfo->genders_filename = strdup(filename)) == NULL) {
       err_msg("out of memory", NULL);
       return -1;
@@ -290,50 +245,21 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
   }
 
   if ((oopt + iopt) > 1) {
-    err_usage("you cannot specify --gmond_hostname and --gmond_ip");
+    err_msg("you cannot specify --gmond_hostname and --gmond_ip", NULL);
+    return -1;
   }
-  else if (oopt == 1) {
+  else if (oopt > 0) {
     if ((arginfo->gmond_hostname = strdup(hostname)) == NULL) {
       err_msg("out of memory", NULL);
       return -1;
     }
   }
-  else if (iopt == 1) {
+  else if (iopt > 0) {
     if ((arginfo->gmond_ip = strdup(ip)) == NULL) {
       err_msg("out of memory", NULL);
       return -1;
     }
   }
-
-  if (popt > 1)
-    err_usage("you can only specify --gmond_port once");
-  else  if (popt == 1)
-    arginfo->gmond_port = port;
-
-  if (bopt == 1  && (uopt == 1 || dopt == 1))
-    err_usage("you cannot specify --upanddown and --up or --down");
-  else if (bopt == 1 || (uopt == 1 && dopt == 1))
-    arginfo->output_type = UP_AND_DOWN;
-  else if (uopt == 1)
-    arginfo->output_type = UP;
-  else if (dopt == 1)
-    arginfo->output_type = DOWN;
-
-  if ((lopt + copt + nopt + sopt) > 1)
-    err_usage("you can only specify --hostlist, --comma,--newline, or --space");
-  else if (lopt == 1)
-    arginfo->list_type = HOSTLIST;
-  else if (copt == 1)
-    arginfo->list_type = COMMA;
-  else if (nopt == 1)
-    arginfo->list_type = NEWLINE;
-  else if (sopt == 1)
-    arginfo->list_type = SPACE;
-
-  if (aopt > 1)
-    err_usage("you can only specify --altnames once");
-  else if (aopt == 1)
-    arginfo->list_altnames = WHATSUP_ON;
 
   if ((arginfo->nodes = hostlist_create(NULL)) == NULL) {
     err_msg("hostlist_create() error", NULL);
@@ -354,94 +280,19 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
       return -1;
     }
 
-    /* search for brackets.  Assume nodes are listed in hostlist format */
     bracket1 = strchr(argv[index], '[');
     bracket2 = strchr(argv[index], ']');
-    
-    if (bracket1 != NULL && bracket2 != NULL) {
-      /* best situation, found both ends of a hostlist list of nodes */
-      
-      if ((ret = hostlist_push(arginfo->nodes, argv[index])) == 0) {
-        err_msg("hostlist_push() error", 
-                     "hosts may have been input incorrectly");
-        return -1;
-      }
-    }
-    else if (bracket1 != NULL && bracket2 == NULL) {
-      /* hardest situation, found beginning bracket, but not end bracket */
-      /* end of hostlist is in a later token */
 
-      int index_begin = index;
-      int strlen_count = strlen(argv[index]);
-      char *buffer;
-      index++;
-
-      /* find ending token with end bracket */
-      while (index < optind) {
-        if ((bracket2 = strchr(argv[index], ']')) != NULL)
-          break;
-
-        strlen_count += strlen(argv[index]);
-        index++;
-      }
-      
-      /* ending token not found */
-      if (bracket2 == NULL) {
-        err_msg("'[' found, but not ']'", 
-                     "hosts may have been input incorrectly");
-        return -1;
-      }
-
-      /* create a single string out of all the tokens */
-      buffer = (char *)malloc(strlen_count + 1);
-      if (buffer == NULL) {
-        err_msg("out of memory", NULL);
-        return -1;
-      }
-      memset(buffer, '\0', strlen_count + 1);
-      
-      strcpy(buffer, argv[index_begin]);
-      for (i = (index_begin+1); i <= index; i++)
-        strcat(buffer, argv[i]);
-
-      if (hostlist_push(arginfo->nodes, buffer) == 0) {
-        free(buffer);
-        err_msg("hostlist_push() error", 
-                     "hosts may have been input incorrectly");
-        return -1;
-      }
-
-      free(buffer);
-    }
-    else if (bracket1 == NULL && bracket2 != NULL) {
-      /* error situation, found end bracket before begin bracket */
-
-      err_msg("']' found before '['", 
-                   "hosts may have been input incorrectly");
+    /* Why doesn't C have XOR!!! */
+    if ((bracket1 == NULL && bracket2 != NULL) ||
+        (bracket1 != NULL && bracket2 == NULL)) {
+      err_msg("nodes listed incorrectly", NULL);
       return -1;
     }
     else {
-      /* found no brackets, node input is comma or space separated */
-
-      char *temp_char;
-
-      if (strchr(argv[index],',') != NULL) {
-        temp_char = strtok(argv[index],",");
-        while (temp_char != NULL) {
-          if (hostlist_push_host(arginfo->nodes, temp_char) == 0) {
-            err_msg("hostlist_push_host() error", 
-                         "hosts may have been input incorrectly");
-            return -1;
-          }
-          temp_char = strtok(NULL,",");
-        }
-      }
-      else {
-        if (hostlist_push_host(arginfo->nodes, argv[index]) == 0) {
-          err_msg("hostlist_push_host() error", 
-                       "hosts may have been input incorrectly");
-          return -1;
-        }
+      if (hostlist_push(arginfo->nodes, argv[index]) == 0) {
+        err_msg("hostlist_push_host() error", "nodes listed incorrectly");
+        return -1;
       }
     }
 
@@ -479,13 +330,13 @@ char * get_hostlist_string(hostlist_t hl, int which) {
   return str;
 }
 
-/* get_specified_nodes_common
+/* get_arg_nodes_common
  * - determine if specific nodes passed in at the command line are up or down 
  */
-int get_specified_nodes_common(struct arginfo *arginfo, 
-                               enum output_type output_type,
-                               nodeupdown_t handle, 
-                               char **nodes) {
+int get_arg_nodes_common(struct arginfo *arginfo, 
+                         int output_type,
+                         nodeupdown_t handle, 
+                         char **nodes) {
   hostlist_t hl = NULL;
   hostlist_iterator_t iter = NULL;
   char *str = NULL;
@@ -502,13 +353,13 @@ int get_specified_nodes_common(struct arginfo *arginfo,
   }
 
   while ((str = hostlist_next(iter)) != NULL) {
-    if (output_type == UP)
+    if (output_type == UP_ONLY)
       ret = nodeupdown_is_node_up(handle, str);
     else
       ret = nodeupdown_is_node_down(handle, str);
 
     if (ret == -1) {
-      if (output_type == UP)
+      if (output_type == UP_ONLY)
         err_msg("nodeupdown_is_node_up()", nodeupdown_errormsg(handle)); 
       else
         err_msg("nodeupdown_is_node_down()", nodeupdown_errormsg(handle)); 
@@ -550,7 +401,7 @@ int get_specified_nodes_common(struct arginfo *arginfo,
  * - get all up or down nodes
  */
 int get_all_nodes_common(struct arginfo *arginfo, 
-                         enum output_type output_type,
+                         int output_type,
                          nodeupdown_t handle, 
                          char **nodes) {
   int ret, str_len = 0;
@@ -565,14 +416,14 @@ int get_all_nodes_common(struct arginfo *arginfo,
     }
     memset(str, '\0', str_len);
     
-    if (output_type == UP)
+    if (output_type == UP_ONLY)
       ret = nodeupdown_get_up_nodes_string(handle, str, str_len);
     else
       ret = nodeupdown_get_down_nodes_string(handle, str, str_len);
 
     if (ret == -1) {
       if (nodeupdown_errnum(handle) != NODEUPDOWN_ERR_OVERFLOW) {
-        if (output_type == UP)
+        if (output_type == UP_ONLY)
           err_msg("nodeupdown_get_up_nodes_string()", 
                   nodeupdown_errormsg(handle));
         else 
@@ -642,14 +493,14 @@ int convert_to_altnames(struct arginfo *arginfo, char **nodes) {
  * - a wrapper function used to avoid duplicate code.
  */
 int get_nodes_common(struct arginfo *arginfo, 
-                     enum output_type output_type, 
+                     int output_type, 
                      nodeupdown_t handle, 
                      char **nodes) {
   int ret;
   char *str = NULL;
   
   if (hostlist_count(arginfo->nodes) > 0)
-    ret = get_specified_nodes_common(arginfo, output_type, handle, &str);
+    ret = get_arg_nodes_common(arginfo, output_type, handle, &str);
   else
     ret = get_all_nodes_common(arginfo, output_type, handle, &str);
   
@@ -678,7 +529,6 @@ int output_nodes(struct arginfo *arginfo, char *nodes) {
 
   char *str = NULL;
   char *ptr;
-  char break_type;
   hostlist_t hl = NULL;
 
   if (arginfo->list_type == HOSTLIST)
@@ -686,13 +536,6 @@ int output_nodes(struct arginfo *arginfo, char *nodes) {
   else {
     /* output nodes separated by some break type */
     
-    if (arginfo->list_type == COMMA)
-      break_type = ',';
-    else if (arginfo->list_type == NEWLINE)
-      break_type = '\n';
-    else
-      break_type = ' ';
-
     if ((hl = hostlist_create(nodes)) == NULL) {
       err_msg("hostlist_create() error", NULL);
       goto cleanup;
@@ -702,9 +545,9 @@ int output_nodes(struct arginfo *arginfo, char *nodes) {
       goto cleanup;
 
     /* convert commas to appropriate break types */
-    if (break_type != ',') {
+    if (arginfo->list_type != COMMA) {
       while ((ptr = strchr(str, ',')) != NULL)
-        *ptr = break_type;
+        *ptr = arginfo->list_type;
     }
 
     fprintf(stdout,"%s\n", str);
@@ -757,16 +600,16 @@ int main(int argc, char **argv) {
   }
 
   /* get up nodes */
-  if (arginfo->output_type == UP || 
+  if (arginfo->output_type == UP_ONLY || 
       arginfo->output_type == UP_AND_DOWN) {
-    if (get_nodes_common(arginfo, UP, handle, &up_nodes) == -1)
+    if (get_nodes_common(arginfo, UP_ONLY, handle, &up_nodes) == -1)
       goto cleanup;
   }
 
   /* get down nodes */
-  if (arginfo->output_type == DOWN || 
+  if (arginfo->output_type == DOWN_ONLY || 
       arginfo->output_type == UP_AND_DOWN) {
-    if (get_nodes_common(arginfo, DOWN, handle, &down_nodes) == -1)
+    if (get_nodes_common(arginfo, DOWN_ONLY, handle, &down_nodes) == -1)
       goto cleanup;
   }
 
@@ -794,11 +637,11 @@ int main(int argc, char **argv) {
     if (output_nodes(arginfo, down_nodes) != 0)
       goto cleanup;
   }
-  else if (arginfo->output_type == UP) {
+  else if (arginfo->output_type == UP_ONLY) {
     if (output_nodes(arginfo, up_nodes) != 0)
       goto cleanup;
   }
-  else if (arginfo->output_type == DOWN) {
+  else if (arginfo->output_type == DOWN_ONLY) {
     if (output_nodes(arginfo, down_nodes) != 0)
       goto cleanup;
   }

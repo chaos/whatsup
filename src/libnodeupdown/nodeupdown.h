@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown.h,v 1.21 2003-05-23 00:32:08 achu Exp $
+ *  $Id: nodeupdown.h,v 1.22 2003-05-23 21:33:23 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h,v $
  *    
  */
@@ -122,18 +122,14 @@ int nodeupdown_get_down_nodes_string(nodeupdown_t handle,
  * - list assumed to be preallocated with len elements
  * - returns number of nodes copied on success, -1 on error
  */
-int nodeupdown_get_up_nodes_list(nodeupdown_t handle, 
-                                 char **list, 
-                                 int len);
+int nodeupdown_get_up_nodes_list(nodeupdown_t handle, char **list, int len);
 
 /* nodeupdown_get_down_nodes_list
  * - retrieve a list of down nodes
  * - list assumed to be preallocated with len elements
  * - returns number of nodes copied on success, -1 on error
  */
-int nodeupdown_get_down_nodes_list(nodeupdown_t handle, 
-                                   char **list, 
-                                   int len);
+int nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len);
 
 /* nodeupdown_is_node_up
  * - check if a node is up
