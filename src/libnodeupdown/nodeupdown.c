@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.45 2003-05-16 15:54:37 achu Exp $
+ * $Id: nodeupdown.c,v 1.46 2003-05-16 23:13:24 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -656,6 +656,7 @@ void xml_parse_start(void *data, const char *e1, const char **attr) {
   unsigned long localtime = ((struct parse_vars *)data)->localtime;
   char *buffer = ((struct parse_vars *)data)->buffer;
   int buflen = ((struct parse_vars *)data)->buflen;
+  int ret;
   char *ptr;
   unsigned long reported;
 
@@ -682,6 +683,10 @@ void xml_parse_start(void *data, const char *e1, const char **attr) {
       handle->errnum = NODEUPDOWN_ERR_GANGLIA;
       return;
     }
+
+    /* make sure this node is legitimate */
+    if (genders_isnode_or_altnode(handle->genders_handle, attr[1]) != 1)
+      return;
 
     memset(buffer, '\0', buflen);
     if (genders_to_gendname_preserve(handle->genders_handle, 
@@ -1004,6 +1009,18 @@ int nodeupdown_is_node(nodeupdown_t handle,
     return -1;
   }
 
+  /* make sure node passed in is legitimate */
+  if ((ret = genders_isnode_or_altnode(handle->genders_handle, 
+                                       node)) == -1) {
+    handle->errnum = NODEUPDOWN_ERR_GENDERS;
+    return -1;
+  }
+
+  if (ret == 0) {
+    handle->errnum = NODEUPDOWN_ERR_NOTFOUND;
+    return -1;
+  }
+
   if ((ret = nodeupdown_check_if_node_in_hostlist(handle,
                                                   hl,
                                                   node)) == -1)
@@ -1029,18 +1046,16 @@ int nodeupdown_check_if_node_in_hostlist(nodeupdown_t handle,
     goto cleanup;
   }
 
-  buflen = (strlen(node) > buflen) ? strlen(node) : buflen;
-
   if ((buffer = (char *)malloc(buflen + 1)) == NULL) {
     handle->errnum = NODEUPDOWN_ERR_OUTMEM;
     goto cleanup;
   }
 
   memset(buffer, '\0', buflen + 1);
-  if (genders_to_gendname_preserve(handle->genders_handle,
-                                   node,
-                                   buffer,
-                                   buflen+1) == -1) {
+  if (genders_to_gendname(handle->genders_handle,
+                          node,
+                          buffer,
+                          buflen+1) == -1) {
     handle->errnum = NODEUPDOWN_ERR_GENDERS;
     goto cleanup;
   }
