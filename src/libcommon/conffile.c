@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.2 2004-01-10 00:52:27 achu Exp $
+ *  $Id: conffile.c,v 1.3 2004-01-10 00:53:23 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -359,10 +359,6 @@ _move_past_whitespace(conffile_t cf, char *linebuf)
     return linebuf;
 }
 
-/*
- * XXX Need fixes for
- * - space vs. comma lists
- */
 int
 _parse_args(conffile_t cf, 
             char *linebuf, 
@@ -437,10 +433,6 @@ _parse_args(conffile_t cf,
     return numargs;
 }
 
-/*
- * XXX Need fixes for
- * - flag options
- */
 static int
 _parseline(conffile_t cf, char *linebuf, int linebuflen)
 {
