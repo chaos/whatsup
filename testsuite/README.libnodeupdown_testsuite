@@ -58,7 +58,8 @@ uses 'pdsh' and 'pkill'.
 
 Step 4)
 
-Run the test suite with 'libnodeupdown_test'.
+Run the test suite with 'libnodeupdown_test' from the first node listed
+in the configuration file.
  
 IV. BUGS
 
@@ -69,9 +70,9 @@ test nodes.  This is done to simulate a set of nodes to be up or down.
 Due to the constant closing and restarting of gmond servers, it is
 possible for nodeupdown_load_data() to fail connecting to a server or
 for functionality tests to fail if the gmond servers have not had time
-to re-establish themselves after being restarted.  If a
-nodeupdown_load_data() connection error occurs during the test suite,
-simply try again.
+to re-establish and re-synchronize themselves after being restarted.
+If a nodeupdown_load_data() connection error occurs during the test
+suite, simply try again.  
 
 Pauses have been put within the test suite to give the gmonds daemons
 time to re-establish themselves.  However, there is always the
@@ -86,3 +87,6 @@ nodeupdown_get_hostlist_alternate_names() and
 nodeupdown_get_list_alternate_names() are not tested for functionality
 in this test suite.  Their functionality is dependent upon genders,
 and not ganglia.
+
+The test suite is not an extremely thorough test suite.  Many test
+situations have not been hit.  But it hits a lot of the situations.

@@ -1,5 +1,5 @@
 /*
- * $Id: libnodeupdown_test.c,v 1.4 2003-03-07 20:13:08 achu Exp $
+ * $Id: libnodeupdown_test.c,v 1.5 2003-03-07 23:47:47 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/testsuite/libnodeupdown_test.c,v $
  *    
  */
@@ -9,7 +9,6 @@
 #endif
 
 #include <errno.h>
-#include <nodeupdown.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,6 +20,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#include "nodeupdown.h"
 #include "libnodeupdown_testcases.h"
 
 /*****************************************************************
@@ -94,7 +94,7 @@ void load_data_param_test(struct test_env *, int, int, char *, char *, char *, i
 
 void get_nodes_hostlist_param_test(struct test_env *, int, int, int, int, int, int, int);
 
-void get_up_nodes_list_param_test(struct test_env *, int, int, int, int, int, int, int, int);
+void get_nodes_list_param_test(struct test_env *, int, int, int, int, int, int, int, int);
 
 void is_node_param_test(struct test_env *, int, int, int, char *, int, int, int) ;
 
@@ -665,15 +665,15 @@ void get_nodes_hostlist_param_test(struct test_env *test_env,
  * - run parameters tests for nodeupdown_get_up_nodes_list() and
  *   nodeupdown_get_down_nodes_list()
  */
-void get_up_nodes_list_param_test(struct test_env *test_env, 
-				      int function, 
-				      int index, 
-				      int nodeupdown_handle, 
-				      int list_flag, 
-				      int len, 
-				      int nodeupdown_load_data, 
-				      int return_value, 
-				      int return_errnum) {
+void get_nodes_list_param_test(struct test_env *test_env, 
+			       int function, 
+			       int index, 
+			       int nodeupdown_handle, 
+			       int list_flag, 
+			       int len, 
+			       int nodeupdown_load_data, 
+			       int return_value, 
+			       int return_errnum) {
   nodeupdown_t handle = NULL;
   char **list = NULL;
   int result;
@@ -1202,15 +1202,15 @@ int run_param_tests(struct test_env *test_env) {
   printf("nodeupdown_get_up_nodes_list(), parameter tests               \n");
   printf("--------------------------------------------------------------\n");
   while (get_list_param_tests[i].nodeupdown_handle != -1) {
-    get_up_nodes_list_param_test(test_env, 
-				 GET_UP_NODES_LIST, 
-				 i, 
-				 get_list_param_tests[i].nodeupdown_handle, 
-				 get_list_param_tests[i].list, 
-				 get_list_param_tests[i].len, 
-				 get_list_param_tests[i].nodeupdown_load_data, 
-				 get_list_param_tests[i].return_value, 
-				 get_list_param_tests[i].return_errnum);  
+    get_nodes_list_param_test(test_env, 
+			      GET_UP_NODES_LIST, 
+			      i, 
+			      get_list_param_tests[i].nodeupdown_handle, 
+			      get_list_param_tests[i].list, 
+			      get_list_param_tests[i].len, 
+			      get_list_param_tests[i].nodeupdown_load_data, 
+			      get_list_param_tests[i].return_value, 
+			      get_list_param_tests[i].return_errnum);  
     i++;
   }
   printf("\n\n");
@@ -1219,15 +1219,15 @@ int run_param_tests(struct test_env *test_env) {
   printf("nodeupdown_get_down_nodes_list(), parameter tests             \n");
   printf("--------------------------------------------------------------\n");
   while (get_list_param_tests[i].nodeupdown_handle != -1) {
-    get_up_nodes_list_param_test(test_env, 
-				 GET_DOWN_NODES_LIST, 
-				 i, 
-				 get_list_param_tests[i].nodeupdown_handle, 
-				 get_list_param_tests[i].list,
-				 get_list_param_tests[i].len,  
-				 get_list_param_tests[i].nodeupdown_load_data, 
-				 get_list_param_tests[i].return_value, 
-				 get_list_param_tests[i].return_errnum);  
+    get_nodes_list_param_test(test_env, 
+			      GET_DOWN_NODES_LIST, 
+			      i, 
+			      get_list_param_tests[i].nodeupdown_handle, 
+			      get_list_param_tests[i].list,
+			      get_list_param_tests[i].len,  
+			      get_list_param_tests[i].nodeupdown_load_data, 
+			      get_list_param_tests[i].return_value, 
+			      get_list_param_tests[i].return_errnum);  
     i++;
   }
   printf("\n\n");

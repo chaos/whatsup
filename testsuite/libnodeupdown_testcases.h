@@ -1,9 +1,8 @@
 /*
- * $Id: libnodeupdown_testcases.h,v 1.2 2003-03-07 20:13:08 achu Exp $
+ * $Id: libnodeupdown_testcases.h,v 1.3 2003-03-07 23:47:47 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/testsuite/libnodeupdown_testcases.h,v $
  *    
  */
-
 
 /*****************************************************************
  * DEFINITIONS                                                   * 
@@ -19,10 +18,10 @@
 #define GET_DOWN_NODES_LIST            3
 #define IS_NODE_UP                     4
 #define IS_NODE_DOWN                   5 
-#define GET_HOSTLIST_ALTERNATE_NAMES   6
+#define GET_HOSTLIST_ALTERNATE_NAMES   6 
 #define GET_LIST_ALTERNATE_NAMES       7
-#define NODELIST_CREATE                8
-#define NODELIST_CLEAR                 9
+#define NODELIST_CREATE                8 
+#define NODELIST_CLEAR                 9 
 #define NODELIST_DESTROY              10
 
 /*
@@ -248,6 +247,9 @@ struct {
 
 /*****************************************************************
  * FUNCTIONALITY TESTS                                           *
+ * - to limit the number of times gmonds are started, closed,    *
+ *   and restarted, we organize the functionality tests in the   *
+ *   mannger below.                                              *   
  *****************************************************************/
 
 struct {
@@ -288,16 +290,6 @@ struct {
   {IS_NODE_DOWN,            NODE_ALL, NODE_A,    NODE_B,    0, NODEUPDOWN_ERR_SUCCESS},
   {IS_NODE_DOWN,            NODE_ALL, NODE_B,    NODE_B,    0, NODEUPDOWN_ERR_SUCCESS},
   {IS_NODE_DOWN,            NODE_ALL, NODE_C,    NODE_B,    0, NODEUPDOWN_ERR_SUCCESS},
-  {GET_UP_NODES_HOSTLIST,   NODE_ALL, NODE_ALL,  NODE_C,    0, NODEUPDOWN_ERR_SUCCESS},
-  {GET_DOWN_NODES_HOSTLIST, NODE_ALL, NODE_NONE, NODE_C,    0, NODEUPDOWN_ERR_SUCCESS},
-  {GET_UP_NODES_LIST,       NODE_ALL, NODE_ALL,  NODE_C,    0, NODEUPDOWN_ERR_SUCCESS},
-  {GET_DOWN_NODES_LIST,     NODE_ALL, NODE_NONE, NODE_C,    0, NODEUPDOWN_ERR_SUCCESS},
-  {IS_NODE_UP,              NODE_ALL, NODE_A,    NODE_C,    1, NODEUPDOWN_ERR_SUCCESS},
-  {IS_NODE_UP,              NODE_ALL, NODE_B,    NODE_C,    1, NODEUPDOWN_ERR_SUCCESS},
-  {IS_NODE_UP,              NODE_ALL, NODE_C,    NODE_C,    1, NODEUPDOWN_ERR_SUCCESS},
-  {IS_NODE_DOWN,            NODE_ALL, NODE_A,    NODE_C,    0, NODEUPDOWN_ERR_SUCCESS},
-  {IS_NODE_DOWN,            NODE_ALL, NODE_B,    NODE_C,    0, NODEUPDOWN_ERR_SUCCESS},
-  {IS_NODE_DOWN,            NODE_ALL, NODE_C,    NODE_C,    0, NODEUPDOWN_ERR_SUCCESS},
   {GET_UP_NODES_HOSTLIST,   NODE_A,   NODE_A,    LOCALHOST, 0, NODEUPDOWN_ERR_SUCCESS},
   {GET_DOWN_NODES_HOSTLIST, NODE_A,   NODE_BC,   LOCALHOST, 0, NODEUPDOWN_ERR_SUCCESS},
   {GET_UP_NODES_LIST,       NODE_A,   NODE_A,    LOCALHOST, 0, NODEUPDOWN_ERR_SUCCESS},
@@ -340,8 +332,6 @@ struct {
   {IS_NODE_DOWN,            NODE_AB,  NODE_C,    LOCALHOST, 1, NODEUPDOWN_ERR_SUCCESS},
   {GET_UP_NODES_HOSTLIST,   NODE_AB,  NODE_AB,   NODE_A,    0, NODEUPDOWN_ERR_SUCCESS},
   {GET_DOWN_NODES_HOSTLIST, NODE_AB,  NODE_C,    NODE_A,    0, NODEUPDOWN_ERR_SUCCESS},
-  {GET_UP_NODES_LIST,       NODE_AB,  NODE_AB,   NODE_A,    0, NODEUPDOWN_ERR_SUCCESS},
-  {GET_DOWN_NODES_LIST,     NODE_AB,  NODE_C,    NODE_A,    0, NODEUPDOWN_ERR_SUCCESS},
   {IS_NODE_UP,              NODE_AB,  NODE_A,    NODE_A,    1, NODEUPDOWN_ERR_SUCCESS},
   {IS_NODE_UP,              NODE_AB,  NODE_B,    NODE_A,    1, NODEUPDOWN_ERR_SUCCESS},
   {IS_NODE_UP,              NODE_AB,  NODE_C,    NODE_A,    0, NODEUPDOWN_ERR_SUCCESS},
@@ -380,3 +370,4 @@ struct {
   {IS_NODE_DOWN,            NODE_BC,  NODE_C,    NODE_C,    0, NODEUPDOWN_ERR_SUCCESS},
   {-1, -1, -1, -1, -1, -1},
 }; 
+
