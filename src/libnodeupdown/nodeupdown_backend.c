@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend.c,v 1.3 2005-04-06 05:24:47 achu Exp $
+ *  $Id: nodeupdown_backend.c,v 1.4 2005-04-06 21:50:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -55,6 +55,14 @@ static int backend_modules_len = 1;
 static lt_dlhandle backend_module_dl_handle = NULL;
 static struct nodeupdown_backend_module_info *backend_module_info = NULL;
 
+/* 
+ * _load_module
+ *
+ * Load the specified backend module
+ * 
+ * Returns 1 if module is found and loaded successfully, 0 if module
+ * cannot be found, -1 on fatal error.
+ */
 static int
 _load_module(nodeupdown_t handle, char *module_path)
 {
@@ -65,13 +73,13 @@ _load_module(nodeupdown_t handle, char *module_path)
 
   if (!(backend_module_dl_handle = lt_dlopen(module_path)))
     {
-      handle->errnum = NODEUPDOWN_ERR_BACKEND;
+      handle->errnum = NODEUPDOWN_ERR_BACKEND_INTERNAL;
       goto cleanup;
     }
 
   if (!(backend_module_info = (struct nodeupdown_backend_module_info *)lt_dlsym(backend_module_dl_handle, "backend_module_info")))
     {
-      handle->errnum = NODEUPDOWN_ERR_BACKEND;
+      handle->errnum = NODEUPDOWN_ERR_BACKEND_INTERNAL;
       goto cleanup;
     }
 
@@ -83,7 +91,7 @@ _load_module(nodeupdown_t handle, char *module_path)
       || !backend_module_info->cleanup
       || !backend_module_info->get_updown_data)
     {
-      handle->errnum = NODEUPDOWN_ERR_BACKEND;
+      handle->errnum = NODEUPDOWN_ERR_BACKEND_INTERNAL;
       goto cleanup;
     }
 
@@ -200,7 +208,7 @@ nodeupdown_backend_load_module(nodeupdown_t handle, char *backend_module)
       if (rv)
         goto done;
 
-      handle->errnum = NODEUPDOWN_ERR_BACKEND;
+      handle->errnum = NODEUPDOWN_ERR_BACKEND_INTERNAL;
       goto cleanup;
     }
 

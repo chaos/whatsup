@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist.h,v 1.1 2005-04-05 23:54:50 achu Exp $
+ *  $Id: nodeupdown_clusterlist.h,v 1.2 2005-04-06 21:50:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -29,23 +29,94 @@
 
 #include "nodeupdown.h"
 
-/*  
- * Clusterlist function prototypes
+/*
+ * Nodeupdown_clusterlist_init
+ *
+ * Initialize the clusterlist module
+ *
+ * Return 0 on success, -1 on error
  */
-
 typedef int (*Nodeupdown_clusterlist_init)(nodeupdown_t);
+
+/*
+ * Nodeupdown_clusterlist_cleanup
+ *
+ * Cleanup clusterlist module allocations
+ *
+ * Return 0 on success, -1 on error
+ */
 typedef int (*Nodeupdown_clusterlist_cleanup)(nodeupdown_t);
+
+/*
+ * Nodeupdown_clusterlist_complete_loading
+ *
+ * Complete loading process after backend get_updown_data function has
+ * been done.
+ *
+ * Returns 0 on success, -1 on error
+ */
 typedef int (*Nodeupdown_clusterlist_complete_loading)(nodeupdown_t);
+
+/*
+ * Nodeupdown_clusterlist_compare_to_clusterlist
+ *
+ * Compare nodes currently discovered to clusterlist database to
+ * determine if additional nodes are down.
+ *
+ * Returns 0 on success, -1 on error
+ */
 typedef int (*Nodeupdown_clusterlist_compare_to_clusterlist)(nodeupdown_t);
+
+/*
+ * Nodeupdown_clusterlist_is_node_in_cluster
+ *
+ * Determines if a node is in the cluster.
+ *
+ * Returns 1 is node is in the cluster, 0 if not, -1 on error
+ */
 typedef int (*Nodeupdown_clusterlist_is_node_in_cluster)(nodeupdown_t, const char *);
+
+/*
+ * Nodeupdown_clusterlist_is_node_discovered
+ *
+ * Determines if a node has been discovered.  Generally identical to
+ * is_node_in_cluster, although some clusterlist modules act
+ * differently.
+ *
+ * Returns 1 is node has been discovered, 0 if not, -1 on error
+ *
+ */
 typedef int (*Nodeupdown_clusterlist_is_node_discovered)(nodeupdown_t, const char *);
+
+/*
+ * Nodeupdown_clusterlist_get_nodename
+ *
+ * Determine the nodename to use for calculations.  Typically, this
+ * function will only copy the node passed in into the buffer passed
+ * in.  However, in some circumstances, nodes with duplicate names
+ * (perhaps aliased) need to be identified with a single nodename.
+ *
+ * Returns nodename in buffer, 0 on success, -1 on error
+ */
 typedef int (*Nodeupdown_clusterlist_get_nodename)(nodeupdown_t, const char *, char *, int);
+
+/*
+ * Nodeupdown_clusterlist_increase_max_nodes
+ *
+ * Increase the maximum number of nodes discovered thus far.  Some
+ * modules may not need to do this, and thus this function does
+ * nothing.
+ *
+ * Returns 0 on success, -1 on error.
+ */
 typedef int (*Nodeupdown_clusterlist_increase_max_nodes)(nodeupdown_t);
 
-/* 
- * Define all module information. 
+/*
+ * struct nodeupdown_clusterlist_module_info
+ *
+ * contains clusterlist module information and operations.  Required
+ * to be defined in each clusterlist module.
  */
-
 struct nodeupdown_clusterlist_module_info
 {
   char *clusterlist_module_name;
@@ -60,60 +131,77 @@ struct nodeupdown_clusterlist_module_info
 };
 
 /*
- * Load the clusterlist module
+ * nodeupdown_clusterlist_load_module
+ *
+ * Find and load the nodeupdown clusterlist module
+ *
+ * Returns 0 on success, -1 on error
  */
 int nodeupdown_clusterlist_load_module(nodeupdown_t handle, char *clusterlist_module);
 
 /*  
- * Unload the clusterlist module
+ * nodeupdown_clusterlist_unload_module
+ *
+ * unload the nodeupdown clusterlist module
+ *
+ * Returns 0 on success, -1 on error
+
  */
 int nodeupdown_clusterlist_unload_module(nodeupdown_t handle);
 
 /* 
- * Initialize any clusterlist info, for example, loading data from a file 
+ * nodeupdown_clusterlist_init
+ *
+ * call clusterlist module init function
  */
 int nodeupdown_clusterlist_init(nodeupdown_t handle);
 
 /* 
- * cleanup up clusterlist
+ * nodeupdown_clusterlist_cleanup
+ *
+ * call clusterlist module init function
  */
 int nodeupdown_clusterlist_cleanup(nodeupdown_t handle);
 
 /* 
- * complete_loading up clusterlist work
+ * nodeupdown_clusterlist_complete_loading
+ *
+ * call clusterlist module complete_loading function
  */
 int nodeupdown_clusterlist_complete_loading(nodeupdown_t handle);
 
 /* 
- * Compare all nodes retrieved with nodes from the clusterlist 
- * - Adds nodes not found from gmond into the down nodes hostlist
+ * nodeupdown_clusterlist_compare_to_clusterlist
+ *
+ * call clusterlist module compare_to_clusterlist function
  */
 int nodeupdown_clusterlist_compare_to_clusterlist(nodeupdown_t handle);
 
 /* 
- * Returns 1 if the specified node is in the cluster, 0 if not, -1 on error 
+ * nodeupdown_clusterlist_is_node_in_cluster
+ *
+ * call clusterlist module is_node_in_cluster function
  */
 int nodeupdown_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node);
 
 /* 
- * Returns 1 if the specified node name is discovered
- * - Usually identical to nodeupdown_clusterlist_is_node_in_cluster.
- *   Only necessary when no clusterlist is available.
+ * nodeupdown_clusterlist_is_node_discovered
+ *
+ * call clusterlist module is_node_discovered function
  */
 int nodeupdown_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node);
 
 /* 
- * Returns the appropriate nodename to use in the specified buffer
- * - Used if multiple node names may be used to specify a single node
- *   and node names need to be resolved to a common one.  Most of the time
- *   this just copies the nodename straight into the buffer.
- * - Typically, this should be called after a check using
- *   "is_node_discovered" or "is_node_in_cluster".
+ * nodeupdown_clusterlist_get_nodename
+ *
+ * call clusterlist module get_nodename function
  */
 int nodeupdown_clusterlist_get_nodename(nodeupdown_t handle, const char *node, char *buffer, int buflen);
 
 /* 
- * Increase the number of nodes in the system found 
+ * nodeupdown_clusterlist_increase_max_nodes
+ *
+ * call clusterlist module increase_max_nodes function
  */
 int nodeupdown_clusterlist_increase_max_nodes(nodeupdown_t handle);
 

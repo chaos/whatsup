@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup_options_gendersllnl.c,v 1.6 2005-04-06 17:24:04 achu Exp $
+ *  $Id: whatsup_options_gendersllnl.c,v 1.7 2005-04-06 21:50:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -51,6 +51,28 @@ static int gendersllnl_option_a_registered = 0;
 static int gendersllnl_list_altnames_flag = 0;
 
 /* 
+ * gendersllnl_options_init
+ * 
+ * gendersllnl init func
+ */
+int 
+gendersllnl_options_init(void)
+{
+  return 0;
+}
+
+/* 
+ * gendersllnl_options_cleanup
+ * 
+ * gendersllnl cleanup func
+ */
+int 
+gendersllnl_options_cleanup(void)
+{
+  return 0;
+}
+
+/* 
  * gendersllnl_options_output_usage
  * 
  * gendersllnl output_usage func
@@ -83,7 +105,10 @@ int
 gendersllnl_options_register_option(char c, char *options)
 {
   if (c == 'a')
-    gendersllnl_option_a_registered++;
+    {
+      strcat(options, "a");
+      gendersllnl_option_a_registered++;
+    }
 
   return 0;
 }
@@ -159,6 +184,8 @@ gendersllnl_options_convert_nodenames(char *nodes, char *buf, int buflen)
 struct whatsup_options_module_info options_module_info = 
   {
     "gendersllnl",
+    &gendersllnl_options_init,
+    &gendersllnl_options_cleanup,
     &gendersllnl_options_output_usage,
     &gendersllnl_options_options_string,
     &gendersllnl_options_register_option,

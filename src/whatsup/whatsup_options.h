@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup_options.h,v 1.4 2005-04-06 17:24:04 achu Exp $
+ *  $Id: whatsup_options.h,v 1.5 2005-04-06 21:50:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -36,23 +36,23 @@
 #include <getopt.h>
 #endif /* HAVE_GETOPT_H */
 
+/*
+ * Whatsup_options_init
+ *
+ * Initialize options module
+ *
+ * Return 0 on success, -1 on error.
+ */
+typedef int (*Whatsup_options_init)(void);
 
 /*
- * Whatsup_options_options_list
- * Return string of options desired from module
- * 
- * Whatsup_options_add_options
- * - Add additional options to the options array
+ * Whatsup_options_cleanup
  *
- * Whatsup_options_add_long_option
- * - Add addtional long options to the long options array
+ * Cleanup options module allocations
  *
- * Whatsup_options_check_option
- * - Check if the option is for this module, and take appropriate action
- * 
- * Whatsup_options_convert_nodenames
- * - Conversion function for node names
+ * Return 0 on success, -1 on error.
  */
+typedef int (*Whatsup_options_cleanup)(void);
 
 /*
  * Whatsup_options_output_usage
@@ -125,6 +125,8 @@ typedef int (*Whatsup_options_convert_nodenames)(char *nodes, char *buf, int buf
 struct whatsup_options_module_info
 {
   char *options_module_name;
+  Whatsup_options_init init;
+  Whatsup_options_cleanup cleanup;
   Whatsup_options_output_usage output_usage;
   Whatsup_options_options_string options_string;
   Whatsup_options_register_option register_option;

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_none.c,v 1.1 2005-04-05 23:54:50 achu Exp $
+ *  $Id: nodeupdown_clusterlist_none.c,v 1.2 2005-04-06 21:50:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -40,42 +40,55 @@
 #include "nodeupdown_clusterlist_util.h"
 #include "hostlist.h"
 
-int
-none_clusterlist_initialize_handle(nodeupdown_t handle) 
-{
-  return 0;
-}
-
-int
-none_clusterlist_free_handle_data(nodeupdown_t handle) 
-{
-  return 0;
-}
-
+/*
+ * none_clusterlist_init
+ *
+ * none clusterlist module init function
+ */
 int 
 none_clusterlist_init(nodeupdown_t handle) 
 {
   return 0;
 }
 
+/*
+ * none_clusterlist_cleanup
+ *
+ * none clusterlist module cleanup function
+ */
 int 
 none_clusterlist_cleanup(nodeupdown_t handle) 
 {
   return 0;
 }
 
+/*
+ * none_clusterlist_complete_loading
+ *
+ * none clusterlist module complete_loading function
+ */
 int 
 none_clusterlist_complete_loading(nodeupdown_t handle) 
 {
   return 0;
 }
 
+/*
+ * none_clusterlist_compare_to_clusterlist
+ *
+ * none clusterlist module compare_to_clusterlist function
+ */
 int 
 none_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
 {
   return 0;
 }
 
+/*
+ * none_clusterlist_is_node_in_cluster
+ *
+ * none clusterlist module is_node_in_cluster function
+ */
 int 
 none_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) 
 {
@@ -83,6 +96,11 @@ none_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node)
   return 1;
 }
 
+/*
+ * none_clusterlist_is_node_discovered
+ *
+ * none clusterlist module is_node_discovered function
+ */
 int 
 none_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node) 
 {
@@ -94,6 +112,11 @@ none_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node)
     return 1;
 }
 
+/*
+ * none_clusterlist_get_nodename
+ *
+ * none clusterlist module get_nodename function
+ */
 int 
 none_clusterlist_get_nodename(nodeupdown_t handle, 
                               const char *node, 
@@ -103,6 +126,11 @@ none_clusterlist_get_nodename(nodeupdown_t handle,
   return nodeupdown_clusterlist_copy_nodename(handle, node, buffer, buflen);
 }
     
+/*
+ * none_clusterlist_increase_max_nodes
+ *
+ * none clusterlist module increase_max_nodes function
+ */
 int 
 none_clusterlist_increase_max_nodes(nodeupdown_t handle) 
 {

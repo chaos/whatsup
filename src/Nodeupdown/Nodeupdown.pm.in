@@ -1,5 +1,5 @@
 #############################################################################
-#  $Id: Nodeupdown.pm.in,v 1.1 2005-01-11 00:14:21 achu Exp $
+#  $Id: Nodeupdown.pm.in,v 1.2 2005-04-06 21:50:19 achu Exp $
 #############################################################################
 #  Copyright (C) 2003 The Regents of the University of California.
 #  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -44,14 +44,14 @@ our %EXPORT_TAGS = ( 'all' => [ qw(&_errormsg
                                    $debugkey 
                                    $handlekey
                                    $hostkey
-                                   $portkey
-                                   $NODEUPDOWN_TIMEOUT_LEN) ] );
+                                   $portkey 
+                                   $timeoutlenkey ] );
 
-our $NODEUPDOWN_TIMEOUT_LEN = Libnodeupdown->NODEUPDOWN_TIMEOUT_LEN;
 our $debugkey = "_DEBUG";
 our $handlekey = "_HANDLE";
 our $hostkey = "_HOST";
 our $portkey = "_PORT";
+our $timeoutlenkey = "_TIMEOUTLEN";
 
 sub _errormsg {
     my $self = shift;
@@ -69,6 +69,7 @@ sub new {
     my $class = ref($proto) || $proto;
     my $hostname = shift;
     my $port = shift;
+    my $timeoutlen = shift;    
     my $self = {};
     my $handle;
     my $ret;
@@ -87,6 +88,13 @@ sub new {
         $self->{$portkey} = 0;
     }
 
+    if (defined($timeoutlen)) {
+        $self->{$timeoutlenkey} = $timeoutlen;
+    }
+    else {
+        $self->{$timeoutlenkey} = 0;
+    }
+
     $self->{$debugkey} = 0;
     
     $handle = Libnodeupdown->nodeupdown_handle_create();
@@ -99,7 +107,7 @@ sub new {
 
     $ret = $self->{$handlekey}->nodeupdown_load_data($self->{$hostkey},
                                                      $self->{$portkey},
-                                                     0,
+                                                     $self->{$timeoutlenkey},
                                                      undef);
     if ($ret == -1) {
         _errormsg($self, "nodeupdown_load_data()");
@@ -302,7 +310,7 @@ Nodeupdown - Perl API for determining up and down nodes
 
  use Nodeupdown;
 
- $obj = Nodeupdown->new([$host, [$port]])
+ $obj = Nodeupdown->new([$host, [$port [$timeoutlen]]])
 
  $upnodes = $obj->up_nodes()
  @uplist  = $obj->up_nodes()
@@ -324,8 +332,9 @@ This package provides a Perl API for determining up and down nodes
 
 =item B<Nodeupdown-E<gt>new([$host, [$port]])>
 
-Creates and returns a Nodeupdown object.  If the host or port are not
-specified, default values are assumed.  On error, undef is returned.
+Creates and returns a Nodeupdown object.  If the host, port, or
+timeoutlen, are not specified, default values are assumed.  On error,
+undef is returned.
 
 =item B<$obj-E<gt>up_nodes()>
 

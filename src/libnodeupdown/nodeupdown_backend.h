@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend.h,v 1.3 2005-04-06 04:24:16 achu Exp $
+ *  $Id: nodeupdown_backend.h,v 1.4 2005-04-06 21:50:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -29,13 +29,60 @@
 
 #include "nodeupdown.h"
 
+/*
+ * Nodeupdown_backend_default_hostname
+ *
+ * Return pointer to default backend hostname
+ */
 typedef char *(*Nodeupdown_backend_default_hostname)(nodeupdown_t);
+
+/*
+ * Nodeupdown_backend_default_port
+ *
+ * Return default port of backend tool
+ */
 typedef int (*Nodeupdown_backend_default_port)(nodeupdown_t);
+
+/*
+ * Nodeupdown_backend_default_timeout_len
+ *
+ * Return default timeout_len of backend tool
+ */
 typedef int (*Nodeupdown_backend_default_timeout_len)(nodeupdown_t);
+
+/*
+ * Nodeupdown_backend_init
+ *
+ * Initialize the backend module
+ *
+ * Return 0 on success, -1 on error
+ */
 typedef int (*Nodeupdown_backend_init)(nodeupdown_t);
+
+/*
+ * Nodeupdown_backend_cleanup
+ *
+ * Cleanup backend module allocations
+ *
+ * Return 0 on success, -1 on error
+ */
 typedef int (*Nodeupdown_backend_cleanup)(nodeupdown_t);
+
+/* 
+ * Nodeupdown_backend_get_updown_data
+ *
+ * Get all updown data and store in the nodeupdown handle
+ *
+ * Returns 0 on success, -1 on error
+ */
 typedef int (*Nodeupdown_backend_get_updown_data)(nodeupdown_t, const char *, int, int, char *);
 
+/*
+ * struct nodeupdown_backend_module_info
+ *
+ * contains backend module information and operations.  Required to be
+ * defined in each backend module.
+ */
 struct nodeupdown_backend_module_info
 {
   char *backend_module_name;
@@ -47,20 +94,64 @@ struct nodeupdown_backend_module_info
   Nodeupdown_backend_get_updown_data get_updown_data;
 };
 
+/* 
+ * nodeupdown_backend_load_module
+ *
+ * Find and load the nodeupdown backend module
+ *
+ * Returns 0 on success, -1 on error
+ */
 int nodeupdown_backend_load_module(nodeupdown_t handle, char *backend_module);
 
+/* 
+ * nodeupdown_backend_unload_module
+ *
+ * unload the nodeupdown backend module
+ *
+ * Returns 0 on success, -1 on error
+ */
 int nodeupdown_backend_unload_module(nodeupdown_t handle);
 
+/* 
+ * nodeupdown_backend_default_hostname
+ *
+ * call backend module default_hostname function
+ */
 char *nodeupdown_backend_default_hostname(nodeupdown_t handle);
 
+/* 
+ * nodeupdown_backend_default_port
+ *
+ * call backend module default_port function
+ */
 int nodeupdown_backend_default_port(nodeupdown_t handle);
 
+/* 
+ * nodeupdown_backend_default_timeout_len
+ *
+ * call backend module default_timeout_len function
+ */
 int nodeupdown_backend_default_timeout_len(nodeupdown_t handle);
 
+/* 
+ * nodeupdown_backend_init
+ *
+ * call backend module init function
+ */
 int nodeupdown_backend_init(nodeupdown_t handle);
 
+/* 
+ * nodeupdown_backend_cleanup
+ *
+ * call backend module cleanup function
+ */
 int nodeupdown_backend_cleanup(nodeupdown_t handle);
 
+/* 
+ * nodeupdown_backend_get_updown_data
+ *
+ * call backend module get_updown_data function
+ */
 int nodeupdown_backend_get_updown_data(nodeupdown_t handle, 
                                        const char *hostname,
                                        int port,

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist.c,v 1.3 2005-04-06 04:24:16 achu Exp $
+ *  $Id: nodeupdown_clusterlist.c,v 1.4 2005-04-06 21:50:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -58,6 +58,14 @@ static int clusterlist_modules_len = 4;
 static lt_dlhandle clusterlist_module_dl_handle = NULL;
 static struct nodeupdown_clusterlist_module_info *clusterlist_module_info = NULL;
 
+/* 
+ * _load_module
+ *
+ * Load the specified clusterlist module
+ * 
+ * Returns 1 if module is found and loaded successfully, 0 if module
+ * cannot be found, -1 on fatal error.
+ */
 static int
 _load_module(nodeupdown_t handle, char *module_path)
 {
@@ -68,13 +76,13 @@ _load_module(nodeupdown_t handle, char *module_path)
 
   if (!(clusterlist_module_dl_handle = lt_dlopen(module_path)))
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
       goto cleanup;
     }
 
   if (!(clusterlist_module_info = (struct nodeupdown_clusterlist_module_info *)lt_dlsym(clusterlist_module_dl_handle, "clusterlist_module_info")))
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
       goto cleanup;
     }
 
@@ -88,7 +96,7 @@ _load_module(nodeupdown_t handle, char *module_path)
       || !clusterlist_module_info->get_nodename
       || !clusterlist_module_info->increase_max_nodes)
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
       goto cleanup;
     }
 
@@ -205,7 +213,7 @@ nodeupdown_clusterlist_load_module(nodeupdown_t handle, char *clusterlist_module
       if (rv)
         goto done;
 
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
       goto cleanup;
     }
 

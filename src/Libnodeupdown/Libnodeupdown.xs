@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: Libnodeupdown.xs,v 1.12 2005-04-06 00:56:22 achu Exp $
+ *  $Id: Libnodeupdown.xs,v 1.13 2005-04-06 21:50:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -149,10 +149,10 @@ NODEUPDOWN_ERR_NOTFOUND (sv=&PL_sv_undef)
         RETVAL    
 
 int
-NODEUPDOWN_ERR_CLUSTERLIST (sv=&PL_sv_undef)
+NODEUPDOWN_ERR_BACKEND_INTERNAL (sv=&PL_sv_undef)
     SV *sv    
     CODE:
-        RETVAL = NODEUPDOWN_ERR_CLUSTERLIST;
+        RETVAL = NODEUPDOWN_ERR_BACKEND_INTERNAL;
     OUTPUT:
         RETVAL    
 
@@ -181,10 +181,10 @@ NODEUPDOWN_ERR_CLUSTERLIST_PARSE (sv=&PL_sv_undef)
         RETVAL    
 
 int
-NODEUPDOWN_ERR_CONF (sv=&PL_sv_undef)
+NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL (sv=&PL_sv_undef)
     SV *sv    
     CODE:
-        RETVAL = NODEUPDOWN_ERR_CONF;
+        RETVAL = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
     OUTPUT:
         RETVAL    
 
@@ -213,10 +213,10 @@ NODEUPDOWN_ERR_CONF_PARSE (sv=&PL_sv_undef)
         RETVAL    
 
 int
-NODEUPDOWN_ERR_BACKEND (sv=&PL_sv_undef)
+NODEUPDOWN_ERR_CONF_INTERNAL (sv=&PL_sv_undef)
     SV *sv    
     CODE:
-        RETVAL = NODEUPDOWN_ERR_BACKEND;
+        RETVAL = NODEUPDOWN_ERR_CONF_INTERNAL;
     OUTPUT:
         RETVAL    
 
@@ -275,16 +275,16 @@ nodeupdown_handle_create(CLASS)
         RETVAL
 
 int
-nodeupdown_load_data(handle, gmond_hostname=NULL, gmond_port=0, timeout_len=0, reserved=NULL)
+nodeupdown_load_data(handle, hostname=NULL, port=0, timeout_len=0, reserved=NULL)
     nodeupdown_t handle
     char *reserved
-    char *gmond_hostname
-    int gmond_port
+    char *hostname
+    int port
     int timeout_len
     CODE:
         RETVAL = nodeupdown_load_data(handle,
-                                      gmond_hostname, 
-                                      gmond_port, 
+                                      hostname, 
+                                      port, 
                                       timeout_len,
                                       reserved);
     OUTPUT:

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.116 2005-04-06 04:24:16 achu Exp $
+ *  $Id: nodeupdown.c,v 1.117 2005-04-06 21:50:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -44,7 +44,11 @@
 #include "list.h"
 #include "ltdl.h"
 
-/* Used to store configuration data */
+/* 
+ * struct nodeupdown_confdata
+ *
+ * stores configuration file data
+ */
 struct nodeupdown_confdata 
 {
   List hostnames;
@@ -59,7 +63,11 @@ struct nodeupdown_confdata
   int clusterlist_module_found;
 };
 
-/* error messages */
+/* 
+ * nodeupdown_errmsg
+ * 
+ * error messages array
+ */
 static char * nodeupdown_errmsg[] = 
   {
     "success",
@@ -67,32 +75,38 @@ static char * nodeupdown_errmsg[] =
     "connection to server error",
     "connection to server timeout",
     "improper hostname error",
-    "improper IP address error",
+    "improper address error",
     "network error",
     "data already loaded",
     "data not loaded",
     "array or string not large enough to store result",
-    "incorrect parameters passed in",
+    "incorrect parameters",
     "null pointer reached in list",
     "out of memory",
     "node not found",
-    "internal cluster list error",
-    "open clusterlist file error",
-    "read clusterlist file error",
-    "parse clusterlist error",
-    "internal configuration file error",
-    "open conf file error",
-    "read conf file error",
-    "parse conf file error",
-    "backend error",
-    "backend open error",
-    "internal XML parsing error",
+    "internal backend module error",
+    "open clusterlist database error",
+    "read clusterlist database error",
+    "parse clusterlist database error",
+    "internal clusterlist module error",
+    "open config file error",
+    "read config file error",
+    "parse config file error",
+    "internal config file error",
+    "internal XML parse error",
     "internal hostlist error",
-    "nodeupdown handle magic number incorrect, improper handle passed in",
+    "illegal nodeupdown handle",
     "internal system error",
     "error number out of range",
   };
 
+/* 
+ * _handle_error_check
+ * 
+ * standard handle error checker
+ *
+ * Returns -1 on error, 0 on success
+ */
 static int 
 _handle_error_check(nodeupdown_t handle) 
 {
@@ -102,6 +116,13 @@ _handle_error_check(nodeupdown_t handle)
   return 0;
 }
 
+/* 
+ * _unloaded_handle_error_check
+ * 
+ * standard unloaded handle error checker
+ *
+ * Returns -1 on error, 0 on success
+ */
 static int 
 _unloaded_handle_error_check(nodeupdown_t handle) 
 {
@@ -117,6 +138,13 @@ _unloaded_handle_error_check(nodeupdown_t handle)
   return 0;
 }
 
+/* 
+ * _loaded_handle_error_check
+ * 
+ * standard loaded handle error checker
+ *
+ * Returns -1 on error, 0 on success
+ */
 static int 
 _loaded_handle_error_check(nodeupdown_t handle) 
 {
@@ -132,6 +160,11 @@ _loaded_handle_error_check(nodeupdown_t handle)
   return 0;
 }
 
+/* 
+ * _initialize_handle
+ *
+ * initialize nodeupdown handle 
+ */
 static void 
 _initialize_handle(nodeupdown_t handle) 
 {
@@ -155,6 +188,11 @@ nodeupdown_handle_create()
   return handle;
 }
 
+/* 
+ * _free_handle_data
+ *
+ * free nodeupdown handle data
+ */
 static void 
 _free_handle_data(nodeupdown_t handle) 
 {
@@ -183,6 +221,13 @@ nodeupdown_handle_destroy(nodeupdown_t handle)
   return 0;
 }  
 
+/* 
+ * _cb_hostnames
+ *
+ * callback function for configuration parsing of hostnames option.
+ *
+ * Returns -1 on error, 0 on success
+ */
 static int 
 _cb_hostnames(conffile_t cf, struct conffile_data *data, char *optionname,
               int option_type, void *option_ptr, int option_data,
@@ -218,8 +263,36 @@ _cb_hostnames(conffile_t cf, struct conffile_data *data, char *optionname,
   return 0;
 }
 
+/*  
+ * _init_nodeupdown_confdata
+ *
+ * initialize nodeupdown_confdata structure with defaults
+ */
+static void
+_init_nodeupdown_confdata(nodeupdown_t handle, struct nodeupdown_confdata *cd)
+{
+  memset(cd, '\0', sizeof(struct nodeupdown_confdata));
+}
 
-/* parse configuration file and store data into confdata */
+/*  
+ * _cleanup_nodeupdown_confdata
+ *
+ * cleanup nodeupdown_confdata structure data
+ */
+static void
+_cleanup_nodeupdown_confdata(nodeupdown_t handle, struct nodeupdown_confdata *cd)
+{
+  if (cd->hostnames)
+    list_destroy(cd->hostnames);
+}
+
+/* 
+ * _read_conffile
+ *
+ * read and parse the nodeupdown configuration file
+ *
+ * Returns 0 on success, -1 on error
+ */
 static int 
 _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd) 
 {
@@ -264,7 +337,7 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd)
         else if (CONFFILE_ERR_OUTMEM)
           handle->errnum = NODEUPDOWN_ERR_OUTMEM;
         else
-          handle->errnum = NODEUPDOWN_ERR_CONF;
+          handle->errnum = NODEUPDOWN_ERR_CONF_INTERNAL;
         goto cleanup;
       }
     }
@@ -299,8 +372,7 @@ nodeupdown_load_data(nodeupdown_t handle,
    * The configuration file may indicate which module to load.
    */
 
-  memset(&cd, '\0', sizeof(struct nodeupdown_confdata));
-
+  _init_nodeupdown_confdata(handle, &cd);
   if (_read_conffile(handle, &cd) < 0)
     goto cleanup;
 
@@ -309,7 +381,7 @@ nodeupdown_load_data(nodeupdown_t handle,
   
   if (nodeupdown_backend_load_module(handle, backend_module) < 0)
     goto cleanup;
-                                                                                      
+
   if (nodeupdown_backend_init(handle) < 0)
     goto cleanup;
 
@@ -318,7 +390,7 @@ nodeupdown_load_data(nodeupdown_t handle,
   
   if (nodeupdown_clusterlist_load_module(handle, clusterlist_module) < 0)
     goto cleanup;
-                                                                                      
+
   if (nodeupdown_clusterlist_init(handle) < 0)
     goto cleanup;
 
@@ -402,14 +474,12 @@ nodeupdown_load_data(nodeupdown_t handle,
   /* loading complete */
   handle->is_loaded++;
 
-  if (cd.hostnames)
-    list_destroy(cd.hostnames);
+  _cleanup_nodeupdown_confdata(handle, &cd);
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return 0;
 
  cleanup:
-  if (cd.hostnames)
-    list_destroy(cd.hostnames);
+  _cleanup_nodeupdown_confdata(handle, &cd);
   _free_handle_data(handle);
   return -1;
 }
@@ -451,6 +521,14 @@ nodeupdown_perror(nodeupdown_t handle, const char *msg)
     fprintf(stderr, "%s: %s\n", msg, errormsg);
 }
 
+/* 
+ * _get_nodes_string
+ *
+ * common function for nodeupdown_get_up_nodes_string and
+ * nodeupdown_get_down_nodes_string
+ *
+ * Returns 0 on success, -1 on error
+ */
 static int 
 _get_nodes_string(nodeupdown_t handle, char *buf, int buflen, int up_or_down) 
 {
@@ -492,6 +570,14 @@ nodeupdown_get_down_nodes_string(nodeupdown_t handle, char *buf, int buflen)
   return _get_nodes_string(handle, buf, buflen, NODEUPDOWN_DOWN_NODES);
 }
 
+/* 
+ * _get_nodes_list
+ *
+ * common function for nodeupdown_get_up_nodes_list and
+ * nodeupdown_get_down_nodes_list
+ *
+ * Returns number of items copied on success, -1 on error
+ */
 static int 
 _get_nodes_list(nodeupdown_t handle, char **list, int len, int up_or_down) 
 {
@@ -561,6 +647,14 @@ nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len)
   return _get_nodes_list(handle, list, len, NODEUPDOWN_DOWN_NODES);
 }
 
+/* 
+ * _is_node
+ *
+ * common function for nodeupdown_is_node_up and
+ * nodeupdown_is_node_down
+ *
+ * Returns bool on success, -1 on error
+ */
 static int 
 _is_node(nodeupdown_t handle, const char *node, int up_or_down) 
 { 
@@ -618,6 +712,13 @@ nodeupdown_is_node_down(nodeupdown_t handle, const char *node)
   return _is_node(handle, node, NODEUPDOWN_DOWN_NODES);
 }
 
+/* 
+ * _node_count
+ *
+ * common function for nodeupdown_up_count and nodeupdown_down_count
+ *
+ * Returns count on success, -1 on error
+ */
 static int 
 _node_count(nodeupdown_t handle, int up_or_down) 
 {

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_ganglia.c,v 1.1 2005-04-06 05:24:47 achu Exp $
+ *  $Id: nodeupdown_backend_ganglia.c,v 1.2 2005-04-06 21:50:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -70,6 +70,11 @@ struct parse_vars
 
 char ganglia_default_hostname[NODEUPDOWN_MAXHOSTNAMELEN+1];
 
+/*
+ * ganglia_backend_default_hostname
+ *
+ * ganglia backend module default_hostname function
+ */
 char *
 ganglia_backend_default_hostname(nodeupdown_t handle)
 {
@@ -82,18 +87,33 @@ ganglia_backend_default_hostname(nodeupdown_t handle)
   return &ganglia_default_hostname[0];
 }
 
+/*
+ * ganglia_backend_default_port
+ *
+ * ganglia backend module default_port function
+ */
 int 
 ganglia_backend_default_port(nodeupdown_t handle)
 {
   return GANGLIA_BACKEND_DEFAULT_PORT;
 }
 
+/*
+ * ganglia_backend_default_timeout_len
+ *
+ * ganglia backend module default_timeout_len function
+ */
 int 
 ganglia_backend_default_timeout_len(nodeupdown_t handle)
 {
   return GANGLIA_BACKEND_DEFAULT_TIMEOUT_LEN;
 }
 
+/*
+ * ganglia_backend_init
+ *
+ * ganglia backend module init function
+ */
 int 
 ganglia_backend_init(nodeupdown_t handle)
 {
@@ -101,6 +121,11 @@ ganglia_backend_init(nodeupdown_t handle)
   return 0;
 }
 
+/*
+ * ganglia_backend_cleanup
+ *
+ * ganglia backend module cleanup function
+ */
 int
 ganglia_backend_cleanup(nodeupdown_t handle)
 {
@@ -108,8 +133,11 @@ ganglia_backend_cleanup(nodeupdown_t handle)
   return 0;
 }
 
-/* xml start function for use with expat XML parsing library
- * - parse beginning tags like <FOO attr1=X attr2=Y> 
+/* 
+ * _xml_start
+ *
+ * Callback for xml parser.  Parses beginning tags like <FOO attr1=X
+ * attr2=Y>
  */
 static void 
 _xml_parse_start(void *data, const char *e1, const char **attr) 
@@ -157,8 +185,10 @@ _xml_parse_start(void *data, const char *e1, const char **attr)
     }
 }
 
-/* xml end function for use with expat XML parsing library
- * - parse end tags like </FOO>
+/* 
+ * _xml_start
+ *
+ * Callback for xml parser.  Parses end tags like </FOO>
  */
 static void 
 _xml_parse_end(void *data, const char *e1) 
@@ -166,6 +196,11 @@ _xml_parse_end(void *data, const char *e1)
   /* nothing to parse at this time */
 }
 
+/*
+ * ganglia_backend_get_updown_data
+ *
+ * ganglia backend module get_updown_data function
+ */
 int 
 ganglia_backend_get_updown_data(nodeupdown_t handle, 
                                 const char *hostname,

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_common.h,v 1.17 2005-04-06 04:24:16 achu Exp $
+ *  $Id: nodeupdown_common.h,v 1.18 2005-04-06 21:50:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -36,7 +36,9 @@
 
 #define NODEUPDOWN_MAXHOSTNAMELEN        64
 
-#define NODEUPDOWN_MAXPATHLEN            255
+#define NODEUPDOWN_MAXNODENAMELEN        NODEUPDOWN_MAXHOSTNAMELEN
+
+#define NODEUPDOWN_MAXPATHLEN            256
 
 #define NODEUPDOWN_UP_NODES              1
 #define NODEUPDOWN_DOWN_NODES            0
@@ -45,7 +47,6 @@
 
 #define NODEUPDOWN_BUFFERLEN             65536
 
-/* Configuration file keys */
 #define NODEUPDOWN_CONF_HOSTNAME                   "hostnames"
 #define NODEUPDOWN_CONF_HOSTNAME_MAX               8
 #define NODEUPDOWN_CONF_PORT                       "port"
@@ -53,6 +54,11 @@
 #define NODEUPDOWN_CONF_BACKEND_MODULE             "backend_module"
 #define NODEUPDOWN_CONF_CLUSTERLIST_MODULE         "clusterlist_module"
 
+/* 
+ * struct nodeupdown
+ *
+ * nodeupdown handle used throughout the nodeupdown library
+ */
 struct nodeupdown {
   int magic;                  /* magic number */
   int errnum;                 /* error code */

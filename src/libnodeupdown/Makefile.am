@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.31 2005-04-06 05:24:47 achu Exp $
+## $Id: Makefile.am,v 1.32 2005-04-06 21:50:19 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -50,7 +50,7 @@ libnodeupdown_la_LDFLAGS = -export-dynamic \
 EXTRA_DIST = nodeupdown.map
 
 #
-# libnodeupdown ganglia clusterlist modules
+# libnodeupdown modules
 #
 
 MODULE_FLAGS = -module -avoid-version

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_util.h,v 1.1 2005-04-06 03:46:10 achu Exp $
+ *  $Id: nodeupdown_clusterlist_util.h,v 1.2 2005-04-06 21:50:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -30,6 +30,9 @@
 #include "nodeupdown.h"
 #include "nodeupdown_clusterlist.h"
 
-int nodeupdown_clusterlist_copy_nodename(nodeupdown_t handle, const char *node, char *buf, unsigned int buflen);
+int nodeupdown_clusterlist_copy_nodename(nodeupdown_t handle, 
+                                         const char *node, 
+                                         char *buf, 
+                                         unsigned int buflen);
 
 #endif /* _NODEUPDOWN_CLUSTERLIST_UTIL_H */

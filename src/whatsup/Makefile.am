@@ -1,10 +1,14 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.21 2005-04-06 00:56:23 achu Exp $
+## $Id: Makefile.am,v 1.22 2005-04-06 21:50:19 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
 
 whatsup_module_builddir=`cd $(top_builddir)/src/whatsup && pwd`
+
+#
+# whatsup
+#
 
 noinst_HEADERS = whatsup_options.h
 
@@ -18,6 +22,10 @@ whatsup_CFLAGS = -DWHATSUP_MODULE_BUILDDIR=\"$(whatsup_module_builddir)\" \
 
 whatsup_LDADD = ../libcommon/libcommon.la \
 		../libnodeupdown/libnodeupdown.la
+
+#
+# whatsup modules
+#
 
 MODULE_FLAGS = -module -avoid-version
 

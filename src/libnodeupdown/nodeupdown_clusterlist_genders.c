@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_genders.c,v 1.1 2005-04-05 23:54:50 achu Exp $
+ *  $Id: nodeupdown_clusterlist_genders.c,v 1.2 2005-04-06 21:50:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -43,30 +43,55 @@
 
 static genders_t genders_handle = NULL;
 
+/*
+ * genders_clusterlist_init
+ *
+ * genders clusterlist module init function
+ */
 int 
 genders_clusterlist_init(nodeupdown_t handle) 
 {
   return genders_util_clusterlist_init(handle, &genders_handle);
 }
 
+/*
+ * genders_clusterlist_cleanup
+ *
+ * genders clusterlist module cleanup function
+ */
 int 
 genders_clusterlist_cleanup(nodeupdown_t handle) 
 {
   return genders_util_clusterlist_cleanup(handle, &genders_handle);
 }
 
+/*
+ * genders_clusterlist_complete_loading
+ *
+ * genders clusterlist module complete_loading function
+ */
 int 
 genders_clusterlist_complete_loading(nodeupdown_t handle) 
 {
   return genders_util_clusterlist_complete_loading(handle, genders_handle);
 }
 
+/*
+ * genders_clusterlist_compare_to_clusterlist
+ *
+ * genders clusterlist module compare_to_clusterlist function
+ */
 int 
 genders_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
 {
   return genders_util_clusterlist_compare_to_clusterlist(handle, genders_handle);
 }
 
+/*
+ * genders_clusterlist_is_node_in_cluster
+ *
+ * genders clusterlist module is_node_in_cluster function
+ */
 int 
 genders_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) 
 {
@@ -90,12 +115,17 @@ genders_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node)
 
   if ((ret = genders_isnode(genders_handle, nodePtr)) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
       return -1;
     }
   return ret;
 }
 
+/*
+ * genders_clusterlist_is_node_discovered
+ *
+ * genders clusterlist module is_node_discovered function
+ */
 int 
 genders_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node) 
 {
@@ -119,12 +149,17 @@ genders_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node)
 
   if ((ret = genders_isnode(genders_handle, nodePtr)) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
       return -1;
     }
   return ret;
 }
 
+/*
+ * genders_clusterlist_get_nodename
+ *
+ * genders clusterlist module get_nodename function
+ */
 int 
 genders_clusterlist_get_nodename(nodeupdown_t handle, 
                                          const char *node, 
@@ -151,6 +186,11 @@ genders_clusterlist_get_nodename(nodeupdown_t handle,
   return nodeupdown_clusterlist_copy_nodename(handle, nodePtr, buffer, buflen);
 }
     
+/*
+ * genders_clusterlist_increase_max_nodes
+ *
+ * genders clusterlist module increase_max_nodes function
+ */
 int 
 genders_clusterlist_increase_max_nodes(nodeupdown_t handle) 
 {

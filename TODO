@@ -1,14 +1,7 @@
-- Screw ganglia, write a updownd daemon.
-- Make distcheck work.
 - repackage for multilib
 
 for rework
 - nodename vs. hostname
-- allow re-load?
 - static modules
 - doc updates
   - manpages and readmes
-- reserved -> database???
-  - for future or other users?
-
-abstract backend modules

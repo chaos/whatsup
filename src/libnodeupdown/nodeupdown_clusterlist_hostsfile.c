@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.1 2005-04-05 23:54:50 achu Exp $
+ *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.2 2005-04-06 21:50:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -50,6 +50,17 @@
 
 static List hosts = NULL;
 
+/*
+ * _readline
+ *
+ * read a line from the hostsfile.  Buffer guaranteed to be null terminated.
+ *
+ * - fd - file descriptor to read from
+ * - buf - buffer pointer
+ * - buflen - buffer length
+ *
+ * Return amount of data read into the buffer
+ */
 static int
 _readline(nodeupdown_t handle, int fd, char *buf, int buflen)
 {
@@ -71,12 +82,22 @@ _readline(nodeupdown_t handle, int fd, char *buf, int buflen)
   return ret;
 }
 
+/*
+ * _remove_comments
+ *
+ * remove comments from the buffer
+ *
+ * - buf - buffer pointer
+ * - buflen - buffer length
+ *
+ * Return length of buffer left after comments were removed
+ */
 static int
 _remove_comments(char *buf, int buflen)
 {
   int i, comment_flag, retlen;
                                                                                      
-  if (strchr(buf, '#') == NULL)
+  if (!strchr(buf, '#'))
     return buflen;
                                                                                      
   i = 0;
@@ -102,6 +123,16 @@ _remove_comments(char *buf, int buflen)
   return retlen;
 }
 
+/*
+ * _remove_trailing_whitespace
+ *
+ * remove trailing whitespace from the buffer
+ *
+ * - buf - buffer pointer
+ * - buflen - buffer length
+ *
+ * Return length of buffer left after trailing whitespace was removed
+ */
 static int
 _remove_trailing_whitespace(char *buf, int buflen)
 {
@@ -120,6 +151,15 @@ _remove_trailing_whitespace(char *buf, int buflen)
   return buflen;
 }
 
+/*
+ * _move_past_whitespace
+ *
+ * move past whitespace at the beginning of the buffer
+ *
+ * - buf - buffer pointer
+ *
+ * Return pointer to beginning of first non-whitespace char
+ */
 static char *
 _move_past_whitespace(char *buf)
 {
@@ -132,8 +172,13 @@ _move_past_whitespace(char *buf)
   return buf;
 }
 
-static int
-_load_hostsfile_data(nodeupdown_t handle)
+/*
+ * hostsfile_clusterlist_init
+ *
+ * hostsfile clusterlist module init function
+ */
+int 
+hostsfile_clusterlist_init(nodeupdown_t handle) 
 {
   int fd = -1, len;
   char buf[NODEUPDOWN_BUFFERLEN];
@@ -161,7 +206,7 @@ _load_hostsfile_data(nodeupdown_t handle)
       if ((len = _remove_trailing_whitespace(buf, len)) == 0)
         continue;
                                                                                      
-      if ((hostPtr = _move_past_whitespace(buf)) == NULL)
+      if (!(hostPtr = _move_past_whitespace(buf)))
         continue;
                                                                                      
       if (hostPtr[0] == '\0')
@@ -187,7 +232,7 @@ _load_hostsfile_data(nodeupdown_t handle)
 
       if (!list_append(hosts, str))
         {
-          handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
+          handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
           goto cleanup;
         }
     }
@@ -200,12 +245,11 @@ _load_hostsfile_data(nodeupdown_t handle)
   return -1;
 }
 
-int 
-hostsfile_clusterlist_init(nodeupdown_t handle) 
-{
-  return _load_hostsfile_data(handle);
-}
-
+/*
+ * hostsfile_clusterlist_cleanup
+ *
+ * hostsfile clusterlist module cleanup function
+ */
 int 
 hostsfile_clusterlist_cleanup(nodeupdown_t handle) 
 {
@@ -215,6 +259,11 @@ hostsfile_clusterlist_cleanup(nodeupdown_t handle)
   return 0;
 }
 
+/*
+ * hostsfile_clusterlist_complete_loading
+ *
+ * hostsfile clusterlist module complete_loading function
+ */
 int 
 hostsfile_clusterlist_compelte_loading(nodeupdown_t handle) 
 {
@@ -222,15 +271,20 @@ hostsfile_clusterlist_compelte_loading(nodeupdown_t handle)
   return 0;
 }
 
+/*
+ * hostsfile_clusterlist_compare_to_clusterlist
+ *
+ * hostsfile clusterlist module compare_to_clusterlist function
+ */
 int 
 hostsfile_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
 {
   ListIterator itr = NULL;
   char *nodename;
                                                                                      
-  if ((itr = list_iterator_create(hosts)) == NULL) 
+  if (!(itr = list_iterator_create(hosts))) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
       return -1;
     }
                                                                                      
@@ -265,6 +319,11 @@ _find_str(void *x, void *key)
   return 0;
 }
 
+/*
+ * hostsfile_clusterlist_is_node_in_cluster
+ *
+ * hostsfile clusterlist module is_node_in_cluster function
+ */
 int 
 hostsfile_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) 
 {
@@ -277,6 +336,11 @@ hostsfile_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node)
     return 0;
 }
 
+/*
+ * hostsfile_clusterlist_is_node_discovered
+ *
+ * hostsfile clusterlist module is_node_discovered function
+ */
 int 
 hostsfile_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node) 
 {
@@ -289,6 +353,11 @@ hostsfile_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node)
     return 0;
 }
 
+/*
+ * hostsfile_clusterlist_get_nodename
+ *
+ * hostsfile clusterlist module get_nodename function
+ */
 int 
 hostsfile_clusterlist_get_nodename(nodeupdown_t handle, 
                                    const char *node, 
@@ -298,6 +367,11 @@ hostsfile_clusterlist_get_nodename(nodeupdown_t handle,
   return nodeupdown_clusterlist_copy_nodename(handle, node, buffer, buflen);
 }
     
+/*
+ * hostsfile_clusterlist_increase_max_nodes
+ *
+ * hostsfile clusterlist module increase_max_nodes function
+ */
 int 
 hostsfile_clusterlist_increase_max_nodes(nodeupdown_t handle) 
 {

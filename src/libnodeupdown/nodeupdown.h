@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.h,v 1.32 2005-04-06 04:24:16 achu Exp $
+ *  $Id: nodeupdown.h,v 1.33 2005-04-06 21:50:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -29,61 +29,68 @@
 
 #include <stdio.h>
 
-/**************************************
- * Definitions                        *
- **************************************/
+/*
+ * Nodeupdown Error Codes
+ */
 
-#define NODEUPDOWN_ERR_SUCCESS            0 /* success */
-#define NODEUPDOWN_ERR_NULLHANDLE         1 /* nodeupdown handle is null */
-#define NODEUPDOWN_ERR_CONNECT            2 /* network connection error */
-#define NODEUPDOWN_ERR_TIMEOUT            3 /* network connect timeout */
-#define NODEUPDOWN_ERR_HOSTNAME           4 /* hostname invalid */
-#define NODEUPDOWN_ERR_ADDRESS            5 /* network address error */
-#define NODEUPDOWN_ERR_NETWORK            6 /* network error */
-#define NODEUPDOWN_ERR_ISLOADED           7 /* data already loaded */
-#define NODEUPDOWN_ERR_NOTLOADED          8 /* data not loaded */
-#define NODEUPDOWN_ERR_OVERFLOW           9 /* overflow on list/string passed in */
-#define NODEUPDOWN_ERR_PARAMETERS        10 /* incorrect parameters passed in */
-#define NODEUPDOWN_ERR_NULLPTR           11 /* null pointer in list */
-#define NODEUPDOWN_ERR_OUTMEM            12 /* out of memory */
-#define NODEUPDOWN_ERR_NOTFOUND          13 /* node not found */ 
-#define NODEUPDOWN_ERR_CLUSTERLIST       14 /* internal cluster list error */
-#define NODEUPDOWN_ERR_CLUSTERLIST_OPEN  15 /* open clusterlist file error */
-#define NODEUPDOWN_ERR_CLUSTERLIST_READ  16 /* read clusterlist file error */
-#define NODEUPDOWN_ERR_CLUSTERLIST_PARSE 17 /* parse clusterlist error */ 
-#define NODEUPDOWN_ERR_CONF              18 /* internal conf file error */
-#define NODEUPDOWN_ERR_CONF_OPEN         19 /* open conf file error */
-#define NODEUPDOWN_ERR_CONF_READ         20 /* read conf file error */
-#define NODEUPDOWN_ERR_CONF_PARSE        21 /* parse conf file error */
-#define NODEUPDOWN_ERR_BACKEND           22 /* backend error */
-#define NODEUPDOWN_ERR_BACKEND_OPEN      23 /* backend error */
-#define NODEUPDOWN_ERR_XML               24 /* internal XML parsing error */
-#define NODEUPDOWN_ERR_HOSTLIST          25 /* internal hostlist error */
-#define NODEUPDOWN_ERR_MAGIC             26 /* magic number error */
-#define NODEUPDOWN_ERR_INTERNAL          27 /* internal system error */
-#define NODEUPDOWN_ERR_ERRNUMRANGE       28 /* error number out of range */ 
+#define NODEUPDOWN_ERR_SUCCESS               0
+#define NODEUPDOWN_ERR_NULLHANDLE            1
+#define NODEUPDOWN_ERR_CONNECT               2
+#define NODEUPDOWN_ERR_TIMEOUT               3
+#define NODEUPDOWN_ERR_HOSTNAME              4
+#define NODEUPDOWN_ERR_ADDRESS               5
+#define NODEUPDOWN_ERR_NETWORK               6
+#define NODEUPDOWN_ERR_ISLOADED              7
+#define NODEUPDOWN_ERR_NOTLOADED             8
+#define NODEUPDOWN_ERR_OVERFLOW              9
+#define NODEUPDOWN_ERR_PARAMETERS           10
+#define NODEUPDOWN_ERR_NULLPTR              11
+#define NODEUPDOWN_ERR_OUTMEM               12
+#define NODEUPDOWN_ERR_NOTFOUND             13
+#define NODEUPDOWN_ERR_BACKEND_INTERNAL     14
+#define NODEUPDOWN_ERR_CLUSTERLIST_OPEN     15
+#define NODEUPDOWN_ERR_CLUSTERLIST_READ     16
+#define NODEUPDOWN_ERR_CLUSTERLIST_PARSE    17
+#define NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL 18
+#define NODEUPDOWN_ERR_CONF_OPEN            19
+#define NODEUPDOWN_ERR_CONF_READ            20
+#define NODEUPDOWN_ERR_CONF_PARSE           21
+#define NODEUPDOWN_ERR_CONF_INTERNAL        22
+#define NODEUPDOWN_ERR_XML                  23
+#define NODEUPDOWN_ERR_HOSTLIST             24
+#define NODEUPDOWN_ERR_MAGIC                25
+#define NODEUPDOWN_ERR_INTERNAL             26
+#define NODEUPDOWN_ERR_ERRNUMRANGE          27
 
 typedef struct nodeupdown *nodeupdown_t;
 
-/* nodeupdown_handle_create
- * - create a nodeupdown handle
- * - returns handle on success, NULL on error
+/* 
+ * nodeupdown_handle_create
+ * 
+ * create a nodeupdown handle
+ *
+ * Returns handle on success, NULL on error
  */
 nodeupdown_t nodeupdown_handle_create(void);
 
 /* nodeupdown_handle_destroy
- * - destroy a nodeupdown handle
- * - returns 0 on success, -1 on error
+ *
+ * destroy a nodeupdown handle
+ *
+ * Returns 0 on success, -1 on error
  */
 int nodeupdown_handle_destroy(nodeupdown_t handle);
 
-/* nodeupdown_load_data
- * - loads data from ganglia and a msterlist
- * - if hostname is NULL, localhost is assumed.
- * - if port is <= 0, default port is used
- * - if timeout_len is <= 0, default timeout is used
+/* 
+ * nodeupdown_load_data
+ *
+ * loads data from the backend tool used to evaluate
+ * up and down nodes
+ * - if hostname is NULL, port is <= 0, or timeout_len <=0, the
+ * backend tool's respective defaults will be used.
  * - 'reserved' is used for backwards compatability
- * - returns 0 on success, -1 on error
+ *
+ * Returns 0 on success, -1 on error
  */
 int nodeupdown_load_data(nodeupdown_t handle, 
                          const char *hostname, 
@@ -91,104 +98,144 @@ int nodeupdown_load_data(nodeupdown_t handle,
                          int timeout_len,
                          char *reserved); 
 
-/* nodeupdown_errnum
- * - return the most recent error number
- * - returns error number on success
+/* 
+ * nodeupdown_errnum
+ *
+ * return the most recent error number
+ *
+ * Returns error number on success
  */
 int nodeupdown_errnum(nodeupdown_t handle);
 
-/* nodeupdown_strerror
- * - return a string message describing an error number
- * - returns pointer to message on success
+/* 
+ * nodeupdown_strerror
+ *
+ * return a string message describing an error number
+ *
+ * Returns pointer to message on success
  */
 char *nodeupdown_strerror(int errnum);
 
-/* nodeupdown_errormsg
- * - return a string message describing the most recently
- *   occurred error
- * - returns pointer to message on success
+/* 
+ * nodeupdown_errormsg
+ * 
+ * return a string message describing the most recent error
+ *
+ * Returns pointer to message on success
  */
 char *nodeupdown_errormsg(nodeupdown_t handle);
 
-/* nodeupdown_perror
- * - output a message to standard error 
+/* 
+ * nodeupdown_perror
+ *
+ * Output a message to standard error 
  */
 void nodeupdown_perror(nodeupdown_t handle, const char *msg);
 
-/* nodeupdown_get_up_nodes_string
- * - retrieve a ranged string of up nodes
- * - buffer space assumed to be preallocated with length buflen
- * - returns 0 on success, -1 on error
+/* 
+ * nodeupdown_get_up_nodes_string
+ *
+ * Retrieve a ranged string of up nodes and store it in the buffer
+ *
+ * Returns 0 on success, -1 on error
  */
 int nodeupdown_get_up_nodes_string(nodeupdown_t handle, 
-                                   char *buf, int buflen);
+                                   char *buf, 
+                                   int buflen);
 
-/* nodeupdown_get_down_nodes_string
- * - retrieve a ranged string of down nodes
- * - buffer space assumed to be preallocated with length buflen
- * - returns 0 on success, -1 on error
+/* 
+ * nodeupdown_get_down_nodes_string
+ *
+ * Retrieve a ranged string of down nodes and store it in the buffer
+ *
+ * Returns 0 on success, -1 on error
  */
 int nodeupdown_get_down_nodes_string(nodeupdown_t handle, 
-                                     char *buf, int buflen);
+                                     char *buf, 
+                                     int buflen);
 
-/* nodeupdown_get_up_nodes_list
- * - retrieve a list of up nodes
- * - list assumed to be preallocated with len elements
- * - returns number of nodes copied on success, -1 on error
+/* 
+ * nodeupdown_get_up_nodes_list
+ *
+ * Retrieve a list of up nodes and store them in the list
+ *
+ * Returns number of nodes copied on success, -1 on error
  */
 int nodeupdown_get_up_nodes_list(nodeupdown_t handle, char **list, int len);
 
-/* nodeupdown_get_down_nodes_list
- * - retrieve a list of down nodes
- * - list assumed to be preallocated with len elements
- * - returns number of nodes copied on success, -1 on error
+/* 
+ * nodeupdown_get_down_nodes_list
+ *
+ * Retrieve a list of down nodes and store them in the list
+ *
+ * Returns number of nodes copied on success, -1 on error
  */
 int nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len);
 
-/* nodeupdown_is_node_up
- * - check if a node is up
- * - node must be shortened name of hostname
- * - returns 1 if up, 0 if down, -1 on error
+/* 
+ * nodeupdown_is_node_up
+ *
+ * Check if a node is up
+ *
+ * Returns 1 if up, 0 if down, -1 on error
  */
 int nodeupdown_is_node_up(nodeupdown_t handle, const char *node);
 
-/* nodeupdown_is_node_down
- * - check if a node is down
- * - node must be shortened name of hostname
- * - returns 1 if down, 0 if up, -1 on error
+/* 
+ * nodeupdown_is_node_down
+ *
+ * Check if a node is down
+ *
+ * Returns 1 if down, 0 if up, -1 on error
  */
 int nodeupdown_is_node_down(nodeupdown_t handle, const char *node);
 
-/* nodeupdown_up_count
- * - returns number of nodes that are up, -1 on error
+/* 
+ * nodeupdown_up_count
+ *
+ * Returns number of nodes that are up, -1 on error
  */
 int nodeupdown_up_count(nodeupdown_t handle);
 
-/* nodeupdown_down_count
- * - returns number of nodes that are down, -1 on error
+/* 
+ * nodeupdown_down_count
+ *
+ * Returns number of nodes that are down, -1 on error
  */
 int nodeupdown_down_count(nodeupdown_t handle);
 
-/* nodeupdown_nodelist_create
- * - allocate an array to store node names in
- * - returns number of node entries created on success, -1 on error
+/* 
+ * nodeupdown_nodelist_create
+ *
+ * Allocate an array to store node names in
+ *
+ * Returns number of node entries created on success, -1 on error
  */
 int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list);
 
-/* nodeupdown_nodelist_clear
- * - clear a previously allocated nodelist
- * - returns 0 on success, -1 on error
+/* 
+ * nodeupdown_nodelist_clear
+ *
+ * Clear a previously allocated nodelist
+ *
+ * Returns 0 on success, -1 on error
  */
 int nodeupdown_nodelist_clear(nodeupdown_t handle, char **list);
 
-/* nodeupdown_nodelist_destroy
- * - destroy the previously allocated nodelist
- * - returns 0 on success, -1 on error
+/* 
+ * nodeupdown_nodelist_destroy
+ *
+ * Destroy a previously allocated nodelist
+ *
+ * Returns 0 on success, -1 on error
  */
 int nodeupdown_nodelist_destroy(nodeupdown_t handle, char **list);
 
-/* Set the errnum for a nodeupdown handle
- * - used for development of local libraries 
+/* 
+ * nodeupdown_set_errnum
+ * 
+ * Set the errnum for a nodeupdown handle.  Used predominantly for
+ * development of locally used libraries.
  */      
 void nodeupdown_set_errnum(nodeupdown_t handle, int errnum);
 

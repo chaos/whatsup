@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_genders_util.c,v 1.1 2005-04-05 23:54:50 achu Exp $
+ *  $Id: nodeupdown_clusterlist_genders_util.c,v 1.2 2005-04-06 21:50:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -91,13 +91,13 @@ genders_util_clusterlist_compare_to_clusterlist(nodeupdown_t handle,
   /* get all genders nodes */
   if ((num = genders_nodelist_create(genders_handle, &nlist)) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
       goto cleanup;
     }
    
   if (genders_getnodes(genders_handle, nlist, num, NULL, NULL) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
       goto cleanup;
     }
    
@@ -117,7 +117,7 @@ genders_util_clusterlist_compare_to_clusterlist(nodeupdown_t handle,
  
   if (genders_nodelist_destroy(genders_handle, nlist) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
       goto cleanup;
     }
  
