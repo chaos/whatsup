@@ -1,5 +1,5 @@
 /*
- * $Id: libnodeupdown_test.c,v 1.13 2003-03-17 16:14:49 achu Exp $
+ * $Id: libnodeupdown_test.c,v 1.14 2003-03-18 18:24:49 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/testsuite/libnodeupdown_test.c,v $
  *    
  */
@@ -669,13 +669,16 @@ void load_data_param_test(struct test_env *test_env,
   nodeupdown_t handle = NULL;
   int result;
 
-  /* can't use test_env->handle_not_loaded b/c nodeupdown_load_data() may clear 
-   * or set data
-   */
   if (nodeupdown_handle == IS_NOT_NULL_DESTROYED) {
     handle = test_env->handle_destroyed;
   }
+  else if (nodeupdown_handle == IS_NOT_NULL_LOADED) {
+    handle = test_env->handle_loaded;
+  }
   else if (nodeupdown_handle == IS_NOT_NULL) {
+    /* can't use test_env->handle_not_loaded b/c nodeupdown_load_data() may clear 
+     * or set data
+     */
     if ((handle = nodeupdown_create()) == NULL) {
       printf("Test %d: nodeupdown_create() error\n", index);
       return;
