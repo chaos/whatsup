@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.22 2003-03-17 16:18:12 achu Exp $
+ * $Id: nodeupdown.c,v 1.23 2003-03-18 01:17:45 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -2284,7 +2284,7 @@ int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list) {
   }
 
   for (i = 0; i < handle->max_nodes; i++) {
-    node[i] = (char *)malloc(MAXHOSTNAMELEN);
+    node[i] = (char *)malloc(MAXHOSTNAMELEN+1);
     if (node[i] == NULL) {
 
       for (j = 0; j < i; j++) 
@@ -2294,7 +2294,7 @@ int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list) {
       handle->errnum = NODEUPDOWN_ERR_OUTMEM;
       return -1;
     }
-    memset(node[i], '\0', MAXHOSTNAMELEN);
+    memset(node[i], '\0', MAXHOSTNAMELEN+1);
   }
 
   *list = node;
@@ -2330,7 +2330,7 @@ int nodeupdown_nodelist_clear(nodeupdown_t handle, char **list) {
       handle->errnum = NODEUPDOWN_ERR_NULLPTR;
       return -1;
     }
-    memset(list[i], '\0', MAXHOSTNAMELEN);
+    memset(list[i], '\0', MAXHOSTNAMELEN+1);
   }
 
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
