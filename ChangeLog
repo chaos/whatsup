@@ -9,6 +9,7 @@
 	- Added note about shortened hostnames in man page for whatsup(1)  
 	- Added note about which machines whatsup(1) works on to the man page.  
 	- Fixed typo in whatsup(1) manpage
+	- fixed build problem for libnodeupdown.la
 	- tagged whatsup-1-0-4
 	
 2003-03-12 Albert Chu <chu11@llnl.gov>
