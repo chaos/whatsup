@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.16 2003-04-09 00:18:32 achu Exp $
+ * $Id: whatsup.c,v 1.17 2003-04-14 20:35:02 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -320,7 +320,8 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
   }
 
   if ((oopt + iopt) > 1) {
-    err_usage("you can only specify one of the --gmond_hostname ('o') or --gmond_ip ('i') options");
+    err_usage("you can only specify one of the"
+	      " --gmond_hostname ('o') or --gmond_ip ('i') options");
   }
   else if (oopt == 1) {
     /* gmond hostname was provided, must determine IP address */
