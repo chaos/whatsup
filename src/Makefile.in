@@ -97,6 +97,7 @@ install_sh = @install_sh@
 SUBDIRS = \
 	libnodeupdown \
 	Libnodeupdown \
+	Nodeupdown \
 	whatsup 
 
 subdir = src

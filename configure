@@ -8651,7 +8651,7 @@ fi
 ##
 # Epilogue.
 ##
-ac_config_files="$ac_config_files Makefile src/Makefile src/libnodeupdown/Makefile src/whatsup/Makefile man/Makefile src/libnodeupdown/nodeupdown.h src/Libnodeupdown/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/libnodeupdown/Makefile src/whatsup/Makefile man/Makefile src/libnodeupdown/nodeupdown.h src/Libnodeupdown/Makefile src/Nodeupdown/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -9155,6 +9155,7 @@ do
   "man/Makefile" ) CONFIG_FILES="$CONFIG_FILES man/Makefile" ;;
   "src/libnodeupdown/nodeupdown.h" ) CONFIG_FILES="$CONFIG_FILES src/libnodeupdown/nodeupdown.h" ;;
   "src/Libnodeupdown/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Libnodeupdown/Makefile" ;;
+  "src/Nodeupdown/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Nodeupdown/Makefile" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   "config/config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS config/config.h" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5

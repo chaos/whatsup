@@ -1,3 +1,7 @@
+2003-08-18  Albert Chu  <chu11@llnl.gov>
+
+	* Added src/Nodeupdown Perl OO API to nodeupdown.
+	
 2003-08-15  Albert Chu  <chu11@llnl.gov>
 
 	* Added src/Libnodeupdown Perl Extensions interface to nodeupdown.
