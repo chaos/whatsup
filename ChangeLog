@@ -1,3 +1,11 @@
+2004-09-10  Albert Chu  <chu11@llnl.gov>
+
+	* configure.ac: Check for genders_index_nodes and
+	genders_index_attrvals functions.
+
+	* src/libnodeupdown/nodeupdown_masterlist.c (_load_genders_data):
+	Index nodes and attrvals if appropriate.
+	
 2004-06-29  Albert Chu  <chu11@llnl.gov>
 
 	* src/libcommon/conffile.c (_parseline): Fixed argument parsing

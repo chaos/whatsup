@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.29 2004-04-27 18:05:16 achu Exp $
+## $Id: configure.ac,v 1.30 2004-09-10 20:56:41 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -238,6 +238,20 @@ fi
 AC_SUBST(GENDERSLLNL_LIBS)
 AC_SUBST(WITH_GENDERSLLNL)
 AC_SUBST(HAVE_GENDERSLLNL)
+
+if (test "$withgenders" = "yes") ||
+   (test "$withgendersllnl" = "yes"); then
+   AC_CHECK_LIB(genders,
+                genders_index_nodes, 
+                AC_DEFINE(HAVE_GENDERS_INDEX_NODES, [1], 
+                          [define genders_index_nodes exists]),
+                [])
+   AC_CHECK_LIB(genders,
+                genders_index_attrvals, 
+                AC_DEFINE(HAVE_GENDERS_INDEX_ATTRVALS, [1], 
+                          [define genders_index_attrvals exists]),
+                [])
+fi
 
 AC_DEFINE_UNQUOTED(NODEUPDOWN_MASTERLIST_DEFAULT, $NODEUPDOWN_MASTERLIST_DEFAULT, [Define default masterlist])
 AC_SUBST(NODEUPDOWN_MASTERLIST_DEFAULT)
