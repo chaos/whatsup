@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.58 2003-09-24 22:01:53 achu Exp $
+ * $Id: whatsup.c,v 1.59 2003-09-24 22:04:03 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -72,10 +72,10 @@ static void   version(void);
 static void   err_msg(char *, char *);
 static int    cmdline_parse(struct arginfo *, int, char **);
 static char * get_hostlist_string(hostlist_t, int);
-static int    get_arg_nodes_common(struct arginfo *, int, nodeupdown_t, char **); 
-static int    get_all_nodes_common(struct arginfo *, int, nodeupdown_t, char **);
+static int    get_arg_nodes(struct arginfo *, int, nodeupdown_t, char **); 
+static int    get_all_nodes(struct arginfo *, int, nodeupdown_t, char **);
 static int    convert_to_altnames(struct arginfo *, char **);
-static int    get_nodes_common(struct arginfo *, int, nodeupdown_t, char **, int *);
+static int    get_nodes(struct arginfo *, int, nodeupdown_t, char **, int *);
 static int    output_nodes(struct arginfo *, char *nodes);
 
 /* usage
@@ -287,13 +287,13 @@ char * get_hostlist_string(hostlist_t hl, int which) {
   return str;
 }
 
-/* get_arg_nodes_common
+/* get_arg_nodes
  * - determine if specific nodes passed in at the command line are up or down 
  */
-int get_arg_nodes_common(struct arginfo *arginfo, 
-                         int output,
-                         nodeupdown_t handle, 
-                         char **nodes) {
+int get_arg_nodes(struct arginfo *arginfo, 
+                  int output,
+                  nodeupdown_t handle, 
+                  char **nodes) {
   hostlist_t hl = NULL;
   hostlist_iterator_t iter = NULL;
   char *str = NULL;
@@ -354,13 +354,13 @@ int get_arg_nodes_common(struct arginfo *arginfo,
   return -1;
 }
 
-/* get_all_nodes_common
+/* get_all_nodes
  * - get all up or down nodes
  */
-int get_all_nodes_common(struct arginfo *arginfo, 
-                         int output,
-                         nodeupdown_t handle, 
-                         char **nodes) {
+int get_all_nodes(struct arginfo *arginfo, 
+                  int output,
+                  nodeupdown_t handle, 
+                  char **nodes) {
   int ret, str_len = 0;
   char *str = NULL;
 
@@ -446,22 +446,22 @@ int convert_to_altnames(struct arginfo *arginfo, char **nodes) {
   return -1;
 }
 
-/* get_nodes_common
+/* get_nodes
  * - a wrapper function used to avoid duplicate code.
  */
-int get_nodes_common(struct arginfo *arginfo, 
-                     int output, 
-                     nodeupdown_t handle, 
-                     char **nodes,
-                     int *count) {
+int get_nodes(struct arginfo *arginfo, 
+              int output, 
+              nodeupdown_t handle, 
+              char **nodes,
+              int *count) {
   int ret;
   char *str = NULL;
   hostlist_t hl = NULL;
   
   if (hostlist_count(arginfo->nodes) > 0)
-    ret = get_arg_nodes_common(arginfo, output, handle, &str);
+    ret = get_arg_nodes(arginfo, output, handle, &str);
   else
-    ret = get_all_nodes_common(arginfo, output, handle, &str);
+    ret = get_all_nodes(arginfo, output, handle, &str);
   
   if (ret != 0)
     goto cleanup;
@@ -581,13 +581,13 @@ int main(int argc, char **argv) {
 
   /* get up nodes */
   if (arginfo->output == UP_NODES || arginfo->output == UP_AND_DOWN) {
-    if (get_nodes_common(arginfo, UP_NODES, handle, &up_nodes, &up_count) == -1)
+    if (get_nodes(arginfo, UP_NODES, handle, &up_nodes, &up_count) == -1)
       goto cleanup;
   }
   
   /* get down nodes */
   if (arginfo->output == DOWN_NODES || arginfo->output == UP_AND_DOWN) {
-    if (get_nodes_common(arginfo, DOWN_NODES, handle, &down_nodes, &down_count) == -1)
+    if (get_nodes(arginfo, DOWN_NODES, handle, &down_nodes, &down_count) == -1)
       goto cleanup;
   }
 
