@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.7 2003-03-11 23:50:57 achu Exp $
+ * $Id: whatsup.c,v 1.8 2003-03-12 18:03:50 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -449,8 +449,15 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
     char *bracket1 = NULL;
     char *bracket2 = NULL;
 
-    /* search for brackets.  Assume nodes are listed in hostlist format */
+    /* search for periods.  If there are periods, these are non-short hostname
+     * machine nams. Output error 
+     */
+    if (strchr(argv[index], '.') != NULL) {
+      output_error("ERROR: nodes must be listed in short hostname format", NULL);
+      return -1;
+    }
 
+    /* search for brackets.  Assume nodes are listed in hostlist format */
     bracket1 = strchr(argv[index], '[');
     bracket2 = strchr(argv[index], ']');
     
