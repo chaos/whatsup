@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_nodelist.3,v 1.3 2003-04-24 18:23:06 achu Exp $
+\."$Id: nodeupdown_nodelist.3,v 1.4 2003-04-25 18:49:55 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -17,26 +17,19 @@ nodeupdown_nodelist_create, nodeupdown_nodelist_clear, nodeupdown_nodelist_destr
 .br
 .SH DESCRIPTION
 \fBnodeupdown_nodelist_create()\fR, \fBnodeupdown_nodelist_clear()\fR, and \fBnodeupdown_nodelist_destroy()\fR are used to create, clear, and destroy lists (arrays of strings) for use with
-.BR nodeupdown_get_up_nodes_list (3),
-.BR nodeupdown_get_down_nodes_list (3),
-.BR nodeupdown_get_up_nodes_list_altnames (3),
-.BR nodeupdown_get_down_nodes_list_altnames (3),
+.BR nodeupdown_get_up_nodes_list (3)
 and
-.BR nodeupdown_convert_list_to_altnames (3).
+.BR nodeupdown_get_down_nodes_list (3).
 
 \fBnodeupdown_nodelist_create()\fR creates a list with minimum size to store nodes.  \fIlist\fR is set to point to the created list.  The created list is guaranteed to store all the nodes returned from 
-.BR nodeupdown_get_up_nodes_list (3),
-.BR nodeupdown_get_down_nodes_list (3),
-.BR nodeupdown_get_up_nodes_list_altnames (3),
+.BR nodeupdown_get_up_nodes_list (3)
 and
-.BR nodeupdown_get_down_nodes_list_altnames (3),
+.BR nodeupdown_get_down_nodes_list (3).
 
 \fBnodeupdown_nodelist_clear()\fR clears any information stored in the list pointed to by \fIlist\fR.  This does not have be called after \fBnodeupdown_nodelist_create()\fR.   It only has to be called after being used with
-.BR nodeupdown_get_up_nodes_list (3),
-.BR nodeupdown_get_down_nodes_list (3),
-.BR nodeupdown_get_up_nodes_list_altnames (3),
+.BR nodeupdown_get_up_nodes_list (3)
 or
-.BR nodeupdown_get_down_nodes_list_altnames (3),
+.BR nodeupdown_get_down_nodes_list (3)
 and the programmer wishes to re-use the list.  
 
 \fBnodeupdown_nodelist_destroy()\fR destroys the list pointed to by \fIlist\fR and frees all memory assocated with the list.  
@@ -85,4 +78,4 @@ handle or \fIhandle\fR has been destroyed by
 .SH FILES
 /usr/include/nodeupdown.h
 .SH SEE ALSO
-libnodeupdown(3), nodeupdown_handle_create(3), nodeupdown_load_data(3), nodeupdown_get_up_nodes_list (3), nodeupdown_get_down_nodes_list (3), nodeupdown_get_up_nodes_list_altnames (3), nodeupdown_get_down_nodes_list_altnames (3), nodeupdown_convert_list_to_altnames (3), nodeupdown_errnum(3), nodeupdown_strerror(3)
+libnodeupdown(3), nodeupdown_handle_create(3), nodeupdown_load_data(3), nodeupdown_get_up_nodes_list (3), nodeupdown_get_down_nodes_list (3), nodeupdown_errnum(3), nodeupdown_strerror(3)

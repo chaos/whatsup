@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: libnodeupdown.3,v 1.5 2003-04-24 18:23:06 achu Exp $
+\."$Id: libnodeupdown.3,v 1.6 2003-04-25 18:49:55 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -33,21 +33,9 @@ libnodeupdown \- a library of functions to determine if a node is up or down
 .sp
 .BI "int nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len);"
 .sp
-.BI "int nodeupdown_get_up_nodes_string_altnames(nodeupdown_t handle, char *buf, int buflen);"
-.sp
-.BI "int nodeupdown_get_down_nodes_string_altnames(nodeupdown_t handle, char *buf, int buflen);"
-.sp
-.BI "int nodeupdown_get_up_nodes_list_altnames(nodeupdown_t handle, char **list, int len);"
-.sp
-.BI "int nodeupdown_get_down_nodes_list_altnames(nodeupdown_t handle, char **list, int len);"
-.sp
 .BI "int nodeupdown_is_node_up(nodeupdown_t handle, char *node);"
 .sp
 .BI "int nodeupdown_is_node_down(nodeupdown_t handle, char *node);"
-.sp
-.BI "int nodeupdown_convert_string_to_altnames(nodeupdown_t handle, char *src, char *dest, int buflen);"
-.sp
-.BI "int nodeupdown_convert_list_to_altnames(nodeupdown_t handle, char **src, char **dest, int num_src_nodes);"
 .sp
 .BI "int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list);"
 .sp
@@ -65,4 +53,4 @@ functions above, or read the comments written in
 .SH FILES
 /usr/include/nodeupdown.h
 .SH "SEE ALSO"
-libgenders(3), nodeupdown_handle_create(3), nodeupdown_load_data(3), nodeupdown_handle_destroy(3), nodeupdown_errnum(3), nodeupdown_strerror(3), nodeupdown_errormsg(3), nodeupdown_perror(3), nodeupdown_dump(3), nodeupdown_get_up_nodes_string(3), nodeupdown_get_down_nodes_string(3), nodeupdown_get_up_nodes_list(3), nodeupdown_get_down_nodes_list(3), nodeupdown_get_up_nodes_string_altnames(3), nodeupdown_get_down_nodes_string_altnames(3), nodeupdown_get_up_nodes_list_altnames(3), nodeupdown_get_down_nodes_list_altnames(3), nodeupdown_is_node_up(3), nodeupdown_is_node_down(3), nodeupdown_convert_string_to_altnames(3), nodeupdown_convert_list_to_altnames(3), nodeupdown_nodelist_create(3), nodeupdown_nodelist_clear(3), nodeupdown_nodelist_destroy(3)
+libgenders(3), nodeupdown_handle_create(3), nodeupdown_load_data(3), nodeupdown_handle_destroy(3), nodeupdown_errnum(3), nodeupdown_strerror(3), nodeupdown_errormsg(3), nodeupdown_perror(3), nodeupdown_dump(3), nodeupdown_get_up_nodes_string(3), nodeupdown_get_down_nodes_string(3), nodeupdown_get_up_nodes_list(3), nodeupdown_get_down_nodes_list(3), nodeupdown_is_node_up(3), nodeupdown_is_node_down(3), nodeupdown_nodelist_create(3), nodeupdown_nodelist_clear(3), nodeupdown_nodelist_destroy(3)

@@ -1,21 +1,17 @@
 \."#################################################################
-\."$Id: nodeupdown_get_nodes_string.3,v 1.4 2003-04-24 18:23:06 achu Exp $
+\."$Id: nodeupdown_get_nodes_string.3,v 1.5 2003-04-25 18:49:55 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
 .TH NODEUPDOWN_GET_UP_NODES_STRING 3 "Release 1.1" "LLNL" "LIBNODEUPDOWN"
 .SH NAME
-nodeupdown_get_up_nodes_string, nodeupdown_get_down_nodes_string, nodeupdown_get_up_nodes_string_altnames, nodeupdown_get_down_nodes_string_altnames - get up or down nodes
+nodeupdown_get_up_nodes_string, nodeupdown_get_down_nodes_string, - get up or down nodes
 .SH SYNOPSIS
 .B #include <nodeupdown.h>
 .sp
 .BI "int nodeupdown_get_up_nodes_string(nodeupdown_t handle, char *buf, int buflen);"
 .sp
 .BI "int nodeupdown_get_down_nodes_string(nodeupdown_t handle, char *buf, int buflen);"
-.sp
-.BI "int nodeupdown_get_up_nodes_string_altnames(nodeupdown_t handle, char *buf, int buflen);"
-.sp
-.BI "int nodeupdown_get_down_nodes_string_altnames(nodeupdown_t handle, char *buf, int buflen);"
 .br
 .SH DESCRIPTION
 \fBnodeupdown_get_up_nodes_string()\fR retrieves a ranged string of
@@ -24,8 +20,6 @@ nodes that are up and places it in the buffer pointed to by \fIbuf\fR.
 \fBnodeupdown_get_down_nodes_string()\fR is identical to
 \fBnodeupdown_get_up_nodes_string()\fR, except that it retrieves a
 ranged string of down nodes.
-
-\fBnodeupdown_get_up_nodes_string_altnames()\fR and \fBnodeupdown_get_down_nodes_string_altnames()\fR are identical to \fBnodeupdown_get_up_nodes_string()\fR and \fBnodeupdown_get_down_nodes_string()\fR, except the ranged string lists alternate node names.
 .br
 .SH RETURN VALUES
 On success, 0 is returned.  On error, -1 is returned, and an error code
@@ -74,4 +68,4 @@ handle or \fIhandle\fR has been destroyed by
 .SH FILES
 /usr/include/nodeupdown.h
 .SH SEE ALSO
-libnodeupdown(3), nodeupdown_handle_create(3), nodeupdown_load_data(3), nodeupdown_get_up_nodes_list (3), nodeupdown_get_down_nodes_list (3), nodeupdown_get_up_nodes_list_altnames (3), nodeupdown_get_down_nodes_list_altnames (3), nodeupdown_convert_string_to_altnames (3), nodeupdown_errnum(3), nodeupdown_strerror(3)
+libnodeupdown(3), nodeupdown_handle_create(3), nodeupdown_load_data(3), nodeupdown_get_up_nodes_list (3), nodeupdown_get_down_nodes_list (3), nodeupdown_errnum(3), nodeupdown_strerror(3)
