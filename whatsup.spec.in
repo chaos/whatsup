@@ -1,4 +1,4 @@
-# $Id: whatsup.spec.in,v 1.8 2003-11-14 01:14:47 achu Exp $
+# $Id: whatsup.spec.in,v 1.9 2003-11-14 01:17:55 achu Exp $
 
 Name:           @PROJECT@
 Version:        @VERSION@
@@ -15,10 +15,10 @@ Source0:        %{name}-%{version}.tgz
 Requires:       ganglia-monitor-core
 Requires:       ganglia-monitor-core-lib 
 
-%if %{?_with_genders: 1}
+%if %{?_with_genders:1}%{!?_with_genders:0}
 Requires:       genders >= 1.2
 %endif
-%if %{?_with_gendersllnl: 1}
+%if %{?_with_gendersllnl:1}%{!?_with_gendersllnl:0}
 Requires:       gendersllnl
 %endif
 
