@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.37 2003-05-16 17:18:00 achu Exp $
+ * $Id: whatsup.c,v 1.38 2003-05-16 17:26:47 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -638,7 +638,6 @@ int convert_to_altnames(struct arginfo *arginfo, char **nodes) {
   genders_t handle = NULL;
   char *buffer = NULL;
   int ret, buflen = 0;
-  hostlist_t altnodes = NULL;
 
   if ((handle = genders_handle_create()) == NULL) {
     output_error("genders_handle_create() error", NULL);
