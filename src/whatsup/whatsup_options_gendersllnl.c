@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup_options_gendersllnl.c,v 1.2 2005-04-02 10:15:26 achu Exp $
+ *  $Id: whatsup_options_gendersllnl.c,v 1.3 2005-04-04 16:17:58 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -44,7 +44,7 @@
 #include "whatsup_options.h"
 #include "error.h"
 
-#define GENDERSLLNL_OPTION_ALTNAME "altname"
+#define GENDERSLLNL_OPTION_ALTNAME "altnames"
 
 static int gendersllnl_option_a_registered = 0;
 
@@ -109,7 +109,7 @@ gendersllnl_options_check_option(int c, char *optarg)
   if (gendersllnl_option_a_registered)
     gendersllnl_list_altnames_flag++;
 
-  return 0;
+  return 1;
 }
 
 int
@@ -117,6 +117,9 @@ gendersllnl_options_convert_nodenames(char *nodes, char *buf, int buflen)
 {
   genders_t handle = NULL;
                                                                                      
+  if (!gendersllnl_list_altnames_flag)
+    return 0;
+
   memset(buf, '\0', buflen);
 
   if ((handle = genders_handle_create()) == NULL)
@@ -131,7 +134,7 @@ gendersllnl_options_convert_nodenames(char *nodes, char *buf, int buflen)
               genders_errormsg(handle));
 
   (void)genders_handle_destroy(handle);
-  return 0;
+  return 1;
 }
 
 struct whatsup_options_module_info options_module_info = 

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup_options.h,v 1.1 2005-04-02 05:51:16 achu Exp $
+ *  $Id: whatsup_options.h,v 1.2 2005-04-04 16:17:58 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -35,6 +35,25 @@
 #if HAVE_GETOPT_H
 #include <getopt.h>
 #endif /* HAVE_GETOPT_H */
+
+/*  
+ * Definitions for Whatsup options modules
+ *
+ * Whatsup_options_output_usage
+ * - Output additional usage lines for options specified by this module
+ *
+ * Whatsup_options_add_options
+ * - Add additional options to the options array
+ *
+ * Whatsup_options_add_long_options
+ * - Add addtional long options to the long options array
+ *
+ * Whatsup_options_check_option
+ * - Check if the option is for this module, and take appropriate action
+ * 
+ * Whatsup_options_convert_nodenames
+ * - Conversion function for node names
+ */
 
 typedef int (*Whatsup_options_output_usage)(void);
 typedef int (*Whatsup_options_add_options)(char *options, int maxlen);

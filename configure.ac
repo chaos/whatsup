@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.42 2005-04-02 00:57:01 achu Exp $
+## $Id: configure.ac,v 1.43 2005-04-04 16:17:58 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -66,8 +66,8 @@ AC_HEADER_TIME
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS( \
   fcntl.h \
-  unistd.h \
   getopt.h \
+  unistd.h \
 )
 
 #
@@ -144,4 +144,3 @@ AC_CONFIG_FILES( \
   src/Nodeupdown/Nodeupdown.pm \
 )
 AC_OUTPUT
-

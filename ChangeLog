@@ -1,3 +1,7 @@
+2005-04-04  Albert Chu  <chu11@llnl.gov>
+
+	* Various bug fixes and code cleanup.
+	
 2005-04-01  Albert Chu  <chu11@llnl.gov>
 
 	* Initial clusterlist module re-work completed.
