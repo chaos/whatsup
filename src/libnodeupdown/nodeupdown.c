@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.27 2003-03-24 18:43:18 achu Exp $
+ * $Id: nodeupdown.c,v 1.28 2003-03-31 16:46:36 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -249,7 +249,6 @@ int nodeupdown_load_data(nodeupdown_t handle,
   }
 
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -897,7 +896,6 @@ int nodeupdown_destroy(nodeupdown_t handle) {
   }
 
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -1045,7 +1043,6 @@ int nodeupdown_dump(nodeupdown_t handle, FILE *stream) {
   }
 
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -1162,7 +1159,6 @@ int nodeupdown_get_up_nodes_string(nodeupdown_t handle, char *buf, int buflen) {
   }
 
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -1210,7 +1206,6 @@ int nodeupdown_get_down_nodes_string(nodeupdown_t handle, char *buf, int buflen)
   }
   
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -1258,7 +1253,6 @@ int nodeupdown_get_up_nodes_list(nodeupdown_t handle, char **list, int len) {
   }
 
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -1299,7 +1293,6 @@ int nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len) {
   }
   
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -1373,7 +1366,6 @@ int nodeupdown_get_up_nodes_hostlist(nodeupdown_t handle, hostlist_t hl) {
   }
 
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -1411,7 +1403,6 @@ int nodeupdown_get_down_nodes_hostlist(nodeupdown_t handle, hostlist_t hl) {
   }
 
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -1480,7 +1471,6 @@ int nodeupdown_get_up_nodes_string_altnames(nodeupdown_t handle,
   }
   
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -1530,7 +1520,6 @@ int nodeupdown_get_down_nodes_string_altnames(nodeupdown_t handle,
   }
   
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -1581,7 +1570,6 @@ int nodeupdown_get_up_nodes_list_altnames(nodeupdown_t handle,
   }
   
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -1642,7 +1630,6 @@ int nodeupdown_get_down_nodes_list_altnames(nodeupdown_t handle,
   }
   
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -1702,7 +1689,6 @@ int nodeupdown_get_up_nodes_hostlist_altnames(nodeupdown_t handle,
   }
   
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -1750,7 +1736,6 @@ int nodeupdown_get_down_nodes_hostlist_altnames(nodeupdown_t handle,
   }
   
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -1799,7 +1784,6 @@ int nodeupdown_is_node_up(nodeupdown_t handle, char *node) {
   }
 
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -1839,7 +1823,6 @@ int nodeupdown_is_node_down(nodeupdown_t handle, char *node) {
   }
 
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -1963,7 +1946,6 @@ int nodeupdown_convert_string_to_altnames(nodeupdown_t handle,
   }
 
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -2042,7 +2024,6 @@ int nodeupdown_convert_list_to_altnames(nodeupdown_t handle,
   }
 
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -2136,7 +2117,6 @@ int nodeupdown_convert_hostlist_to_altnames(nodeupdown_t handle,
   }
 
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -2281,7 +2261,6 @@ int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list) {
   }
 
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -2329,7 +2308,6 @@ int nodeupdown_nodelist_clear(nodeupdown_t handle, char **list) {
   }
 
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -2364,7 +2342,6 @@ int nodeupdown_nodelist_destroy(nodeupdown_t handle, char **list) {
   }
 
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
-    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
