@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.11 2004-01-13 19:29:56 achu Exp $
+ *  $Id: conffile.c,v 1.12 2004-01-13 19:47:50 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -305,8 +305,8 @@ _readline(conffile_t cf, char *linebuf, int linebuflen)
         }
 
         if (ret == 0) {
-            /* Ok to break here. If last line of file has '\'
-             * character at end, it is a parse error.
+            /* Ok to break here. All continuation characters and
+             * comments taken care of earlier
              */
             cf->end_of_file++; 
             break;
