@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.11 2003-03-13 22:31:54 achu Exp $
+ * $Id: whatsup.c,v 1.12 2003-03-14 21:11:56 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -12,11 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <strings.h>
 #include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/errno.h>
-#include <sys/param.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 
