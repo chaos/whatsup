@@ -1,3 +1,7 @@
+2003-01-09  Albert Chu  <chu11@llnl.gov>
+
+	* src/libcommon/conffile.h, src/libcommon/conffile.c: New files
+	
 2003-12-31  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/Makefile.am,
