@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.56 2003-09-24 16:18:44 achu Exp $
+ * $Id: whatsup.c,v 1.57 2003-09-24 16:40:49 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -75,7 +75,7 @@ static char * get_hostlist_string(hostlist_t, int);
 static int    get_arg_nodes_common(struct arginfo *, int, nodeupdown_t, char **); 
 static int    get_all_nodes_common(struct arginfo *, int, nodeupdown_t, char **);
 static int    convert_to_altnames(struct arginfo *, char **);
-static int    get_nodes_common(struct arginfo *, int, nodeupdown_t, char **);
+static int    get_nodes_common(struct arginfo *, int, nodeupdown_t, char **, int *);
 static int    output_nodes(struct arginfo *, char *nodes);
 
 /* usage
@@ -452,9 +452,11 @@ int convert_to_altnames(struct arginfo *arginfo, char **nodes) {
 int get_nodes_common(struct arginfo *arginfo, 
                      int output, 
                      nodeupdown_t handle, 
-                     char **nodes) {
+                     char **nodes,
+                     int *count) {
   int ret;
   char *str = NULL;
+  hostlist_t hl = NULL;
   
   if (hostlist_count(arginfo->nodes) > 0)
     ret = get_arg_nodes_common(arginfo, output, handle, &str);
@@ -470,12 +472,22 @@ int get_nodes_common(struct arginfo *arginfo,
   }
 
   *nodes = str;
+  
+  /* can't use nodeupdown_up/down_count, b/c we may be counting the
+   * nodes specified by the user */
+  if ((hl = hostlist_create(str)) == NULL) {
+    err_msg("hostlist_create() error", NULL);
+    goto cleanup;
+  }
+  *count = hostlist_count(hl);
 
+  hostlist_destroy(hl);
   return 0;
 
  cleanup:
 
   free(str);
+  hostlist_destroy(hl);
   return -1;
 }
 
@@ -527,6 +539,7 @@ int main(int argc, char **argv) {
   char *up_nodes = NULL;
   char *down_nodes = NULL;
   int up_count, down_count;
+  int exit_value = 1;
 
   if (argc == 2) {
     if (strcasecmp(argv[1],"doc") == 0)
@@ -565,16 +578,16 @@ int main(int argc, char **argv) {
     goto cleanup;
   }
 
-  if (arginfo->count == WHATSUP_ON || arginfo->output == UP_AND_DOWN) {
-    if ((up_count = nodeupdown_up_count(handle)) < 0) {
-      err_msg("nodeupdown_up_count()", nodeupdown_errormsg(handle));
+  /* get up nodes */
+  if (arginfo->output == UP_NODES || arginfo->output == UP_AND_DOWN) {
+    if (get_nodes_common(arginfo, UP_NODES, handle, &up_nodes, &up_count) == -1)
       goto cleanup;
-    }
-
-    if ((down_count = nodeupdown_down_count(handle)) < 0) {
-      err_msg("nodeupdown_down_count()", nodeupdown_errormsg(handle));
+  }
+  
+  /* get down nodes */
+  if (arginfo->output == DOWN_NODES || arginfo->output == UP_AND_DOWN) {
+    if (get_nodes_common(arginfo, DOWN_NODES, handle, &down_nodes, &down_count) == -1)
       goto cleanup;
-    }
   }
 
   if (arginfo->count == WHATSUP_ON) {
@@ -588,17 +601,6 @@ int main(int argc, char **argv) {
       fprintf(stdout, "%d\n", down_count);
   }
   else {
-    /* get up nodes */
-    if (arginfo->output == UP_NODES || arginfo->output == UP_AND_DOWN) {
-      if (get_nodes_common(arginfo, UP_NODES, handle, &up_nodes) == -1)
-        goto cleanup;
-    }
-
-    /* get down nodes */
-    if (arginfo->output == DOWN_NODES || arginfo->output == UP_AND_DOWN) {
-      if (get_nodes_common(arginfo, DOWN_NODES, handle, &down_nodes) == -1)
-        goto cleanup;
-    }
 
     /* output up, down, or both up and down nodes */
     if (arginfo->output == UP_AND_DOWN) {
@@ -634,14 +636,6 @@ int main(int argc, char **argv) {
     }
   }
 
-  hostlist_destroy(arginfo->nodes);
-  free(arginfo);
-  (void)nodeupdown_handle_destroy(handle);
-  free(up_nodes);
-  free(down_nodes);
-
-  exit(0);
-
  cleanup:
 
   hostlist_destroy(arginfo->nodes);
@@ -649,6 +643,5 @@ int main(int argc, char **argv) {
   (void)nodeupdown_handle_destroy(handle);
   free(up_nodes);
   free(down_nodes);
-
-  exit(1);
+  exit(exit_value);
 }
