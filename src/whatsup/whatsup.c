@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.50 2003-05-30 19:26:45 achu Exp $
+ * $Id: whatsup.c,v 1.51 2003-06-28 15:53:38 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -50,40 +50,32 @@ extern int optind, opterr, optopt;
 
 /* struct arginfo
  * - carries information about args passed in from the command line
- * genders_filename - filename of genders file
- * gmond_hostname - hostname of gmond server
- * gmond_ip - ip address of gmond server
- * gmond_port - port of gmond server
- * output - what output should be dumped to screen (up/down)
- * list_type - how nodes should be outputted (hostlist/comma/newline/space)
- * list_altnames - indicates if alternate names should be listed instead
- * nodes - stores the nodes (if any) were input in the command line
  */
 struct arginfo {
-  char *genders_filename; 
-  char *gmond_hostname;
-  char *gmond_ip;         
-  int gmond_port;         
-  int output;
-  char list_type;    
-  int list_altnames;
-  hostlist_t nodes;
+  char *genders_filename;     /* genders filename */
+  char *gmond_hostname;       /* hostname of gmond server */
+  char *gmond_ip;             /* ip of gmond server */
+  int gmond_port;             /* port of gmond server */  
+  int output;                 /* output type */ 
+  char list_type;             /* list type */
+  int list_altnames;          /* list altnames? */
+  hostlist_t nodes;           /* nodes entered at command line */
 };
 
 /********************************
  * Function Declarations        *
  ********************************/
 
-static void usage(void);
-static void version(void);
-static void err_msg(char *, char *);
-static int cmdline_parse(struct arginfo *, int, char **);
-static char *get_hostlist_string(hostlist_t, int);
-static int get_arg_nodes_common(struct arginfo *, int, nodeupdown_t, char **); 
-static int get_all_nodes_common(struct arginfo *, int, nodeupdown_t, char **);
-static int convert_to_altnames(struct arginfo *, char **);
-static int get_nodes_common(struct arginfo *, int, nodeupdown_t, char **);
-static int output_nodes(struct arginfo *, char *nodes);
+static void   usage(void);
+static void   version(void);
+static void   err_msg(char *, char *);
+static int    cmdline_parse(struct arginfo *, int, char **);
+static char * get_hostlist_string(hostlist_t, int);
+static int    get_arg_nodes_common(struct arginfo *, int, nodeupdown_t, char **); 
+static int    get_all_nodes_common(struct arginfo *, int, nodeupdown_t, char **);
+static int    convert_to_altnames(struct arginfo *, char **);
+static int    get_nodes_common(struct arginfo *, int, nodeupdown_t, char **);
+static int    output_nodes(struct arginfo *, char *nodes);
 
 /* usage
  * - output usage
@@ -600,7 +592,6 @@ int main(int argc, char **argv) {
     if (output_nodes(arginfo, down_nodes) != 0)
       goto cleanup;
   }
-
 
   hostlist_destroy(arginfo->nodes);
   free(arginfo);
