@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_is_node.3,v 1.2 2003-03-19 20:48:26 achu Exp $
+\."$Id: nodeupdown_is_node.3,v 1.3 2003-03-25 01:01:43 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -19,6 +19,9 @@ is up.
 
 \fBnodeupdown_is_node_down()\fR tests if the node pointed to by \fInode\fR
 is down.  
+
+The node name passed into these functions must be the shortened name of the
+hostname.
 .br
 .SH RETURN VALUES
 For \fBnodeupdown_is_node_up()\fR, 1 is returned if the node is up, 0
