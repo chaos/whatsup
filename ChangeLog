@@ -1,3 +1,8 @@
+2004-06-29  Albert Chu  <chu11@llnl.gov>
+
+	* src/libcommon/conffile.c (_parseline): Fixed argument parsing
+	bugs.
+	
 2004-06-21  Albert Chu  <chu11@llnl.gov>
 
 	* src/Libgnodeupdown/Makefile.am, src/Nodeupdown/Makefile.am,
