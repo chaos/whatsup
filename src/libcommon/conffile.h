@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.h,v 1.12 2004-03-17 21:24:50 achu Exp $
+ *  $Id: conffile.h,v 1.13 2004-03-19 18:16:18 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -209,7 +209,7 @@ typedef struct conffile *conffile_t;
  * it wishes to save.
  */
 struct conffile_data {
-    int bool;
+    int boolval;
     int intval;
     double doubleval;
     char string[CONFFILE_MAX_ARGLEN];

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.14 2004-03-17 21:24:50 achu Exp $
+ *  $Id: conffile.c,v 1.15 2004-03-19 18:16:18 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -586,9 +586,9 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
             || !strcasecmp(args[0], "t")
             || !strcasecmp(args[0], "true")
             || !strcasecmp(args[0], "enable"))
-            data.bool = 1;
+            data.boolval = 1;
         else
-            data.bool = 0;
+            data.boolval = 0;
     }
     else if (option->option_type == CONFFILE_OPTION_INT)
         data.intval = atoi(args[0]);
@@ -734,7 +734,7 @@ CONFFILE_OPTION_FUNC(conffile_bool)
         return -1;
     }
 
-    *((int *)option_ptr) = data->bool;
+    *((int *)option_ptr) = data->boolval;
     return 0;
 }
 
