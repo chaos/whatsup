@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.23 2003-03-18 01:17:45 achu Exp $
+ * $Id: nodeupdown.c,v 1.24 2003-03-18 01:39:04 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -1034,6 +1034,11 @@ int nodeupdown_dump(nodeupdown_t handle, FILE *stream) {
 
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
     handle->errnum = NODEUPDOWN_ERR_MAGIC;
+    return -1;
+  }
+
+  if (handle->genders_handle == NULL || handle->gmond_nodes == NULL) {
+    handle->errnum = NODEUPDOWN_ERR_LOAD;
     return -1;
   }
 
