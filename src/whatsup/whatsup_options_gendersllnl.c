@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup_options_gendersllnl.c,v 1.1 2005-04-02 05:51:16 achu Exp $
+ *  $Id: whatsup_options_gendersllnl.c,v 1.2 2005-04-02 10:15:26 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -103,8 +103,8 @@ gendersllnl_options_add_long_options(struct option *long_options, int maxlen)
 int
 gendersllnl_options_check_option(int c, char *optarg)
 {
-  if (c != 'a')
-    return 0;
+  if (c != 'a' || !gendersllnl_option_a_registered)
+    return -1;
 
   if (gendersllnl_option_a_registered)
     gendersllnl_list_altnames_flag++;
