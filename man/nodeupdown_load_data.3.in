@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_load_data.3.in,v 1.2 2003-11-06 18:09:55 achu Exp $
+\."$Id: nodeupdown_load_data.3.in,v 1.3 2003-11-06 20:04:42 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -31,7 +31,7 @@ handle created by
 .if @WITH_GENDERS@ \{
 \fIgenders_filename\fR should indicate the genders file to be loaded.
 If \fIgenders_filename\fR is NULL, the default genders file
-GENDERS_DEFAULT_FILE will be used.
+@NODEUPDOWN_MASTERLIST_DEFAULT@ will be used.
 \}
 .if @WITH_MASTERLIST@ \{
 \fIfilename\fR should indicate a filename that lists every node in the
