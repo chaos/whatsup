@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.57 2003-05-30 18:03:46 achu Exp $
+ * $Id: nodeupdown.c,v 1.58 2003-05-30 19:20:28 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -689,7 +689,7 @@ int get_nodes_string(nodeupdown_t handle,
   else
     hl = handle->down_nodes;
 
-  if (hostlist_ranged_string(hl, buf, buflen) == -1) {
+  if (hostlist_ranged_string(hl, buflen, buf) == -1) {
     handle->errnum = NODEUPDOWN_ERR_OVERFLOW;
     return -1;
   }
