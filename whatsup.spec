@@ -1,4 +1,4 @@
-# $Id: whatsup.spec,v 1.22 2003-05-19 17:51:43 achu Exp $
+# $Id: whatsup.spec,v 1.23 2003-05-20 17:22:40 achu Exp $
 
 Name:           whatsup
 Version:        1.0
@@ -11,6 +11,12 @@ License:        GPL
 BuildRoot:      %{_tmppath}/%{name}-%{version}
 
 Source0:        %{name}-%{version}.tgz
+
+Requires:       gendersllnl
+
+Requires:       ganglia-monitor-core
+
+Requires:       ganglia-monitor-core-lib 
 
 %description
 whatsup is a tool that lists which nodes are currently up or down in a
