@@ -2,11 +2,15 @@
 
 	Renamed "masterlist" mechanism to "hostsfile".
 
+	* man/nodeupdown_masterlist.conf.5.in: Renamed to
+	nodeupdown_hostsfile.conf.5.in.
+
 	* README, configure.ac, whatsup.spec.in, src/whatsup/whatsup.c,
 	src/libnodeupdown/nodeupdown.c,
 	src/libnodeupdown/nodeupdown_common.h,
-	src/libnodeupdown/nodeupdown_masterlist.c, man/libnodeupdown.3,
-	man/nodeupdown_load_data.3, man/whatsup.1: Renamed everything
+	src/libnodeupdown/nodeupdown_masterlist.c, man/libnodeupdown.3.in,
+	man/nodeupdown_load_data.3.in, man/whatsup.1.in,
+	man/nodeupdown_hostsfile.conf.5.in: Renamed everything
 	appropriately.
 
 2003-11-13  Albert Chu  <chu11@llnl.gov>

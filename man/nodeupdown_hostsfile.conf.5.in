@@ -1,12 +1,12 @@
 \."#################################################################
-\."$Id: nodeupdown_masterlist.conf.5.in,v 1.1 2003-11-08 17:41:29 achu Exp $
+\."$Id: nodeupdown_hostsfile.conf.5.in,v 1.1 2003-11-14 16:14:08 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
-.if @WITH_MASTERLIST@ \{
-.TH NODEUPDOWN_MASTERLIST.CONF 5 "November 2003" "LLNL" "LIBNODEUPDOWN"
+.if @WITH_HOSTSFILE@ \{
+.TH NODEUPDOWN_HOSTSFILE.CONF 5 "November 2003" "LLNL" "LIBNODEUPDOWN"
 .SH NAME
-nodeupdown_masterlist.conf \- specify all hosts in the cluster
+nodeupdown_hostsfile.conf \- specify all hosts in the cluster
 .SH DESCRIPTION
 
 When dealing with up and down nodes in a cluster, ganglia report nodes
@@ -16,10 +16,10 @@ means of reporting the node as down.
 
 Therefore, to determine all of the down nodes in a cluster, a "master
 list" of nodes is required by whatsup and the nodeupdown library.  The
-master list lists the nodes in the cluster, one node per line.  The
-nodes should be the shortened hostname versions of the nodes
-(typically obtained using hostname -s).  Comments can be placed in the
-file by beginning a line with the pound ('#') symbol.
+file lists the nodes in the cluster, one node per line.  The nodes
+should be the shortened hostname versions of the nodes (typically
+obtained using hostname -s).  Comments can be placed in the file by
+beginning a line with the pound ('#') symbol.
 
 An example configuration file is shown below.
 
@@ -40,7 +40,7 @@ sun02
 sun03
 .br
 .SH FILES
-The default masterlist file is:
+The default hostsfile file is:
 
 @NODEUPDOWN_MASTERLIST_DEFAULT@
 .SH SEE ALSO
