@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.75 2003-11-24 16:13:19 achu Exp $
+ * $Id: whatsup.c,v 1.76 2003-12-05 18:23:19 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -121,12 +121,6 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
   int c, index, oopt = 0, iopt = 0;
   char options[100];
 
-  strcpy(options, "hVo:p:budtlcns");
-#if (HAVE_HOSTSFILE || HAVE_GENDERS)
-  strcat(options, "f:");
-#elif HAVE_GENDERSLLNL
-  strcat(options, "f:a");
-#endif
 #if HAVE_GETOPT_LONG
   struct option long_options[] = {
     {"help",      0, NULL, 'h'},
@@ -150,6 +144,13 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
     {0, 0, 0, 0}
   };
 #endif /* HAVE_GETOPT_LONG */
+
+  strcpy(options, "hVo:p:budtlcns");
+#if (HAVE_HOSTSFILE || HAVE_GENDERS)
+  strcat(options, "f:");
+#elif HAVE_GENDERSLLNL
+  strcat(options, "f:a");
+#endif
 
   /* turn off output messages printed by getopt_long */
   opterr = 0;
