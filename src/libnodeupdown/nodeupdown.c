@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.43 2003-05-15 18:27:50 achu Exp $
+ * $Id: nodeupdown.c,v 1.44 2003-05-15 20:24:50 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -222,7 +222,7 @@ static int nodeupdown_check_if_node_in_hostlist(nodeupdown_t handle,
                                                 const char *node);
 
 char * get_hostlist_ranged_string(nodeupdown_t handle, hostlist_t hostlist) {
-  char *str;
+  char *str = NULL;
   int str_len;
 
   do {
