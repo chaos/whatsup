@@ -46,10 +46,10 @@ Hostsfile modules packages.
 %build
 %configure --program-prefix=%{?_program_prefix:%{_program_prefix}} \
            --with-perl-install-destdir="$RPM_BUILD_ROOT" \
-           %{_with_genders} \
-           %{_without_genders} \
-           %{_with_gendersllnl} \
-           %{_without_gendersllnl}
+           %{?_with_genders} \
+           %{?_without_genders} \
+           %{?_with_gendersllnl} \
+           %{?_without_gendersllnl}
 make
 
 %install
