@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.8 2004-01-12 23:17:06 achu Exp $
+ *  $Id: conffile.c,v 1.9 2004-01-12 23:54:48 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -42,18 +42,33 @@
 
 #define CONFFILE_MAGIC           0x0a1b2c3d
 
+/* struct conffile
+ * 
+ * structure for conffile handle.  
+ * - magic - magic number
+ * - errnum - error code
+ * - options - options array passed in conffile_parse()
+ * - options_len - options length passed in conffile_parse()
+ * - app_ptr - app_ptr passed in conffile_parse()
+ * - app_data - app_data passed in conffile_parse()
+ * - flags - flags passed in conffile_parse()
+ * - line_num - line number, does not count continuation lines
+ * - line_count - line number, counting continuation lines
+ * - end_of_file - flag indicating if we've read EOF
+ * - optionname - the current option name read from the conf file
+ */
 struct conffile {
     int magic;
     int errnum;
     int fd;
     struct conffile_option *options;
     int options_len;
+    void *app_ptr;
+    int app_data;
+    int flags;
     int line_num;
     int line_count;
     int end_of_file;
-    void *app_ptr;
-    int app_ptr_arg;
-    int flags;
     char optionname[CONFFILE_MAX_OPTIONNAMELEN];
 };
 
@@ -184,7 +199,7 @@ _setup(conffile_t cf,
        struct conffile_option *options,
        int options_len,
        void *app_ptr,
-       int app_ptr_arg,
+       int app_data,
        int flags)
 {
     int i;
@@ -204,12 +219,12 @@ _setup(conffile_t cf,
     for (i = 0; i < options_len; i++)
         *cf->options[i].count_ptr = 0;
 
+    cf->app_ptr = app_ptr;
+    cf->app_data = app_data;
+    cf->flags = flags;
     cf->line_num = 0;
     cf->line_count = 0;
     cf->end_of_file = 0;
-    cf->app_ptr = app_ptr;
-    cf->app_ptr_arg = app_ptr_arg;
-    cf->flags = flags;
     memset(cf->optionname, '\0', CONFFILE_MAX_OPTIONNAMELEN);
 
     cf->errnum = CONFFILE_ERR_SUCCESS;
@@ -599,13 +614,13 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
     cf->errnum = CONFFILE_ERR_SUCCESS;
     if (option->callback_func) {
         rv = (option->callback_func)(cf,
+                                     &data,
                                      option->optionname,
                                      option->option_type,
-                                     &data,
                                      option->option_ptr,
-                                     option->option_ptr_arg,
+                                     option->option_data,
                                      cf->app_ptr,
-                                     cf->app_ptr_arg);
+                                     cf->app_data);
         if (rv < 0) {
             if (cf->errnum == CONFFILE_ERR_SUCCESS)
                 cf->errnum = CONFFILE_ERR_PARSE_CALLBACK;
@@ -622,7 +637,7 @@ conffile_parse(conffile_t cf,
                struct conffile_option *options,
                int options_len,
                void *app_ptr,
-               int app_ptr_arg,
+               int app_data,
                int flags)
 {
     int i, j, len, retval = -1;
@@ -667,7 +682,7 @@ conffile_parse(conffile_t cf,
         }
     }
 
-    if (_setup(cf, filename, options, options_len, app_ptr, app_ptr_arg, flags) < 0)
+    if (_setup(cf, filename, options, options_len, app_ptr, app_data, flags) < 0)
         goto cleanup;
 
     while (cf->end_of_file == 0 && 
@@ -739,13 +754,13 @@ CONFFILE_OPTION_FUNC(conffile_double)
 
 CONFFILE_OPTION_FUNC(conffile_string)
 {
-    if (option_ptr == NULL || option_ptr_arg <= 0) {
+    if (option_ptr == NULL || option_data <= 0) {
         conffile_seterrnum(cf, CONFFILE_ERR_PARAMETERS);
         return -1;
     }
 
-    strncpy((char *)option_ptr, data->string, option_ptr_arg);
-    ((char *)option_ptr)[option_ptr_arg - 1] = '\0';
+    strncpy((char *)option_ptr, data->string, option_data);
+    ((char *)option_ptr)[option_data - 1] = '\0';
     return 0;
 }
 

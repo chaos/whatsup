@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.h,v 1.7 2004-01-12 23:36:09 achu Exp $
+ *  $Id: conffile.h,v 1.8 2004-01-12 23:54:48 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -178,7 +178,7 @@
 
 /* FLAGS
  * 
- * The following flags can be passed to conffile_setup() to alter
+ * The following flags can be passed to conffile_parse() to alter
  * behavior of conffile parsing.
  *
  * OPTION_CASESENSITIVE - By default option names are case
@@ -224,24 +224,25 @@ struct conffile_data {
  * an option name and its potential arguments have been parsed by the
  * conffile parser.
  *
+ * 'cf' the conffile handle
+ * 'data' is a pointer to argument data.  The data that should be
+ *     accessed depends on the option type.
  * 'optionname' is the option name that was just parsed.
  * 'option_type' is the option type specified in conffile through a 
  *     struct conffile_option type.  See below.
- * 'data' is a pointer to argument data.  The data that should be
- *     accessed depends on the option type.
  * 'option_ptr' is a pointer to data specified through a
  *     struct conffile_option type.  See below.
- * 'option_ptr_arg' is an integer to data specified through a
+ * 'option_data' is an integer to data specified through a
  *     struct conffile_option type.  See below.
- * 'app_ptr' is a pointer to data specified in conffile_setup().
- * 'app_ptr_arg' is an integer specified in conffile_setup().
+ * 'app_ptr' is a pointer to data specified in conffile_parse().
+ * 'app_data' is an integer specified in conffile_parse().
  *
- * Typically, the option_ptr and option_ptr_arg will point to a buffer
+ * Typically, the option_ptr and option_data will point to a buffer
  * and its length to store argument data.  The The callback function
  * then copies data into the buffer from the data pointed at by the
  * 'data' pointer.  However, they may be used for any purpose.
  *
- * The app_ptr and app_ptr_arg are passed via the conffile_setup()
+ * The app_ptr and app_data are passed via the conffile_parse()
  * function.  Typically, they are used to handle contexts within 
  * the configuration file, but they may be used for any purpose.
  *
@@ -254,24 +255,24 @@ struct conffile_data {
  * conffile_parse().
  */
 typedef int (*conffile_option_func)(conffile_t cf,
+                                    struct conffile_data *data,
                                     char *optionname,
                                     int option_type,
-                                    struct conffile_data *data,
                                     void *option_ptr,
-                                    int option_ptr_arg,
+                                    int option_data,
                                     void *app_ptr,
-                                    int app_ptr_arg);
+                                    int app_data);
 
 #define CONFFILE_OPTION_FUNC(func_name) \
-  int \
-  func_name(conffile_t cf, \
-            char *optionname, \
-            int option_type, \
-            struct conffile_data *data, \
-            void *option_ptr, \
-            int option_ptr_arg, \
-            void *app_ptr, \
-            int app_ptr_arg)
+    int \
+    func_name(conffile_t cf, \
+              struct conffile_data *data, \
+              char *optionname, \
+              int option_type, \
+              void *option_ptr, \
+              int option_data, \
+              void *app_ptr, \
+              int app_data)
 
 /* conffile_option
  *
@@ -295,7 +296,7 @@ typedef int (*conffile_option_func)(conffile_t cf,
  * 'option_ptr' is a pointer to data that will be passed to the callback
  *     function.  Typically, a buffer pointer is passed.  This parameter
  *     is optional and can be set to NULL.
- * 'option_ptr_arg' is an integer that will be passed to the callback
+ * 'option_data' is an integer that will be passed to the callback
  *     function.  Typically this is a buffer length.
  *
  */
@@ -308,7 +309,7 @@ struct conffile_option {
     int required_count;
     int *count_ptr;
     void *option_ptr;
-    int option_ptr_arg;
+    int option_data;
 };
 
 /* API */
@@ -359,7 +360,7 @@ int conffile_seterrnum(conffile_t cf, int errnum);
  */
 int conffile_parse(conffile_t cf, char *filename,
                    struct conffile_option *options,
-                   int options_len, void *app_ptr, int app_ptr_arg,
+                   int options_len, void *app_ptr, int app_data,
                    int flags);
 
 /* conffile_empty
@@ -395,9 +396,9 @@ CONFFILE_OPTION_FUNC(conffile_double);
 /* conffile_string
  *
  * Generic callback function for strings.  Assumes option_ptr is a
- * pointer to a char buffer and option_ptr_arg is the buffer's length,
+ * pointer to a char buffer and option_data is the buffer's length,
  * stores the argument, and returns 0.  If option_ptr is NULL or
- * option_ptr_arg is <= 0, sets errnum to ERR_PARAMETERS, and returns
+ * option_data is <= 0, sets errnum to ERR_PARAMETERS, and returns
  * -1.
  */
 CONFFILE_OPTION_FUNC(conffile_string);
