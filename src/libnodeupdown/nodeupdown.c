@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.9 2003-03-05 01:59:16 achu Exp $
+ * $Id: nodeupdown.c,v 1.10 2003-03-05 02:10:08 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -791,59 +791,7 @@ int nodeupdown_cleanup(nodeupdown_t handle) {
     (void)genders_handle_destroy(handle->genders_handle);
   }
   if (handle->ganglia_cluster != NULL) {
-    /********************************************************
-     * FIX LATER
-     *
-     * As of the time of this code writing, There is currently no API
-     * function that handles "destroy cluster data" or "free cluster
-     * data".  Therefore, the following block of code must manually
-     * free the data.
-     *
-     * If the libganglia library is updated to include a
-     * "destroy" or "free" API function in the future, the
-     * following block of code can be replaced with the
-     * appropriate API call.
-     ********************************************************/
-    
-    {
-      
-      llist_entry *temp;
-      
-      /* free hashes */
-      
-      if (handle->ganglia_cluster->host_cache != NULL) {
-        hash_destroy(handle->ganglia_cluster->host_cache);
-      }
-      if (handle->ganglia_cluster->nodes != NULL) {
-        hash_destroy(handle->ganglia_cluster->nodes);
-      }
-      if (handle->ganglia_cluster->dead_nodes != NULL) {
-        hash_destroy(handle->ganglia_cluster->dead_nodes);
-      }
-      
-      /* free lists */
-      
-      while (handle->ganglia_cluster->source_list != NULL) {
-        temp = handle->ganglia_cluster->source_list->next;
-        if (handle->ganglia_cluster->source_list->val != NULL) {
-          free(handle->ganglia_cluster->source_list->val);
-        }
-        free(handle->ganglia_cluster->source_list);
-        handle->ganglia_cluster->source_list = temp;
-      }
-      
-      while (handle->ganglia_cluster->llist != NULL) {
-        temp = handle->ganglia_cluster->llist->next;
-        if (handle->ganglia_cluster->llist->val != NULL) {
-          free(handle->ganglia_cluster->llist->val);
-        }
-        free(handle->ganglia_cluster->llist);
-        handle->ganglia_cluster->llist = temp;
-      }
-
       free(handle->ganglia_cluster);
-      
-    }
   }
   nodeupdown_initialization(handle);
 
