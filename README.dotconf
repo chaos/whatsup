@@ -1,5 +1,12 @@
-The dotconf configuration file parsing library is written by 
-Lukas Schröder <lukas@azzit.de>.  The webpage can be found at
+The dotconf configuration file parsing library is written by Lukas
+Schröder <lukas@azzit.de>.  The dotconf library has been modifiedd
+very slightly from its original.  The changes involve:
+
+A) Removal of all error messages output to stderr.
+
+B) Addition of an "errors" count variable in struct configfile_t. 
+
+The webpage for the dotconf library an be found at
 http://www.azzit.de/dotconf/.  The dotconf library comes with the
 following license.
 
