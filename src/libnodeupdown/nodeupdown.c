@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.112 2005-04-05 23:13:01 achu Exp $
+ *  $Id: nodeupdown.c,v 1.113 2005-04-05 23:54:50 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -41,6 +41,7 @@
 #include "nodeupdown_common.h"
 #include "nodeupdown_util.h"
 #include "nodeupdown_ganglia.h"
+#include "nodeupdown_clusterlist.h"
 #include "conffile.h"
 #include "hostlist.h"
 #include "list.h"
@@ -551,8 +552,8 @@ _is_node(nodeupdown_t handle, const char *node, int up_or_down)
       return -1;
     }
 
-  if ((ret = nodeupdown_ganglia_clusterlist_is_node_discovered(handle, 
-                                                               node)) < 0)
+  if ((ret = nodeupdown_clusterlist_is_node_discovered(handle, 
+                                                       node)) < 0)
     return -1;
 
   if (!ret) 
@@ -561,10 +562,10 @@ _is_node(nodeupdown_t handle, const char *node, int up_or_down)
       return -1;
     }
 
-  if (nodeupdown_ganglia_clusterlist_get_nodename(handle, 
-                                                  node, 
-                                                  buffer, 
-                                                  NODEUPDOWN_MAXHOSTNAMELEN+1) < 0)
+  if (nodeupdown_clusterlist_get_nodename(handle, 
+                                          node, 
+                                          buffer, 
+                                          NODEUPDOWN_MAXHOSTNAMELEN+1) < 0)
     return -1;
 
   if (up_or_down == NODEUPDOWN_UP_NODES)

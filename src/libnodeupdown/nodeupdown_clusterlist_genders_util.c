@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_genders_util.c,v 1.5 2005-04-05 23:13:01 achu Exp $
+ *  $Id: nodeupdown_clusterlist_genders_util.c,v 1.1 2005-04-05 23:54:50 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -37,12 +37,12 @@
 
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
-#include "nodeupdown_ganglia_clusterlist_genders_util.h"
+#include "nodeupdown_clusterlist_genders_util.h"
 #include "hostlist.h"
 
 int 
-genders_util_ganglia_clusterlist_init(nodeupdown_t handle,
-                                      genders_t *genders_handle)
+genders_util_clusterlist_init(nodeupdown_t handle,
+                              genders_t *genders_handle)
 {
   if (!(*genders_handle = genders_handle_create()))
     {
@@ -65,8 +65,8 @@ genders_util_ganglia_clusterlist_init(nodeupdown_t handle,
 }
 
 int 
-genders_util_ganglia_clusterlist_cleanup(nodeupdown_t handle,
-                                         genders_t *genders_handle) 
+genders_util_clusterlist_cleanup(nodeupdown_t handle,
+                                 genders_t *genders_handle) 
 {
   genders_handle_destroy(*genders_handle);
   *genders_handle = NULL;
@@ -74,16 +74,16 @@ genders_util_ganglia_clusterlist_cleanup(nodeupdown_t handle,
 }
 
 int 
-genders_util_ganglia_clusterlist_complete_loading(nodeupdown_t handle, 
-                                                  genders_t genders_handle) 
+genders_util_clusterlist_complete_loading(nodeupdown_t handle, 
+                                          genders_t genders_handle) 
 {
   handle->max_nodes = genders_getnumnodes(genders_handle);
   return 0;
 }
 
 int 
-genders_util_ganglia_clusterlist_compare_to_clusterlist(nodeupdown_t handle,
-                                                        genders_t genders_handle) 
+genders_util_clusterlist_compare_to_clusterlist(nodeupdown_t handle,
+                                                genders_t genders_handle) 
 {
   int i, num;
   char **nlist = NULL;

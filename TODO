@@ -3,7 +3,6 @@
 - repackage for multilib
 
 for rework
-- error checking in clusterlist modules
 - nodename vs. hostname
 - allow re-load?
 - static modules
@@ -13,7 +12,3 @@ for rework
   - for future or other users?
 
 abstract backend modules
-
-maps for modules
-
-make clusterlist non-ganglia specific.  make generic

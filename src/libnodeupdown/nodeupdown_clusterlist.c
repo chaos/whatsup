@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist.c,v 1.8 2005-04-05 23:13:01 achu Exp $
+ *  $Id: nodeupdown_clusterlist.c,v 1.1 2005-04-05 23:54:50 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -43,20 +43,20 @@
 
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
-#include "nodeupdown_ganglia_clusterlist.h"
+#include "nodeupdown_clusterlist.h"
 #include "ltdl.h"
 
-static char *ganglia_clusterlist_modules[] = {
-  "nodeupdown_ganglia_clusterlist_gendersllnl.la",
-  "nodeupdown_ganglia_clusterlist_genders.la",
-  "nodeupdown_ganglia_clusterlist_none.la",
-  "nodeupdown_ganglia_clusterlist_hostsfile.la",
+static char *clusterlist_modules[] = {
+  "nodeupdown_clusterlist_gendersllnl.la",
+  "nodeupdown_clusterlist_genders.la",
+  "nodeupdown_clusterlist_none.la",
+  "nodeupdown_clusterlist_hostsfile.la",
   NULL
 };
-static int ganglia_clusterlist_modules_len = 4;
+static int clusterlist_modules_len = 4;
 
-static lt_dlhandle ganglia_clusterlist_module_dl_handle = NULL;
-static struct nodeupdown_ganglia_clusterlist_module_info *ganglia_clusterlist_module_info = NULL;
+static lt_dlhandle clusterlist_module_dl_handle = NULL;
+static struct nodeupdown_clusterlist_module_info *clusterlist_module_info = NULL;
 
 static int
 _load_module(nodeupdown_t handle, char *module_path)
@@ -66,27 +66,27 @@ _load_module(nodeupdown_t handle, char *module_path)
   if (stat(module_path, &buf) < 0)
     return 0;
 
-  if (!(ganglia_clusterlist_module_dl_handle = lt_dlopen(module_path)))
+  if (!(clusterlist_module_dl_handle = lt_dlopen(module_path)))
     {
       handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
       goto cleanup;
     }
 
-  if (!(ganglia_clusterlist_module_info = (struct nodeupdown_ganglia_clusterlist_module_info *)lt_dlsym(ganglia_clusterlist_module_dl_handle, "ganglia_clusterlist_module_info")))
+  if (!(clusterlist_module_info = (struct nodeupdown_clusterlist_module_info *)lt_dlsym(clusterlist_module_dl_handle, "clusterlist_module_info")))
     {
       handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
       goto cleanup;
     }
 
-  if (!ganglia_clusterlist_module_info->ganglia_clusterlist_module_name
-      || !ganglia_clusterlist_module_info->init
-      || !ganglia_clusterlist_module_info->complete_loading
-      || !ganglia_clusterlist_module_info->cleanup
-      || !ganglia_clusterlist_module_info->compare_to_clusterlist
-      || !ganglia_clusterlist_module_info->is_node_in_cluster
-      || !ganglia_clusterlist_module_info->is_node_discovered
-      || !ganglia_clusterlist_module_info->get_nodename
-      || !ganglia_clusterlist_module_info->increase_max_nodes)
+  if (!clusterlist_module_info->clusterlist_module_name
+      || !clusterlist_module_info->init
+      || !clusterlist_module_info->complete_loading
+      || !clusterlist_module_info->cleanup
+      || !clusterlist_module_info->compare_to_clusterlist
+      || !clusterlist_module_info->is_node_in_cluster
+      || !clusterlist_module_info->is_node_discovered
+      || !clusterlist_module_info->get_nodename
+      || !clusterlist_module_info->increase_max_nodes)
     {
       handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
       goto cleanup;
@@ -95,10 +95,10 @@ _load_module(nodeupdown_t handle, char *module_path)
   return 1;
 
  cleanup:
-  if (ganglia_clusterlist_module_dl_handle)
-    lt_dlclose(ganglia_clusterlist_module_dl_handle);
-  ganglia_clusterlist_module_info = NULL;
-  ganglia_clusterlist_module_dl_handle = NULL;
+  if (clusterlist_module_dl_handle)
+    lt_dlclose(clusterlist_module_dl_handle);
+  clusterlist_module_info = NULL;
+  clusterlist_module_dl_handle = NULL;
   return -1;
 }
 
@@ -155,7 +155,7 @@ _search_dir_for_module(nodeupdown_t handle,
 }
 
 int 
-nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlist_module)
+nodeupdown_clusterlist_load_module(nodeupdown_t handle, char *clusterlist_module)
 {
   int rv;
 
@@ -180,7 +180,7 @@ nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlis
         goto done;
 
       memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
-      snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/nodeupdown_ganglia_clusterlist_%s.la",
+      snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/nodeupdown_clusterlist_%s.la",
                NODEUPDOWN_MODULE_BUILDDIR, clusterlist_module);
 
       if ((rv = _load_module(handle, filebuf)) < 0)
@@ -200,7 +200,7 @@ nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlis
         goto done;
 
       memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
-      snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/nodeupdown_ganglia_clusterlist_%s.la",
+      snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/nodeupdown_clusterlist_%s.la",
                NODEUPDOWN_MODULE_DIR, clusterlist_module);
 
       if ((rv = _load_module(handle, filebuf)) < 0)
@@ -210,7 +210,7 @@ nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlis
         goto done;
 
       memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
-      snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "./nodeupdown_ganglia_clusterlist_%s.la",
+      snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "./nodeupdown_clusterlist_%s.la",
                clusterlist_module);
 
       if ((rv = _load_module(handle, filebuf)) < 0)
@@ -235,8 +235,8 @@ nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlis
     {
       if ((rv = _search_dir_for_module(handle,
                                        NODEUPDOWN_MODULE_DIR,
-                                       ganglia_clusterlist_modules,
-                                       ganglia_clusterlist_modules_len)) < 0)
+                                       clusterlist_modules,
+                                       clusterlist_modules_len)) < 0)
         goto cleanup;
                      
       if (rv)
@@ -244,8 +244,8 @@ nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlis
                                                                           
       if ((rv = _search_dir_for_module(handle,
                                        ".",
-                                       ganglia_clusterlist_modules,
-                                       ganglia_clusterlist_modules_len)) < 0)
+                                       clusterlist_modules,
+                                       clusterlist_modules_len)) < 0)
         goto cleanup;
 
       if (rv)
@@ -253,8 +253,8 @@ nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlis
 
       if ((rv = _search_dir_for_module(handle,
                                        NODEUPDOWN_MODULE_BUILDDIR,
-                                       ganglia_clusterlist_modules,
-                                       ganglia_clusterlist_modules_len)) < 0)
+                                       clusterlist_modules,
+                                       clusterlist_modules_len)) < 0)
         goto cleanup;
 
       if (rv)
@@ -272,77 +272,77 @@ nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlis
 }
 
 int
-nodeupdown_ganglia_clusterlist_unload_module(nodeupdown_t handle)
+nodeupdown_clusterlist_unload_module(nodeupdown_t handle)
 {
   /* May have not been loaded, so can't close */
-  if (ganglia_clusterlist_module_dl_handle)
-    lt_dlclose(ganglia_clusterlist_module_dl_handle);
+  if (clusterlist_module_dl_handle)
+    lt_dlclose(clusterlist_module_dl_handle);
   lt_dlexit();
-  ganglia_clusterlist_module_info = NULL;
-  ganglia_clusterlist_module_dl_handle = NULL;
+  clusterlist_module_info = NULL;
+  clusterlist_module_dl_handle = NULL;
   return 0;
 }
  
 int 
-nodeupdown_ganglia_clusterlist_init(nodeupdown_t handle)
+nodeupdown_clusterlist_init(nodeupdown_t handle)
 {
-  return (*ganglia_clusterlist_module_info->init)(handle);
+  return (*clusterlist_module_info->init)(handle);
 }
  
 int 
-nodeupdown_ganglia_clusterlist_cleanup(nodeupdown_t handle)
+nodeupdown_clusterlist_cleanup(nodeupdown_t handle)
 {
   /* May have not been loaded, so can't cleanup */
-  if (!ganglia_clusterlist_module_info)
+  if (!clusterlist_module_info)
     return 0;
 
-  return (*ganglia_clusterlist_module_info->cleanup)(handle);
+  return (*clusterlist_module_info->cleanup)(handle);
 }
  
 int 
-nodeupdown_ganglia_clusterlist_complete_loading(nodeupdown_t handle)
+nodeupdown_clusterlist_complete_loading(nodeupdown_t handle)
 {
-  return (*ganglia_clusterlist_module_info->complete_loading)(handle);
+  return (*clusterlist_module_info->complete_loading)(handle);
 }
 
 int 
-nodeupdown_ganglia_clusterlist_compare_to_clusterlist(nodeupdown_t handle)
+nodeupdown_clusterlist_compare_to_clusterlist(nodeupdown_t handle)
 {
-  return (*ganglia_clusterlist_module_info->compare_to_clusterlist)(handle);
+  return (*clusterlist_module_info->compare_to_clusterlist)(handle);
 }
  
 int 
-nodeupdown_ganglia_clusterlist_is_node_in_cluster(nodeupdown_t handle, 
-                                                  const char *node)
+nodeupdown_clusterlist_is_node_in_cluster(nodeupdown_t handle, 
+                                          const char *node)
 {
-  return (*ganglia_clusterlist_module_info->is_node_in_cluster)(handle, 
-                                                                node);
+  return (*clusterlist_module_info->is_node_in_cluster)(handle, 
+                                                        node);
 }
  
 int 
-nodeupdown_ganglia_clusterlist_is_node_discovered(nodeupdown_t handle, 
-                                                  const char *node)
+nodeupdown_clusterlist_is_node_discovered(nodeupdown_t handle, 
+                                          const char *node)
 {
-  return (*ganglia_clusterlist_module_info->is_node_discovered)(handle, 
-                                                                node);
+  return (*clusterlist_module_info->is_node_discovered)(handle, 
+                                                        node);
 }
  
 int 
-nodeupdown_ganglia_clusterlist_get_nodename(nodeupdown_t handle, 
-                                            const char *node, 
-                                            char *buffer, 
-                                            int buflen)
+nodeupdown_clusterlist_get_nodename(nodeupdown_t handle, 
+                                    const char *node, 
+                                    char *buffer, 
+                                    int buflen)
 {
-  return (*ganglia_clusterlist_module_info->get_nodename)(handle, 
-                                                          node, 
-                                                          buffer, 
-                                                          buflen);
+  return (*clusterlist_module_info->get_nodename)(handle, 
+                                                  node, 
+                                                  buffer, 
+                                                  buflen);
 }
  
 int 
-nodeupdown_ganglia_clusterlist_increase_max_nodes(nodeupdown_t handle)
+nodeupdown_clusterlist_increase_max_nodes(nodeupdown_t handle)
 {
-  return (*ganglia_clusterlist_module_info->increase_max_nodes)(handle);
+  return (*clusterlist_module_info->increase_max_nodes)(handle);
 }
 
 

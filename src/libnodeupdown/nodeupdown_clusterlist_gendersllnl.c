@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_gendersllnl.c,v 1.9 2005-04-05 23:13:01 achu Exp $
+ *  $Id: nodeupdown_clusterlist_gendersllnl.c,v 1.1 2005-04-05 23:54:50 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -37,18 +37,18 @@
 
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
-#include "nodeupdown_ganglia_clusterlist.h"
-#include "nodeupdown_ganglia_clusterlist_util.h"
-#include "nodeupdown_ganglia_clusterlist_genders_util.h"
+#include "nodeupdown_clusterlist.h"
+#include "nodeupdown_clusterlist_util.h"
+#include "nodeupdown_clusterlist_genders_util.h"
 
 static genders_t gendersllnl_handle = NULL;
 
 int 
-gendersllnl_ganglia_clusterlist_init(nodeupdown_t handle) 
+gendersllnl_clusterlist_init(nodeupdown_t handle) 
 {
   int rv;
 
-  rv = genders_util_ganglia_clusterlist_init(handle, &gendersllnl_handle);
+  rv = genders_util_clusterlist_init(handle, &gendersllnl_handle);
 
 #if HAVE_GENDERS_INDEX_ATTRVALS
   if (!rv)
@@ -65,54 +65,25 @@ gendersllnl_ganglia_clusterlist_init(nodeupdown_t handle)
 }
 
 int 
-gendersllnl_ganglia_clusterlist_cleanup(nodeupdown_t handle) 
+gendersllnl_clusterlist_cleanup(nodeupdown_t handle) 
 {
-  return genders_util_ganglia_clusterlist_cleanup(handle, &gendersllnl_handle);
+  return genders_util_clusterlist_cleanup(handle, &gendersllnl_handle);
 }
 
 int 
-gendersllnl_ganglia_clusterlist_complete_loading(nodeupdown_t handle) 
+gendersllnl_clusterlist_complete_loading(nodeupdown_t handle) 
 {
-  return genders_util_ganglia_clusterlist_complete_loading(handle, gendersllnl_handle);
+  return genders_util_clusterlist_complete_loading(handle, gendersllnl_handle);
 }
 
 int 
-gendersllnl_ganglia_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
+gendersllnl_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
 {
-  return genders_util_ganglia_clusterlist_compare_to_clusterlist(handle, gendersllnl_handle);
+  return genders_util_clusterlist_compare_to_clusterlist(handle, gendersllnl_handle);
 }
 
 int 
-gendersllnl_ganglia_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) 
-{
-  int ret;
-  char nodebuf[NODEUPDOWN_MAXHOSTNAMELEN+1];
-  char *nodePtr = NULL;
-
-  /* Shorten hostname if necessary */
-  if (strchr(node, '.'))
-    {
-      char *p;
- 
-      memset(nodebuf, '\0', NODEUPDOWN_MAXHOSTNAMELEN+1);
-      strncpy(nodebuf, node, NODEUPDOWN_MAXHOSTNAMELEN);
-      p = strchr(nodebuf, '.');
-      *p = '\0';
-      nodePtr = nodebuf;
-    }
-  else
-    nodePtr = (char *)node;
-
-  if ((ret = genders_isnode_or_altnode(gendersllnl_handle, nodePtr)) < 0) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
-      return -1;
-    }
-  return ret;
-}
-
-int 
-gendersllnl_ganglia_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node) 
+gendersllnl_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) 
 {
   int ret;
   char nodebuf[NODEUPDOWN_MAXHOSTNAMELEN+1];
@@ -141,7 +112,36 @@ gendersllnl_ganglia_clusterlist_is_node_discovered(nodeupdown_t handle, const ch
 }
 
 int 
-gendersllnl_ganglia_clusterlist_get_nodename(nodeupdown_t handle, 
+gendersllnl_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node) 
+{
+  int ret;
+  char nodebuf[NODEUPDOWN_MAXHOSTNAMELEN+1];
+  char *nodePtr = NULL;
+
+  /* Shorten hostname if necessary */
+  if (strchr(node, '.'))
+    {
+      char *p;
+ 
+      memset(nodebuf, '\0', NODEUPDOWN_MAXHOSTNAMELEN+1);
+      strncpy(nodebuf, node, NODEUPDOWN_MAXHOSTNAMELEN);
+      p = strchr(nodebuf, '.');
+      *p = '\0';
+      nodePtr = nodebuf;
+    }
+  else
+    nodePtr = (char *)node;
+
+  if ((ret = genders_isnode_or_altnode(gendersllnl_handle, nodePtr)) < 0) 
+    {
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
+      return -1;
+    }
+  return ret;
+}
+
+int 
+gendersllnl_clusterlist_get_nodename(nodeupdown_t handle, 
                                              const char *node, 
                                              char *buffer, 
                                              int buflen) 
@@ -172,20 +172,20 @@ gendersllnl_ganglia_clusterlist_get_nodename(nodeupdown_t handle,
 }
     
 int 
-gendersllnl_ganglia_clusterlist_increase_max_nodes(nodeupdown_t handle) 
+gendersllnl_clusterlist_increase_max_nodes(nodeupdown_t handle) 
 {
   return 0;
 }
 
-struct nodeupdown_ganglia_clusterlist_module_info ganglia_clusterlist_module_info =
+struct nodeupdown_clusterlist_module_info clusterlist_module_info =
   {
     "gendersllnl",
-    &gendersllnl_ganglia_clusterlist_init,
-    &gendersllnl_ganglia_clusterlist_cleanup,
-    &gendersllnl_ganglia_clusterlist_complete_loading,
-    &gendersllnl_ganglia_clusterlist_compare_to_clusterlist,
-    &gendersllnl_ganglia_clusterlist_is_node_in_cluster,
-    &gendersllnl_ganglia_clusterlist_is_node_discovered,
-    &gendersllnl_ganglia_clusterlist_get_nodename,
-    &gendersllnl_ganglia_clusterlist_increase_max_nodes,
+    &gendersllnl_clusterlist_init,
+    &gendersllnl_clusterlist_cleanup,
+    &gendersllnl_clusterlist_complete_loading,
+    &gendersllnl_clusterlist_compare_to_clusterlist,
+    &gendersllnl_clusterlist_is_node_in_cluster,
+    &gendersllnl_clusterlist_is_node_discovered,
+    &gendersllnl_clusterlist_get_nodename,
+    &gendersllnl_clusterlist_increase_max_nodes,
   };

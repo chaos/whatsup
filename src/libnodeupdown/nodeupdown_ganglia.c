@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia.c,v 1.7 2005-04-05 23:13:01 achu Exp $
+ *  $Id: nodeupdown_ganglia.c,v 1.8 2005-04-05 23:54:50 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -51,7 +51,7 @@
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
 #include "nodeupdown_ganglia.h"
-#include "nodeupdown_ganglia_clusterlist.h"
+#include "nodeupdown_clusterlist.h"
 #include "nodeupdown_util.h"
 #include "hostlist.h"
 #include "xmlparse.h"
@@ -73,10 +73,10 @@ nodeupdown_ganglia_get_default_port(nodeupdown_t handle)
 int
 nodeupdown_ganglia_init(nodeupdown_t handle, char *clusterlist_module)
 {
-  if (nodeupdown_ganglia_clusterlist_load_module(handle, clusterlist_module) < 0)
+  if (nodeupdown_clusterlist_load_module(handle, clusterlist_module) < 0)
     return -1;
                                                                                       
-  if (nodeupdown_ganglia_clusterlist_init(handle) < 0)
+  if (nodeupdown_clusterlist_init(handle) < 0)
     return -1;
 
   return 0;
@@ -107,10 +107,10 @@ _xml_parse_start(void *data, const char *e1, const char **attr)
        * - remaining attributes aren't needed 
        */
 
-      if (nodeupdown_ganglia_clusterlist_is_node_in_cluster(handle, attr[1]) <= 0)
+      if (nodeupdown_clusterlist_is_node_in_cluster(handle, attr[1]) <= 0)
         return;
       
-      if (nodeupdown_ganglia_clusterlist_get_nodename(handle, 
+      if (nodeupdown_clusterlist_get_nodename(handle, 
                                                       attr[1], 
                                                       buffer, 
                                                       NODEUPDOWN_MAXHOSTNAMELEN+1) < 0)
@@ -126,7 +126,7 @@ _xml_parse_start(void *data, const char *e1, const char **attr)
       if (ret == 0)
         return;
       
-      if (nodeupdown_ganglia_clusterlist_increase_max_nodes(handle) < 0)
+      if (nodeupdown_clusterlist_increase_max_nodes(handle) < 0)
         return;
     }
 }
@@ -204,10 +204,10 @@ nodeupdown_ganglia_get_updown_data(nodeupdown_t handle,
         break;
     }
   
-  if (nodeupdown_ganglia_clusterlist_compare_to_clusterlist(handle) < 0)
+  if (nodeupdown_clusterlist_compare_to_clusterlist(handle) < 0)
     goto cleanup;
 
-  if (nodeupdown_ganglia_clusterlist_complete_loading(handle) < 0)
+  if (nodeupdown_clusterlist_complete_loading(handle) < 0)
     goto cleanup;
 
   retval = 0;
@@ -222,6 +222,6 @@ nodeupdown_ganglia_get_updown_data(nodeupdown_t handle,
 void
 nodeupdown_ganglia_cleanup(nodeupdown_t handle)
 {
-  nodeupdown_ganglia_clusterlist_cleanup(handle);
-  nodeupdown_ganglia_clusterlist_unload_module(handle);
+  nodeupdown_clusterlist_cleanup(handle);
+  nodeupdown_clusterlist_unload_module(handle);
 }

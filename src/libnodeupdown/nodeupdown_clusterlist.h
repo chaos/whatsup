@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist.h,v 1.6 2005-04-05 23:13:01 achu Exp $
+ *  $Id: nodeupdown_clusterlist.h,v 1.1 2005-04-05 23:54:50 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -24,8 +24,8 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
 \*****************************************************************************/
 
-#ifndef _NODEUPDOWN_GANGLIA_CLUSTERLIST_H
-#define _NODEUPDOWN_GANGLIA_CLUSTERLIST_H
+#ifndef _NODEUPDOWN_CLUSTERLIST_H
+#define _NODEUPDOWN_CLUSTERLIST_H
 
 #include "nodeupdown.h"
 
@@ -33,74 +33,74 @@
  * Clusterlist function prototypes
  */
 
-typedef int (*Nodeupdown_ganglia_clusterlist_init)(nodeupdown_t);
-typedef int (*Nodeupdown_ganglia_clusterlist_cleanup)(nodeupdown_t);
-typedef int (*Nodeupdown_ganglia_clusterlist_complete_loading)(nodeupdown_t);
-typedef int (*Nodeupdown_ganglia_clusterlist_compare_to_clusterlist)(nodeupdown_t);
-typedef int (*Nodeupdown_ganglia_clusterlist_is_node_in_cluster)(nodeupdown_t, const char *);
-typedef int (*Nodeupdown_ganglia_clusterlist_is_node_discovered)(nodeupdown_t, const char *);
-typedef int (*Nodeupdown_ganglia_clusterlist_get_nodename)(nodeupdown_t, const char *, char *, int);
-typedef int (*Nodeupdown_ganglia_clusterlist_increase_max_nodes)(nodeupdown_t);
+typedef int (*Nodeupdown_clusterlist_init)(nodeupdown_t);
+typedef int (*Nodeupdown_clusterlist_cleanup)(nodeupdown_t);
+typedef int (*Nodeupdown_clusterlist_complete_loading)(nodeupdown_t);
+typedef int (*Nodeupdown_clusterlist_compare_to_clusterlist)(nodeupdown_t);
+typedef int (*Nodeupdown_clusterlist_is_node_in_cluster)(nodeupdown_t, const char *);
+typedef int (*Nodeupdown_clusterlist_is_node_discovered)(nodeupdown_t, const char *);
+typedef int (*Nodeupdown_clusterlist_get_nodename)(nodeupdown_t, const char *, char *, int);
+typedef int (*Nodeupdown_clusterlist_increase_max_nodes)(nodeupdown_t);
 
 /* 
  * Define all module information. 
  */
 
-struct nodeupdown_ganglia_clusterlist_module_info
+struct nodeupdown_clusterlist_module_info
 {
-  char *ganglia_clusterlist_module_name;
-  Nodeupdown_ganglia_clusterlist_init init;
-  Nodeupdown_ganglia_clusterlist_cleanup cleanup;
-  Nodeupdown_ganglia_clusterlist_complete_loading complete_loading;
-  Nodeupdown_ganglia_clusterlist_compare_to_clusterlist compare_to_clusterlist;
-  Nodeupdown_ganglia_clusterlist_is_node_in_cluster is_node_in_cluster;
-  Nodeupdown_ganglia_clusterlist_is_node_discovered is_node_discovered;
-  Nodeupdown_ganglia_clusterlist_get_nodename get_nodename;
-  Nodeupdown_ganglia_clusterlist_increase_max_nodes increase_max_nodes;
+  char *clusterlist_module_name;
+  Nodeupdown_clusterlist_init init;
+  Nodeupdown_clusterlist_cleanup cleanup;
+  Nodeupdown_clusterlist_complete_loading complete_loading;
+  Nodeupdown_clusterlist_compare_to_clusterlist compare_to_clusterlist;
+  Nodeupdown_clusterlist_is_node_in_cluster is_node_in_cluster;
+  Nodeupdown_clusterlist_is_node_discovered is_node_discovered;
+  Nodeupdown_clusterlist_get_nodename get_nodename;
+  Nodeupdown_clusterlist_increase_max_nodes increase_max_nodes;
 };
 
 /*
  * Load the clusterlist module
  */
-int nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlist_module);
+int nodeupdown_clusterlist_load_module(nodeupdown_t handle, char *clusterlist_module);
 
 /*  
  * Unload the clusterlist module
  */
-int nodeupdown_ganglia_clusterlist_unload_module(nodeupdown_t handle);
+int nodeupdown_clusterlist_unload_module(nodeupdown_t handle);
 
 /* 
  * Initialize any clusterlist info, for example, loading data from a file 
  */
-int nodeupdown_ganglia_clusterlist_init(nodeupdown_t handle);
+int nodeupdown_clusterlist_init(nodeupdown_t handle);
 
 /* 
  * cleanup up clusterlist
  */
-int nodeupdown_ganglia_clusterlist_cleanup(nodeupdown_t handle);
+int nodeupdown_clusterlist_cleanup(nodeupdown_t handle);
 
 /* 
  * complete_loading up clusterlist work
  */
-int nodeupdown_ganglia_clusterlist_complete_loading(nodeupdown_t handle);
+int nodeupdown_clusterlist_complete_loading(nodeupdown_t handle);
 
 /* 
  * Compare all nodes retrieved with nodes from the clusterlist 
  * - Adds nodes not found from gmond into the down nodes hostlist
  */
-int nodeupdown_ganglia_clusterlist_compare_to_clusterlist(nodeupdown_t handle);
+int nodeupdown_clusterlist_compare_to_clusterlist(nodeupdown_t handle);
 
 /* 
  * Returns 1 if the specified node is in the cluster, 0 if not, -1 on error 
  */
-int nodeupdown_ganglia_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node);
+int nodeupdown_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node);
 
 /* 
  * Returns 1 if the specified node name is discovered
- * - Usually identical to nodeupdown_ganglia_clusterlist_is_node_in_cluster.
+ * - Usually identical to nodeupdown_clusterlist_is_node_in_cluster.
  *   Only necessary when no clusterlist is available.
  */
-int nodeupdown_ganglia_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node);
+int nodeupdown_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node);
 
 /* 
  * Returns the appropriate nodename to use in the specified buffer
@@ -110,11 +110,11 @@ int nodeupdown_ganglia_clusterlist_is_node_discovered(nodeupdown_t handle, const
  * - Typically, this should be called after a check using
  *   "is_node_discovered" or "is_node_in_cluster".
  */
-int nodeupdown_ganglia_clusterlist_get_nodename(nodeupdown_t handle, const char *node, char *buffer, int buflen);
+int nodeupdown_clusterlist_get_nodename(nodeupdown_t handle, const char *node, char *buffer, int buflen);
 
 /* 
  * Increase the number of nodes in the system found 
  */
-int nodeupdown_ganglia_clusterlist_increase_max_nodes(nodeupdown_t handle);
+int nodeupdown_clusterlist_increase_max_nodes(nodeupdown_t handle);
 
-#endif /* _NODEUPDOWN_GANGLIA_CLUSTERLIST_H */
+#endif /* _NODEUPDOWN_CLUSTERLIST_H */

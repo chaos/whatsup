@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_none.c,v 1.7 2005-04-05 23:13:01 achu Exp $
+ *  $Id: nodeupdown_clusterlist_none.c,v 1.1 2005-04-05 23:54:50 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -36,55 +36,55 @@
 
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
-#include "nodeupdown_ganglia_clusterlist.h"
-#include "nodeupdown_ganglia_clusterlist_util.h"
+#include "nodeupdown_clusterlist.h"
+#include "nodeupdown_clusterlist_util.h"
 #include "hostlist.h"
 
 int
-none_ganglia_clusterlist_initialize_handle(nodeupdown_t handle) 
+none_clusterlist_initialize_handle(nodeupdown_t handle) 
 {
   return 0;
 }
 
 int
-none_ganglia_clusterlist_free_handle_data(nodeupdown_t handle) 
+none_clusterlist_free_handle_data(nodeupdown_t handle) 
 {
   return 0;
 }
 
 int 
-none_ganglia_clusterlist_init(nodeupdown_t handle) 
+none_clusterlist_init(nodeupdown_t handle) 
 {
   return 0;
 }
 
 int 
-none_ganglia_clusterlist_cleanup(nodeupdown_t handle) 
+none_clusterlist_cleanup(nodeupdown_t handle) 
 {
   return 0;
 }
 
 int 
-none_ganglia_clusterlist_complete_loading(nodeupdown_t handle) 
+none_clusterlist_complete_loading(nodeupdown_t handle) 
 {
   return 0;
 }
 
 int 
-none_ganglia_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
+none_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
 {
   return 0;
 }
 
 int 
-none_ganglia_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) 
+none_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) 
 {
   /* Have to assume it is */
   return 1;
 }
 
 int 
-none_ganglia_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node) 
+none_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node) 
 {
   /* Without a clusterlist_ of some sort, this is the best we can do */
   if (hostlist_find(handle->up_nodes, node) == -1 
@@ -95,30 +95,30 @@ none_ganglia_clusterlist_is_node_discovered(nodeupdown_t handle, const char *nod
 }
 
 int 
-none_ganglia_clusterlist_get_nodename(nodeupdown_t handle, 
-                                      const char *node, 
-                                      char *buffer, 
-                                      int buflen) 
+none_clusterlist_get_nodename(nodeupdown_t handle, 
+                              const char *node, 
+                              char *buffer, 
+                              int buflen) 
 {
-  return nodeupdown_ganglia_clusterlist_copy_nodename(handle, node, buffer, buflen);
+  return nodeupdown_clusterlist_copy_nodename(handle, node, buffer, buflen);
 }
     
 int 
-none_ganglia_clusterlist_increase_max_nodes(nodeupdown_t handle) 
+none_clusterlist_increase_max_nodes(nodeupdown_t handle) 
 {
   handle->max_nodes++;
   return 0;
 }
 
-struct nodeupdown_ganglia_clusterlist_module_info ganglia_clusterlist_module_info =
+struct nodeupdown_clusterlist_module_info clusterlist_module_info =
   {
     "none",
-    &none_ganglia_clusterlist_init,
-    &none_ganglia_clusterlist_cleanup,
-    &none_ganglia_clusterlist_complete_loading,
-    &none_ganglia_clusterlist_compare_to_clusterlist,
-    &none_ganglia_clusterlist_is_node_in_cluster,
-    &none_ganglia_clusterlist_is_node_discovered,
-    &none_ganglia_clusterlist_get_nodename,
-    &none_ganglia_clusterlist_increase_max_nodes,
+    &none_clusterlist_init,
+    &none_clusterlist_cleanup,
+    &none_clusterlist_complete_loading,
+    &none_clusterlist_compare_to_clusterlist,
+    &none_clusterlist_is_node_in_cluster,
+    &none_clusterlist_is_node_discovered,
+    &none_clusterlist_get_nodename,
+    &none_clusterlist_increase_max_nodes,
   };

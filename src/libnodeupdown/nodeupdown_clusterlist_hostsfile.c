@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_hostsfile.c,v 1.8 2005-04-05 23:13:01 achu Exp $
+ *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.1 2005-04-05 23:54:50 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -42,8 +42,8 @@
 
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
-#include "nodeupdown_ganglia_clusterlist.h"
-#include "nodeupdown_ganglia_clusterlist_util.h"
+#include "nodeupdown_clusterlist.h"
+#include "nodeupdown_clusterlist_util.h"
 #include "hostlist.h"
 #include "fd.h"
 #include "list.h"
@@ -201,13 +201,13 @@ _load_hostsfile_data(nodeupdown_t handle)
 }
 
 int 
-hostsfile_ganglia_clusterlist_init(nodeupdown_t handle) 
+hostsfile_clusterlist_init(nodeupdown_t handle) 
 {
   return _load_hostsfile_data(handle);
 }
 
 int 
-hostsfile_ganglia_clusterlist_cleanup(nodeupdown_t handle) 
+hostsfile_clusterlist_cleanup(nodeupdown_t handle) 
 {
   if (hosts)
     list_destroy(hosts);
@@ -216,14 +216,14 @@ hostsfile_ganglia_clusterlist_cleanup(nodeupdown_t handle)
 }
 
 int 
-hostsfile_ganglia_clusterlist_compelte_loading(nodeupdown_t handle) 
+hostsfile_clusterlist_compelte_loading(nodeupdown_t handle) 
 {
   handle->max_nodes = list_count(hosts);
   return 0;
 }
 
 int 
-hostsfile_ganglia_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
+hostsfile_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
 {
   ListIterator itr = NULL;
   char *nodename;
@@ -266,7 +266,7 @@ _find_str(void *x, void *key)
 }
 
 int 
-hostsfile_ganglia_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) 
+hostsfile_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) 
 {
   void *ptr;
   
@@ -278,7 +278,7 @@ hostsfile_ganglia_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char
 }
 
 int 
-hostsfile_ganglia_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node) 
+hostsfile_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node) 
 {
   void *ptr;
 
@@ -290,29 +290,29 @@ hostsfile_ganglia_clusterlist_is_node_discovered(nodeupdown_t handle, const char
 }
 
 int 
-hostsfile_ganglia_clusterlist_get_nodename(nodeupdown_t handle, 
-                                           const char *node, 
-                                           char *buffer, 
-                                           int buflen) 
+hostsfile_clusterlist_get_nodename(nodeupdown_t handle, 
+                                   const char *node, 
+                                   char *buffer, 
+                                   int buflen) 
 {
-  return nodeupdown_ganglia_clusterlist_copy_nodename(handle, node, buffer, buflen);
+  return nodeupdown_clusterlist_copy_nodename(handle, node, buffer, buflen);
 }
     
 int 
-hostsfile_ganglia_clusterlist_increase_max_nodes(nodeupdown_t handle) 
+hostsfile_clusterlist_increase_max_nodes(nodeupdown_t handle) 
 {
   return 0;
 }
 
-struct nodeupdown_ganglia_clusterlist_module_info ganglia_clusterlist_module_info =
+struct nodeupdown_clusterlist_module_info clusterlist_module_info =
   {
     "hostsfile",
-    &hostsfile_ganglia_clusterlist_init,
-    &hostsfile_ganglia_clusterlist_cleanup,
-    &hostsfile_ganglia_clusterlist_compelte_loading,
-    &hostsfile_ganglia_clusterlist_compare_to_clusterlist,
-    &hostsfile_ganglia_clusterlist_is_node_in_cluster,
-    &hostsfile_ganglia_clusterlist_is_node_discovered,
-    &hostsfile_ganglia_clusterlist_get_nodename,
-    &hostsfile_ganglia_clusterlist_increase_max_nodes,
+    &hostsfile_clusterlist_init,
+    &hostsfile_clusterlist_cleanup,
+    &hostsfile_clusterlist_compelte_loading,
+    &hostsfile_clusterlist_compare_to_clusterlist,
+    &hostsfile_clusterlist_is_node_in_cluster,
+    &hostsfile_clusterlist_is_node_discovered,
+    &hostsfile_clusterlist_get_nodename,
+    &hostsfile_clusterlist_increase_max_nodes,
   };

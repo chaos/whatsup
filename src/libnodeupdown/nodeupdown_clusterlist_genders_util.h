@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_util.c,v 1.4 2005-04-02 00:57:01 achu Exp $
+ *  $Id: nodeupdown_clusterlist_genders_util.h,v 1.1 2005-04-05 23:54:50 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -24,34 +24,21 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
 \*****************************************************************************/
 
-#if HAVE_CONFIG_H
-#include "config.h"
-#endif /* HAVE_CONFIG_H */
- 
-#include <stdio.h>
-#include <stdlib.h>
-#if STDC_HEADERS
-#include <string.h>
-#endif /* STDC_HEADERS */
+#ifndef _NODEUPDOWN_CLUSTERLIST_GENDERS_UTIL_H
+#define _NODEUPDOWN_CLUSTERLIST_GENDERS_UTIL_H
 
 #include "nodeupdown.h"
-#include "nodeupdown_common.h"
-#include "nodeupdown_ganglia_clusterlist_util.h"
 
-int 
-nodeupdown_ganglia_clusterlist_copy_nodename(nodeupdown_t handle, const char *node, char *buf, unsigned int buflen)
-{
-  int len;
- 
-  len = strlen(node);
- 
-  if ((len + 1) > buflen)
-    {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      return -1;
-    }
- 
-  strcpy(buf, node);
- 
-  return 0;
-}
+int genders_util_clusterlist_init(nodeupdown_t handle,
+                                  genders_t *genders_handle);
+
+int genders_util_clusterlist_cleanup(nodeupdown_t handle,
+                                     genders_t *genders_handle); 
+
+int genders_util_clusterlist_complete_loading(nodeupdown_t handle, 
+                                              genders_t genders_handle); 
+
+int genders_util_clusterlist_compare_to_clusterlist(nodeupdown_t handle,
+                                                    genders_t genders_handle) ;
+
+#endif /* _NODEUPDOWN_CLUSTERLIST_GENDERS_UTIL_H */
