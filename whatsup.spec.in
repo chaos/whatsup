@@ -70,7 +70,11 @@ rm -rf "$RPM_BUILD_ROOT"
 %defattr(-,root,root,0755)
 %doc AUTHORS COPYING ChangeLog DISCLAIMER INSTALL NEWS README README.expat 
 %doc README.hostsfile_install README.genders_install README.troubleshooting
+# It doesn't matter if the user chooses a 32bit or 64bit target.  The
+# packaging must work off whatever Perl is installed.
+%define _perldir %(perl -e 'use Config; $T=$Config{installsitearch}; $T=~/(.*)\\/site_perl.*/; print $1;')
 %{_bindir}/whatsup
 %{_includedir}/*
-%{_libdir}/*
+%{_libdir}/libnodeupdown.*
+%{_perldir}/*
 %{_mandir}/*

@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.34 2004-12-20 16:39:06 achu Exp $
+## $Id: configure.ac,v 1.35 2005-01-11 00:14:20 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -19,6 +19,32 @@ AC_CANONICAL_SYSTEM
 AM_INIT_AUTOMAKE($PROJECT, $VERSION)
 AM_CONFIG_HEADER([config/config.h])
 AM_MAINTAINER_MODE
+
+# Update this information before a public release only!
+  
+# libnodeupdown versioning
+#
+# If library source code has changed at all increment rev
+# (current:rev:age) = (current:rev+1:age)
+#
+# If any interfaces have been added,removed, or changed increment current
+#  and set rev = 0;
+#
+# If any interfaces have been added increment age
+#
+# If any interfaces have been removed, set age = 0
+#
+LIBNODEUPDOWN_CURRENT=0
+LIBNODEUPDOWN_REVISION=0
+LIBNODEUPDOWN_AGE=0
+LIBNODEUPDOWN_VERSION_INFO=$LIBNODEUPDOWN_CURRENT:$LIBNODEUPDOWN_REVISION:$LIBNODEUPDOWN_AGE
+AC_SUBST([LIBNODEUPDOWN_VERSION_INFO])
+  
+# Libnodeupdown and Nodeupdown versioning
+PERLNODEUPDOWN_MAJOR=0
+PERLNODEUPDOWN_MINOR=01
+PERLNODEUPDOWN_VERSION=$PERLNODEUPDOWN_MAJOR.$PERLNODEUPDOWN_MINOR
+AC_SUBST([PERLNODEUPDOWN_VERSION])
 
 # default location for nodeupdown conf file
 AC_MSG_CHECKING(for --with-nodeupdown-conf )
@@ -327,7 +353,6 @@ AC_CONFIG_FILES( \
   src/libnodeupdown/nodeupdown.h \
   src/whatsup/Makefile \
   src/Libnodeupdown/Makefile \
-  src/Libnodeupdown/Libnodeupdown.pm \
   src/Nodeupdown/Makefile \
   man/Makefile \
   man/libnodeupdown.3 \
@@ -335,6 +360,8 @@ AC_CONFIG_FILES( \
   man/nodeupdown.conf.5 \
   man/nodeupdown_hostsfile.conf.5 \
   man/whatsup.1 \
+  src/Libnodeupdown/Libnodeupdown.pm \
+  src/Nodeupdown/Nodeupdown.pm \
 )
 AC_OUTPUT
 

@@ -1,3 +1,23 @@
+2005-01-10  Albert Chu  <chu11@llnl.gov>
+	 
+        * src/libcommon/hostlist.h, src/libcommon/hostlist.c:
+	Updated libraries.
+ 
+        * src/Libnodeupdown/Makefile.am, src/Nodeupdown/Makefile.am: Cleanup.
+ 
+        * whatsup.spec.in: Fix a Perl Extensions packaging problem for
+        multilib systems.
+ 
+        * src/libgendersllnl/Makefile.am, configure.ac: Move versioning
+        info into configure.ac.
+ 
+        * configure.ac: Added Perl versioning.
+
+        * src/Libnodeupdown/Libnodeupdown.pm: Added versioning.
+
+        * src/Nodeupdown/Nodeupdown.pm: Renamed to Nodeupdown.pm.in and
+        added versioning.
+
 2004-12-29  Albert Chu  <chu11@llnl.gov>
 	 
         * Makefile.am: distcheck fix.
