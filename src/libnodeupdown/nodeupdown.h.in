@@ -1,6 +1,6 @@
 /*
- *  $Id: nodeupdown.h,v 1.22 2003-05-23 21:33:23 achu Exp $
- *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h,v $
+ *  $Id: nodeupdown.h.in,v 1.1 2003-07-16 01:54:07 achu Exp $
+ *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h.in,v $
  *    
  */
 
@@ -37,6 +37,8 @@
 #define NODEUPDOWN_ERR_ERRNUMRANGE       21 /* error number out of range */ 
 
 #define NODEUPDOWN_TIMEOUT_LEN           60
+
+#define NODEUPDOWN_CONF_FILE             @NODEUPDOWN_CONF_FILE@
 
 typedef struct nodeupdown *nodeupdown_t;
 

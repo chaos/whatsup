@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.62 2003-06-30 23:42:22 achu Exp $
+ * $Id: nodeupdown.c,v 1.63 2003-07-16 01:54:07 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -105,9 +105,11 @@ static void _initialize_handle(nodeupdown_t handle);
 static void _free_handle_data(nodeupdown_t handle);
 static int  _get_genders_data(nodeupdown_t, const char *);
 static int  _low_timeout_connect(nodeupdown_t, const char *, int);
+static int  _connect_gmond(nodeupdown_t, const char *, int, int);
+static int  _readline(int, char *, int);
 static void _xml_parse_start(void *, const char *, const char **);
 static void _xml_parse_end(void *, const char *);
-static int  _get_gmond_data(nodeupdown_t, const char *, int, int);
+static int  _get_gmond_data(nodeupdown_t, const char *, int, int, int);
 static int  _compare_genders_to_gmond_nodes(nodeupdown_t);
 static int  _get_nodes_string(nodeupdown_t, char *, int, int);
 static int  _get_nodes_list(nodeupdown_t, char **, int, int);
@@ -302,8 +304,67 @@ int _low_timeout_connect(nodeupdown_t handle, const char *ip, int port) {
  cleanup:
 
   close(sockfd);
-  
   return -1;
+}
+
+int _readline(int fd,  char *buf, int buflen) {
+  int ret, count = 0;
+  char chr;
+
+  do {
+    if ((ret = read(fd, &chr, 1)) == -1)
+      return -1;
+
+    if (ret == 1)
+      buf[count++] = chr;
+
+  } while (ret == 1 && chr != '\n' && count < buflen);
+
+  return count;
+}
+
+int _connect_gmond(nodeupdown_t handle,
+                   const char *gmond_ip,
+                   int gmond_port,
+                   int check_conf) {
+  int fd, port, sockfd = -1;
+  char buf[NODEUPDOWN_BUFFERLEN];
+  char *ip_ptr, *port_ptr;
+  
+  if ((sockfd = _low_timeout_connect(handle, gmond_ip, gmond_port)) == -1) {
+
+    if (check_conf) {
+
+      /* 
+       * Attempt to read gmond ip/port from conf file.  If anything
+       * fails prior to the next connection attempt, just fail and
+       * return error code from the previous _low_timeout_connect()
+       */
+
+      if ((fd = open(NODEUPDOWN_CONF_FILE, O_RDONLY)) < 0)
+        goto cleanup;
+
+      if (_readline(fd, buf, NODEUPDOWN_BUFFERLEN) < 0)
+        goto cleanup;
+
+      if (buf[0] == '#') {
+        if (_readline(fd, buf, NODEUPDOWN_BUFFERLEN) < 0)
+          goto cleanup;
+      }
+      
+      ip_ptr = buf;
+      strtok(buf, " \t");
+      if ((port_ptr = strtok(NULL, " \t")) == NULL)
+        goto cleanup;
+
+      port = atoi(port_ptr);
+
+      sockfd = _low_timeout_connect(handle, ip_ptr, port);
+    }
+  }
+
+ cleanup:
+  return sockfd;
 }
 
 /* xml start function for use with ganglia XML library
@@ -367,9 +428,10 @@ void _xml_parse_end(void *data, const char *e1) {
 }
 
 int _get_gmond_data(nodeupdown_t handle, 
-                   const char *gmond_ip, 
-                   int gmond_port, 
-                   int timeout_len) {
+                    const char *gmond_ip, 
+                    int gmond_port, 
+                    int timeout_len,
+                    int check_conf) {
 
   XML_Parser xml_parser = NULL;
   int sockfd = -1;
@@ -377,7 +439,7 @@ int _get_gmond_data(nodeupdown_t handle,
   struct timeval tv;
   pv.buf = NULL;
 
-  if ((sockfd = _low_timeout_connect(handle, gmond_ip, gmond_port)) == -1)
+  if ((sockfd = _connect_gmond(handle, gmond_ip, gmond_port, check_conf)) == -1)
     goto cleanup;
 
   pv.handle = handle;
@@ -505,7 +567,8 @@ int nodeupdown_load_data(nodeupdown_t handle,
                          int timeout_len) {
 
   char ip_buf[INET_ADDRSTRLEN];
-
+  int check_conf;
+ 
   if (_unloaded_handle_error_check(handle) == -1)
     return -1;
 
@@ -513,6 +576,10 @@ int nodeupdown_load_data(nodeupdown_t handle,
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
   }
+
+  /* were all defaults passed in? */
+  check_conf = (!gmond_hostname && !gmond_ip && 
+                (!gmond_port || gmond_port == -1));
 
   /* determine filename */
   if (genders_filename == NULL)
@@ -571,7 +638,7 @@ int nodeupdown_load_data(nodeupdown_t handle,
     goto cleanup;
   }
 
-  if (_get_gmond_data(handle, ip_buf, gmond_port, timeout_len) == -1)
+  if (_get_gmond_data(handle, ip_buf, gmond_port, timeout_len, check_conf) == -1)
     goto cleanup;
 
   if (_compare_genders_to_gmond_nodes(handle))

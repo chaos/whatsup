@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_load_data.3,v 1.13 2003-05-21 20:15:43 achu Exp $
+\."$Id: nodeupdown_load_data.3,v 1.14 2003-07-16 01:54:07 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -35,6 +35,24 @@ to pass in both the hostname and IP address of the server's location.
 Only one of the parameters is necessary.  The other parameter can be
 set to NULL.  If both \fIgmond_hostname\fR and \fIgmond_ip\fR are
 non-NULL, the \fIgmond_hostname\fR parameter will be ignored.
+
+System administrators may optionally store a default gmond IP address
+and port number in a nodeupdown configuration file.  The configuration
+file should be stored at the location defined by NODEUPDOWN_CONF_FILE.
+The configuration file will give
+.BR nodeupdown_load_data (3) 
+a second chance to connect to a gmond server when the default values
+fail to connect.  Below is an example of a nodeupdown configuration
+file:
+
+# gmond_ip    gmond_port
+.br
+134.9.36.80      8649 
+.br
+
+The IP address and port may be separated by any amount of whitespace.
+They must be stored on the first line of the configuration
+file or the second line if the first line contains a comment.
 .br
 .SH RETURN VALUES
 On success, 0 is returned.  On error, -1 is returned, and an error

@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.5 2003-05-27 18:16:28 achu Exp $
+## $Id: configure.ac,v 1.6 2003-07-16 01:54:05 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -35,6 +35,29 @@ AC_SUBST(RELEASE)
 AM_INIT_AUTOMAKE($PROJECT, $VERSION)
 AM_CONFIG_HEADER([config/config.h])
 AM_MAINTAINER_MODE
+
+# default location for nodeupdown conf file
+AC_MSG_CHECKING(for --with-nodeupdown-conf )
+AC_ARG_WITH(nodeupdown-conf,
+    AC_HELP_STRING([--with-nodeupdown-conf=path], 
+                   [define location of nodeupdown configuration file]),
+    [ case "$withval" in
+    yes)
+        withnodeupdownconf=yes
+        ;;
+    no)
+        ;;
+    *)
+        withnodeupdownconf=yes
+        NODEUPDOWN_CONF_FILE="\"$withval\""
+        ;;
+    esac ]
+)
+AC_MSG_RESULT(${withnodeupdownconf=no})
+if test -z "$NODEUPDOWN_CONF_FILE"; then
+   NODEUPDOWN_CONF_FILE="\"/etc/nodeupdown.conf\""
+fi
+AC_SUBST(NODEUPDOWN_CONF_FILE)
 
 ##
 # Checks for programs.
@@ -95,7 +118,8 @@ AC_CONFIG_FILES( \
   src/Makefile \
   src/libnodeupdown/Makefile \
   src/whatsup/Makefile \
-  man/Makefile 
+  man/Makefile \
+  src/libnodeupdown/nodeupdown.h
 )
 AC_OUTPUT
 

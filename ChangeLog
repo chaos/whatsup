@@ -1,4 +1,5 @@
 2003-07-15 Albert Chu <chu11@llnl.gov>
+        - added support for nodeupdown configuration file
 	- updated rpm dependencies and rpm release numbers
 	- tagged whatsup-1-1-1 
 	

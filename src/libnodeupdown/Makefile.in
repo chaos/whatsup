@@ -80,6 +80,7 @@ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
 MAINT = @MAINT@
+NODEUPDOWN_CONF_FILE = @NODEUPDOWN_CONF_FILE@
 OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 PROJECT = @PROJECT@
@@ -106,7 +107,7 @@ libnodeupdown_la_SOURCES = \
 subdir = src/libnodeupdown
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = nodeupdown.h
 LTLIBRARIES = $(lib_LTLIBRARIES)
 
 libnodeupdown_la_LDFLAGS =
@@ -134,7 +135,8 @@ CFLAGS = @CFLAGS@
 DIST_SOURCES = $(libnodeupdown_la_SOURCES)
 HEADERS = $(include_HEADERS)
 
-DIST_COMMON = $(include_HEADERS) Makefile.am Makefile.in
+DIST_COMMON = $(include_HEADERS) Makefile.am Makefile.in \
+	nodeupdown.h.in
 SOURCES = $(libnodeupdown_la_SOURCES)
 
 all: all-am
@@ -146,6 +148,8 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am  $(top_srcdir)/configu
 	  $(AUTOMAKE) --gnu  src/libnodeupdown/Makefile
 Makefile: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
+nodeupdown.h: $(top_builddir)/config.status nodeupdown.h.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 libLTLIBRARIES_INSTALL = $(INSTALL)
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
