@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.76 2003-11-07 18:28:58 achu Exp $
+ * $Id: nodeupdown.c,v 1.77 2003-11-07 23:47:43 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -27,18 +27,6 @@
 #include "nodeupdown.h"
 #include "nodeupdown_masterlist.h"
 #include "nodeupdown_common.h"
-
-#define NODEUPDOWN_UP_NODES              1
-#define NODEUPDOWN_DOWN_NODES            0
-
-#define NODEUPDOWN_MAGIC_NUM             0xfeedbeef
-
-#define NODEUPDOWN_CONNECT_LEN           5 
-
-/* Configuration file keys */
-#define NODEUPDOWN_CONF_HOSTNAME         "gmond_hostname"
-#define NODEUPDOWN_CONF_IP               "gmond_ip"
-#define NODEUPDOWN_CONF_PORT             "gmond_port"
 
 /* for gethostbyname */
 extern int h_errno;

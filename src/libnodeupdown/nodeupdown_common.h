@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown_common.h,v 1.1 2003-11-07 18:28:58 achu Exp $
+ *  $Id: nodeupdown_common.h,v 1.2 2003-11-07 23:47:43 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown_common.h,v $
  *    
  */
@@ -29,7 +29,19 @@
 #define MAXHOSTNAMELEN 64
 #endif
 
-#define NODEUPDOWN_BUFFERLEN  65536
+#define NODEUPDOWN_UP_NODES              1
+#define NODEUPDOWN_DOWN_NODES            0
+
+#define NODEUPDOWN_MAGIC_NUM             0xfeedbeef
+
+#define NODEUPDOWN_BUFFERLEN             65536
+
+#define NODEUPDOWN_CONNECT_LEN           5 
+
+/* Configuration file keys */
+#define NODEUPDOWN_CONF_HOSTNAME         "gmond_hostname"
+#define NODEUPDOWN_CONF_IP               "gmond_ip"
+#define NODEUPDOWN_CONF_PORT             "gmond_port"
 
 struct nodeupdown {
   int magic;                  /* magic number */
