@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_is_node.3,v 1.6 2003-04-29 23:57:09 achu Exp $
+\."$Id: nodeupdown_is_node.3,v 1.7 2003-04-30 00:11:01 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -9,9 +9,9 @@ nodeupdown_is_node_up, nodeupdown_is_node_down \- test if a node is up or down
 .SH SYNOPSIS
 .B #include <nodeupdown.h>
 .sp
-.BI "int nodeupdown_is_node_up(nodeupdown_t handle, char *node);"
+.BI "int nodeupdown_is_node_up(nodeupdown_t handle, const char *node);"
 .sp
-.BI "int nodeupdown_is_node_down(nodeupdown_t handle, char *node);"
+.BI "int nodeupdown_is_node_down(nodeupdown_t handle, const char *node);"
 .br
 .SH DESCRIPTION
 \fBnodeupdown_is_node_up()\fR tests if the node pointed to by \fInode\fR

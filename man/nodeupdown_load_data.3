@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_load_data.3,v 1.6 2003-04-29 23:57:09 achu Exp $
+\."$Id: nodeupdown_load_data.3,v 1.7 2003-04-30 00:11:01 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -9,7 +9,7 @@ nodeupdown_load_data \- load data from genders and ganglia
 .SH SYNOPSIS
 .B #include <nodeupdown.h>
 .sp
-.BI "int nodeupdown_load_data(nodeupdown_t handle, char *genders_filename, char *gmond_hostname, char *gmond_ip, int gmond_port, int timeout_len);"
+.BI "int nodeupdown_load_data(nodeupdown_t handle, const char *genders_filename, const char *gmond_hostname, const char *gmond_ip, int gmond_port, int timeout_len);"
 .br
 .SH DESCRIPTION
 \fBnodeupdown_load_data()\fR loads data from genders and ganglia so

@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: libnodeupdown.3,v 1.7 2003-04-29 23:57:09 achu Exp $
+\."$Id: libnodeupdown.3,v 1.8 2003-04-30 00:11:01 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -13,7 +13,7 @@ libnodeupdown \- a library of functions to determine if a node is up or down
 .sp
 .BI "int nodeupdown_handle_destroy(nodeupdown_t handle);"
 .sp
-.BI "int nodeupdown_load_data(nodeupdown_t handle, char *genders_filename, char *gmond_hostname, char *gmond_ip, int gmond_port, int timeout_len);"
+.BI "int nodeupdown_load_data(nodeupdown_t handle, const char *genders_filename, const char *gmond_hostname, const char *gmond_ip, int gmond_port, int timeout_len);"
 .sp
 .BI "int nodeupdown_errnum(nodeupdown_t handle);"
 .sp
@@ -21,7 +21,7 @@ libnodeupdown \- a library of functions to determine if a node is up or down
 .sp
 .BI "char *nodeupdown_errormsg(int errnum);"
 .sp
-.BI "void nodeupdown_perror(nodeupdown_t handle, char *msg);"
+.BI "void nodeupdown_perror(nodeupdown_t handle, const char *msg);"
 .sp
 .BI "int nodeupdown_dump(nodeupdown_t handle, FILE *stream);"
 .sp
@@ -33,9 +33,9 @@ libnodeupdown \- a library of functions to determine if a node is up or down
 .sp
 .BI "int nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len);"
 .sp
-.BI "int nodeupdown_is_node_up(nodeupdown_t handle, char *node);"
+.BI "int nodeupdown_is_node_up(nodeupdown_t handle, const char *node);"
 .sp
-.BI "int nodeupdown_is_node_down(nodeupdown_t handle, char *node);"
+.BI "int nodeupdown_is_node_down(nodeupdown_t handle, const char *node);"
 .sp
 .BI "int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list);"
 .sp
