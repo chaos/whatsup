@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: whatsup.1,v 1.1 2003-02-26 01:31:27 achu Exp $
+\."$Id: whatsup.1,v 1.2 2003-02-26 02:06:38 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -13,7 +13,7 @@ whatsup \- list up and/or down nodes in a cluster
 .SH DESCRIPTION
 .B whatsup
 lists which nodes are currently up or down in a
-cluster.  It determines which nodes are up or down bsaed on
+cluster.  It determines which nodes are up or down based on
 information gathered from genders and ganglia.
 
 .B whatsup
@@ -24,8 +24,9 @@ space separated lists.  What information is listed and how it
 is listed is dependent on the options listed below.
 
 As a reminder to the reader, some shells will interpret brackets
-('[' and ']').  Therefore, it may be necessary to enclose 
-hostlist formatted lists within quotes.
+('[' and ']') for pattern matching.  Depending on your shell, it may 
+be necessary to enclose hostlist formatted lists within quotes.  See
+the examples below for details.
 .br
 .SH OPTIONS
 .TP
@@ -80,6 +81,9 @@ List all nodes among foo[0-20] that are down
 .LP
 List all nodes that are up and down by their alternate names
      whatsup -a
+.LP
+List all nodes among foo[5-25] that are up by their alternate names
+     whatsup -u -a "foo[5-25]"
 .LP
 List all nodes that are up in comma separated lists.	
      whatsup -u -c
