@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.15 2004-05-20 00:28:30 achu Exp $
+## $Id: Makefile.am,v 1.16 2004-06-08 15:42:02 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -21,7 +21,7 @@ rev     = 0
 age     = 0
 
 if WITH_GNU_LD
-VERSION_SCRIPT = nodeupdown.map
+VERSION_SCRIPT = $(srcdir)/nodeupdown.map
 OTHER_FLAGS = -Wl,--version-script=$(VERSION_SCRIPT)
 endif
 
