@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.1 2003-02-24 19:30:42 achu Exp $
+ * $Id: whatsup.c,v 1.2 2003-02-25 23:33:59 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -280,7 +280,7 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
       err_usage("invalid command line option entered");
       break;
     default:
-      output_error("getopt error", NULL);
+      output_error("getopt() error", NULL);
       return -1;
       break;
     }
@@ -313,7 +313,7 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
     }
     
     if ((hptr = gethostbyname(hostname)) == NULL) {
-      output_error("gethostbyname error", (char *)hstrerror(h_errno));
+      output_error("gethostbyname() error", (char *)hstrerror(h_errno));
       return -1;
     }
 
@@ -327,7 +327,7 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
 		  (void *)hptr->h_addr, 
 		  arginfo->gmond_ip, 
 		  INET_ADDRSTRLEN) == NULL) {
-      output_error("inet_ntop error", strerror(errno));
+      output_error("inet_ntop() error", strerror(errno));
       return -1;
     }
   }
@@ -345,18 +345,18 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
 
     ret = inet_pton(AF_INET, arginfo->gmond_ip, &temp_in_addr);
     if (ret == 0) {
-      output_error("inet_pton error", "invalid address");
+      output_error("inet_pton() error", "invalid address");
       return -1;
     }
     else if (ret < 0) {
-      output_error("inet_pton error", strerror(errno));
+      output_error("inet_pton() error", strerror(errno));
       return -1;
     }
 
     if ((hptr = gethostbyaddr(&temp_in_addr,
 			      sizeof(struct in_addr), 
 			      AF_INET)) == NULL) {
-      output_error("gethostbyaddr error", (char *)hstrerror(h_errno));
+      output_error("gethostbyaddr() error", (char *)hstrerror(h_errno));
       return -1;
     }
 
@@ -423,7 +423,7 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
   }
 
   if ((arginfo->nodes = hostlist_create(NULL)) == NULL) {
-      output_error("hostlist_create error", NULL);
+      output_error("hostlist_create() error", NULL);
       return -1;
   }
 
@@ -442,7 +442,7 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
       /* best situation, found both ends of a hostlist list of nodes */
       
       if ((ret = hostlist_push(arginfo->nodes, argv[index])) == 0) {
-	output_error("hostlist_push error", 
+	output_error("hostlist_push() error", 
 		     "hosts may have been input incorrectly");
 	return -1;
       }
@@ -487,7 +487,7 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
 
       if (hostlist_push(arginfo->nodes, buffer) == 0) {
 	free(buffer);
-	output_error("hostlist_push error", 
+	output_error("hostlist_push() error", 
 		     "hosts may have been input incorrectly");
 	return -1;
       }
@@ -514,7 +514,7 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
 	temp_char = strtok(argv[index]," ");
 	while (temp_char != NULL) {
 	  if (hostlist_push_host(arginfo->nodes, temp_char) == 0) {
-	    output_error("hostlist_push_host error", 
+	    output_error("hostlist_push_host() error", 
 			 "hosts may have been input incorrectly");
 	    return -1;
 	  }
@@ -523,7 +523,7 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
       }
       else {
 	if (hostlist_push_host(arginfo->nodes, argv[index]) == 0) {
-	  output_error("hostlist_push_host error", 
+	  output_error("hostlist_push_host() error", 
 		       "hosts may have been input incorrectly");
 	  return -1;
 	}
@@ -589,7 +589,7 @@ int check_if_nodes_are_up_or_down(struct arginfo *arginfo,
   int ret;
 
   if ((iter = hostlist_iterator_create(arginfo->nodes)) == NULL) {
-    output_error("hostlist_iterator_create", NULL);
+    output_error("hostlist_iterator_create() error", NULL);
     return -1;
   }
 
@@ -604,13 +604,13 @@ int check_if_nodes_are_up_or_down(struct arginfo *arginfo,
     if (ret == 1) {
       if (hostlist_push_host(nodes, str) == 0) {
 	hostlist_iterator_destroy(iter);
-	output_error("hostlist_push_host", NULL);
+	output_error("hostlist_push_host() error", NULL);
 	return -1;
       }
     }
     else if (ret == -1) {
       hostlist_iterator_destroy(iter);
-      output_error("nodeupdown_is_node_up/down",
+      output_error("nodeupdown_is_node_up/down() error",
 		   nodeupdown_strerror(nodeupdown_errnum(handle))); 
       return -1;
     }
@@ -631,14 +631,14 @@ int get_all_up_or_down_nodes(struct arginfo *arginfo,
 
   if (output_type == WHATSUP_UP) {
     if (nodeupdown_get_up_nodes_hostlist(handle, nodes) == -1) {
-      output_error("nodeupdown_get_up_nodes_hostlist",
+      output_error("nodeupdown_get_up_nodes_hostlist() error",
 		   nodeupdown_strerror(nodeupdown_errnum(handle)));
       return -1;
     }
   }
   else {
     if (nodeupdown_get_down_nodes_hostlist(handle, nodes) == -1) {
-      output_error("nodeupdown_get_up_nodes_hostlist",
+      output_error("nodeupdown_get_up_nodes_hostlist() error",
 		   nodeupdown_strerror(nodeupdown_errnum(handle)));
       return -1;
     }
@@ -697,24 +697,24 @@ int output_nodes(struct arginfo *arginfo, hostlist_t nodes) {
       break_type = ' ';
       break;
     default:
-      output_error("output_nodes", "invalid list type");
+      output_error("output_nodes() error", "invalid list type");
       return -1;
       break;
     }
 
-    /* handle odd situation to ensure output doesn't look odd */
+    /* handle odd situation to ensure output w/ newlines doesn't look odd */
     if (break_type == '\n' && arginfo->output_type == WHATSUP_UP_AND_DOWN) {
       fprintf(stdout, "\n");
     }
 
     if ((num_nodes = hostlist_count(nodes)) < 0) {
-      output_error("hostlist_count", NULL);
+      output_error("hostlist_count() error", NULL);
       return -1;
     }
 
     if (num_nodes > 0) {
       if ((iter = hostlist_iterator_create(nodes)) == NULL) {
-	output_error("hostlist_iterator_create", NULL);
+	output_error("hostlist_iterator_create() error", NULL);
 	return -1;
       }
      
@@ -726,15 +726,19 @@ int output_nodes(struct arginfo *arginfo, hostlist_t nodes) {
       str = hostlist_next(iter);
       fprintf(stdout, "%s",str);
       free(str);
+      
+      hostlist_iterator_destroy(iter);
     }
     fprintf(stdout,"\n");
 
-    hostlist_iterator_destroy(iter);
   }
 
   return 0;
 }
 
+/* handle_up_or_down_nodes
+ * - a wrapper function used to avoid duplicate code.
+ */
 int handle_up_or_down_nodes(struct arginfo *arginfo, 
 			    enum whatsup_output_type output_type, 
 			    nodeupdown_t handle, 
@@ -762,14 +766,14 @@ int handle_up_or_down_nodes(struct arginfo *arginfo,
   if (arginfo->list_altnames == WHATSUP_ON) {
   
     if ((alternate_nodes = hostlist_create(NULL)) == NULL) {
-      output_error("hostlist_create", NULL);
+      output_error("hostlist_create() error", NULL);
       goto cleanup;
     }
     
     if (nodeupdown_get_hostlist_alternate_names(handle, 
 						*nodes, 
 						alternate_nodes)) {
-      output_error("nodeupdown_get_hostlist_alternate_names", 
+      output_error("nodeupdown_get_hostlist_alternate_names() error", 
 		   nodeupdown_strerror(nodeupdown_errnum(handle)));
       goto cleanup;
     }
@@ -805,7 +809,7 @@ int main(int argc, char **argv) {
   }
 
   if (initialize_struct_arginfo(arginfo) != 0) {
-    output_error("initialize_struct_arginfo", NULL);
+    output_error("initialize_struct_arginfo() error", NULL);
     goto cleanup;
   }
 
@@ -814,7 +818,7 @@ int main(int argc, char **argv) {
   }
   
   if ((handle = nodeupdown_create()) == NULL) {
-    output_error("nodeupdown_create", NULL);
+    output_error("nodeupdown_create() error", NULL);
     goto cleanup;
   }
 
@@ -858,7 +862,6 @@ int main(int argc, char **argv) {
     if (output_nodes(arginfo, up_nodes) != 0) {
       goto cleanup;
     }
-
     /* odd situation with output formatting */
     if (arginfo->list_type == WHATSUP_NEWLINE) {
       fprintf(stdout, "\n");
