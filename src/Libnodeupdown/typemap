@@ -1,0 +1,32 @@
+#
+# $Id: typemap,v 1.1 2003-08-16 00:15:29 achu Exp $
+# $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/Libnodeupdown/typemap,v $
+#
+# O_OBJECT by Dean Roehrich, CPAN 
+# http://www.cpan.org/modules/by-authors/id/DMR/
+#
+
+TYPEMAP
+nodeupdown_t  O_OBJECT
+char *        T_CHAR_PTR
+
+OUTPUT
+
+T_CHAR_PTR 
+        sv_setpv((SV*)$arg, $var);
+
+O_OBJECT
+        sv_setref_pv( $arg, CLASS, (void*)$var );
+
+INPUT
+
+T_CHAR_PTR
+        $var = (SvOK($arg)) ? ($type)SvPV($arg, PL_na) : NULL
+
+O_OBJECT
+        if( sv_isobject($arg) && (SvTYPE(SvRV($arg)) == SVt_PVMG) )
+                $var = ($type)SvIV((SV*)SvRV( $arg ));
+        else{
+                warn( \"${Package}::$func_name() -- $var is not a blessed SV reference\" );
+                XSRETURN_UNDEF;
+        }
