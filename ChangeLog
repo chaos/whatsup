@@ -9,6 +9,7 @@
 	- Added note about shortened hostnames in man page for whatsup(1)  
 	- Added note about newline separated lists in man page for whatsup(1)
 	- Fixed typo in whatsup(1) manpage
+	- tagged whatsup-1-0-4
 	
 2003-03-12 Albert Chu <chu11@llnl.gov>
            - moved unnecessary #defines and #includes from nodeupdown.h
