@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.3 2003-02-26 01:31:27 achu Exp $
+ * $Id: whatsup.c,v 1.4 2003-03-07 22:55:56 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -24,6 +24,7 @@
 #include <mcheck.h>
 #endif
 
+#include "hostlist.h"
 #include "nodeupdown.h"
 
 /********************************
@@ -662,7 +663,7 @@ int output_nodes(struct arginfo *arginfo, hostlist_t nodes) {
   if (arginfo->list_type == WHATSUP_HOSTLIST) {
     /* output nodes in hostlist format */
 
-    str_len = NODEUPDOWN_BUFFERLEN;
+    str_len = WHATSUP_BUFFERLEN;
     if ((str = (char *)malloc(str_len)) == NULL) {
       output_error("out of memory", NULL);
       return -1;
@@ -671,7 +672,7 @@ int output_nodes(struct arginfo *arginfo, hostlist_t nodes) {
 
     while (hostlist_ranged_string(nodes, str_len, str) == -1) {
       free(str);
-      str_len += NODEUPDOWN_BUFFERLEN;
+      str_len += WHATSUP_BUFFERLEN;
       if ((str = (char *)malloc(str_len)) == NULL) {
 	output_error("out of memory", NULL);
 	return -1;
