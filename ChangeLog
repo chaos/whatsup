@@ -28,7 +28,10 @@
 	     "#ifdef NODEUPDOWN_HOSTLIST_API"
 	     - int nodeupdown_get_up_nodes_hostlist_altnames();
 	     - int nodeupdown_get_down_nodes_hostlist_altnames();
-	   - updated whatsup command for new API
+	   - added code to enforace a smaller connect() timeout in
+	     nodeupdown_retrieve_gmond_data() (rather than the very long
+	     default timeout used in Linux).
+	   - updated whatsup command for new nodeupdown API
 	   - added -V (version) option to whatsup
 	   - added -g (genders attribute) option to whatsup
 	   - added error checks for non short hostnames in whatsup
