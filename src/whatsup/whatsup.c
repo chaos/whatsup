@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.57 2003-09-24 16:40:49 achu Exp $
+ * $Id: whatsup.c,v 1.58 2003-09-24 22:01:53 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -474,7 +474,8 @@ int get_nodes_common(struct arginfo *arginfo,
   *nodes = str;
   
   /* can't use nodeupdown_up/down_count, b/c we may be counting the
-   * nodes specified by the user */
+   * nodes specified by the user 
+   */
   if ((hl = hostlist_create(str)) == NULL) {
     err_msg("hostlist_create() error", NULL);
     goto cleanup;
@@ -601,7 +602,6 @@ int main(int argc, char **argv) {
       fprintf(stdout, "%d\n", down_count);
   }
   else {
-
     /* output up, down, or both up and down nodes */
     if (arginfo->output == UP_AND_DOWN) {
       fprintf(stdout, "up: %d:\t", up_count);
@@ -635,6 +635,8 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
   }
+
+  exit_value = 0;
 
  cleanup:
 
