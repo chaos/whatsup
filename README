@@ -1,7 +1,7 @@
 Whatsup is cluster node up/down detection utility. Working in
 conjunction with Ganglia and a master list of cluster machine names,
-whatsup quickly calculates and outputs the up and down nodes of a
-cluster.  
+whatsup can quickly calculate and output the up and down nodes of a
+cluster.
 
 This package includes:
 
