@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_load_data.3.in,v 1.3 2003-11-06 20:04:42 achu Exp $
+\."$Id: nodeupdown_load_data.3.in,v 1.4 2003-11-06 20:31:12 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -9,11 +9,11 @@ nodeupdown_load_data \- load data from ganglia
 .SH SYNOPSIS
 .B #include <nodeupdown.h>
 .sp
-.if @WITH_GENDERS@ \{
-.BI "int nodeupdown_load_data(nodeupdown_t handle, const char *genders_filename, const char *gmond_hostname, const char *gmond_ip, int gmond_port, int timeout_len);"
-\}
 .if @WITH_MASTERLIST@ \{
 .BI "int nodeupdown_load_data(nodeupdown_t handle, const char *filename, const char *gmond_hostname, const char *gmond_ip, int gmond_port, int timeout_len);"
+\}
+.if @WITH_GENDERS@ \{
+.BI "int nodeupdown_load_data(nodeupdown_t handle, const char *genders_filename, const char *gmond_hostname, const char *gmond_ip, int gmond_port, int timeout_len);"
 \}
 .if @WITH_NOMASTERLIST@ \{
 .BI "int nodeupdown_load_data(nodeupdown_t handle, void *ptr, const char *gmond_hostname, const char *gmond_ip, int gmond_port, int timeout_len);"
@@ -28,16 +28,16 @@ information about up and down nodes.
 handle created by
 .BR nodeupdown_handle_create (3).  
 
-.if @WITH_GENDERS@ \{
-\fIgenders_filename\fR should indicate the genders file to be loaded.
-If \fIgenders_filename\fR is NULL, the default genders file
-@NODEUPDOWN_MASTERLIST_DEFAULT@ will be used.
-\}
 .if @WITH_MASTERLIST@ \{
 \fIfilename\fR should indicate a filename that lists every node in the
 cluster.  The file should list shortened hostnames, one per line.  Lines
 beginning with a pound sign ('#') will be ignored.  If set to NULL, the
 default @NODEUPDOWN_MASTERLIST_DEFAULT@ will be used.
+\}
+.if @WITH_GENDERS@ \{
+\fIgenders_filename\fR should indicate the genders file to be loaded.
+If \fIgenders_filename\fR is NULL, the default genders file
+@NODEUPDOWN_MASTERLIST_DEFAULT@ will be used.
 \}
 .if @WITH_NOMASTERLIST@ \{
 \fIptr\fR can be set to anything, it will be ignored in this

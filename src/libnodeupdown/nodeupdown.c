@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.72 2003-11-06 18:09:55 achu Exp $
+ * $Id: nodeupdown.c,v 1.73 2003-11-06 20:31:12 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -22,11 +22,11 @@
 #include <sys/time.h> 
 #include <sys/types.h>
 
-#if HAVE_GENDERS
+#if HAVE_MASTERLIST
+#include "list.h"
+#elif HAVE_GENDERS
 #include <genders.h>
 #include <gendersllnl.h>
-#elif HAVE_MASTERLIST
-#include "list.h"
 #endif 
 
 #include "hostlist.h"
@@ -61,10 +61,10 @@ struct nodeupdown {
   hostlist_t up_nodes;        /* up nodes */
   hostlist_t down_nodes;      /* down nodes */
   int max_nodes;              /* max nodes in genders file */
-#if HAVE_GENDERS
-  genders_t genders_handle;   /* genders handle */
-#elif HAVE_MASTERLIST
+#if HAVE_MASTERLIST
   List masterlist;            /* list of all nodes */
+#elif HAVE_GENDERS
+  genders_t genders_handle;   /* genders handle */
 #endif 
 };
 
@@ -156,10 +156,10 @@ static void _initialize_handle(nodeupdown_t handle) {
   handle->up_nodes = NULL;
   handle->down_nodes = NULL;
   handle->max_nodes = 0;
-#if HAVE_GENDERS
-  handle->genders_handle = NULL;
-#elif HAVE_MASTERLIST
+#if HAVE_MASTERLIST
   handle->masterlist = NULL;
+#elif HAVE_GENDERS
+  handle->genders_handle = NULL;
 #endif 
 }
 
@@ -178,10 +178,10 @@ nodeupdown_t nodeupdown_handle_create() {
 static void _free_handle_data(nodeupdown_t handle) {
   hostlist_destroy(handle->up_nodes);
   hostlist_destroy(handle->down_nodes);
-#if HAVE_GENDERS
-  (void)genders_handle_destroy(handle->genders_handle);
-#elif HAVE_MASTERLIST
+#if HAVE_MASTERLIST
   (void)list_destroy(handle->masterlist);
+#elif HAVE_GENDERS
+  (void)genders_handle_destroy(handle->genders_handle);
 #endif
 
   _initialize_handle(handle);
@@ -199,26 +199,6 @@ int nodeupdown_handle_destroy(nodeupdown_t handle) {
   free(handle);
   return 0;
 }  
-
-#if HAVE_GENDERS
-static int _load_genders_data(nodeupdown_t handle, const char *filename) {
-  /* determine filename */
-  if (filename == NULL)
-    filename = NODEUPDOWN_MASTERLIST_DEFAULT;
-
-  if ((handle->genders_handle = genders_handle_create()) == NULL) {
-    handle->errnum = NODEUPDOWN_ERR_OUTMEM;
-    return -1;
-  }
-
-  if (genders_load_data(handle->genders_handle, filename) == -1) {
-    handle->errnum = NODEUPDOWN_ERR_OPEN;
-    return -1;
-  }
-
-  return 0;
-}
-#endif /* HAVE_GENDERS */
 
 #if HAVE_MASTERLIST
 static int _find_str(void *x, void *key) {
@@ -271,6 +251,26 @@ static int _load_masterlist_data(nodeupdown_t handle, const char *filename) {
   return retval;
 }
 #endif /* HAVE_MASTERLIST */
+
+#if HAVE_GENDERS
+static int _load_genders_data(nodeupdown_t handle, const char *filename) {
+  /* determine filename */
+  if (filename == NULL)
+    filename = NODEUPDOWN_MASTERLIST_DEFAULT;
+
+  if ((handle->genders_handle = genders_handle_create()) == NULL) {
+    handle->errnum = NODEUPDOWN_ERR_OUTMEM;
+    return -1;
+  }
+
+  if (genders_load_data(handle->genders_handle, filename) == -1) {
+    handle->errnum = NODEUPDOWN_ERR_OPEN;
+    return -1;
+  }
+
+  return 0;
+}
+#endif /* HAVE_GENDERS */
 
 static int _low_timeout_connect(nodeupdown_t handle, const char *ip, int port) {
   int ret, old_flags, error, len, sockfd = -1;
@@ -554,19 +554,20 @@ static void _xml_parse_start(void *data, const char *e1, const char **attr) {
     if ((ptr = strchr(shorthostname, '.')) != NULL)
       *ptr = '\0';
 
-#if HAVE_GENDERS
-    /* The following turns the alternate gendname into a genders nodename,
-     * and elminates nodes not listed in the genders database.  To
-     * not eliminate nodes, genders_to_gendname_preserve should be used instead
-     */
-    if (genders_to_gendname(handle->genders_handle, shorthostname, 
-			    buffer, MAXHOSTNAMELEN+1) == -1)
-      return;
-#elif HAVE_MASTERLIST
+#if HAVE_MASTERLIST
     /* Return if this node is not part of the master list */
     if (list_find_first(handle->masterlist, _find_str, shorthostname) == NULL)
       return;
     strcpy(buffer, shorthostname);
+#elif HAVE_GENDERS
+    /* The following turns the alternate gendname into a genders
+     * nodename, and elminates nodes not listed in the genders
+     * database.  To not eliminate nodes, genders_to_gendname_preserve
+     * should be used instead
+     */
+    if (genders_to_gendname(handle->genders_handle, shorthostname, 
+			    buffer, MAXHOSTNAMELEN+1) == -1)
+      return;
 #else
     strcpy(buffer, shorthostname);
 #endif
@@ -651,7 +652,34 @@ static int _get_gmond_data(nodeupdown_t handle, int sockfd, int timeout_len) {
 
 /* compare gmond nodes to the master list */
 static int _compare_gmond_nodes_to_master_list(nodeupdown_t handle) {
-#if HAVE_GENDERS
+#if HAVE_MASTERLIST
+  ListIterator itr = NULL;
+  char *nodename;
+
+  if ((itr = list_iterator_create(handle->masterlist)) == NULL) {
+    handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
+    return -1;
+  }
+
+  while (nodename = list_next(itr)) {
+    if ((hostlist_find(handle->up_nodes, nodename) == -1) &&
+        (hostlist_find(handle->down_nodes, nodename) == -1)) {
+      /* This node must also be down */
+      if (hostlist_push_host(handle->down_nodes, nodename) == 0) {
+        handle->errnum = NODEUPDOWN_ERR_HOSTLIST;
+        goto cleanup;
+      }
+    }    
+  }
+
+  list_iterator_destroy(itr);
+  hostlist_sort(handle->down_nodes);
+  return 0;
+
+ cleanup: 
+  list_iterator_destroy(itr);
+  return -1;
+#elif HAVE_GENDERS
   int i, ret, num;
   char **nlist = NULL;
   genders_t gh = handle->genders_handle;
@@ -691,43 +719,16 @@ static int _compare_gmond_nodes_to_master_list(nodeupdown_t handle) {
  cleanup: 
   (void)genders_nodelist_destroy(gh, nlist);
   return -1;
-#elif HAVE_MASTERLIST
-  ListIterator itr = NULL;
-  char *nodename;
-
-  if ((itr = list_iterator_create(handle->masterlist)) == NULL) {
-    handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
-    return -1;
-  }
-
-  while (nodename = list_next(itr)) {
-    if ((hostlist_find(handle->up_nodes, nodename) == -1) &&
-        (hostlist_find(handle->down_nodes, nodename) == -1)) {
-      /* This node must also be down */
-      if (hostlist_push_host(handle->down_nodes, nodename) == 0) {
-        handle->errnum = NODEUPDOWN_ERR_HOSTLIST;
-        goto cleanup;
-      }
-    }    
-  }
-
-  list_iterator_destroy(itr);
-  hostlist_sort(handle->down_nodes);
-  return 0;
-
- cleanup: 
-  list_iterator_destroy(itr);
-  return -1;
 #else
   return 0;
 #endif
 }
 
 int nodeupdown_load_data(nodeupdown_t handle, 
-#if HAVE_GENDERS
-                         const char *genders_filename, 
-#elif HAVE_MASTERLIST
+#if HAVE_MASTERLIST
 			 const char *filename,
+#elif HAVE_GENDERS
+                         const char *genders_filename, 
 #else
                          void *ptr,
 #endif
@@ -740,11 +741,11 @@ int nodeupdown_load_data(nodeupdown_t handle,
     return -1;
 
   /* Must call before _connect_to_gmond */
-#if HAVE_GENDERS
-  if (_load_genders_data(handle, genders_filename) == -1)
-    goto cleanup;
-#elif HAVE_MASTERLIST
+#if HAVE_MASTERLIST
   if (_load_masterlist_data(handle, filename) == -1)
+    goto cleanup;
+#elif HAVE_GENDERS
+  if (_load_genders_data(handle, genders_filename) == -1)
     goto cleanup;
 #endif
 
@@ -922,7 +923,13 @@ static int _is_node(nodeupdown_t handle, const char *node, int up_or_down) {
     return -1;
   }
 
-#if HAVE_GENDERS
+#if HAVE_MASTERLIST
+  if (list_find_first(handle->masterlist, _find_str, node) == NULL) {
+    handle->errnum = NODEUPDOWN_ERR_NOTFOUND;
+    return;
+  }
+  strcpy(buffer, node);
+#elif HAVE_GENDERS
   /* make sure node passed in is legitimate */
   if ((ret = genders_isnode_or_altnode(handle->genders_handle, node)) == -1) {
     handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
@@ -939,12 +946,6 @@ static int _is_node(nodeupdown_t handle, const char *node, int up_or_down) {
     handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
     return -1;
   }
-#elif HAVE_MASTERLIST
-  if (list_find_first(handle->masterlist, _find_str, node) == NULL) {
-    handle->errnum = NODEUPDOWN_ERR_NOTFOUND;
-    return;
-  }
-  strcpy(buffer, node);
 #else
   if (strlen(node) > MAXHOSTNAMELEN) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;

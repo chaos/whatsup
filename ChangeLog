@@ -1,5 +1,13 @@
 2003-11-07  Albert Chu  <chu11@llnl.gov>
 
+	* configure.ac, src/libnodeupdown/nodeupdown.c,
+	  src/whatsup/whatsup.c, man/libnodeupdown.3,
+	  man/nodeupdown_load_data.3, man/whatsup.1: Re-ordered things so
+	  the "masterlist" mechanism is the primary mechanism, and genders
+	  is secondary.
+
+2003-11-07  Albert Chu  <chu11@llnl.gov>
+
 	Added master file list support
 	
 	* src/libnodeupdown/nodeupdown.h.in: Added

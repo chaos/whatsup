@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: whatsup.1.in,v 1.3 2003-11-06 20:03:34 achu Exp $
+\."$Id: whatsup.1.in,v 1.4 2003-11-06 20:31:12 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -76,6 +76,12 @@ List nodes in newline separated list
 .TP
 .B \-s, \-\-space
 List nodes in space separated list
+.if @WITH_MASTERLIST@ \{
+.TP
+.B \-f \fISTRING\fR, \fB\-\-filename\fR=\fISTRING\fR
+Location of master list file (default=@NODEUPDOWN_MASTERLIST_DEFAULT@)
+.TP
+\}
 .if @WITH_GENDERS@ \{
 .TP
 .B \-f \fISTRING\fR, \fB\-\-filename\fR=\fISTRING\fR
@@ -85,11 +91,6 @@ Location of genders file (default=/etc/genders)
 List nodes by alternate names (default=off)
 \}
 .TP
-.if @WITH_MASTERLIST@ \{
-.B \-f \fISTRING\fR, \fB\-\-filename\fR=\fISTRING\fR
-Location of master list file (default=@NODEUPDOWN_MASTERLIST_DEFAULT@)
-.TP
-\}
 
 .SH "HOST RANGES"
 As noted in sections above,

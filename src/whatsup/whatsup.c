@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.68 2003-11-06 19:54:37 achu Exp $
+ * $Id: whatsup.c,v 1.69 2003-11-06 20:31:12 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -66,7 +66,7 @@ struct winfo {
   char list_type;             /* list type */
   int count;                  /* list count? */
   hostlist_t nodes;           /* nodes entered at command line */
-#if (HAVE_GENDERS || HAVE_MASTERLIST)
+#if (HAVE_MASTERLIST || HAVE_GENDERS)
   char *filename;             /* filename */
 #endif
 #if HAVE_GENDERS
@@ -93,13 +93,13 @@ static void usage(void) {
     "  -c         --comma             List nodes in comma separated list\n"
     "  -n         --newline           List nodes in newline separated list\n"
     "  -s         --space             List nodes in space separated list\n");
-#if HAVE_GENDERS
+#if HAVE_MASTERLIST
+  fprintf(stderr,
+    "  -f STRING  --filename=STRING   Location of master list file\n");
+#elif HAVE_GENDERS
   fprintf(stderr,
     "  -f STRING  --filename=STRING   Location of genders file\n"
     "  -a         --altnames          List nodes by alternate name\n");
-#elif HAVE_MASTERLIST
-  fprintf(stderr,
-    "  -f STRING  --filename=STRING   Location of master list file\n");
 #endif
     fprintf(stderr, "\n");
 }
@@ -146,7 +146,7 @@ static int initialize_struct_winfo(struct winfo *winfo) {
   winfo->list_type = HOSTLIST;
   winfo->count = WHATSUP_OFF;
   winfo->nodes = NULL;
-#if (HAVE_GENDERS || HAVE_MASTERLIST)
+#if (HAVE_MASTERLIST || HAVE_GENDERS)
   winfo->filename = NULL;
 #endif
 #if HAVE_GENDERS
@@ -162,10 +162,10 @@ static int initialize_struct_winfo(struct winfo *winfo) {
 static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
   int c, index, oopt = 0, iopt = 0;
 
-#if HAVE_GENDERS
-  char *options = "hVo:i:p:budtlcnsf:a";
-#elif HAVE_MASTERLIST
+#if HAVE_MASTERLIST
   char *options = "hVo:i:p:budtlcnsf:";
+#elif HAVE_GENDERS
+  char *options = "hVo:i:p:budtlcnsf:a";
 #else
   char *options = "hVo:i:p:budtlcns";
 #endif
@@ -183,7 +183,7 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
     {"comma",     0, NULL, 'c'},
     {"newline",   0, NULL, 'n'},
     {"space",     0, NULL, 's'},
-#if (HAVE_GENDERS || HAVE_MASTERLIST)
+#if (HAVE_MASTERLIST || HAVE_GENDERS)
     {"filename",  1, NULL, 'f'},
 #endif
 #if HAVE_GENDERS
@@ -240,7 +240,7 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
     case 's':
       winfo->list_type = SPACE;
       break;
-#if (HAVE_GENDERS || HAVE_MASTERLIST)
+#if (HAVE_MASTERLIST || HAVE_GENDERS)
     case 'f':
       winfo->filename = optarg;
       break;
@@ -542,7 +542,7 @@ int main(int argc, char **argv) {
   }
 
   if (nodeupdown_load_data(winfo->handle, 
-#if (HAVE_GENDERS || HAVE_MASTERLIST)
+#if (HAVE_MASTERLIST || HAVE_GENDERS)
                            winfo->filename, 
 #else
                            NULL,
