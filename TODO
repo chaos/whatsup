@@ -1,3 +1,4 @@
 Allow multiple servers/IP addresses in conf file
 Remove stupid conf file parsing and replace with "dotconf" library.
 Fix up spec file to take parameters for proper masterlist type
+Use libtool to allow pluggable loadable modules for masterlist mechanism??
