@@ -11,7 +11,8 @@
 	during file parsing.
 
 	* src/libnodeupdown/nodeupdown.c (_cb_gmond_hostnames): Error if
-	too many hostnames.  Return (char *)"" instead of (char *)(-1);
+	too many hostnames.  Return (char *)"" instead of (char *)(-1).
+	Fix typo in options list.
 	
 2003-12-08  Albert Chu  <chu11@llnl.gov>
 

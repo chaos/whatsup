@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.91 2003-12-09 18:46:56 achu Exp $
+ * $Id: nodeupdown.c,v 1.92 2003-12-09 18:51:44 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -230,7 +230,7 @@ static int _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd) {
 #if HAVE_HOSTSFILE
     {NODEUPDOWN_CONF_HOSTSFILE, ARG_STR, _cb_hostsfile, cd, 0},
 #elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
-    {NODEUPDOWN_CONF_HOSTSFILE, ARG_STR, _cb_gendersfile, cd, 0},
+    {NODEUPDOWN_CONF_GENDERSFILE, ARG_STR, _cb_gendersfile, cd, 0},
 #endif
     LAST_OPTION
   };
