@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.46 2003-05-28 16:23:11 achu Exp $
+ * $Id: whatsup.c,v 1.47 2003-05-29 22:13:56 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -145,8 +145,6 @@ static int initialize_struct_arginfo(struct arginfo *arginfo) {
  * - free memory allocated in a struct arginfo structure
  */
 static void cleanup_struct_arginfo(struct arginfo *arginfo) {
-  free(arginfo->genders_filename);
-  free(arginfo->gmond_ip);
   hostlist_destroy(arginfo->nodes);
   free(arginfo);
 }
@@ -156,8 +154,8 @@ static void cleanup_struct_arginfo(struct arginfo *arginfo) {
  * - store info in a struct arginfo strcuture
  */
 static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
-  int c, index, fopt = 0, oopt = 0, iopt = 0;
-  char *filename, *hostname, *ip;
+  int c, index, oopt = 0, iopt = 0;
+  char *hostname, *ip;
 
   char *options = "hVf:o:i:p:budlcnsag:";
   struct option long_options[] = {
@@ -192,8 +190,7 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
       return -1;
       break;
     case 'f':
-      fopt++;
-      filename = optarg;
+      arginfo->genders_filename = optarg;
       break;
     case 'o':
       oopt++;
@@ -241,29 +238,14 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
     }
   }
 
-  if (fopt > 0) { 
-    if ((arginfo->genders_filename = strdup(filename)) == NULL) {
-      err_msg("out of memory", NULL);
-      return -1;
-    }
-  }
-
   if ((oopt + iopt) > 1) {
     err_msg("you cannot specify --gmond_hostname and --gmond_ip", NULL);
     return -1;
   }
-  else if (oopt > 0) {
-    if ((arginfo->gmond_hostname = strdup(hostname)) == NULL) {
-      err_msg("out of memory", NULL);
-      return -1;
-    }
-  }
-  else if (iopt > 0) {
-    if ((arginfo->gmond_ip = strdup(ip)) == NULL) {
-      err_msg("out of memory", NULL);
-      return -1;
-    }
-  }
+  else if (oopt > 0)
+    arginfo->gmond_hostname = hostname;
+  else if (iopt > 0)
+    arginfo->gmond_ip = ip;
 
   if ((arginfo->nodes = hostlist_create(NULL)) == NULL) {
     err_msg("hostlist_create() error", NULL);
