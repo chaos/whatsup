@@ -91,7 +91,7 @@ install_sh = @install_sh@
 
 ACLOCAL_AMFLAGS = -I config
 EXTRA_DIST = AUTHORS COPYING DISCLAIMER INSTALL NEWS README ChangeLog whatsup.spec mans
-SUBDIRS = src
+SUBDIRS = src man
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs

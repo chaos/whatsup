@@ -1,4 +1,4 @@
-# $Id: whatsup.spec,v 1.20 2003-04-24 19:25:25 achu Exp $
+# $Id: whatsup.spec,v 1.21 2003-05-16 21:50:54 achu Exp $
 
 Name:		whatsup
 Version:	1.0
@@ -29,42 +29,6 @@ make
 
 %install
 rm -rf "$RPM_BUILD_ROOT"
-mkdir -p "$RPM_BUILD_ROOT"
-mkdir -p $RPM_BUILD_ROOT/usr/man/man1
-mkdir -p $RPM_BUILD_ROOT/usr/man/man3
-cd man; gzip *.3; gzip *.1; cd ..
-install man/whatsup.1.gz $RPM_BUILD_ROOT/usr/man/man1
-install man/libnodeupdown.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_handle_create.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_handle_destroy.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_load_data.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_errnum.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_strerror.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_errormsg.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_perror.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_dump.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_get_up_nodes_string.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_get_down_nodes_string.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_get_up_nodes_list.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_get_down_nodes_list.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_get_up_nodes_string_altnames.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_get_down_nodes_string_altnames.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_get_up_nodes_list_altnames.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_get_down_nodes_list_altnames.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_is_node_up.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_is_node_down.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_convert_string_to_altnames.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_convert_list_to_altnames.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_nodelist_create.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_nodelist_clear.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_nodelist_destroy.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_errors.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_nodelist.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_get_nodes_string.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_get_nodes_list.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_is_node.3.gz $RPM_BUILD_ROOT/usr/man/man3
-install man/nodeupdown_convert_altnames.3.gz $RPM_BUILD_ROOT/usr/man/man3
 DESTDIR="$RPM_BUILD_ROOT" make install
 
 %clean

@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.2 2003-02-26 01:33:37 achu Exp $
+## $Id: Makefile.am,v 1.3 2003-05-16 21:50:54 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -9,7 +9,7 @@ include $(top_srcdir)/config/Make-rpm.mk
 ACLOCAL_AMFLAGS =       -I config
 EXTRA_DIST =            AUTHORS COPYING DISCLAIMER INSTALL NEWS README
 EXTRA_DIST +=           ChangeLog whatsup.spec mans
-SUBDIRS =               src
+SUBDIRS =               src man
 
 distclean-local:
 	-rm -fr autom4te*.cache autoscan.*
