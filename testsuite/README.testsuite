@@ -19,7 +19,7 @@ Modify the libnodeupdown_test.conf file appropriately.  It should list
 6) test node #2
 7) test node #3
 
-Compile the test with 'make', and run.
+Compile the test with 'make', and run 'libnodeupdown_test'.
  
 ASSUMPTIONS FOR THE TESTSUITE
 
@@ -33,3 +33,20 @@ ASSUMPTIONS FOR THE TESTSUITE
 - test is executed on the first test node listed in the configuration
   file.
 - test must be run as root
+
+ERRORS/BUGS?
+
+The testsuite tests the functionality of libnodeupdown by 
+closing and starting gmond daemons on the listed test nodes.
+
+Due to this, nodeupdown_load_data() can possibly fail if the gmond
+server has not been closed and started up again when a connection is
+attempted by the library.  (Thus the testsuite quits.)  Timeouts in
+the testsuite have been set to give the gmonds daemons time to close
+and start up again.  However, there is always the possibility the
+timeouts may be long enough.
+
+SPECIAL NOTES
+
+The longest time-out will be 60 seconds.  So don't give up if the
+testsuite looks like it is hanging.
