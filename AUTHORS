@@ -1,2 +1,4 @@
-whatsup - Albert Chu <chu11@llnl.gov>
-libnodeupdown - Albert Chu <chu11@llnl.gov>
+Albert Chu <chu11@llnl.gov>
+
+With the exception of src/libexpat and src/libdotconf.  See
+README.expat and README.dotconf for origin information.

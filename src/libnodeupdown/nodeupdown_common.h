@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown_common.h,v 1.4 2003-11-14 02:14:50 achu Exp $
+ *  $Id: nodeupdown_common.h,v 1.5 2003-11-24 16:13:19 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown_common.h,v $
  *    
  */
@@ -40,9 +40,12 @@
 #define NODEUPDOWN_CONNECT_LEN           5 
 
 /* Configuration file keys */
-#define NODEUPDOWN_CONF_HOSTNAME         "gmond_hostname"
-#define NODEUPDOWN_CONF_IP               "gmond_ip"
-#define NODEUPDOWN_CONF_PORT             "gmond_port"
+#define NODEUPDOWN_CONF_GMOND_HOSTNAME     "gmond_hostname"
+#define NODEUPDOWN_CONF_GMOND_PORT         "gmond_port"
+#define NODEUPDOWN_CONF_TIMEOUT_LEN        "timeout_len"
+#define NODEUPDOWN_CONF_MASTERLIST         "masterlist"
+#define NODEUPDOWN_CONF_GMOND_HOSTNAME_MAX 8
+#define NODEUPDOWN_CONF_MASTERLIST_BUFLEN  64
 
 struct nodeupdown {
   int magic;                  /* magic number */
@@ -52,12 +55,10 @@ struct nodeupdown {
   hostlist_t down_nodes;      /* down nodes */
   int max_nodes;              /* max nodes in genders file */
 #if HAVE_HOSTSFILE
-  List masterlist;            /* list of all nodes */
+  List hosts;                 /* list of all nodes */
 #elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
   genders_t genders_handle;   /* genders handle */
 #endif 
 };
-
-int _readline(nodeupdown_t, int, char *, int);
 
 #endif /* _NODEUPDOWN_COMMON_H */

@@ -1,6 +1,6 @@
 /*
- *  $Id: nodeupdown.h.in,v 1.7 2003-11-14 02:14:50 achu Exp $
- *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h.in,v $
+ *  $Id: nodeupdown.h,v 1.24 2003-11-24 16:13:19 achu Exp $
+ *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h,v $
  *    
  */
 
@@ -30,15 +30,13 @@
 #define NODEUPDOWN_ERR_OUTMEM            14 /* out of memory */
 #define NODEUPDOWN_ERR_NOTFOUND          15 /* node not found */ 
 #define NODEUPDOWN_ERR_MASTERLIST        16 /* internal master list error */
-#define NODEUPDOWN_ERR_GANGLIA           17 /* internal ganglia error */
+#define NODEUPDOWN_ERR_EXPAT             17 /* internal expat error */
 #define NODEUPDOWN_ERR_HOSTLIST          18 /* internal hostlist error */
 #define NODEUPDOWN_ERR_MAGIC             19 /* magic number error */
 #define NODEUPDOWN_ERR_INTERNAL          20 /* internal system error */
 #define NODEUPDOWN_ERR_ERRNUMRANGE       21 /* error number out of range */ 
 
 #define NODEUPDOWN_TIMEOUT_LEN           60
-
-#define NODEUPDOWN_CONF_FILE             @NODEUPDOWN_CONF_FILE@
 
 typedef struct nodeupdown *nodeupdown_t;
 
@@ -55,20 +53,17 @@ nodeupdown_t nodeupdown_handle_create(void);
 int nodeupdown_handle_destroy(nodeupdown_t handle);
 
 /* nodeupdown_load_data
- * - loads data from genders and ganglia
- * - user may pass in hostname, or IP address (presentable format), or both.  
- * - if both hostname and IP are passed in, IP address is used.
- * - if hostname and IP address is NULL, default IP is used.
- * - if 0 or -1 is passed in for port, default port is used
- * - if timeout_len is 0 or -1, default timeout is used
+ * - loads data from ganglia and a msterlist
+ * - if hostname is NULL, localhost is assumed.
+ * - if port is <= 0, default port is used
+ * - if timeout_len is <= 0, default timeout is used
  * - returns 0 on success, -1 on error
  */
 int nodeupdown_load_data(nodeupdown_t handle, 
-                         @NODEUPDOWN_MASTERLIST_PTR@, 
                          const char *gmond_hostname, 
-                         const char *gmond_ip, 
                          int gmond_port,
-                         int timeout_len);
+                         int timeout_len,
+                         void *masterlist); 
 
 /* nodeupdown_errnum
  * - return the most recent error number

@@ -1,0 +1,54 @@
+\."#################################################################
+\."$Id: nodeupdown.conf.5.in,v 1.1 2003-11-24 16:13:19 achu Exp $
+\."by Albert Chu <chu11@llnl.gov>
+\."#################################################################
+.\"
+.TH NODEUPDOWN.CONF 5 "November 2003" "LLNL" "LIBNODEUPDOWN"
+.SH NAME
+nodeupdown.conf \- specify alternate default values to nodeupdown_load_data(3)
+.SH DESCRIPTION
+
+Through a configuration file, system administrators may override the
+statically configured default values for \fIgmond_hostname\fR, \fIgmond_port\fR,
+\fItimeout_len\fR, and \fImasterlist\fR
+in the 
+.BR nodeupdown_load_data(3)
+API function. 
+
+The configuration file is stored at @NODEUPDOWN_CONF_FILE@.
+
+An example configuration file is shown below.
+
+# Nodeupdown configuration
+.br
+# gmond_hostname      localhost host2 host3
+.br
+# gmond_port          8649 
+.br
+# timeout_len         60
+.br
+# masterlist          /etc/filename
+.br
+gmond_hostname      mymachine1
+.br
+gmond_port          8689
+.br
+timeout_len         30
+.br
+masterlist          /etc/genders2
+
+The configuration values may be separated by any amount of whitespace
+after the configuration keyword.  Multiple hosts can be specified
+after the gmond_hostname configuration keyword.  Each host must be
+separated by whitespace.  The user is not required to specify all of
+the configuration keywords.  Comments can be specified with a '#'.
+
+If the configuration file can't be read or is improperly formatted,
+.BR nodeupdown_load_data (3)
+will not fail.  It will instead use the statically defined default
+values.
+.br
+.SH FILES
+@NODEUPDOWN_CONF_FILE@
+.SH SEE ALSO
+libnodeupdown(3), nodeupdown_load_data(3)

@@ -1,7 +1,4 @@
-Allow multiple servers/IP addresses in conf file
-Remove stupid conf file parsing and replace with "dotconf" library.
 Fix up spec file to take parameters for proper masterlist type
-Use libtool to allow pluggable loadable modules for masterlist mechanism??
-Screw libganglia and their crap, rip out the xml parsing .c files 
-  and make your own lib.  We'll use libganglia only for the default ganglia
-  port.
+Use libtool to allow pluggable loadable modules for masterlist mechanisms??
+Make Perl MakeMaker actually be good
+Need to valigrind/memcheck test

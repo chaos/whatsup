@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: whatsup.1.in,v 1.8 2003-11-14 02:14:50 achu Exp $
+\."$Id: whatsup.1.in,v 1.9 2003-11-24 16:13:19 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -31,7 +31,7 @@ nodeupdown configuration file points to a non-deaf ganglia server.
 Generally speaking, non-deaf ganglia servers are only executed on
 management nodes, not login or compute nodes.  In order to execute
 .B whatsup
-on a deaf ganglia node, use the --hostname ('o') or --ip ('i') options
+on a deaf ganglia node, use the --hostname ('o') option
 to force
 .B whatsup
 to contact a management node's ganglia server.
@@ -46,9 +46,6 @@ Print version and exit
 .TP
 .B \-o \fISTRING\fR, \fB\-\-hostname\fR=\fISTRING\fR
 gmond server hostname (default=localhost)
-.TP
-.B \-i \fISTRING\fR, \fB\-\-ip\fR=\fISTRING\fR
-gmond server IP address (default=127.0.0.1)
 .TP
 .B \-p \fIINT\fR, \fB\-\-port\fR=\fIINT\fR
 gmond server port (default=8649)

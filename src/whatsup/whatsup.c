@@ -1,11 +1,11 @@
 /*
- * $Id: whatsup.c,v 1.74 2003-11-14 02:14:50 achu Exp $
+ * $Id: whatsup.c,v 1.75 2003-11-24 16:13:19 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
 
 #if HAVE_CONFIG_H
-#include <config.h>
+#include "config.h"
 #endif
 
 #include <errno.h>
@@ -26,12 +26,10 @@
 #include "nodeupdown.h"
 
 /* External Variables */
-
 extern char *optarg;
 extern int optind, opterr, optopt;
 
 /* Definitions */
- 
 typedef enum {WHATSUP_TRUE, WHATSUP_FALSE} whatsup_bool_t;
 typedef enum {UP_NODES, DOWN_NODES, UP_AND_DOWN} whatsup_output_t;
 typedef enum {WHATSUP_HOSTLIST = '\0', /* anything not ',', '\n', or ' ' */
@@ -48,7 +46,6 @@ typedef enum {WHATSUP_HOSTLIST = '\0', /* anything not ',', '\n', or ' ' */
 struct winfo {
   nodeupdown_t handle;        /* nodeupdown handle */
   char *hostname;             /* hostname of gmond server */
-  char *ip;                   /* ip of gmond server */
   int port;                   /* port of gmond server */  
   whatsup_output_t output;    /* output type */ 
   whatsup_list_t list;        /* list type */
@@ -85,7 +82,6 @@ static void usage(void) {
     "  -h         --help              Print help and exit\n"
     "  -V         --version           Print version and exit\n"
     "  -o STRING  --hostname=STRING   gmond server hostname\n"
-    "  -i STRING  --ip=STRING         gmond server IP address\n"
     "  -p INT     --port=INT          gmond server port\n"
     "  -b         --updown            List both up and down nodes\n"
     "  -u         --up                List only up nodes\n"
@@ -125,7 +121,7 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
   int c, index, oopt = 0, iopt = 0;
   char options[100];
 
-  strcpy(options, "hVo:i:p:budtlcns");
+  strcpy(options, "hVo:p:budtlcns");
 #if (HAVE_HOSTSFILE || HAVE_GENDERS)
   strcat(options, "f:");
 #elif HAVE_GENDERSLLNL
@@ -136,7 +132,6 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
     {"help",      0, NULL, 'h'},
     {"version",   0, NULL, 'V'},
     {"hostname",  1, NULL, 'o'},
-    {"ip",        1, NULL, 'i'},
     {"port",      1, NULL, 'p'},
     {"updown",    0, NULL, 'b'},
     {"up",        0, NULL, 'u'},
@@ -176,10 +171,6 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
     case 'o':
       oopt++;
       winfo->hostname = optarg;
-      break;
-    case 'i':
-      iopt++;
-      winfo->ip = optarg;
       break;
     case 'p':
       winfo->port = atoi(optarg);
@@ -227,11 +218,6 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
       return -1;
       break;
     }
-  }
-
-  if (oopt && iopt) {
-    fprintf(stderr, "Usage: you cannot specify --hostname and --ip\n");
-    return -1;
   }
 
   if ((winfo->nodes = hostlist_create(NULL)) == NULL) {
@@ -496,7 +482,6 @@ int main(int argc, char **argv) {
 
   /* Initialize winfo structure with defaults */
   winfo.hostname = NULL;
-  winfo.ip = NULL;
   winfo.port = 0;
   winfo.output = UP_AND_DOWN;
   winfo.list = WHATSUP_HOSTLIST;
@@ -517,13 +502,13 @@ int main(int argc, char **argv) {
     goto cleanup;
   }
 
-  if (nodeupdown_load_data(winfo.handle, 
+  if (nodeupdown_load_data(winfo.handle, winfo.hostname, winfo.port, 0,
 #if (HAVE_HOSTSFILE || HAVE_GENDERS || HAVE_GENDERSLLNL)
-                           winfo.filename, 
+                           winfo.filename 
 #else
-                           NULL,
+                           NULL
 #endif
-                           winfo.hostname, winfo.ip, winfo.port, 0) == -1) {
+			   ) == -1) {
     fprintf(stderr, "main: nodeupdown_load_data(): %s\n", 
 	    nodeupdown_errormsg(winfo.handle)); 
     goto cleanup;

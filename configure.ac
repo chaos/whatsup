@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.24 2003-11-14 16:14:08 achu Exp $
+## $Id: configure.ac,v 1.25 2003-11-24 16:13:19 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -33,14 +33,15 @@ AC_ARG_WITH(nodeupdown-conf,
         ;;
     *)
         withnodeupdownconf=yes
-        NODEUPDOWN_CONF_FILE="\"$withval\""
+        NODEUPDOWN_CONF_FILE=$withval
         ;;
     esac ]
 )
 AC_MSG_RESULT(${withnodeupdownconf=no})
 if test -z "$NODEUPDOWN_CONF_FILE"; then
-   NODEUPDOWN_CONF_FILE="\"/etc/nodeupdown.conf\""
+   NODEUPDOWN_CONF_FILE=/etc/nodeupdown.conf
 fi
+AC_DEFINE_UNQUOTED(NODEUPDOWN_CONF_FILE, "$NODEUPDOWN_CONF_FILE", [Define nodeupdown conf file])
 AC_SUBST(NODEUPDOWN_CONF_FILE)
 
 # Perl Install Prefix
@@ -144,13 +145,6 @@ AC_MSG_RESULT(${withgendersllnl=no})
 ##
 # Check for libraries
 ##
-AC_CHECK_LIB(ganglia, XML_ParserCreate, [haveganglia=yes], [])
-if test "$haveganglia" != "yes"; then
-   AC_MSG_ERROR([libganglia not found!]) 
-else
-   GANGLIA_LIBS="-lganglia"
-   AC_SUBST(GANGLIA_LIBS) 
-fi
 AC_CHECK_LIB(genders, genders_handle_create, [havegenders=yes], [])
 AC_CHECK_LIB(gendersllnl, genders_get_cluster, [havegendersllnl=yes], [])
 
@@ -165,7 +159,7 @@ if test "$withnomasterlist" != "yes" &&
    test "$withgendersllnl" != "yes"; then
    AC_MSG_ERROR([You must specify a master list mechanism, either 
                  --with-nomasterlist, --with-hostsfile, --with-genders, 
-                 or --with-gendersllnl])
+                 or --with-gendersllnl.  See README])
 fi   
 
 if (test "$withnomasterlist" = "yes" && test "$withhostsfile" = "yes") ||
@@ -180,8 +174,6 @@ fi
 # Build with no materlist mechanism
 if test "$withnomasterlist" = "yes"; then
    AC_DEFINE(HAVE_NOMASTERLIST, [1], [Define no master list])
-   NODEUPDOWN_MASTERLIST_PTR="void *ptr"
-   NODEUPDOWN_MASTERLIST_DEFAULT="\"*** NOT USED ***\""
    WITH_NOMASTERLIST=1
 else
    WITH_NOMASTERLIST=0
@@ -192,7 +184,6 @@ AC_SUBST(HAVE_NOMASTERLIST)
 # Build with master list host file mechanism
 if test "$withhostsfile" = "yes"; then
   AC_DEFINE(HAVE_HOSTSFILE, [1], [Define use of master list])
-  NODEUPDOWN_MASTERLIST_PTR="const char *filename"
   NODEUPDOWN_MASTERLIST_DEFAULT="\"/etc/nodeupdown_hostsfile.conf\""
   WITH_HOSTSFILE=1
 else
@@ -208,7 +199,6 @@ if test "$withgenders" = "yes"; then
    else
      GENDERS_LIBS="-lgenders"
      AC_DEFINE(HAVE_GENDERS, [1], [Define use of genders])
-     NODEUPDOWN_MASTERLIST_PTR="const char *genders_filename"
      NODEUPDOWN_MASTERLIST_DEFAULT=GENDERS_DEFAULT_FILE
      WITH_GENDERS=1
    fi
@@ -227,7 +217,6 @@ if test "$withgendersllnl" = "yes"; then
    else
      GENDERSLLNL_LIBS="-lgenders -lgendersllnl"
      AC_DEFINE(HAVE_GENDERSLLNL, [1], [Define use of genders])
-     NODEUPDOWN_MASTERLIST_PTR="const char *genders_filename"
      NODEUPDOWN_MASTERLIST_DEFAULT=GENDERS_DEFAULT_FILE
      WITH_GENDERSLLNL=1
    fi
@@ -238,7 +227,7 @@ AC_SUBST(GENDERSLLNL_LIBS)
 AC_SUBST(WITH_GENDERSLLNL)
 AC_SUBST(HAVE_GENDERSLLNL)
 
-AC_SUBST(NODEUPDOWN_MASTERLIST_PTR)
+AC_DEFINE_UNQUOTED(NODEUPDOWN_MASTERLIST_DEFAULT, $NODEUPDOWN_MASTERLIST_DEFAULT, [Define default masterlist])
 AC_SUBST(NODEUPDOWN_MASTERLIST_DEFAULT)
 
 ##
@@ -256,7 +245,6 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS( \
   errno.h \
   fcntl.h \
-  ganglia.h \
   socket.h \
   time.h \
   types.h \
@@ -295,16 +283,16 @@ AC_CONFIG_FILES( \
   whatsup.spec \
   src/Makefile \
   src/libcommon/Makefile \
+  src/libdotconf/Makefile \
+  src/libexpat/Makefile \
   src/libnodeupdown/Makefile \
-  src/libnodeupdown/nodeupdown.h \
-  src/libnodeupdown/nodeupdown_masterlist.h \
   src/whatsup/Makefile \
   src/Libnodeupdown/Makefile \
   src/Libnodeupdown/Libnodeupdown.pm \
   src/Nodeupdown/Makefile \
   man/Makefile \
-  man/libnodeupdown.3 \
   man/nodeupdown_load_data.3 \
+  man/nodeupdown.conf.5 \
   man/nodeupdown_hostsfile.conf.5 \
   man/whatsup.1 \
 )

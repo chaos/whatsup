@@ -1,3 +1,23 @@
+2003-11-22  Albert Chu  <chu11@llnl.gov>
+
+	Massive massive changes throughout code, not worth listing
+	details.
+
+	* Removed dependence upon libganglia library.
+
+	* Added dotconf library and dotconf parsing instead
+
+	* Changed nodeupdown_load_data API to just have a generic void
+	  *masterlist and no IP parameter.
+
+	* Allow multiple ips or hostnames for nodeupdown.conf
+
+	* Removed ip option from nodeupdown.conf
+
+	* Added timeout_len and masterlist conf file options
+
+	* Added new README help files.
+	
 2003-11-13  Albert Chu  <chu11@llnl.gov>
 
 	Renamed "masterlist" mechanism to "hostsfile".

@@ -1,0 +1,21 @@
+Setting up your system to use whatsup with the hostsfile masterlist
+mechanism is quite simple.
+
+1)
+
+To compile, build, and install (generically speaking) run:
+
+> ./bootstrap
+> ./configure --with-hostsfile
+> make
+> make install
+
+2)
+
+Write a file named /etc/nodeupdown_hostsfile.conf.  In the file list
+every machine in your cluster in shortened hostname format.  You can
+see the nodeupdown_hostsfile.conf(5) for details and an example.
+
+3)
+
+You're done!  Begin using whatsup(1) to your heart's content.

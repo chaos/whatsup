@@ -1,11 +1,11 @@
 /*
- * $Id: nodeupdown.c,v 1.81 2003-11-14 02:14:50 achu Exp $
+ * $Id: nodeupdown.c,v 1.82 2003-11-24 16:13:19 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
 
 #if HAVE_CONFIG_H
-#include <config.h>
+#include "config.h"
 #endif
 
 #include <netdb.h>
@@ -16,22 +16,36 @@
 #include <netinet/in.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <ganglia.h>
-#include <ganglia/xmlparse.h>
 #include <sys/socket.h>
 #include <sys/time.h> 
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include "list.h"
 #include "hostlist.h"
+#include "xmlparse.h"
+#include "dotconf.h"
 #include "nodeupdown.h"
 #include "nodeupdown_masterlist.h"
 #include "nodeupdown_common.h"
 
-/* for gethostbyname */
-extern int h_errno;
+#ifndef GANGLIA_DEFAULT_XML_PORT
+#define GANGLIA_DEFAULT_XML_PORT  8649
+#endif
 
-/* used so multiple variables can be passed as one variable */
+/* to store config file data */
+struct confdata {
+  List gmond_hostnames;
+  int gmond_port;
+  int timeout_len;
+  char masterlist[NODEUPDOWN_CONF_MASTERLIST_BUFLEN+1];
+  int gmond_hostnames_found;
+  int gmond_port_found;
+  int timeout_len_found;
+  int masterlist_found; 
+};
+
+/* to pass multiple variables as one during XML parsing */
 struct parse_vars {
   nodeupdown_t handle;
   int timeout_len;
@@ -57,7 +71,7 @@ static char * errmsg[] = {
   "out of memory",
   "node not found",
   "internal master list error",
-  "internal ganglia error",
+  "internal XML error",
   "internal hostlist error",
   "nodeupdown handle magic number incorrect, improper handle passed in",
   "internal system error",
@@ -111,7 +125,6 @@ nodeupdown_t nodeupdown_handle_create() {
     return NULL;
   
   _initialize_handle(handle);
-
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return handle;
 }
@@ -136,12 +149,115 @@ int nodeupdown_handle_destroy(nodeupdown_t handle) {
   return 0;
 }  
 
-static int _low_timeout_connect(nodeupdown_t handle, const char *ip, int port) {
+/* dotconf gmond_hostname(s) callback function */
+static const char *_cb_gmond_hostname(command_t *cmd, context_t *ctx) {
+  struct confdata *cd = (struct confdata *)cmd->option->info;
+  char *str;
+  int i;
+  
+  if (cmd->arg_count > NODEUPDOWN_CONF_GMOND_HOSTNAME_MAX)
+    cmd->arg_count = NODEUPDOWN_CONF_GMOND_HOSTNAME_MAX;
+
+  for (i = 0; i < cmd->arg_count; i++) {
+    if (strlen(cmd->data.list[i]) > MAXHOSTNAMELEN) /* bad config value */
+      continue;
+    if ((str = strdup(cmd->data.list[i])) == NULL)
+      return (char *)(-1);		/* dotconf uses non-null as error */
+    if (list_append(cd->gmond_hostnames, str) == NULL)
+      return (char *)(-1);		/* dotconf uses non-null as error */
+  }
+
+  cd->gmond_hostnames_found++;
+  return NULL;
+}
+
+/* dotconf gmond_port callback function */
+static const char *_cb_gmond_port(command_t *cmd, context_t *ctx) {
+  struct confdata *cd = (struct confdata *)cmd->option->info;
+  cd->gmond_port = cmd->data.value;
+  cd->gmond_port_found++; 
+  return NULL;
+}
+
+/* dotconf timeout_len callback function */
+static const char *_cb_timeout_len(command_t *cmd, context_t *ctx) {
+  struct confdata *cd = (struct confdata *)cmd->option->info;
+  cd->timeout_len = cmd->data.value;
+  cd->timeout_len_found++;
+  return NULL;
+}
+
+/* dotconf masterlist callback function */
+static const char *_cb_masterlist(command_t *cmd, context_t *ctx) {
+  struct confdata *cd = (struct confdata *)cmd->option->info;
+  strncpy(cd->masterlist, cmd->data.str, NODEUPDOWN_CONF_MASTERLIST_BUFLEN);
+  cd->masterlist[NODEUPDOWN_CONF_MASTERLIST_BUFLEN-1] = '\0';
+  cd->masterlist_found++;
+  return NULL;
+}
+
+/* parse configuration file */
+static void _read_conffile(nodeupdown_t handle, struct confdata *cd) {
+  configfile_t *cf = NULL;
+  configoption_t options[] = {
+    {NODEUPDOWN_CONF_GMOND_HOSTNAME, ARG_LIST, _cb_gmond_hostname, cd, 0},
+    {NODEUPDOWN_CONF_GMOND_PORT, ARG_INT, _cb_gmond_port, cd, 0},
+    {NODEUPDOWN_CONF_TIMEOUT_LEN, ARG_INT, _cb_timeout_len, cd, 0},
+    {NODEUPDOWN_CONF_MASTERLIST, ARG_STR, _cb_masterlist, cd, 0},
+    LAST_OPTION
+  };
+  int reset = 1;
+
+  /* NODEUPDOWN_CONF_FILE defined in config.h */
+  if (!(cf = dotconf_create(NODEUPDOWN_CONF_FILE, options, 0, CASE_INSENSITIVE)))
+    goto cleanup;
+
+  if (dotconf_command_loop_until_error(cf) != NULL)
+    goto cleanup;
+
+  reset = 0;
+ cleanup:
+  if (cf != NULL)
+    dotconf_cleanup(cf);
+  if (reset) { 
+    /* reset as if nothing was found */
+    cd->gmond_hostnames_found = 0;
+    cd->gmond_port_found = 0;
+    cd->timeout_len_found = 0;
+    cd->masterlist_found = 0;
+  }
+}
+
+static int _low_timeout_connect(nodeupdown_t handle, const char *hostname, 
+				int port) {
   int ret, old_flags, error, len, sockfd = -1;
   int sa_in_size = sizeof(struct sockaddr_in);
   struct sockaddr_in servaddr;
   fd_set rset, wset;
   struct timeval tval;
+  char ip_buf[INET_ADDRSTRLEN+1];
+
+  /* use default hostname? */
+  if (hostname == NULL)
+    strncpy(ip_buf, "127.0.0.1", INET_ADDRSTRLEN);
+  else {
+    struct hostent *hptr;
+
+    /* valgrind will report a mem-leak in gethostbyname() */
+    if ((hptr = gethostbyname(hostname)) == NULL) {
+      handle->errnum = NODEUPDOWN_ERR_HOSTNAME;
+      return -1;
+    }
+
+    if (!inet_ntop(AF_INET, (void *)hptr->h_addr, ip_buf, INET_ADDRSTRLEN)) {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
+  }
+
+  /* use default port? */
+  if (port <= 0)
+    port = GANGLIA_DEFAULT_XML_PORT;
 
   /* Alot of this code is from Unix Network Programming, by Stevens */
 
@@ -154,7 +270,7 @@ static int _low_timeout_connect(nodeupdown_t handle, const char *ip, int port) {
   servaddr.sin_family = AF_INET;
   servaddr.sin_port = htons(port);
 
-  if ((ret = inet_pton(AF_INET, ip, (void *)&servaddr.sin_addr)) < 0) {
+  if ((ret = inet_pton(AF_INET, ip_buf, (void *)&servaddr.sin_addr)) < 0) {
     handle->errnum = NODEUPDOWN_ERR_INTERNAL;
     goto cleanup;
   }
@@ -232,168 +348,19 @@ static int _low_timeout_connect(nodeupdown_t handle, const char *ip, int port) {
   return -1;
 }
 
-/* get proper IP address and port given gmond_hostname, ip, and port.
- * - caller responsible for large enough ip_buf
- */ 
-static int _get_ip_and_port(nodeupdown_t handle, const char *gmond_hostname,
-                            const char *gmond_ip, int gmond_port,
-                            char *ip_buf, int iplen, int *port_buf) {
-
-  if (gmond_hostname == NULL && gmond_ip == NULL)
-    strcpy(ip_buf, "127.0.0.1");
-  else if (gmond_hostname != NULL && gmond_ip == NULL) {
-    /* if only hostname is given, determine ip address */
-    struct hostent *hptr;
-
-    /* valgrind will report a mem-leak in gethostbyname() */
-    if ((hptr = gethostbyname(gmond_hostname)) == NULL) {
-      if (h_errno == HOST_NOT_FOUND)
-        handle->errnum = NODEUPDOWN_ERR_HOSTNAME;
-      else
-        handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      return -1;
-    }
-
-    if (inet_ntop(AF_INET, (void *)hptr->h_addr, ip_buf, iplen) == NULL) {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      return -1;
-    }
-  }
-  else if (gmond_ip != NULL) {
-    /* we don't care about hostname, just use IP address */
-    if (strlen(gmond_ip)+1 > iplen) {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      return -1;
-    }
-    strcpy(ip_buf, gmond_ip);
-  }
-
-  if (gmond_port <= 0) 
-    *port_buf = GANGLIA_DEFAULT_XML_PORT;
-  else
-    *port_buf = gmond_port;
-
-  return 0;
-}
-
-/* parse configuration file 
- * - return ip and port of what's in the conf file
- */
-static int _read_conffile(nodeupdown_t handle, char *ip_buf, int iplen, 
-                          int *port_buf) {
-  char buf[NODEUPDOWN_BUFFERLEN];
-  char hostbuf[MAXHOSTNAMELEN+1];
-  char ipbuf[INET_ADDRSTRLEN+1];
-  int hostname_flag = 0, ip_flag = 0, port_flag = 0;
-  int len, retval = -1;
-  int fd = -1;
-  int port_val = -1;
-  char *conf_name, *conf_val;
-
-  if ((fd = open(NODEUPDOWN_CONF_FILE, O_RDONLY)) < 0)
-    goto cleanup;
-
-  while ((len = _readline(handle, fd, buf, NODEUPDOWN_BUFFERLEN)) > 0) {
-
-    if (buf[0] == '#')
-      continue;        /* comment */
-    
-    if ((conf_name = strtok(buf, " \t\n")) == NULL)
-      continue;        /* empty line */ 
-
-    if ((conf_val = strtok(NULL, " \t\n")) == NULL)
-      goto cleanup;    /* parse error, no value */
-
-    if (strcmp(conf_name, NODEUPDOWN_CONF_HOSTNAME) == 0) {
-      strncpy(hostbuf, conf_val, MAXHOSTNAMELEN+1);
-      hostbuf[MAXHOSTNAMELEN] = '\0';
-      hostname_flag++;
-    }
-    else if (strcmp(conf_name, NODEUPDOWN_CONF_IP) == 0) {
-      strncpy(ipbuf, conf_val, MAXHOSTNAMELEN+1);
-      ipbuf[INET_ADDRSTRLEN] = '\0';
-      ip_flag++;
-    }
-    else if (strcmp(conf_name, NODEUPDOWN_CONF_PORT) == 0) {
-      port_val = atoi(conf_val);
-      port_flag++;
-    }
-    else
-      goto cleanup;  /* parse error, invalid key */ 
-  }
-
-  if (len == -1)
-    goto cleanup;
-
-  /* did we find anything? */
-  if (hostname_flag == 0 && ip_flag == 0 && port_flag == 0)
-    goto cleanup;
-
-  /* get ip and port based on the conffile info */
-  if (_get_ip_and_port(handle, 
-                       (hostname_flag > 0) ? hostbuf : NULL,
-                       (ip_flag > 0) ? ipbuf : NULL, 
-                       (port_flag > 0) ? port_val : -1, 
-                       ip_buf, iplen, port_buf) == -1)
-    goto cleanup; 
-
-  retval = 0;
- cleanup:
-  close(fd);
-  return retval;
-}
-
-static int _connect_to_gmond(nodeupdown_t handle, const char *gmond_hostname,
-                             const char *gmond_ip, int gmond_port) {
-  int sockfd = -1;
-  char ip_buf[INET_ADDRSTRLEN+1];
-  int iplen = INET_ADDRSTRLEN+1;
-  int port;
-
-  if (_get_ip_and_port(handle, gmond_hostname, gmond_ip, gmond_port, 
-                       ip_buf, iplen, &port) < 0)
-    return -1;
-
-  /* read conf file, see if we should first try some different defaults */
-  if ((gmond_hostname == NULL && gmond_ip == NULL) || gmond_port <= 0) {
-    char conf_ip_buf[INET_ADDRSTRLEN+1];
-    int conf_port;
-
-    /* if anything fails, just try again */
-    if (_read_conffile(handle, conf_ip_buf, iplen, &conf_port) < 0) 
-      goto try_again;
-
-    /* connect using values specified in conf file */
-    sockfd = _low_timeout_connect(handle, 
-                                  (!gmond_hostname && !gmond_ip) ? 
-                                          conf_ip_buf : ip_buf,
-                                  (gmond_port <= 0) ? conf_port : port);
-    if (sockfd > -1)
-      return sockfd;
-    /* else fallthrough and try with defaults */
-  }
-
- try_again:
-  return _low_timeout_connect(handle, ip_buf, port);
-}
-
 /* xml start function for use with ganglia XML library
- * - handle parsing of beginning tags
+ * - handle parsing of beginning tags, i.e. <FOO attr1=X attr2=Y> 
  */
 static void _xml_parse_start(void *data, const char *e1, const char **attr) {
   nodeupdown_t handle = ((struct parse_vars *)data)->handle;
   int timeout_len = ((struct parse_vars *)data)->timeout_len;
   unsigned long localtime = ((struct parse_vars *)data)->localtime;
-  char *ptr;
   char shorthostname[MAXHOSTNAMELEN+1];
   char buffer[MAXHOSTNAMELEN+1];
   unsigned long reported;
+  char *ptr;
   int ret;
 
-  /* ignore "CLUSTER" and "METRIC" tags.  Assume ganglia executed on
-   * only 1 cluster
-   */
-     
   if (strcmp("HOST", e1) == 0) {
 
     /* attributes of XML HOST tag
@@ -403,12 +370,12 @@ static void _xml_parse_start(void *data, const char *e1, const char **attr) {
      * attr[3] - ip address of host
      * attr[4] - "REPORTED"
      * attr[5] - time gmond received a multicast message from the host
+     * - remaining attributes aren't needed 
      */
 
     /* shorten hostname if necessary */
     memset(shorthostname, '\0', MAXHOSTNAMELEN+1);
-    strcpy(shorthostname, attr[1]);
-    shorthostname[MAXHOSTNAMELEN] = '\0';
+    strncpy(shorthostname, attr[1], MAXHOSTNAMELEN);
     if ((ptr = strchr(shorthostname, '.')) != NULL)
       *ptr = '\0';
 
@@ -435,17 +402,19 @@ static void _xml_parse_start(void *data, const char *e1, const char **attr) {
 }
 
 /* xml end function for use with ganglia XML library
- * - handle parsing of end tags
+ * - handle parsing of end tags, ie. </FOO> 
  */
 static void _xml_parse_end(void *data, const char *e1) {
-  /* nothing to do */
+  /* nothing to do at this time */
 }
 
-static int _get_gmond_data(nodeupdown_t handle, int sockfd, int timeout_len) {
+static int _get_gmond_data(nodeupdown_t handle, int fd, int timeout_len) {
   XML_Parser xml_parser = NULL;
   struct parse_vars pv;
   struct timeval tv;
   int retval = -1;
+
+  /* Setup parse vars to pass to _xml_parse_start */
 
   pv.handle = handle;
 
@@ -461,27 +430,30 @@ static int _get_gmond_data(nodeupdown_t handle, int sockfd, int timeout_len) {
   } 
   pv.localtime = tv.tv_sec;
 
-  xml_parser = XML_ParserCreate(NULL);
+  /* Following XML parsing loop more or less ripped from libganglia by
+   * Matt Massie <massie@CS.Berkeley.EDU>
+   */
 
+  xml_parser = XML_ParserCreate(NULL);
   XML_SetElementHandler(xml_parser, _xml_parse_start, _xml_parse_end);
   XML_SetUserData(xml_parser, (void *)&pv);
 
   while (1) {
     int bytes_read;
-    void *buff = XML_GetBuffer(xml_parser, BUFSIZ);
+    void *buff;
 
-    if (buff == NULL) {
-      handle->errnum = NODEUPDOWN_ERR_GANGLIA;
+    if ((buff = XML_GetBuffer(xml_parser, BUFSIZ)) == NULL) {
+      handle->errnum = NODEUPDOWN_ERR_EXPAT;
       goto cleanup;
     }
 
-    if ((bytes_read = read(sockfd, buff, BUFSIZ)) == -1) {
+    if ((bytes_read = read(fd, buff, BUFSIZ)) == -1) {
       handle->errnum = NODEUPDOWN_ERR_NETWORK;
       goto cleanup;
     }
 
     if (XML_ParseBuffer(xml_parser, bytes_read, bytes_read == 0) == 0) {
-      handle->errnum = NODEUPDOWN_ERR_GANGLIA;
+      handle->errnum = NODEUPDOWN_ERR_EXPAT;
       goto cleanup;
     }
 
@@ -496,33 +468,49 @@ static int _get_gmond_data(nodeupdown_t handle, int sockfd, int timeout_len) {
   return retval;
 }
 
-int nodeupdown_load_data(nodeupdown_t handle, 
-#if (HAVE_HOSTSFILE || HAVE_GENDERS || HAVE_GENDERSLLNL)
-			 const char *filename,
-#else
-                         void *ptr,
-#endif
-                         const char *gmond_hostname, const char *gmond_ip, 
-                         int gmond_port, int timeout_len) {
-
-  int sockfd = -1;
+int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname, 
+                         int gmond_port, int timeout_len, void *masterlist) {
+  struct confdata cd;
+  int port, fd = -1;
 
   if (_unloaded_handle_error_check(handle) == -1)
     return -1;
 
-  /* Must call before _connect_to_gmond */
-  /* XXX ACK, I know this is ugly! What's a cleaner way?? */
-  if (nodeupdown_masterlist_init(handle,
-#if (HAVE_HOSTSFILE || HAVE_GENDERS || HAVE_GENDERSLLNL)
-                                 (void *)filename
-#else
-                                 (void *)ptr
-#endif
-                                 ) == -1)
+  /* Read conffile */
+  memset(&cd, '\0', sizeof(struct confdata));
+  if ((cd.gmond_hostnames = list_create((ListDelF)free)) == NULL)
     goto cleanup;
 
-  sockfd = _connect_to_gmond(handle, gmond_hostname, gmond_ip, gmond_port);
-  if (sockfd == -1)
+  _read_conffile(handle, &cd); 
+
+  /* Must call masterlist_init before _connect_to_gmond */
+  masterlist = (masterlist == NULL && cd.masterlist_found > 0) ? &(cd.masterlist[0]) : masterlist;
+  if (nodeupdown_masterlist_init(handle, masterlist) == -1)
+    goto cleanup;
+
+  if (gmond_hostname == NULL && cd.gmond_hostnames_found > 0) {
+    ListIterator itr = NULL;
+    char *str;
+
+    /* Use conffile hostnames as default */
+    if ((itr = list_iterator_create(cd.gmond_hostnames)) == NULL)
+      goto cleanup;
+
+    while ((str = list_next(itr)) != NULL) {
+      port = (gmond_port <= 0 && cd.gmond_port_found > 0) ? cd.gmond_port : gmond_port;
+      if ((fd = _low_timeout_connect(handle, str, port)) >= 0) 
+	break;
+    }
+
+    if (itr)
+      list_iterator_destroy(itr);
+  }
+  else {
+    port = (gmond_port <= 0 && cd.gmond_port_found > 0) ? cd.gmond_port : gmond_port;
+    fd = _low_timeout_connect(handle, gmond_hostname, port);
+  }
+
+  if (fd < 0)
     goto cleanup;
 
   if ((handle->up_nodes = hostlist_create(NULL)) == NULL) {
@@ -535,7 +523,8 @@ int nodeupdown_load_data(nodeupdown_t handle,
     goto cleanup;
   }
 
-  if (_get_gmond_data(handle, sockfd, timeout_len) == -1)
+  timeout_len = (timeout_len <= 0 && cd.timeout_len_found > 0) ? cd.timeout_len : timeout_len;
+  if (_get_gmond_data(handle, fd, timeout_len) == -1)
     goto cleanup;
 
   if (nodeupdown_masterlist_compare_gmond_to_masterlist(handle) == -1)
@@ -550,12 +539,15 @@ int nodeupdown_load_data(nodeupdown_t handle,
   /* loading complete */
   handle->is_loaded++;
 
-  close(sockfd);
+  close(fd);
+  list_destroy(cd.gmond_hostnames);
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return 0;
 
  cleanup:
-  close(sockfd);
+  close(fd);
+  if (cd.gmond_hostnames)
+    list_destroy(cd.gmond_hostnames);
   _free_handle_data(handle);
   return -1;
 }

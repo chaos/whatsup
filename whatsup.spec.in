@@ -1,4 +1,4 @@
-# $Id: whatsup.spec.in,v 1.13 2003-11-14 02:15:41 achu Exp $
+# $Id: whatsup.spec.in,v 1.14 2003-11-24 16:13:19 achu Exp $
 
 Name:           @PROJECT@
 Version:        @VERSION@
@@ -11,9 +11,6 @@ License:        GPL
 BuildRoot:      %{_tmppath}/%{name}-%{version}
 
 Source0:        %{name}-%{version}.tgz
-
-Requires:       ganglia-monitor-core
-Requires:       ganglia-monitor-core-lib 
 
 # By default, we'll compile with gendersllnl if nothing else is specified
 # Most of you don't have this library, pick something at the command line :-)
@@ -59,12 +56,9 @@ rm -rf "$RPM_BUILD_ROOT"
 
 %files
 %defattr(-,root,root,0755)
-%doc AUTHORS
-%doc COPYING
-%doc ChangeLog
-%doc INSTALL
-%doc NEWS
-%doc README
+%doc AUTHORS COPYING ChangeLog INSTALL NEWS README 
+%doc README.expat README.dotconf 
+%doc README.hostsfile_install README.genders_install README.troubleshooting
 %{_bindir}/*
 %{_includedir}/*
 %{_libdir}/*

@@ -20,14 +20,14 @@ the following:
   - A command that outputs the up and down nodes in a cluster. See
     whatsup(1).
 
-When dealing with up and down nodes in the cluster, there is a
-deficiency in ganglia that requires a work around.  Ganglia can only
-report nodes as down only if it has had previous communication with
-the node.  Therefore, if a node has never sent a ganglia message,
-ganglia has no means of reporting the node as down.  For example,
-suppose a node from your cluster was removed for servicing, then the
-remaining nodes were rebooted.  The node that was removed for
-servicing will not be listed by ganglia as down.
+When dealing with up and down nodes in a cluster, there is a
+deficiency in ganglia that requires a work around.  Ganglia can report
+nodes as down only if it has had previous communication with the node.
+Therefore, if a node has never sent a ganglia message, ganglia has no
+means of reporting the node as down.  For example, suppose a node from
+your cluster was removed for servicing, then the remaining nodes were
+rebooted.  The node that was removed for servicing will not be listed
+by ganglia as down.
 
 Therefore, to determine all of the down nodes in a cluster, a "master
 list" of nodes is required by whatsup and the nodeupdown libraries.
@@ -49,17 +49,21 @@ selecting one of the following options in configure.
     will assume /etc/nodeupdown_hostsfile.conf is the default file.
     If a default file is not put in the default location, nodeupdown
     and whatsup will always require the file location be specified.
+    Please read the README.hostsfile_install file for installation
+    instructions.
 
 * Genders (--with-genders)
   - Uses a genders database and the genders library to determine all 
-    of the nodes in the cluster.  
+    of the nodes in the cluster.  Please read the
+    README.genders_install file for installation instructions.
 
 * Gendersllnl (--with-gendersllnl)
   - In addition to genders, uses the gendersllnl library to convert
     between node names and alternate node names.  For the most part,
     this is used in house at Lawrence Livermore National Laboratories
     and sister labs that have clusters and genders setup in a
-    particular way that we like :-)
+    particular way that we like.  I have high doubts anyone else will
+    ever this this option.
 
 Other mechanisms may be implemented in the future.  If you are interested
 in seeing some new mechanism implemented, feel free to e-mail me and I'll

@@ -1,0 +1,20 @@
+Setting up your system to use whatsup with the genders masterlist
+mechanism is quite simple.
+
+1)
+
+To compile, build, and install (generically speaking) run:
+
+> ./bootstrap
+> ./configure --with-genders
+> make
+> make install
+
+2)
+
+Download and install genders and create a genders database in
+/etc/genders.  This database should list every node in your cluster.
+
+3)
+
+You're done!  Begin using whatsup(1) to your heart's content.

@@ -1,0 +1,17 @@
+Q: Whatsup reports every node as down.  Ganglia is running fine
+though.  What's wrong?
+
+A: The odds are that you've setup your master list (for example a
+hostsfile or a genders database) with incorrect hostnames.  For
+example, if your cluster machine's have different NICs with different
+IP addresses, those IP addresses may be resolving to different
+hostnames.  Perhaps ganglia is using different hostnames than what
+you're expecting.
+
+Try building whatsup with the --with-nomasterlist option.  If whatsup
+shows a number of nodes as up, but they are different node names than
+what you're expecting, then your master list is setup incorrectly.
+
+
+
+

@@ -147,10 +147,10 @@ NODEUPDOWN_ERR_MASTERLIST (sv=&PL_sv_undef)
         RETVAL    
 
 int
-NODEUPDOWN_ERR_GANGLIA (sv=&PL_sv_undef)
+NODEUPDOWN_ERR_EXPAT (sv=&PL_sv_undef)
     SV *sv    
     CODE:
-        RETVAL = NODEUPDOWN_ERR_GANGLIA;
+        RETVAL = NODEUPDOWN_ERR_EXPAT;
     OUTPUT:
         RETVAL    
 
@@ -194,14 +194,6 @@ NODEUPDOWN_TIMEOUT_LEN (sv=&PL_sv_undef)
     OUTPUT:
         RETVAL    
 
-char * 
-NODEUPDOWN_CONF_FILE (sv=&PL_sv_undef)
-    SV *sv    
-    CODE:
-        RETVAL = NODEUPDOWN_CONF_FILE;
-    OUTPUT:
-        RETVAL    
-
 void
 DESTROY(handle)
     nodeupdown_t handle    
@@ -217,20 +209,18 @@ nodeupdown_handle_create(CLASS)
         RETVAL
 
 int
-nodeupdown_load_data(handle, master_list=NULL, gmond_hostname=NULL, gmond_ip=NULL, gmond_port=0, timeout_len=0)
+nodeupdown_load_data(handle, gmond_hostname=NULL, gmond_port=0, timeout_len=0, master_list=NULL)
     nodeupdown_t handle
-    char *master_list
+    void *master_list
     char *gmond_hostname
-    char *gmond_ip
     int gmond_port
     int timeout_len
     CODE:
         RETVAL = nodeupdown_load_data(handle,
-                                      master_list, 
                                       gmond_hostname, 
-                                      gmond_ip, 
                                       gmond_port, 
-                                      timeout_len);
+                                      timeout_len,
+                                      master_list);
     OUTPUT:
         RETVAL
 
