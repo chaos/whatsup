@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.4 2003-02-26 16:10:21 achu Exp $
+ * $Id: nodeupdown.c,v 1.5 2003-03-04 01:40:25 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -963,6 +963,11 @@ int nodeupdown_get_up_nodes_hostlist(nodeupdown_t handle, hostlist_t hl) {
     return -1;
   }
 
+  if (hl == NULL) {
+    handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
+    return -1;
+  }
+
   if (handle->genders_handle == NULL || handle->gmond_nodes == NULL) {
     handle->errnum = NODEUPDOWN_ERR_LOAD;
     return -1;
@@ -988,6 +993,11 @@ int nodeupdown_get_up_nodes_hostlist(nodeupdown_t handle, hostlist_t hl) {
 int nodeupdown_get_down_nodes_hostlist(nodeupdown_t handle, hostlist_t hl) {
 
   if (handle == NULL) {
+    return -1;
+  }
+
+  if (hl == NULL) {
+    handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
   }
 
@@ -1046,13 +1056,13 @@ int nodeupdown_get_up_nodes_list(nodeupdown_t handle, char **list, int len) {
     return -1;
   }
 
-  if (handle->genders_handle == NULL || handle->gmond_nodes == NULL) {
-    handle->errnum = NODEUPDOWN_ERR_LOAD;
+  if (list == NULL || len <= 0 || len > handle->max_nodes) {
+    handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
   }
 
-  if (list == NULL || len <= 0 || len > handle->max_nodes) {
-    handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
+  if (handle->genders_handle == NULL || handle->gmond_nodes == NULL) {
+    handle->errnum = NODEUPDOWN_ERR_LOAD;
     return -1;
   }
 
@@ -1080,13 +1090,13 @@ int nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len) {
     return -1;
   }
   
-  if (handle->genders_handle == NULL || handle->gmond_nodes == NULL) {
-    handle->errnum = NODEUPDOWN_ERR_LOAD;
-    return -1;
-  }
-  
   if (list == NULL || len <= 0 || len > handle->max_nodes) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
+    return -1;
+  }
+
+  if (handle->genders_handle == NULL || handle->gmond_nodes == NULL) {
+    handle->errnum = NODEUPDOWN_ERR_LOAD;
     return -1;
   }
   
@@ -1145,13 +1155,13 @@ int nodeupdown_is_node_up(nodeupdown_t handle, char *node) {
     return -1;
   }
 
-  if (handle->genders_handle == NULL || handle->gmond_nodes == NULL) {
-    handle->errnum = NODEUPDOWN_ERR_LOAD;
+  if (node == NULL) {
+    handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
   }
 
-  if (node == NULL) {
-    handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
+  if (handle->genders_handle == NULL || handle->gmond_nodes == NULL) {
+    handle->errnum = NODEUPDOWN_ERR_LOAD;
     return -1;
   }
 
@@ -1180,15 +1190,15 @@ int nodeupdown_is_node_down(nodeupdown_t handle, char *node) {
     return -1;
   }
 
-  if (handle->genders_handle == NULL || handle->gmond_nodes == NULL) {
-    handle->errnum = NODEUPDOWN_ERR_LOAD;
-    return -1;
-  }
-
   if (node == NULL) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
   } 
+
+  if (handle->genders_handle == NULL || handle->gmond_nodes == NULL) {
+    handle->errnum = NODEUPDOWN_ERR_LOAD;
+    return -1;
+  }
 
   /* load data the first time data is requested */
   if (handle->nodeupdown_down_nodes == NULL) {
@@ -1294,13 +1304,13 @@ int nodeupdown_get_hostlist_alternate_names(nodeupdown_t handle,
     return -1;
   }
 
-  if (handle->genders_handle == NULL || handle->gmond_nodes == NULL) {
-    handle->errnum = NODEUPDOWN_ERR_LOAD;
+  if (src == NULL || dest == NULL) {
+    handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
   }
 
-  if (src == NULL || dest == NULL) {
-    handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
+  if (handle->genders_handle == NULL || handle->gmond_nodes == NULL) {
+    handle->errnum = NODEUPDOWN_ERR_LOAD;
     return -1;
   }
 
@@ -1421,13 +1431,13 @@ int nodeupdown_get_list_alternate_names(nodeupdown_t handle,
     return -1;
   }
 
-  if (handle->genders_handle == NULL) {
-    handle->errnum = NODEUPDOWN_ERR_LOAD;
+  if (src == NULL || dest == NULL) {
+    handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
   }
 
-  if (src == NULL || dest == NULL) {
-    handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
+  if (handle->genders_handle == NULL) {
+    handle->errnum = NODEUPDOWN_ERR_LOAD;
     return -1;
   }
 
