@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: Libnodeupdown.xs,v 1.11 2005-04-05 01:32:44 achu Exp $
+ *  $Id: Libnodeupdown.xs,v 1.12 2005-04-06 00:56:22 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -213,6 +213,14 @@ NODEUPDOWN_ERR_CONF_PARSE (sv=&PL_sv_undef)
         RETVAL    
 
 int
+NODEUPDOWN_ERR_BACKEND (sv=&PL_sv_undef)
+    SV *sv    
+    CODE:
+        RETVAL = NODEUPDOWN_ERR_BACKEND;
+    OUTPUT:
+        RETVAL    
+
+int
 NODEUPDOWN_ERR_XML (sv=&PL_sv_undef)
     SV *sv    
     CODE:
@@ -249,14 +257,6 @@ NODEUPDOWN_ERR_ERRNUMRANGE (sv=&PL_sv_undef)
     SV *sv    
     CODE:
         RETVAL = NODEUPDOWN_ERR_ERRNUMRANGE;
-    OUTPUT:
-        RETVAL    
-
-int
-NODEUPDOWN_TIMEOUT_LEN (sv=&PL_sv_undef)
-    SV *sv    
-    CODE:
-        RETVAL = NODEUPDOWN_TIMEOUT_LEN;
     OUTPUT:
         RETVAL    
 

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend.h,v 1.1 2005-04-05 14:13:13 achu Exp $
+ *  $Id: nodeupdown_backend.h,v 1.2 2005-04-06 00:56:23 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -27,12 +27,40 @@
 #ifndef _NODEUPDOWN_BACKEND_H
 #define _NODEUPDOWN_BACKEND_H
 
-#define NODEUPDOWN_BACKEND_DEFAULT_PORT  8649
+#include "nodeupdown.h"
+
+typedef char *(*Nodeupdown_backend_default_hostname)(nodeupdown_t);
+typedef int (*Nodeupdown_backend_default_port)(nodeupdown_t);
+typedef int (*Nodeupdown_backend_default_timeout_len)(nodeupdown_t);
+typedef int (*Nodeupdown_backend_init)(nodeupdown_t);
+typedef int (*Nodeupdown_backend_cleanup)(nodeupdown_t);
+typedef int (*Nodeupdown_backend_get_updown_data)(nodeupdown_t, const char *, int, int, char *);
+
+struct nodeupdown_backend_module_info
+{
+  char *backend_module_name;
+  Nodeupdown_backend_default_hostname default_hostname;
+  Nodeupdown_backend_default_port default_port;
+  Nodeupdown_backend_default_timeout_len default_timeout_len;
+  Nodeupdown_backend_init init;
+  Nodeupdown_backend_cleanup cleanup;
+  Nodeupdown_backend_get_updown_data get_updown_data;
+};
+
+char *nodeupdown_backend_default_hostname(nodeupdown_t handle);
 
 int nodeupdown_backend_default_port(nodeupdown_t handle);
 
-int nodeupdown_backend_get_data(nodeupdown_t handle, int fd, int timeout_len);
+int nodeupdown_backend_default_timeout_len(nodeupdown_t handle);
 
-void nodeupdown_backend_free_data(nodeupdown_t handle);
+int nodeupdown_backend_init(nodeupdown_t handle);
+
+int nodeupdown_backend_cleanup(nodeupdown_t handle);
+
+int nodeupdown_backend_get_updown_data(nodeupdown_t handle, 
+                                       const char *hostname,
+                                       int port,
+                                       int timeout_len,
+                                       char *reserved);
 
 #endif /* _NODEUPDOWN_BACKEND_H  */

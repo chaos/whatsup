@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.114 2005-04-06 00:22:19 achu Exp $
+ *  $Id: nodeupdown.c,v 1.115 2005-04-06 00:56:23 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -42,6 +42,7 @@
 #include "conffile.h"
 #include "hostlist.h"
 #include "list.h"
+#include "ltdl.h"
 
 /* Used to store configuration data */
 struct nodeupdown_confdata 
@@ -81,6 +82,7 @@ static char * nodeupdown_errmsg[] =
     "open conf file error",
     "read conf file error",
     "parse conf file error",
+    "backend error",
     "internal XML parsing error",
     "internal hostlist error",
     "nodeupdown handle magic number incorrect, improper handle passed in",
@@ -156,6 +158,7 @@ _free_handle_data(nodeupdown_t handle)
   nodeupdown_clusterlist_cleanup(handle);
   nodeupdown_clusterlist_unload_module(handle);
   nodeupdown_ganglia_cleanup(handle);
+  lt_dlexit();
   hostlist_destroy(handle->up_nodes);
   hostlist_destroy(handle->down_nodes);
   _initialize_handle(handle);
@@ -276,7 +279,13 @@ nodeupdown_load_data(nodeupdown_t handle,
   char *clusterlist_module = NULL;
 
   if (_unloaded_handle_error_check(handle) < 0)
-    return -1;
+    goto cleanup;
+
+  if (lt_dlinit() != 0)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      goto cleanup;
+    }
 
   /* Read configuration before loading a potential clusterlist module.
    * The configuration file may indicate which module to load.

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.h,v 1.30 2005-04-06 00:22:19 achu Exp $
+ *  $Id: nodeupdown.h,v 1.31 2005-04-06 00:56:23 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -55,11 +55,12 @@
 #define NODEUPDOWN_ERR_CONF_OPEN         19 /* open conf file error */
 #define NODEUPDOWN_ERR_CONF_READ         20 /* read conf file error */
 #define NODEUPDOWN_ERR_CONF_PARSE        21 /* parse conf file error */
-#define NODEUPDOWN_ERR_XML               22 /* internal XML parsing error */
-#define NODEUPDOWN_ERR_HOSTLIST          23 /* internal hostlist error */
-#define NODEUPDOWN_ERR_MAGIC             24 /* magic number error */
-#define NODEUPDOWN_ERR_INTERNAL          25 /* internal system error */
-#define NODEUPDOWN_ERR_ERRNUMRANGE       26 /* error number out of range */ 
+#define NODEUPDOWN_ERR_BACKEND           22 /* backend error */
+#define NODEUPDOWN_ERR_XML               23 /* internal XML parsing error */
+#define NODEUPDOWN_ERR_HOSTLIST          24 /* internal hostlist error */
+#define NODEUPDOWN_ERR_MAGIC             25 /* magic number error */
+#define NODEUPDOWN_ERR_INTERNAL          26 /* internal system error */
+#define NODEUPDOWN_ERR_ERRNUMRANGE       27 /* error number out of range */ 
 
 typedef struct nodeupdown *nodeupdown_t;
 

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia.c,v 1.9 2005-04-06 00:22:19 achu Exp $
+ *  $Id: nodeupdown_ganglia.c,v 1.10 2005-04-06 00:56:23 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -97,10 +97,11 @@ nodeupdown_ganglia_init(nodeupdown_t handle)
   return 0;
 }
 
-void
+int
 nodeupdown_ganglia_cleanup(nodeupdown_t handle)
 {
   /* nothing to do */
+  return 0;
 }
 
 /* xml start function for use with expat XML parsing library

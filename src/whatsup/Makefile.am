@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.20 2005-04-05 21:51:54 achu Exp $
+## $Id: Makefile.am,v 1.21 2005-04-06 00:56:23 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -12,8 +12,7 @@ bin_PROGRAMS = whatsup
 
 whatsup_SOURCES = whatsup.c
 
-whatsup_CFLAGS = -export-dynamic \
-		 -DWHATSUP_MODULE_BUILDDIR=\"$(whatsup_module_builddir)\" \
+whatsup_CFLAGS = -DWHATSUP_MODULE_BUILDDIR=\"$(whatsup_module_builddir)\" \
 		 -I $(srcdir)/../libnodeupdown \
 		 -I $(srcdir)/../libcommon
 
@@ -32,6 +31,7 @@ whatsupmodulelib_LTLIBRARIES = $(GENDERSLLNL_OPTIONS_MODULE)
 whatsup_options_gendersllnl_la_SOURCES = whatsup_options_gendersllnl.c
 whatsup_options_gendersllnl_la_LDFLAGS = $(MODULE_FLAGS) $(GENDERSLLNL_LIBS)
 whatsup_options_gendersllnl_la_CFLAGS  = -I$(srcdir)/../libcommon
+whatsup_options_gendersllnl_la_LIBADD  = ../libcommon/libcommon.la
 
 ../libcommon/libcommon.la: force-dependency-check
 	@cd `dirname $@` && make `basename $@`
