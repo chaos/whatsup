@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.47 2003-05-19 18:14:52 achu Exp $
+ * $Id: nodeupdown.c,v 1.48 2003-05-21 19:23:35 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -657,7 +657,6 @@ void xml_parse_start(void *data, const char *e1, const char **attr) {
   unsigned long localtime = ((struct parse_vars *)data)->localtime;
   char *buffer = ((struct parse_vars *)data)->buffer;
   int buflen = ((struct parse_vars *)data)->buflen;
-  int ret;
   char *ptr;
   unsigned long reported;
 
