@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.64 2003-07-16 18:01:29 achu Exp $
+ * $Id: nodeupdown.c,v 1.65 2003-07-18 20:58:28 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -56,10 +56,7 @@ struct nodeupdown {
   int max_nodes;              /* max nodes in genders file */
 };
 
-/* parse_vars
- * - variables used when parsing ganglia XML data
- * - used so multiple variables can be passed as one variable
- */
+/* used so multiple variables can be passed as one variable */
 struct parse_vars {
   nodeupdown_t handle;
   int timeout_len;
