@@ -5,8 +5,8 @@
 	man/Makefile.am, src/libnodeupdown/Makefile.am,
 	src/libcommon/Makefile.am, src/libexpact/Makefile.am,
 	src/whatsup/Makefile.am, src/Libnodeupdown/Makefile.am,
-	src/Nodeupdown/Makefile.am: Backport porting, distcheck, and
-	documentation fixes from higher branch.
+	src/Nodeupdown/Makefile.am, configure.ac: Backport porting,
+	distcheck, and documentation fixes from higher branch.
 
 	* META: Updated for new release.
 

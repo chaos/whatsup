@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.27 2004-01-10 00:42:52 achu Exp $
+## $Id: configure.ac,v 1.27.2.1 2004-11-16 21:42:41 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -150,18 +150,9 @@ AC_CHECK_LIB(gendersllnl, genders_get_cluster, [havegendersllnl=yes], [])
 
 ##
 # Error Checks
-# - I know this is ugly, I'll fix it later 
 ##
 
-if test "$withnomasterlist" != "yes" &&
-   test "$withhostsfile" != "yes" && 
-   test "$withgenders" != "yes" &&
-   test "$withgendersllnl" != "yes"; then
-   AC_MSG_ERROR([You must specify a master list mechanism, either 
-                 --with-nomasterlist, --with-hostsfile, --with-genders, 
-                 or --with-gendersllnl.  See README])
-fi   
-
+# I know this is ugly, I'll fix it later
 if (test "$withnomasterlist" = "yes" && test "$withhostsfile" = "yes") ||
    (test "$withnomasterlist" = "yes" && test "$withgenders" = "yes") ||
    (test "$withnomasterlist" = "yes" && test "$withgendersllnl" = "yes") || 
@@ -170,6 +161,22 @@ if (test "$withnomasterlist" = "yes" && test "$withhostsfile" = "yes") ||
    (test "$withgenders" = "yes" && test "$withgendersllnl" = "yes"); then
    AC_MSG_ERROR([You can only specify one master list mechanism])
 fi
+
+if test "$withnomasterlist" != "yes" &&
+   test "$withhostsfile" != "yes" && 
+   test "$withgenders" != "yes" &&
+   test "$withgendersllnl" != "yes"; then
+   if test "$havegendersllnl" = "yes"; then
+      withgendersllnl=yes
+      AC_MSG_NOTICE([gendersllnl chosen as masterlist mechanism])
+   elif test "$havegenders" = "yes"; then
+      withgenders=yes
+      AC_MSG_NOTICE([genders chosen as masterlist mechanism])
+   else
+      withnomasterlist=yes
+      AC_MSG_NOTICE([no masterlist mechanism chosen by default])
+   fi
+fi   
 
 # Build with no materlist mechanism
 if test "$withnomasterlist" = "yes"; then
@@ -239,6 +246,15 @@ AC_SUBST(GENDERSLLNL_LIBS)
 AC_SUBST(WITH_GENDERSLLNL)
 AC_SUBST(HAVE_GENDERSLLNL)
 
+if (test "$withgenders" = "yes") ||
+   (test "$withgendersllnl" = "yes"); then
+   AC_CHECK_LIB(genders,
+                genders_index_attrvals, 
+                AC_DEFINE(HAVE_GENDERS_INDEX_ATTRVALS, [1], 
+                          [define genders_index_attrvals exists]),
+                [])
+fi
+
 AC_DEFINE_UNQUOTED(NODEUPDOWN_MASTERLIST_DEFAULT, $NODEUPDOWN_MASTERLIST_DEFAULT, [Define default masterlist])
 AC_SUBST(NODEUPDOWN_MASTERLIST_DEFAULT)
 AC_SUBST(NODEUPDOWN_MASTERLIST_PARAMETER)
@@ -289,6 +305,10 @@ AC_CHECK_FUNCS( \
   strtok \ 
 )
 AC_CHECK_FUNCS([getopt_long])
+
+# Do this last, you could add compile options which can make
+# function checks fail
+AC_DEBUG
 
 ##
 # Epilogue.
