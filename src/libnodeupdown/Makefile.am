@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.12 2004-01-12 23:15:16 achu Exp $
+## $Id: Makefile.am,v 1.13 2004-02-11 22:04:05 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -20,7 +20,7 @@ current = 0
 rev     = 0
 age     = 0
 
-CPPFLAGS = -I ../../config -I ../libcommon -I ../libexpat
+AM_CPPFLAGS = -D_REENTRANT -I ../../config -I ../libcommon -I ../libexpat
 
 include_HEADERS = nodeupdown.h 
 

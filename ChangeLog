@@ -1,3 +1,7 @@
+2004-02-11  Albert Chu  <chu11@llnl.gov>
+
+	* src/libnodeupdown/Makefile.am: Compile with _REENTRANT.
+
 2003-01-15  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown_masterlist.c (_readline): fix
