@@ -209,9 +209,9 @@ nodeupdown_handle_create(CLASS)
         RETVAL
 
 int
-nodeupdown_load_data(handle, gmond_hostname=NULL, gmond_port=0, timeout_len=0, master_list=NULL)
+nodeupdown_load_data(handle, gmond_hostname=NULL, gmond_port=0, timeout_len=0, masterlist=NULL)
     nodeupdown_t handle
-    void *master_list
+    void *masterlist
     char *gmond_hostname
     int gmond_port
     int timeout_len
@@ -220,7 +220,7 @@ nodeupdown_load_data(handle, gmond_hostname=NULL, gmond_port=0, timeout_len=0, m
                                       gmond_hostname, 
                                       gmond_port, 
                                       timeout_len,
-                                      master_list);
+                                      masterlist);
     OUTPUT:
         RETVAL
 
