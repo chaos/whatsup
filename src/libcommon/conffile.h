@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.h,v 1.8 2004-01-12 23:54:48 achu Exp $
+ *  $Id: conffile.h,v 1.9 2004-01-13 18:44:32 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -148,7 +148,7 @@
  * 
  * The following are the error codes that may be returned to the user.
  * The error codes and strings describing the error codes can be
- * accessed through conffile_errnum(), conffile_strerror(), and
+ * accessed through conffile_errnum(), conffile_errmsg(), and
  * conffile_errmsg().  The error code can be set using
  * conffile_seterrnum().
  */
@@ -342,7 +342,7 @@ int conffile_errnum(conffile_t cf);
  * on the optionname or line number of the parse error.  Returns 0 on
  * success, -1 if the buffer passed in is not large enough.
  */
-int conffile_strerror(conffile_t cf, char *buf, int buflen);
+int conffile_errmsg(conffile_t cf, char *buf, int buflen);
 
 /* conffile_seterrnum
  * 
