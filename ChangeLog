@@ -1,3 +1,8 @@
+2003-01-15  Albert Chu  <chu11@llnl.gov>
+
+	* src/libnodeupdown/nodeupdown_masterlist.c (_readline): fix
+	corner case.
+	
 2003-01-14  Albert Chu  <chu11@llnl.gov>
 
 	* src/whatsup/whatsup.c (read_stdin, push_nodestring,

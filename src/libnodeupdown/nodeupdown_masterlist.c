@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_masterlist.c,v 1.12 2004-01-15 01:27:59 achu Exp $
+ *  $Id: nodeupdown_masterlist.c,v 1.13 2004-01-15 16:45:26 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -75,9 +75,9 @@ _readline(nodeupdown_t handle, int fd, char *buf, int buflen)
     handle->errnum = NODEUPDOWN_ERR_MASTERLIST_READ;
     return -1;
   }
-  
-  /* overflow is a parse error */
-  if (ret == buflen) {
+ 
+  /* buflen - 1 b/c fd_read_line guarantees null termination */ 
+  if (ret >= (buflen-1)) {
     handle->errnum = NODEUPDOWN_ERR_MASTERLIST_PARSE;
     return -1;
   }
