@@ -3,7 +3,7 @@ conjunction with Ganglia and a master list of cluster machine names,
 whatsup can quickly calculate and output the up and down nodes of a
 cluster.
 
-This package includes:
+The whatsup package includes:
 
 * libnodeupdown
   - A C library to determine up or down nodes in a cluster.  See
@@ -35,7 +35,7 @@ down since it has no prior knowledge of that machine's existence.
 A master list of cluster machines can be input several ways.
 Currently the following master list mechanisms are supported.  The one
 you choose for your system must be selected by selecting one of the
-following options in configure.
+following options in configure for installing the equivalent rpm.
 
 * Hosts file (--with-hostsfile)
   - This mechanism uses a file that lists the shortened hostname of
