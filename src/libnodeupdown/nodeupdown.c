@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.68 2003-09-23 23:09:06 achu Exp $
+ * $Id: nodeupdown.c,v 1.69 2003-09-27 03:50:08 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -538,6 +538,10 @@ void _xml_parse_start(void *data, const char *e1, const char **attr) {
       return;
     }
 
+    /* The following turns the alternate gendname into a genders nodename,
+     * but coincidently also has the feature that if a node in the 
+     * gmond daemon is not part of this cluster, then that node is ignored
+     */
     memset(buf, '\0', buflen);
     if (genders_to_gendname(genders_handle, attr[1], buf, buflen) == -1)
       return;
