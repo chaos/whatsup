@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.12 2003-03-14 21:11:56 achu Exp $
+ * $Id: whatsup.c,v 1.13 2003-03-18 18:37:19 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -871,7 +871,7 @@ int handle_up_or_down_nodes(struct arginfo *arginfo,
 
     while ((nodename = hostlist_next(iter)) != NULL) {
       if ((retval = genders_testattr(genders_handle, nodename, 
-				     arginfo->genders_attribute, NULL)) == -1) {
+				     arginfo->genders_attribute, NULL, 0)) == -1) {
 	output_error("genders_testattr() error", 
 		     genders_strerror(genders_errnum(genders_handle)));
 	goto cleanup;
