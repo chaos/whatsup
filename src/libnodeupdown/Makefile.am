@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.16 2004-06-08 15:42:02 achu Exp $
+## $Id: Makefile.am,v 1.17 2004-06-08 15:47:27 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -28,7 +28,8 @@ endif
 include_HEADERS = nodeupdown.h 
 noinst_HEADERS  = nodeupdown_masterlist.h nodeupdown_common.h
 lib_LTLIBRARIES = libnodeupdown.la
-libnodeupdown_la_CFLAGS = -D_REENTRANT -I ../../config -I ../libcommon -I ../libexpat
+libnodeupdown_la_CFLAGS = -D_REENTRANT -I ../../config \
+	                  -I $(srcdir)../libcommon -I $(srcdir)/../libexpat
 libnodeupdown_la_SOURCES = nodeupdown.c nodeupdown_masterlist.c
 libnodeupdown_la_LIBADD = ../libcommon/libcommon.la ../libexpat/libexpat.la $(GENDERS_LIBS) $(GENDERSLLNL_LIBS)
 libnodeupdown_la_LDFLAGS = -version-info $(current):$(rev):$(age) $(OTHER_FLAGS)
