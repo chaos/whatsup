@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.61 2003-09-24 23:14:15 achu Exp $
+ * $Id: whatsup.c,v 1.62 2003-09-24 23:16:50 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -555,8 +555,9 @@ int main(int argc, char **argv) {
   nodeupdown_t handle = NULL;
   char *up_nodes = NULL;
   char *down_nodes = NULL;
-  int up_count, down_count;
-  int exit_value = 1;
+  int up_count, down_count, max, exit_value = 1;
+  char ufmt[WHATSUP_FORMATLEN];
+  char dfmt[WHATSUP_FORMATLEN];
 
   if (argc == 2) {
     if (strcasecmp(argv[1],"doc") == 0)
@@ -607,10 +608,18 @@ int main(int argc, char **argv) {
       goto cleanup;
   }
 
+  if (arginfo->output == UP_AND_DOWN) {
+  }
+
   if (arginfo->count == WHATSUP_ON) {
     if (arginfo->output == UP_AND_DOWN) {
-      fprintf(stdout, "up: %d\n", up_count);
-      fprintf(stdout, "down: %d\n", down_count);
+      /* hacks to get the numbers to align */
+      max = (up_count > down_count) ? _log10(up_count) : _log10(down_count);
+      snprintf(ufmt, WHATSUP_FORMATLEN, "up:   %%%dd\n", ++max);
+      snprintf(dfmt, WHATSUP_FORMATLEN, "down: %%%dd\n", max);
+
+      fprintf(stdout, ufmt, up_count);
+      fprintf(stdout, dfmt, down_count);
     }
     else if (arginfo->output == UP_NODES)
       fprintf(stdout, "%d\n", up_count);
@@ -620,9 +629,6 @@ int main(int argc, char **argv) {
   else {
     /* output up, down, or both up and down nodes */
     if (arginfo->output == UP_AND_DOWN) {
-      char ufmt[WHATSUP_FORMATLEN];
-      char dfmt[WHATSUP_FORMATLEN];
-      int max;
 
       /* hacks to get the numbers to align */
       max = (up_count > down_count) ? _log10(up_count) : _log10(down_count);
