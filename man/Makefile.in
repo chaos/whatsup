@@ -93,32 +93,6 @@ am__quote = @am__quote@
 install_sh = @install_sh@
 
 man1_MANS = whatsup.1
-
-man3_MANS = \
-	libnodeupdown.3 \
-	nodeupdown.3 \
-	nodeupdown_handle_destroy.3 \
-	nodeupdown_load_data.3 \
-	nodeupdown_errnum.3 \
-	nodeupdown_strerror.3 \
-	nodeupdown_perror.3 \
-	nodeupdown_get_nodes_string.3 \
-	nodeupdown_get_nodes_list.3 \
-	nodeupdown_get_up_nodes_list.3 \
-	nodeupdown_get_down_nodes_list.3 \
-	nodeupdown_is_node_up.3 \
-	nodeupdown_is_node_down.3 \
-	nodeupdown_nodelist_create.3 \
-	nodeupdown_nodelist_clear.3 \
-	nodeupdown_nodelist_destroy.3 \
-	nodeupdown_get_up_nodes_string.3 \
-	nodeupdown_get_down_nodes_string.3 \
-	nodeupdown_is_node.3 \
-	nodeupdown_handle_create.3 \
-	nodeupdown_errormsg.3 \
-	nodeupdown_errors.3 \
-	nodeupdown_nodelist.3
-
 subdir = man
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
@@ -126,7 +100,7 @@ CONFIG_CLEAN_FILES =
 DIST_SOURCES =
 
 NROFF = nroff
-MANS = $(man1_MANS) $(man3_MANS)
+MANS = $(man1_MANS)
 DIST_COMMON = Makefile.am Makefile.in
 all: all-am
 
@@ -189,49 +163,6 @@ uninstall-man1:
 	  echo " rm -f $(DESTDIR)$(man1dir)/$$inst"; \
 	  rm -f $(DESTDIR)$(man1dir)/$$inst; \
 	done
-
-man3dir = $(mandir)/man3
-install-man3: $(man3_MANS) $(man_MANS)
-	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(man3dir)
-	@list='$(man3_MANS) $(dist_man3_MANS) $(nodist_man3_MANS)'; \
-	l2='$(man_MANS) $(dist_man_MANS) $(nodist_man_MANS)'; \
-	for i in $$l2; do \
-	  case "$$i" in \
-	    *.3*) list="$$list $$i" ;; \
-	  esac; \
-	done; \
-	for i in $$list; do \
-	  if test -f $(srcdir)/$$i; then file=$(srcdir)/$$i; \
-	  else file=$$i; fi; \
-	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
-	  case "$$ext" in \
-	    3*) ;; \
-	    *) ext='3' ;; \
-	  esac; \
-	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
-	  inst=`echo $$inst | sed -e 's/^.*\///'`; \
-	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
-	  echo " $(INSTALL_DATA) $$file $(DESTDIR)$(man3dir)/$$inst"; \
-	  $(INSTALL_DATA) $$file $(DESTDIR)$(man3dir)/$$inst; \
-	done
-uninstall-man3:
-	@$(NORMAL_UNINSTALL)
-	@list='$(man3_MANS) $(dist_man3_MANS) $(nodist_man3_MANS)'; \
-	l2='$(man_MANS) $(dist_man_MANS) $(nodist_man_MANS)'; \
-	for i in $$l2; do \
-	  case "$$i" in \
-	    *.3*) list="$$list $$i" ;; \
-	  esac; \
-	done; \
-	for i in $$list; do \
-	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
-	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
-	  inst=`echo $$inst | sed -e 's/^.*\///'`; \
-	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
-	  echo " rm -f $(DESTDIR)$(man3dir)/$$inst"; \
-	  rm -f $(DESTDIR)$(man3dir)/$$inst; \
-	done
 tags: TAGS
 TAGS:
 
@@ -266,7 +197,7 @@ check: check-am
 all-am: Makefile $(MANS)
 
 installdirs:
-	$(mkinstalldirs) $(DESTDIR)$(man1dir) $(DESTDIR)$(man3dir)
+	$(mkinstalldirs) $(DESTDIR)$(man1dir)
 
 install: install-am
 install-exec: install-exec-am
@@ -314,7 +245,7 @@ install-exec-am:
 
 install-info: install-info-am
 
-install-man: install-man1 install-man3
+install-man: install-man1
 
 installcheck-am:
 
@@ -328,17 +259,17 @@ mostlyclean-am: mostlyclean-generic mostlyclean-libtool
 
 uninstall-am: uninstall-info-am uninstall-man
 
-uninstall-man: uninstall-man1 uninstall-man3
+uninstall-man: uninstall-man1
 
 .PHONY: all all-am check check-am clean clean-generic clean-libtool \
 	distclean distclean-generic distclean-libtool distdir dvi \
 	dvi-am info info-am install install-am install-data \
 	install-data-am install-exec install-exec-am install-info \
-	install-info-am install-man install-man1 install-man3 \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic mostlyclean-libtool uninstall uninstall-am \
-	uninstall-info-am uninstall-man uninstall-man1 uninstall-man3
+	install-info-am install-man install-man1 install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic \
+	mostlyclean-libtool uninstall uninstall-am uninstall-info-am \
+	uninstall-man uninstall-man1
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
