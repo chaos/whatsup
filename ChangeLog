@@ -1,3 +1,9 @@
+2003-12-31  Albert Chu  <chu11@llnl.gov>
+
+	* src/libnodeupdown/Makefile.am,
+	src/Libnodeupdown/Libnodeupdown.pm.in,
+	src/Nodeupdown/Nodeupdown.pm: Added consistent versioning.
+	
 2003-12-30  Albert Chu  <chu11@llnl.gov>
 
 	* src/whatsup/whatsup.c (cmdline_parse): All command line option

@@ -1,5 +1,5 @@
 #############################################################################
-#  $Id: Nodeupdown.pm,v 1.9 2003-12-29 19:02:02 achu Exp $
+#  $Id: Nodeupdown.pm,v 1.10 2003-12-31 18:52:05 achu Exp $
 #############################################################################
 #  Copyright (C) 2003 The Regents of the University of California.
 #  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -29,7 +29,7 @@ package Nodeupdown;
 use strict;
 use Libnodeupdown;
 
-our $VERSION = "2.0";
+our $VERSION = "0.01";
 
 require Exporter;
 our @ISA = qw(Exporter);
