@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia.c,v 1.11 2005-04-06 04:24:16 achu Exp $
+ *  $Id: nodeupdown_backend_ganglia.c,v 1.1 2005-04-06 05:24:47 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -50,8 +50,8 @@
 
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
+#include "nodeupdown_backend.h"
 #include "nodeupdown_clusterlist.h"
-#include "nodeupdown_ganglia.h"
 #include "nodeupdown_util.h"
 #include "hostlist.h"
 #include "xmlparse.h"
@@ -64,10 +64,14 @@ struct parse_vars
   unsigned long localtime;
 };
 
+#define GANGLIA_BACKEND_DEFAULT_PORT        8649
+#define GANGLIA_BACKEND_DEFAULT_TIMEOUT_LEN 60
+#define GANGLIA_BACKEND_CONNECT_LEN         5 
+
 char ganglia_default_hostname[NODEUPDOWN_MAXHOSTNAMELEN+1];
 
 char *
-nodeupdown_ganglia_default_hostname(nodeupdown_t handle)
+ganglia_backend_default_hostname(nodeupdown_t handle)
 {
   memset(ganglia_default_hostname, '\0', NODEUPDOWN_MAXHOSTNAMELEN+1);
   if (gethostname(ganglia_default_hostname, NODEUPDOWN_MAXHOSTNAMELEN) < 0)
@@ -79,26 +83,26 @@ nodeupdown_ganglia_default_hostname(nodeupdown_t handle)
 }
 
 int 
-nodeupdown_ganglia_default_port(nodeupdown_t handle)
+ganglia_backend_default_port(nodeupdown_t handle)
 {
-  return NODEUPDOWN_GANGLIA_DEFAULT_PORT;
+  return GANGLIA_BACKEND_DEFAULT_PORT;
 }
 
 int 
-nodeupdown_ganglia_default_timeout_len(nodeupdown_t handle)
+ganglia_backend_default_timeout_len(nodeupdown_t handle)
 {
-  return NODEUPDOWN_GANGLIA_DEFAULT_TIMEOUT_LEN;
+  return GANGLIA_BACKEND_DEFAULT_TIMEOUT_LEN;
 }
 
 int 
-nodeupdown_ganglia_init(nodeupdown_t handle)
+ganglia_backend_init(nodeupdown_t handle)
 {
   /* nothing to do */
   return 0;
 }
 
 int
-nodeupdown_ganglia_cleanup(nodeupdown_t handle)
+ganglia_backend_cleanup(nodeupdown_t handle)
 {
   /* nothing to do */
   return 0;
@@ -163,11 +167,11 @@ _xml_parse_end(void *data, const char *e1)
 }
 
 int 
-nodeupdown_ganglia_get_updown_data(nodeupdown_t handle, 
-                                   const char *hostname,
-                                   int port,
-                                   int timeout_len,
-                                   char *reserved) 
+ganglia_backend_get_updown_data(nodeupdown_t handle, 
+                                const char *hostname,
+                                int port,
+                                int timeout_len,
+                                char *reserved) 
 {
   XML_Parser xml_parser = NULL;
   struct parse_vars pv;
@@ -177,7 +181,7 @@ nodeupdown_ganglia_get_updown_data(nodeupdown_t handle,
   if ((fd = nodeupdown_util_low_timeout_connect(handle,
                                                 hostname,
                                                 port,
-                                                NODEUPDOWN_GANGLIA_CONNECT_LEN)) < 0)
+                                                GANGLIA_BACKEND_CONNECT_LEN)) < 0)
     goto cleanup;
 
   /* Setup parse vars to pass to _xml_parse_start */
@@ -242,3 +246,13 @@ nodeupdown_ganglia_get_updown_data(nodeupdown_t handle,
   return retval;
 }
 
+struct nodeupdown_backend_module_info backend_module_info = 
+  {
+    "ganglia",
+    &ganglia_backend_default_hostname,
+    &ganglia_backend_default_port,
+    &ganglia_backend_default_timeout_len,
+    &ganglia_backend_init,
+    &ganglia_backend_cleanup,
+    &ganglia_backend_get_updown_data
+  };

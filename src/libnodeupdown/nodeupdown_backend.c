@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend.c,v 1.2 2005-04-06 04:24:16 achu Exp $
+ *  $Id: nodeupdown_backend.c,v 1.3 2005-04-06 05:24:47 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -269,4 +269,3 @@ nodeupdown_backend_get_updown_data(nodeupdown_t handle,
                                                  timeout_len,
                                                  reserved);
 }
-
