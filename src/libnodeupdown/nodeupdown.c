@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.96 2004-01-10 01:25:10 achu Exp $
+ *  $Id: nodeupdown.c,v 1.97 2004-01-12 22:56:06 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -175,20 +175,18 @@ int nodeupdown_handle_destroy(nodeupdown_t handle) {
   return 0;
 }  
 
-static int _cb_gmond_hostnames(char *optionname, int option_type, 
-			       struct conffile_data *data, 
-			       void *option_ptr, void *app_ptr) {
+static CONFFILE_OPTION_FUNC(_gmond_hostnames) {
   List l = (List)option_ptr;
   char *str;
   int i;
   
-  if (data->list_len > NODEUPDOWN_CONF_GMOND_HOSTNAME_MAX)
+  if (data->stringlist_len > NODEUPDOWN_CONF_GMOND_HOSTNAME_MAX)
     return -1;
 
-  for (i = 0; i < data->list_len; i++) {
-    if (strlen(data->list[i]) > MAXHOSTNAMELEN)
+  for (i = 0; i < data->stringlist_len; i++) {
+    if (strlen(data->stringlist[i]) > MAXHOSTNAMELEN)
       return -1;
-    if ((str = strdup(data->list[i])) == NULL)
+    if ((str = strdup(data->stringlist[i])) == NULL)
       return -1;
     if (list_append(l, str) == NULL)
       return -1;
@@ -196,39 +194,21 @@ static int _cb_gmond_hostnames(char *optionname, int option_type,
   return 0;
 }
 
-static int _cb_intval(char *optionname, int option_type,
-		      struct conffile_data *data,
-		      void *option_ptr, void *app_ptr) {
-  int *temp = (int *)option_ptr;
-  *temp = data->intval;
-  return 0;
-}
-
-#if (HAVE_HOSTSFILE || HAVE_GENDERS || HAVE_GENDERSLLNL)
-static int _cb_string(char *optionname, int option_type,
-		      struct conffile_data *data,
-		      void *option_ptr, void *app_ptr) {
-  char *temp = (char *)option_ptr;
-  strncpy(temp, data->string, MAXPATHLEN);
-  temp[MAXPATHLEN-1] = '\0';
-  return 0;
-}
-
 /* parse configuration file and store data into confdata */
 static int _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd) {
   struct conffile_option options[] = {
-    {NODEUPDOWN_CONF_GMOND_HOSTNAME, CONFFILE_OPTION_LIST, _cb_gmond_hostnames, 
-     1, 0, &(cd->gmond_hostnames_found), cd->gmond_hostnames},
-    {NODEUPDOWN_CONF_GMOND_PORT, CONFFILE_OPTION_INT, _cb_intval,
-     1, 0, &(cd->gmond_port_found), &(cd->gmond_port)},
-    {NODEUPDOWN_CONF_TIMEOUT_LEN, CONFFILE_OPTION_INT, _cb_intval,
-     1, 0, &(cd->timeout_len_found), &(cd->timeout_len)},
+    {NODEUPDOWN_CONF_GMOND_HOSTNAME, CONFFILE_OPTION_LIST_STRING, -1, 
+     _gmond_hostnames, 1, 0, &(cd->gmond_hostnames_found), cd->gmond_hostnames, 0},
+    {NODEUPDOWN_CONF_GMOND_PORT, CONFFILE_OPTION_INT, 0, 
+     conffile_int, 1, 0, &(cd->gmond_port_found), &(cd->gmond_port), 0},
+    {NODEUPDOWN_CONF_TIMEOUT_LEN, CONFFILE_OPTION_INT, 0, 
+     conffile_int, 1, 0, &(cd->timeout_len_found), &(cd->timeout_len), 0},
 #if HAVE_HOSTSFILE
-    {NODEUPDOWN_CONF_HOSTSFILE, CONFFILE_OPTION_STRING, _cb_hostsfile, 
-     1, 0, &(cd->hostsfile_found), cd->hostsfile},
+    {NODEUPDOWN_CONF_HOSTSFILE, CONFFILE_OPTION_STRING, 0, 
+     conffile_string, 1, 0, &(cd->hostsfile_found), cd->hostsfile, MAXPATHLEN},
 #elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
-    {NODEUPDOWN_CONF_GENDERSFILE, CONFFILE_OPTION_STRING, _cb_gendersfile, 
-     1, 0, &(cd->gendersfile_found), cd->gendersfile}
+    {NODEUPDOWN_CONF_GENDERSFILE, CONFFILE_OPTION_STRING, 0, 
+     conffile_string, 1, 0, &(cd->gendersfile_found), cd->gendersfile, MAXPATHLEN}
 #endif
   };
   conffile_t cf = NULL;
@@ -241,7 +221,7 @@ static int _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd) {
 
   /* NODEUPDOWN_CONF_FILE defined in config.h */
   num = sizeof(options)/sizeof(struct conffile_option);
-  if (conffile_parse(cf, NODEUPDOWN_CONF_FILE, options, num, NULL, 0) < 0) {
+  if (conffile_parse(cf, NODEUPDOWN_CONF_FILE, options, num, NULL, 0, 0) < 0) {
       /* Not an error if the file does not exist */
       if (conffile_errnum(cf) != CONFFILE_ERR_EXIST) {
           handle->errnum = NODEUPDOWN_ERR_CONF;
