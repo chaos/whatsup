@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown.h,v 1.16 2003-04-24 00:53:44 achu Exp $
+ *  $Id: nodeupdown.h,v 1.17 2003-04-24 18:35:25 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h,v $
  *    
  */
@@ -40,11 +40,17 @@
 
 typedef struct nodeupdown *nodeupdown_t;
 
-/* nodeupdown_create
+/* nodeupdown_handle_create
  * - create a nodeupdown handle
  * - returns handle on success, NULL on error
  */
-nodeupdown_t nodeupdown_create(void);
+nodeupdown_t nodeupdown_handle_create(void);
+
+/* nodeupdown_handle_destroy
+ * - destroy a nodeupdown handle
+ * - returns 0 on success, -1 on error
+ */
+int nodeupdown_handle_destroy(nodeupdown_t handle);
 
 /* nodeupdown_load_data
  * - loads data from genders and ganglia
@@ -62,12 +68,6 @@ int nodeupdown_load_data(nodeupdown_t handle,
                          char *gmond_ip, 
                          int gmond_port,
                          int timeout_len);
-
-/* nodeupdown_destroy
- * - destroy a nodeupdown handle
- * - returns 0 on success, -1 on error
- */
-int nodeupdown_destroy(nodeupdown_t handle);
 
 /* nodeupdown_errnum
  * - return the most recent error number
