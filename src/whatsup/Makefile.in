@@ -95,10 +95,7 @@ LDADD = $(top_builddir)/src/libnodeupdown/libnodeupdown.la
 
 bin_PROGRAMS = whatsup
 
-whatsup_SOURCES = \
-	whatsup.c \
-	hostlist.c
-
+whatsup_SOURCES = whatsup.c hostlist.c 
 subdir = src/whatsup
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h

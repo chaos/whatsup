@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.7 2003-03-12 00:14:00 achu Exp $
+## $Id: Makefile.am,v 1.8 2003-03-12 00:16:38 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -12,7 +12,5 @@ LDADD = $(top_builddir)/src/libnodeupdown/libnodeupdown.la
 
 bin_PROGRAMS = whatsup
 
-whatsup_SOURCES = \
-	whatsup.c \
-	hostlist.c 
+whatsup_SOURCES = whatsup.c hostlist.c 
 
