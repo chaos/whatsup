@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.36 2005-03-31 00:27:38 achu Exp $
+## $Id: configure.ac,v 1.37 2005-03-31 18:29:29 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -46,151 +46,40 @@ PERLNODEUPDOWN_MINOR=01
 PERLNODEUPDOWN_VERSION=$PERLNODEUPDOWN_MAJOR.$PERLNODEUPDOWN_MINOR
 AC_SUBST([PERLNODEUPDOWN_VERSION])
 
-AC_NODEUPDOWN_CONF
-
-AC_PERL_INSTALL_DESTDIR
-
-##
-# Check for libraries
-##
-AC_CHECK_LIB(genders, genders_handle_create, [havegenders=yes], [])
-AC_CHECK_LIB(gendersllnl, genders_get_cluster, [havegendersllnl=yes], [])
-
-##
-# Check for masterlist mechanism
-##
-AC_MSG_CHECKING(for --with-masterlist-mechanism )
-AC_ARG_WITH(masterlist-mechanism,
-    AC_HELP_STRING([--with-masterlist-mechanism=type], 
-                   [build with a specific master list mechanism]),
-    [ case "$withval" in
-    yes)
-        withmasterlist=yes
-        ;;
-    no)
-        withmasterlist=no
-        ;;
-    *)
-        withmasterlist=yes
-        MASTERLIST_MECHANISM="$withval"
-        ;;
-    esac ]
-)
-AC_MSG_RESULT(${withmasterlist=no})
-
-if test -n "$MASTERLIST_MECHANISM" &&
-   test "$MASTERLIST_MECHANISM" != "gendersllnl" &&
-   test "$MASTERLIST_MECHANISM" != "genders" && 
-   test "$MASTERLIST_MECHANISM" != "hostsfile" &&
-   test "$MASTERLIST_MECHANISM" != "none"; then
-   AC_MSG_ERROR([Invalid masterlist mechanism specified])
-fi
-
-if test "$MASTERLIST_MECHANISM" = "gendersllnl"; then
-   if test "$havegenders" != "yes" || test "$havegendersllnl" != "yes"; then
-     AC_MSG_ERROR([genders and gendersllnl libraries not found])
-   fi
-fi
-
-if test "$MASTERLIST_MECHANISM" = "genders"; then
-   if test "$havegenders" != "yes" ; then
-     AC_MSG_ERROR([genders library not found])
-   fi
-fi
-
-if test -z "$MASTERLIST_MECHANISM"; then
-   if test "$havegendersllnl" = "yes"; then
-      MASTERLIST_MECHANISM=gendersllnl
-   elif test "$havegenders" = "yes"; then
-      MASTERLIST_MECHANISM=genders
-   else
-      MASTERLIST_MECHANISM=hostsfile
-   fi
-fi
-
-# Build with gendersllnl support
-# - For the most part only used at LLNL
-if test "$MASTERLIST_MECHANISM" = "gendersllnl"; then
-   AC_DEFINE(HAVE_GENDERSLLNL, [1], [Define use of gendersllnl])
-   GENDERSLLNL_LIBS="-lgenders -lgendersllnl"
-   NODEUPDOWN_MASTERLIST_DEFAULT=GENDERS_DEFAULT_FILE
-   NODEUPDOWN_MASTERLIST_PARAMETER="char *gendersfile" 
-   NODEUPDOWN_MASTERLIST_PERL_PARAMETER='$gendersfile' 
-   NODEUPDOWN_MASTERLIST_COMMENT="if gendersfile is NULL, default genders file is used"
-   MANPAGE_GENDERSLLNL=1
-else
-   MANPAGE_GENDERSLLNL=0
-fi
-AC_SUBST(GENDERSLLNL_LIBS)
-AC_SUBST(HAVE_GENDERSLLNL)
-AC_SUBST(MANPAGE_GENDERSLLNL)
-
-# Build with genders support
-if test "$MASTERLIST_MECHANISM" = "genders"; then
-   AC_DEFINE(HAVE_GENDERS, [1], [Define use of genders])
-   GENDERS_LIBS="-lgenders"
-   NODEUPDOWN_MASTERLIST_DEFAULT=GENDERS_DEFAULT_FILE
-   NODEUPDOWN_MASTERLIST_PARAMETER="char *gendersfile" 
-   NODEUPDOWN_MASTERLIST_PERL_PARAMETER='$gendersfile' 
-   NODEUPDOWN_MASTERLIST_COMMENT="if gendersfile is NULL, default genders file is used"
-   MANPAGE_GENDERS=1
-else
-   MANPAGE_GENDERS=0
-fi
-AC_SUBST(GENDERS_LIBS)
-AC_SUBST(HAVE_GENDERS)
-AC_SUBST(MANPAGE_GENDERS)
-
-# Build with master list host file mechanism
-if test "$MASTERLIST_MECHANISM" = "hostsfile"; then
-  AC_DEFINE(HAVE_HOSTSFILE, [1], [Define use of master list])
-  NODEUPDOWN_MASTERLIST_DEFAULT="\"/etc/nodeupdown_hostsfile.conf\""
-  NODEUPDOWN_MASTERLIST_PARAMETER="char *hostsfile" 
-  NODEUPDOWN_MASTERLIST_PERL_PARAMETER='$hostsfile'
-  NODEUPDOWN_MASTERLIST_COMMENT="if hostsfile is NULL, default hosts is used"
-  MANPAGE_HOSTSFILE=1
-else
-  MANPAGE_HOSTSFILE=0
-fi
-AC_SUBST(HAVE_HOSTSFILE)
-AC_SUBST(MANPAGE_HOSTSFILE)
-
-# Build with no materlist mechanism
-if test "$MASTERLIST_MECHANISM" = "nomasterlist"; then
-  AC_DEFINE(HAVE_NOMASTERLIST, [1], [Define no master list])
-  NODEUPDOWN_MASTERLIST_PARAMETER="void *masterlist"
-  NODEUPDOWN_MASTERLIST_PERL_PARAMETER='$masterlist'
-  NODEUPDOWN_MASTERLIST_COMMENT="masterlist is reserved for future use"
-  MANPAGE_NOMASTERLIST=1
-else
-  MANPAGE_NOMASTERLIST=0
-fi
-AC_SUBST(HAVE_NOMASTERLIST)
-AC_SUBST(MANPAGE_NOMASTERLIST)
-
-if test "$MASTERLIST_MECHANISM" = "gendersllnl" ||
-   test "$MASTERLIST_MECHANISM" = "genders"; then
-   AC_CHECK_LIB(genders,
-                genders_index_attrvals, 
-                AC_DEFINE(HAVE_GENDERS_INDEX_ATTRVALS, [1], 
-                          [define genders_index_attrvals exists]),
-                [])
-fi
-
-AC_DEFINE_UNQUOTED(NODEUPDOWN_MASTERLIST_DEFAULT, $NODEUPDOWN_MASTERLIST_DEFAULT, [Define default masterlist])
-AC_SUBST(NODEUPDOWN_MASTERLIST_DEFAULT)
-AC_SUBST(NODEUPDOWN_MASTERLIST_PARAMETER)
-AC_SUBST(NODEUPDOWN_MASTERLIST_PERL_PARAMETER)
-AC_SUBST(NODEUPDOWN_MASTERLIST_COMMENT)
-
 ##
 # Checks for programs.
 ##
 AC_PROG_CC
-AC_PROG_LIBTOOL
 AC_PROG_MAKE_SET
+AC_LIBTOOL_DLOPEN
+AC_PROG_LIBTOOL
+AC_LIB_LTDL
 AM_CONDITIONAL(WITH_GNU_LD, test "$with_gnu_ld" = "yes")
 AC_PATH_PROG(PERL, perl)
+
+#
+# Check for defaults paths
+#
+AC_NODEUPDOWN_CONF
+AC_NODEUPDOWN_MODULE_DIR
+AC_WHATSUP_MODULE_DIR
+
+#
+# Check for perl install destdir
+#
+AC_PERL_INSTALL_DESTDIR
+
+#
+# Check for genders
+#
+AC_GENDERS
+AM_CONDITIONAL(WITH_GENDERS, [test "$ac_with_genders" = "yes"])
+ 
+#
+# Check for gendersllnl
+#
+AC_GENDERSLLNL
+AM_CONDITIONAL(WITH_GENDERSLLNL, [test "$ac_with_gendersllnl" = "yes"])
 
 ##
 # Checks for header files.

@@ -1,3 +1,16 @@
+2005-03-31  Albert Chu  <chu11@llnl.gov>
+
+	* src/Nodeupdown/Makefile.PL: Cleanup.
+
+	* config/ac_genders.m4, config/ac_gendersllnl.m4,
+	config/libtool.m4, config/ac_whatsup_module_dir.m4,
+	config/ac_nodeupdown_module_dir.m4, src/libcommon/ltdl.h,
+	src/libcommon/ltdl.c: New files.
+
+	* src/libcommon/Makefile.am: Updated for new files.
+	
+	* configure.ac: Re-work for use with dynamically loadable modules.
+	
 2005-03-30  Albert Chu  <chu11@llnl.gov>
 
 	Preparing to support multiple backend technologies for whatsup.

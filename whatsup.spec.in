@@ -1,32 +1,11 @@
 Name:    @PROJECT@
 Version: @VERSION@
-%if %{?_with_gendersllnl:1}%{!?_with_gendersllnl:0}
-Release: @RELEASE@.gendersllnl
-%endif
-%if %{?_with_genders:1}%{!?_with_genders:0}
-Release: @RELEASE@.genders
-%endif
-%if %{?_with_hostsfile:1}%{!?_with_hostsfile:0}
-Release: @RELEASE@.hostsfile
-%endif
-%if %{?_with_nomasterlist:1}%{!?_with_nomasterlist:0}
-Release: @RELEASE@.nomasterlist
-%endif
-%if %{!?_with_nomasterlist: %{!?_with_hostsfile: %{!?_with_genders: %{!?_with_gendersllnl: 1}}}}%{?_with_nomasterlist: 0}%{?_with_hostsfile: 0}%{?_with_genders: 0}%{?_with_gendersllnl: 0}
 Release: @RELEASE@
-%endif
 Summary: whatsup node up/down detection utility
 Group: Applications/Communications
 License: GPL
-Source: %{name}-%{version}-@RELEASE@.tgz
-BuildRoot: %{_tmppath}/%{name}-%{version}-@RELEASE@
-
-%if %{?_with_genders:1}%{!?_with_genders:0}
-Requires:       genders >= 1.2
-%endif
-%if %{?_with_gendersllnl:1}%{!?_with_gendersllnl:0}
-Requires:       gendersllnl
-%endif
+Source: %{name}-%{version}-%{release}.tgz
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}
 
 %description
 Whatsup is a cluster node up/down detection utility.  Node up/down
@@ -35,25 +14,15 @@ and a master list of cluster nodes.  C and perl libraries are also
 supplied for detecting up/down nodes.
 
 %prep
-%setup -q -n %{name}-%{version}-@RELEASE@
-
-%if %{?_with_gendersllnl:1}%{!?_with_gendersllnl:0}
-  %define _with_masterlist_mechanism --with-masterlist-mechanism=gendersllnl
-%endif
-%if %{?_with_genders:1}%{!?_with_genders:0}
-  %define _with_masterlist_mechanism --with-masterlist-mechanism=genders
-%endif
-%if %{?_with_hostsfile:1}%{!?_with_hostsfile:0}
-  %define _with_masterlist_mechanism --with-masterlist-mechanism=hostsfile
-%endif
-%if %{?_with_nomasterlist:1}%{!?_with_nomasterlist:0}
-  %define _with_masterlist_mechanism --with-masterlist-mechanism=nomasterlist
-%endif
+%setup -q -n %{name}-%{version}-%{release}
 
 %build
 %configure --program-prefix=%{?_program_prefix:%{_program_prefix}} \
-        --with-perl-install-destdir="$RPM_BUILD_ROOT" \
-        %{?_with_masterlist_mechanism}
+           --with-perl-install-destdir="$RPM_BUILD_ROOT" \
+           %{_with_genders} \
+           %{_without_genders} \
+           %{_with_gendersllnl} \
+           %{_without_gendersllnl}
 make
 
 %install
