@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.78 2003-12-30 17:02:00 achu Exp $
+ *  $Id: whatsup.c,v 1.79 2003-12-30 17:10:03 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -232,6 +232,7 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
 #endif 
     default:
       fprintf(stderr, "Error: command line option error\n");
+      usage();
       return -1;
       break;
     }
