@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.16 2003-03-11 20:20:32 achu Exp $
+ * $Id: nodeupdown.c,v 1.17 2003-03-12 00:10:45 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -938,17 +938,26 @@ int nodeupdown_dump(nodeupdown_t handle, FILE *stream) {
     fprintf(stream, "gmond_ip: %s\n", handle->gmond_ip);
   }
   if (handle->gmond_nodes != NULL) {
-    if (output_hostlist_nodes(handle, handle->gmond_nodes, stream, "gmond nodes") == -1) {
+    if (output_hostlist_nodes(handle, 
+			      handle->gmond_nodes, 
+			      stream, 
+			      "gmond nodes") == -1) {
       return -1;
     }
   }
   if (handle->nodeupdown_up_nodes != NULL) {
-    if (output_hostlist_nodes(handle, handle->nodeupdown_up_nodes, stream, "whatsup up nodes") == -1) {
+    if (output_hostlist_nodes(handle, 
+			      handle->nodeupdown_up_nodes, 
+			      stream, 
+			      "whatsup up nodes") == -1) {
       return -1;
     }
   }
   if (handle->nodeupdown_down_nodes != NULL) {
-    if (output_hostlist_nodes(handle, handle->nodeupdown_down_nodes, stream, "whatsup down nodes") == -1) {
+    if (output_hostlist_nodes(handle, 
+			      handle->nodeupdown_down_nodes, 
+			      stream, 
+			      "whatsup down nodes") == -1) {
       return -1;
     }
   }
