@@ -11,6 +11,12 @@
 
 	* configure.ac; Updated for name changes.
 
+	* src/Nodeupdown/Makefile.am, src/Libnodeupdown/Makefile.am: Added
+	conditional to ensure cleanup always works.
+
+	* src/libnodeupdown/Makefile.am, src/whatsup/Makefile.am: Added
+	dependency checks.
+
 2003-11-07  Albert Chu  <chu11@llnl.gov>
 
 	Created new masterlist.c and masterlist.h.in, to encapsulate

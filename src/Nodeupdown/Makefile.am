@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.2 2003-11-06 00:53:29 achu Exp $
+## $Id: Makefile.am,v 1.3 2003-11-07 19:10:04 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -25,6 +25,6 @@ install-data-local:
 	$(MAKE) -f Makefile.pm pure_install
 
 clean:
-	$(MAKE) -f Makefile.pm clean
+	if test -a Makefile.pm; then $(MAKE) -f Makefile.pm clean; fi
 	rm -f Makefile.pm
 	rm -f Makefile.pm.old
