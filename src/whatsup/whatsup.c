@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.82 2004-01-14 20:04:54 achu Exp $
+ *  $Id: whatsup.c,v 1.83 2004-01-14 20:07:10 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -396,7 +396,7 @@ _convert_to_altnames(struct winfo *winfo, char *buf, int buflen)
   if ((handle = genders_handle_create()) == NULL)
     _err_exit("_convert_to_altnames: genders_handle_create()");
 
-  if (genders_load_data(handle, winfo->filename) == -1)
+  if (genders_load_data(handle, winfo->filename) < 0)
     _err_exit("_convert_to_altnames: genders_load_data(): %s", 
               genders_errormsg(handle));
 
@@ -524,7 +524,7 @@ main(int argc, char *argv[])
 #else
                            NULL
 #endif
-			   ) == -1) {
+			   ) < 0) {
     int errnum = nodeupdown_errnum(winfo.handle);
 
     /* Check for "legit" errors and output appropriate message */
