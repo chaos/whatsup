@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup_options.h,v 1.2 2005-04-04 16:17:58 achu Exp $
+ *  $Id: whatsup_options.h,v 1.3 2005-04-05 01:32:44 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -42,6 +42,9 @@
  * Whatsup_options_output_usage
  * - Output additional usage lines for options specified by this module
  *
+ * Whatsup_options_options_list
+ * - Return string of options desired from module
+ * 
  * Whatsup_options_add_options
  * - Add additional options to the options array
  *
@@ -56,15 +59,17 @@
  */
 
 typedef int (*Whatsup_options_output_usage)(void);
-typedef int (*Whatsup_options_add_options)(char *options, int maxlen);
-typedef int (*Whatsup_options_add_long_options)(struct option *long_options, int maxlen);
-typedef int (*Whatsup_options_check_option)(int c, char *optarg);
+typedef char *(*Whatsup_options_options_string)(void);
+typedef int (*Whatsup_options_add_options)(char c, char *options);
+typedef int (*Whatsup_options_add_long_options)(char c, struct option *long_options);
+typedef int (*Whatsup_options_check_option)(char c, char *optarg);
 typedef int (*Whatsup_options_convert_nodenames)(char *nodes, char *buf, int buflen);
 
 struct whatsup_options_module_info
 {
   char *options_module_name;
   Whatsup_options_output_usage output_usage;
+  Whatsup_options_options_string options_string;
   Whatsup_options_add_options add_options;
   Whatsup_options_add_long_options add_long_options;
   Whatsup_options_check_option check_option;

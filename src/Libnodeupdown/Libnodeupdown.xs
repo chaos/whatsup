@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: Libnodeupdown.xs,v 1.10 2005-04-01 21:45:25 achu Exp $
+ *  $Id: Libnodeupdown.xs,v 1.11 2005-04-05 01:32:44 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -213,10 +213,10 @@ NODEUPDOWN_ERR_CONF_PARSE (sv=&PL_sv_undef)
         RETVAL    
 
 int
-NODEUPDOWN_ERR_EXPAT (sv=&PL_sv_undef)
+NODEUPDOWN_ERR_XML (sv=&PL_sv_undef)
     SV *sv    
     CODE:
-        RETVAL = NODEUPDOWN_ERR_EXPAT;
+        RETVAL = NODEUPDOWN_ERR_XML;
     OUTPUT:
         RETVAL    
 

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia.c,v 1.4 2005-04-02 01:30:29 achu Exp $
+ *  $Id: nodeupdown_ganglia.c,v 1.5 2005-04-05 01:32:44 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -149,7 +149,7 @@ nodeupdown_ganglia_get_gmond_data(nodeupdown_t handle, int fd, int timeout_len)
   pv.localtime = tv.tv_sec;
 
   /* Following XML parsing loop more or less ripped from libganglia by
-   * Matt Massie <massie@CS.Berkeley.EDU>
+   * Matt Massie <massie at CS.Berkeley.EDU>
    */
 
   xml_parser = XML_ParserCreate(NULL);
@@ -161,9 +161,9 @@ nodeupdown_ganglia_get_gmond_data(nodeupdown_t handle, int fd, int timeout_len)
       int bytes_read;
       void *buff;
       
-      if ((buff = XML_GetBuffer(xml_parser, BUFSIZ)) == NULL) 
+      if (!(buff = XML_GetBuffer(xml_parser, BUFSIZ))) 
         {
-          handle->errnum = NODEUPDOWN_ERR_EXPAT;
+          handle->errnum = NODEUPDOWN_ERR_XML;
           goto cleanup;
         }
 
@@ -173,9 +173,9 @@ nodeupdown_ganglia_get_gmond_data(nodeupdown_t handle, int fd, int timeout_len)
           goto cleanup;
         }
 
-      if (XML_ParseBuffer(xml_parser, bytes_read, bytes_read == 0) == 0) 
+      if (!XML_ParseBuffer(xml_parser, bytes_read, bytes_read == 0)) 
         {
-          handle->errnum = NODEUPDOWN_ERR_EXPAT;
+          handle->errnum = NODEUPDOWN_ERR_XML;
           goto cleanup;
         }
       

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.h,v 1.28 2005-04-01 17:59:01 achu Exp $
+ *  $Id: nodeupdown.h,v 1.29 2005-04-05 01:32:44 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -55,7 +55,7 @@
 #define NODEUPDOWN_ERR_CONF_OPEN         19 /* open conf file error */
 #define NODEUPDOWN_ERR_CONF_READ         20 /* read conf file error */
 #define NODEUPDOWN_ERR_CONF_PARSE        21 /* parse conf file error */
-#define NODEUPDOWN_ERR_EXPAT             22 /* internal expat error */
+#define NODEUPDOWN_ERR_XML               22 /* internal XML parsing error */
 #define NODEUPDOWN_ERR_HOSTLIST          23 /* internal hostlist error */
 #define NODEUPDOWN_ERR_MAGIC             24 /* magic number error */
 #define NODEUPDOWN_ERR_INTERNAL          25 /* internal system error */

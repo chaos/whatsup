@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown_is_node.3,v 1.13 2003-12-29 19:02:01 achu Exp $
+\."$Id: nodeupdown_is_node.3,v 1.14 2005-04-05 01:32:44 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -71,16 +71,16 @@ An incorrect parameter has been passed in.
 .TP
 .B NODEUPDOWN_ERR_OUTMEM
 .BR malloc (3)
-has failed internally, system is out of memory.
+has failed internally.
 .TP
 .B NODEUPDOWN_ERR_NOTFOUND
 The node pointed to by \fInode\fR is not known.
 .TP
-.B NODEUPDOWN_ERR_MASTERLIST
-internal error with the Nodeupdown master list of nodes.
+.B NODEUPDOWN_ERR_CLUSTERLIST
+Internal error with the cluster list of nodes.
 .TP
 .B NODEUPDOWN_ERR_HOSTLIST
-hostlist API has failed internally.
+Hostlist API has failed internally.
 .TP
 .B NODEUPDOWN_ERR_MAGIC 
 \fIhandle\fR has an incorrect magic number.  \fIhandle\fR does not

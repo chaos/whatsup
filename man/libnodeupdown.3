@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: libnodeupdown.3,v 1.20 2005-03-31 22:44:22 achu Exp $
+\."$Id: libnodeupdown.3,v 1.21 2005-04-05 01:32:44 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -35,7 +35,7 @@ or down
 .sp
 .BI "int nodeupdown_handle_destroy(nodeupdown_t handle);"
 .sp
-.BI "int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname, int gmond_port, int timeout_len, char *reserved);"
+.BI "int nodeupdown_load_data(nodeupdown_t handle, const char *hostname, int port, int timeout_len, char *reserved);"
 .sp
 .BI "int nodeupdown_errnum(nodeupdown_t handle);"
 .sp
@@ -69,10 +69,14 @@ or down
 .br
 .SH DESCRIPTION
 The nodeupdown library functions are a set of functions that interacts
-with ganglia to determine if a node is up or down.  For instructions,
-please see the individual manpages for each of the functions above, or
-read the comments written in /usr/include/nodeupdown.h.  Please see
-the
+with a particular backend tool to determine if a node is up or down.
+The currently avaiable backend tools are:
+
+ganglia
+
+For instructions, please see the individual manpages for each
+of the functions above, or read the comments written in
+/usr/include/nodeupdown.h.  Please see the
 .BR nodeupdown.conf (5)
 manpage for information about the nodeupdown configuration file.
 
