@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.4 2003-05-27 16:53:51 achu Exp $
+## $Id: configure.ac,v 1.5 2003-05-27 18:16:28 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -85,7 +85,6 @@ AC_CHECK_FUNCS( \
 # Check for genders and ganglia libraries that we need
 ##
 AC_CHECK_LIB(ganglia, XML_ParserCreate)
-AC_CHECK_LIB(genders, genders_handle_create)
 AC_CHECK_LIB(gendersllnl, genders_string_to_altnames_preserve)
 
 ##

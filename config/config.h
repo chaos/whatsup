@@ -14,7 +14,7 @@
 #define HAVE_GANGLIA_H 1
 
 /* Define to 1 if you have the <gendersllnl.h> header file. */
-/* #undef HAVE_GENDERSLLNL_H */
+#define HAVE_GENDERSLLNL_H 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
@@ -22,11 +22,8 @@
 /* Define to 1 if you have the `ganglia' library (-lganglia). */
 #define HAVE_LIBGANGLIA 1
 
-/* Define to 1 if you have the `genders' library (-lgenders). */
-#define HAVE_LIBGENDERS 1
-
 /* Define to 1 if you have the `gendersllnl' library (-lgendersllnl). */
-/* #undef HAVE_LIBGENDERSLLNL */
+#define HAVE_LIBGENDERSLLNL 1
 
 /* Define to 1 if your system has a working `malloc' function. */
 #define HAVE_MALLOC 1

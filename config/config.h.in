@@ -21,9 +21,6 @@
 /* Define to 1 if you have the `ganglia' library (-lganglia). */
 #undef HAVE_LIBGANGLIA
 
-/* Define to 1 if you have the `genders' library (-lgenders). */
-#undef HAVE_LIBGENDERS
-
 /* Define to 1 if you have the `gendersllnl' library (-lgendersllnl). */
 #undef HAVE_LIBGENDERSLLNL
 
