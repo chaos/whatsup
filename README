@@ -1,31 +1,49 @@
-1) Read INSTALL.
+Whatsup determines and outputs the cluster nodes that are currently
+up and down based on information gathered from ganglia.
 
-2) Ganglia only has knowledge about cluster nodes in which it has
-   has previous communication with.  Therefore, if a node has never
-   sent a ganglia message (for example, 1 node was out for servicing when
-   the entire cluster was rebooted), ganglia will not be able to report
-   this node as down.
-   
-   In order to determine all of the down nodes in a cluster,
-   whatsup and the nodeupdown library require a "master list" of
-   nodes in the cluster.  "master list" mechanisms can be compiled
-   into whatsup by specifying a master list option with ./configure.
+However, there is one deficiency within ganglia when dealing with up
+vs. down nodes.  Ganglia can only report nodes as down only if it has
+had previous communication with the node.  Therefore, if a node has
+never sent a ganglia message, ganglia has no means of reporting the
+node as down.  For example, suppose a node from your cluster was
+removed for servicing, then the remaining nodes were rebooted.  The
+node that was removed for servicing will not be listed by ganglia as
+down.
 
-   Currently, the following "master list" mechanisms are implemented
-   in whatsup.
+Therefore, to determine all of the down nodes in a cluster, a "master
+list" of nodes is required by whatsup and the nodeupdown library which
+is uses.  There are a number of mechanisms that could be used for a
+"master list" of nodes.  Currently the following "master list"
+mechanisms are programmed into the nodeupdown library and whatsup.
+Either one can be selected by selecting the appropriate option in
+configure.
 
-   * genders - uses a genders database and the genders library as a 
-               master list of all nodes in the cluster. In addition,
-	       using the gendersllnl library, node names and alternate
-	       node names are resolved and turned into the same.	
-   
-   * master list file - a file that lists the shortened hostname of
-	                every node in teh cluster, one per line.
-                        Comments can be placed in the file using a
-                        pound sign ('#') at the beginning of a line.
+* Master List Hosts file
+  - This mechanism simply uses a file that lists the shortened
+    hostname of every node in teh cluster, one per line.  Comments can
+    be placed in the file using a pound sign ('#') at the beginning of
+    a line.  Configure can be used to specify a default location of this
+    file.  If no default is chosen, the nodeupdown library and whatsup
+    will assume /etc/nodeupdown_masterlist.
 
-   * none - whatsup and nodeupdown will only use ganglia data to
-            determine the difference between up nodes, down nodes, and
-            nodes that are not part of the cluster.
+* Genders
+  - Uses a genders database and the genders library to determine all 
+    of the nodes in the cluster.  In addition, it uses the gendersllnl
+    library to convert between node names and alternate node names.  For
+    the most part, this will used in house at Lawrence Livermore National
+    Laboratories and sister labs that also use genders.
 
-   Other mechanisms may be implemented in the future.
+* None
+  - Whatsup and nodeupdown will only use ganglia data to determine the
+    difference between up nodes, down nodes, and nodes that are not part
+    of the cluster.
+
+Other mechanisms may be implemented in the future.  If you are interested
+in seeing some new mechanism implemented, feel free to e-mail me.
+
+Also, feel free to e-mail me to tell how much you use like/dislike this
+tool.
+
+Albert Chu
+chu11@llnl.gov
+Lawrence Livermore National Laboratories
