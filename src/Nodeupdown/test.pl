@@ -31,7 +31,7 @@ print $obj->are_up("foomdevi"),"\n";
 print $obj->are_up("mdevi","mdevj"),"\n";
 print $obj->are_up("emdevi","mdevj"),"\n";
 print $obj->are_up("foomdevi","mdevj"),"\n";
-print $obj->are_up();
+print $obj->are_up(),"\n";
 
 print $obj->are_down("mdevi"),"\n";
 print $obj->are_down("emdevi"),"\n";
@@ -39,4 +39,4 @@ print $obj->are_down("foomdevi"),"\n";
 print $obj->are_down("mdevi","mdevj"),"\n";
 print $obj->are_down("emdevi","mdevj"),"\n";
 print $obj->are_down("foomdevi","mdevj"),"\n";
-print $obj->are_down();
+print $obj->are_down(),"\n";
