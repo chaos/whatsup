@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_hostsfile.c,v 1.2 2005-03-31 23:59:28 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_hostsfile.c,v 1.3 2005-04-01 00:53:05 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -39,17 +39,18 @@
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
 #include "nodeupdown_ganglia_clusterlist.h"
+#include "nodeupdown_ganglia_clusterlist_util.h"
 #include "hostlist.h"
 #include "fd.h"
 #include "list.h"
 
 static List hosts = NULL;
-static char *hostsfile_file = NULL;
+static char hostsfile_file[MAXPATHLEN+1];
 
 int
-hostsfile_ganglia_clusterlist_parse_options(char **options)
+hostsfile_ganglia_clusterlist_parse_options(nodeupdown_t handle, char **options)
 {
-  return 0;
+  return nodeupdown_ganglia_clusterlist_parse_filename(handle, options, hostsfile_file, MAXPATHLEN);
 }
 
 static int
@@ -241,7 +242,7 @@ hostsfile_ganglia_clusterlist_compare_to_clusterlist(nodeupdown_t handle)
       return -1;
     }
                                                                                      
-  while (nodename = list_next(itr)) 
+  while ((nodename = list_next(itr)))
     {
       if ((hostlist_find(handle->up_nodes, nodename) == -1)
           && (hostlist_find(handle->down_nodes, nodename) == -1)) 
@@ -302,13 +303,7 @@ hostsfile_ganglia_clusterlist_get_nodename(nodeupdown_t handle,
                                            char *buffer, 
                                            int buflen) 
 {
-  if ((strlen(node) + 1) > buflen) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      return -1;
-    }
-  strcpy(buffer, node);
-  return 0;
+  return nodeupdown_ganglia_clusterlist_copy_nodename(handle, node, buffer, buflen);
 }
     
 int 

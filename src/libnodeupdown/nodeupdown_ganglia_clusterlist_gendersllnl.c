@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_gendersllnl.c,v 1.2 2005-03-31 23:59:28 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_gendersllnl.c,v 1.3 2005-04-01 00:53:05 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -36,15 +36,16 @@
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
 #include "nodeupdown_ganglia_clusterlist.h"
+#include "nodeupdown_ganglia_clusterlist_util.h"
 #include "hostlist.h"
 
 static genders_t gendersllnl_handle = NULL;
-static char *gendersllnl_file = NULL;
+static char gendersllnl_file[MAXPATHLEN+1];
 
 int
-gendersllnl_ganglia_clusterlist_parse_options(char **options)
+gendersllnl_ganglia_clusterlist_parse_options(nodeupdown_t handle, char **options)
 {
-  return 0;
+  return nodeupdown_ganglia_clusterlist_parse_filename(handle, options, gendersllnl_file, MAXPATHLEN);
 }
 
 static int

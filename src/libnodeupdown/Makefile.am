@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.20 2005-03-31 23:59:28 achu Exp $
+## $Id: Makefile.am,v 1.21 2005-04-01 00:53:05 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -33,28 +33,32 @@ nodeupdownmodulelib_LTLIBRARIES = \
 	nodeupdown_ganglia_clusterlist_none.la
 
 nodeupdown_ganglia_clusterlist_gendersllnl_la_SOURCES = \
-	nodeupdown_ganglia_clusterlist_gendersllnl.c
+	nodeupdown_ganglia_clusterlist_gendersllnl.c \
+	nodeupdown_ganglia_clusterlist_util.c
 nodeupdown_ganglia_clusterlist_gendersllnl_la_LDFLAGS = \
 	$(MODULE_FLAGS) $(GENDERSLLNL_LIBS)
 nodeupdown_ganglia_clusterlist_gendersllnl_la_CFLAGS  = \
 	-I$(srcdir)/../libcommon
  
 nodeupdown_ganglia_clusterlist_genders_la_SOURCES = \
-	nodeupdown_ganglia_clusterlist_genders.c
+	nodeupdown_ganglia_clusterlist_genders.c \
+	nodeupdown_ganglia_clusterlist_util.c
 nodeupdown_ganglia_clusterlist_genders_la_LDFLAGS = \
 	$(MODULE_FLAGS) $(GENDERS_LIBS)
 nodeupdown_ganglia_clusterlist_genders_la_CFLAGS  = \
 	-I$(srcdir)/../libcommon
  
 nodeupdown_ganglia_clusterlist_hostsfile_la_SOURCES = \
-	nodeupdown_ganglia_clusterlist_hostsfile.c
+	nodeupdown_ganglia_clusterlist_hostsfile.c \
+	nodeupdown_ganglia_clusterlist_util.c
 nodeupdown_ganglia_clusterlist_hostsfile_la_LDFLAGS = \
 	$(MODULE_FLAGS)
 nodeupdown_ganglia_clusterlist_hostsfile_la_CFLAGS  = \
 	-I$(srcdir)/../libcommon
  
 nodeupdown_ganglia_clusterlist_none_la_SOURCES = \
-	nodeupdown_ganglia_clusterlist_none.c
+	nodeupdown_ganglia_clusterlist_none.c \
+	nodeupdown_ganglia_clusterlist_util.c
 nodeupdown_ganglia_clusterlist_none_la_LDFLAGS = \
 	$(MODULE_FLAGS)
 nodeupdown_ganglia_clusterlist_none_la_CFLAGS  = \

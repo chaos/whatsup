@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_none.c,v 1.2 2005-03-31 23:59:28 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_none.c,v 1.3 2005-04-01 00:53:05 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -35,10 +35,11 @@
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
 #include "nodeupdown_ganglia_clusterlist.h"
+#include "nodeupdown_ganglia_clusterlist_util.h"
 #include "hostlist.h"
 
 int
-none_ganglia_clusterlist_parse_options(char **options)
+none_ganglia_clusterlist_parse_options(nodeupdown_t handle, char **options)
 {
   return 0;
 }
@@ -99,17 +100,11 @@ none_ganglia_clusterlist_is_node_discovered(nodeupdown_t handle, const char *nod
 
 int 
 none_ganglia_clusterlist_get_nodename(nodeupdown_t handle, 
-                  const char *node, 
-                  char *buffer, 
-                  int buflen) 
+                                      const char *node, 
+                                      char *buffer, 
+                                      int buflen) 
 {
-  if ((strlen(node) + 1) > buflen) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      return -1;
-    }
-  strcpy(buffer, node);
-  return 0;
+  return nodeupdown_ganglia_clusterlist_copy_nodename(handle, node, buffer, buflen);
 }
     
 int 

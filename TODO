@@ -4,3 +4,10 @@
 - Screw ganglia, write a updownd daemon.
 - Make distcheck work.
 - repackage for multilib
+
+for rework
+- filename options in whatsup?
+- error checking in clusterlist modules
+- #if stuff all over
+- nodename vs. hostname
+- #include order consistency

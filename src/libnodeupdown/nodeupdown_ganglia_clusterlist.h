@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist.h,v 1.1 2005-03-31 22:44:22 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist.h,v 1.2 2005-04-01 00:53:05 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -33,7 +33,7 @@
  * Clusterlist function prototypes
  */
 
-typedef int (*Nodeupdown_ganglia_clusterlist_parse_options)(char **options);
+typedef int (*Nodeupdown_ganglia_clusterlist_parse_options)(nodeupdown_t, char **);
 typedef int (*Nodeupdown_ganglia_clusterlist_init)(nodeupdown_t);
 typedef int (*Nodeupdown_ganglia_clusterlist_finish)(nodeupdown_t);
 typedef int (*Nodeupdown_ganglia_clusterlist_cleanup)(nodeupdown_t);
@@ -59,53 +59,45 @@ struct nodeupdown_ganglia_clusterlist_module_info
   Nodeupdown_ganglia_clusterlist_get_nodename get_nodename;
 };
 
-/* 
- * Increase the number of nodes in the system found 
- */
-int nodeupdown_ganglia_clusterlist_increase_max_nodes(nodeupdown_t);
-
 /*
  * Load the clusterlist module
  */
-int nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t);
+int nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle);
 
-/* 
- * Initialize clusterlist items in the nodeupdown_t handle 
- */
-int nodeupdown_ganglia_clusterlist_initialize_handle(nodeupdown_t);
-
-/* 
- * Free clusterlist handle data from the nodeupdown_t handle 
- */
-int nodeupdown_ganglia_clusterlist_destroy_handle(nodeupdown_t);
+int nodeupdown_ganglia_clusterlist_parse_options(nodeupdown_t handle, char **options);
 
 /* 
  * Initialize any clusterlist info, for example, loading data from a file 
  */
-int nodeupdown_ganglia_clusterlist_init(nodeupdown_t);
+int nodeupdown_ganglia_clusterlist_init(nodeupdown_t handle);
 
 /* 
- * cleanup up any clusterlist needs 
+ * finish up clusterlist work
  */
-int nodeupdown_ganglia_clusterlist_cleanup(nodeupdown_t);
+int nodeupdown_ganglia_clusterlist_cleanup(nodeupdown_t handle);
+
+/* 
+ * cleanup up clusterlist
+ */
+int nodeupdown_ganglia_clusterlist_cleanup(nodeupdown_t handle);
 
 /* 
  * Compare all nodes retrieved with nodes from the clusterlist 
  * - Adds nodes not found from gmond into the down nodes hostlist
  */
-int nodeupdown_ganglia_clusterlist_compare_to_clusterlist(nodeupdown_t);
+int nodeupdown_ganglia_clusterlist_compare_to_clusterlist(nodeupdown_t handle);
 
 /* 
  * Returns 1 if the specified node is in the cluster, 0 if not, -1 on error 
  */
-int nodeupdown_ganglia_clusterlist_is_node_in_cluster(nodeupdown_t, const char *);
+int nodeupdown_ganglia_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node);
 
 /* 
  * Returns 1 if the specified node name is discovered
  * - Usually identical to nodeupdown_ganglia_clusterlist_is_node_in_cluster.
  *   Only necessary when no clusterlist is available.
  */
-int nodeupdown_ganglia_clusterlist_is_node_discovered(nodeupdown_t, const char *);
+int nodeupdown_ganglia_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node);
 
 /* 
  * Returns the appropriate nodename to use in the specified buffer
@@ -115,11 +107,11 @@ int nodeupdown_ganglia_clusterlist_is_node_discovered(nodeupdown_t, const char *
  * - Typically, this should be called after a check using
  *   "is_node_discovered" or "is_node_in_cluster".
  */
-int nodeupdown_ganglia_clusterlist_get_nodename(nodeupdown_t, const char *, char *, int);
+int nodeupdown_ganglia_clusterlist_get_nodename(nodeupdown_t handle, const char *node, char *buffer, int buflen);
 
 /* 
  * Increase the number of nodes in the system found 
  */
-int nodeupdown_ganglia_clusterlist_increase_max_nodes(nodeupdown_t);
+int nodeupdown_ganglia_clusterlist_increase_max_nodes(nodeupdown_t handle);
 
 #endif /* _NODEUPDOWN_GANGLIA_CLUSTERLIST_H */
