@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist.h,v 1.3 2005-04-01 01:37:47 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist.h,v 1.4 2005-04-01 17:59:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -69,7 +69,7 @@ int nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *cluste
 /*  
  * Unload the clusterlist module
  */
-int nodeupdown_gangali_clusterlist_unload_module(nodeupdown_t handle);
+int nodeupdown_ganglia_clusterlist_unload_module(nodeupdown_t handle);
 
 /*
  * Pasre the clusterlist module options
@@ -84,7 +84,7 @@ int nodeupdown_ganglia_clusterlist_init(nodeupdown_t handle);
 /* 
  * finish up clusterlist work
  */
-int nodeupdown_ganglia_clusterlist_cleanup(nodeupdown_t handle);
+int nodeupdown_ganglia_clusterlist_finish(nodeupdown_t handle);
 
 /* 
  * cleanup up clusterlist

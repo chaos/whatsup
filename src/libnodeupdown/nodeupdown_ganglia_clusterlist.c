@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist.c,v 1.2 2005-04-01 16:19:32 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist.c,v 1.3 2005-04-01 17:59:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -45,7 +45,7 @@ char *clusterlist_modules[] = {
   "nodeupdown_ganglia_clusterlist_gendersllnl.la",
   "nodeupdown_ganglia_clusterlist_genders.la",
   "nodeupdown_ganglia_clusterlist_none.la",
-  "nodeupdown_ganglia_clusterlist_hostfile.la",
+  "nodeupdown_ganglia_clusterlist_hostsfile.la",
   NULL
 };
 int clusterlist_modules_len = 4;
@@ -58,14 +58,14 @@ _load_module(nodeupdown_t handle, char *module_path)
 {
   if (!(ganglia_clusterlist_module_dl_handle = lt_dlopen(module_path)))
     {
-      handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
-      return -1;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
+      goto cleanup;
     }
 
   if (!(ganglia_clusterlist_module_info = (struct nodeupdown_ganglia_clusterlist_module_info *)lt_dlsym(ganglia_clusterlist_module_dl_handle, "ganglia_clusterlist_module_info")))
     {
-      handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
-      return -1;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
+      goto cleanup;
     }
 
   if (!ganglia_clusterlist_module_info->ganglia_clusterlist_module_name
@@ -79,11 +79,17 @@ _load_module(nodeupdown_t handle, char *module_path)
       || !ganglia_clusterlist_module_info->get_nodename
       || !ganglia_clusterlist_module_info->increase_max_nodes)
     {
-      handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
-      return -1;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
     }
 
-  return 0;
+  return 1;
+
+ cleanup:
+  if (ganglia_clusterlist_module_dl_handle)
+    lt_dlclose(ganglia_clusterlist_module_dl_handle);
+  ganglia_clusterlist_module_info = NULL;
+  ganglia_clusterlist_module_dl_handle = NULL;
+  return -1;
 }
 
 int
@@ -117,7 +123,7 @@ _search_dir_for_module(nodeupdown_t handle,
                        search_dir, modules_list[i]);
 
               if ((ret = _load_module(handle, filebuf)) < 0)
-                goto cleanup;
+                  goto cleanup;
 
               if (ret)
                 {
@@ -145,7 +151,7 @@ nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlis
 
   if (lt_dlinit() != 0)
     {
-      handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
       return -1;
     }
 
@@ -211,11 +217,20 @@ nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlis
                                        clusterlist_modules,
                                        clusterlist_modules_len)) < 0)
         goto cleanup;
-                                                                                               
+
       if (rv)
         goto done;
 
-      handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
+      if ((rv = _search_dir_for_module(handle,
+                                       "/home/achu/chaos/whatsup/src/libnodeupdown",
+                                       clusterlist_modules,
+                                       clusterlist_modules_len)) < 0)
+        goto cleanup;
+
+      if (rv)
+        goto done;
+
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
       goto cleanup;
     }
 
@@ -227,9 +242,11 @@ nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlis
 }
 
 int
-nodeupdown_gangali_clusterlist_unload_module(nodeupdown_t handle)
+nodeupdown_ganglia_clusterlist_unload_module(nodeupdown_t handle)
 {
-  lt_dlclose(ganglia_clusterlist_module_dl_handle);
+  /* May have not been loaded, so can't close */
+  if (ganglia_clusterlist_module_dl_handle)
+    lt_dlclose(ganglia_clusterlist_module_dl_handle);
   lt_dlexit();
   ganglia_clusterlist_module_info = NULL;
   ganglia_clusterlist_module_dl_handle = NULL;
@@ -257,6 +274,10 @@ nodeupdown_ganglia_clusterlist_finish(nodeupdown_t handle)
 int 
 nodeupdown_ganglia_clusterlist_cleanup(nodeupdown_t handle)
 {
+  /* May have not been loaded, so can't cleanup */
+  if (!ganglia_clusterlist_module_info)
+    return 0;
+
   return (*ganglia_clusterlist_module_info->cleanup)(handle);
 }
  

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_hostsfile.c,v 1.4 2005-04-01 01:37:47 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_hostsfile.c,v 1.5 2005-04-01 17:59:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -60,14 +60,14 @@ _readline(nodeupdown_t handle, int fd, char *buf, int buflen)
                                                                                      
   if ((ret = fd_read_line(fd, buf, buflen)) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_MASTERLIST_READ;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_READ;
       return -1;
     }
                                                                                      
   /* buflen - 1 b/c fd_read_line guarantees null termination */
   if (ret >= (buflen-1)) 
     {
-      handle->errnum = NODEUPDOWN_ERR_MASTERLIST_PARSE;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_PARSE;
       return -1;
     }
                                                                                      
@@ -155,7 +155,7 @@ _load_hostsfile_data(nodeupdown_t handle)
                                                                                      
   if ((fd = open(file, O_RDONLY)) < 0)
     {
-      handle->errnum = NODEUPDOWN_ERR_MASTERLIST_OPEN;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_OPEN;
       goto cleanup;
     }
                                                                                      
@@ -178,13 +178,13 @@ _load_hostsfile_data(nodeupdown_t handle)
                                                                                      
       if (strchr(hostPtr, ' ') || strchr(hostPtr, '\t'))
         {
-          handle->errnum = NODEUPDOWN_ERR_MASTERLIST_PARSE;
+          handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_PARSE;
           goto cleanup;
         }
                                                                                      
       if (strlen(hostPtr) > MAXHOSTNAMELEN)
         {
-          handle->errnum = NODEUPDOWN_ERR_MASTERLIST_PARSE;
+          handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_PARSE;
           goto cleanup;
         }
                                                                                      
@@ -196,7 +196,7 @@ _load_hostsfile_data(nodeupdown_t handle)
 
       if (!list_append(hosts, str))
         {
-          handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
+          handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
           goto cleanup;
         }
     }
@@ -225,7 +225,8 @@ hostsfile_ganglia_clusterlist_finish(nodeupdown_t handle)
 int 
 hostsfile_ganglia_clusterlist_cleanup(nodeupdown_t handle) 
 {
-  list_destroy(hosts);
+  if (hosts)
+    list_destroy(hosts);
   hosts = NULL;
   return 0;
 }
@@ -238,7 +239,7 @@ hostsfile_ganglia_clusterlist_compare_to_clusterlist(nodeupdown_t handle)
                                                                                      
   if ((itr = list_iterator_create(hosts)) == NULL) 
     {
-      handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
       return -1;
     }
                                                                                      

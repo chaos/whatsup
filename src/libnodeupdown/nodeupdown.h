@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.h,v 1.27 2005-03-31 23:59:28 achu Exp $
+ *  $Id: nodeupdown.h,v 1.28 2005-04-01 17:59:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -47,10 +47,10 @@
 #define NODEUPDOWN_ERR_NULLPTR           11 /* null pointer in list */
 #define NODEUPDOWN_ERR_OUTMEM            12 /* out of memory */
 #define NODEUPDOWN_ERR_NOTFOUND          13 /* node not found */ 
-#define NODEUPDOWN_ERR_MASTERLIST        14 /* internal master list error */
-#define NODEUPDOWN_ERR_MASTERLIST_OPEN   15 /* open masterlist file error */
-#define NODEUPDOWN_ERR_MASTERLIST_READ   16 /* read masterlist file error */
-#define NODEUPDOWN_ERR_MASTERLIST_PARSE  17 /* parse masterlist error */ 
+#define NODEUPDOWN_ERR_CLUSTERLIST       14 /* internal cluster list error */
+#define NODEUPDOWN_ERR_CLUSTERLIST_OPEN  15 /* open clusterlist file error */
+#define NODEUPDOWN_ERR_CLUSTERLIST_READ  16 /* read clusterlist file error */
+#define NODEUPDOWN_ERR_CLUSTERLIST_PARSE 17 /* parse clusterlist error */ 
 #define NODEUPDOWN_ERR_CONF              18 /* internal conf file error */
 #define NODEUPDOWN_ERR_CONF_OPEN         19 /* open conf file error */
 #define NODEUPDOWN_ERR_CONF_READ         20 /* read conf file error */

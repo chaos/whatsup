@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_gendersllnl.c,v 1.5 2005-04-01 16:19:32 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_gendersllnl.c,v 1.6 2005-04-01 17:59:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -94,7 +94,7 @@ gendersllnl_ganglia_clusterlist_is_node_in_cluster(nodeupdown_t handle, const ch
   int ret;
   if ((ret = genders_isnode_or_altnode(gendersllnl_handle, node)) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
       return -1;
     }
   return ret;
@@ -106,7 +106,7 @@ gendersllnl_ganglia_clusterlist_is_node_discovered(nodeupdown_t handle, const ch
   int ret;
   if ((ret = genders_isnode_or_altnode(gendersllnl_handle, node)) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
       return -1;
     }
   return ret;
@@ -120,7 +120,7 @@ gendersllnl_ganglia_clusterlist_get_nodename(nodeupdown_t handle,
 {
   if (genders_to_gendname(gendersllnl_handle, node, buffer, buflen) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
       return -1;
     }
   return 0;
