@@ -1,4 +1,4 @@
-2003-03-19 Albert Chu <chu11@llnl.gov>
+2003-04-14 Albert Chu <chu11@llnl.gov>
 	- Added NODEUPDOWN_ERR_NODE_CONFLICT error description
 	  to manpages
 	- Added corner case to nodeupdown_load_data() 
