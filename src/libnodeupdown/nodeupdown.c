@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.49 2003-05-21 20:14:50 achu Exp $
+ * $Id: nodeupdown.c,v 1.50 2003-05-23 00:32:08 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -38,14 +38,6 @@
 #define NODEUPDOWN_MAGIC_NUM             0xfeedbeef
 
 #define NODEUPDOWN_BUFFERLEN             65536
-
-#ifndef GENDERS_ALTNAME_ATTRIBUTE
-#define GENDERS_ALTNAME_ATTRIBUTE        "altname"
-#endif
-
-#ifndef MAXHOSTNAMELEN
-#define MAXHOSTNAMELEN 64
-#endif
 
 #ifndef CONNECT_TIMEOUT_LEN
 #define CONNECT_TIMEOUT_LEN              5 
@@ -140,14 +132,12 @@ static int nodeupdown_unloaded_handle_err_check(nodeupdown_t handle);
 static int nodeupdown_loaded_handle_err_check(nodeupdown_t handle);
 
 /* initialize nodeupdown handle 
- * Returns -1 on error, 0 on success
  */
-static int nodeupdown_initialization(nodeupdown_t handle);
+static void nodeupdown_initialization(nodeupdown_t handle);
 
 /* free memory from nodeupdown handle 
- * Returns -1 on error, 0 on success
  */
-static int nodeupdown_cleanup(nodeupdown_t handle);
+static void nodeupdown_cleanup(nodeupdown_t handle);
 
 /* retrieve data from the genders file 
  * Returns -1 on error, 0 on success
@@ -230,11 +220,11 @@ static int nodeupdown_check_if_node_in_hostlist(nodeupdown_t handle,
 
 char * get_hostlist_ranged_string(nodeupdown_t handle, hostlist_t hostlist) {
   char *str = NULL;
-  int str_len;
+  int str_len = 0;
 
   do {
     free(str);
-    str_len = NODEUPDOWN_BUFFERLEN;
+    str_len += NODEUPDOWN_BUFFERLEN;
     if ((str = (char *)malloc(str_len)) == NULL) {
       handle->errnum = NODEUPDOWN_ERR_OUTMEM;
       return NULL;
@@ -247,10 +237,7 @@ char * get_hostlist_ranged_string(nodeupdown_t handle, hostlist_t hostlist) {
 }
 
 int nodeupdown_handle_err_check(nodeupdown_t handle) {
-  if (handle == NULL)
-    return -1;
-
-  if (handle->magic != NODEUPDOWN_MAGIC_NUM)
+  if (handle == NULL || handle->magic != NODEUPDOWN_MAGIC_NUM)
     return -1;
 
   return 0;
@@ -292,18 +279,13 @@ nodeupdown_t nodeupdown_handle_create() {
   return handle;
 }
 
-int nodeupdown_initialization(nodeupdown_t handle) {
-  if (handle == NULL)
-    return -1;
-
+void nodeupdown_initialization(nodeupdown_t handle) {
   handle->magic = NODEUPDOWN_MAGIC_NUM;
   handle->loaded_flag = NODEUPDOWN_DATA_NOT_LOADED;
   handle->up_nodes = NULL;
   handle->down_nodes = NULL;
   handle->genders_handle = NULL;
   handle->max_nodes = -1;
-
-  return 0;
 }
 
 int nodeupdown_handle_destroy(nodeupdown_t handle) {
@@ -322,22 +304,13 @@ int nodeupdown_handle_destroy(nodeupdown_t handle) {
   return 0;
 }  
 
-int nodeupdown_cleanup(nodeupdown_t handle) {
-  if (handle == NULL)
-    return -1;
+void nodeupdown_cleanup(nodeupdown_t handle) {
 
-  if (handle->up_nodes != NULL)
-    hostlist_destroy(handle->up_nodes);
-
-  if (handle->down_nodes != NULL)
-    hostlist_destroy(handle->down_nodes);
-
-  if (handle->genders_handle != NULL)
-    (void)genders_handle_destroy(handle->genders_handle);
+  hostlist_destroy(handle->up_nodes);
+  hostlist_destroy(handle->down_nodes);
+  (void)genders_handle_destroy(handle->genders_handle);
 
   nodeupdown_initialization(handle);
-
-  return 0;
 }
 
 int nodeupdown_load_data(nodeupdown_t handle, 
@@ -694,15 +667,11 @@ void xml_parse_start(void *data, const char *e1, const char **attr) {
       return;
     }
 
-    /* make sure this node is legitimate */
-    if (genders_isnode_or_altnode(handle->genders_handle, attr[1]) != 1)
-      return;
-
     memset(buffer, '\0', buflen);
-    if (genders_to_gendname_preserve(handle->genders_handle, 
-                                     attr[1],
-                                     ((struct parse_vars *)data)->buffer,
-                                     buflen) == -1)
+    if (genders_to_gendname(handle->genders_handle, 
+                            attr[1],
+                            buffer,
+                            buflen) == -1)
       return;
 
     /* shorten hostname if necessary */
@@ -711,20 +680,10 @@ void xml_parse_start(void *data, const char *e1, const char **attr) {
 
     /* store up or down */
     reported = atol(attr[5]);
-    if (abs(localtime - reported) < timeout_len) {
-      if (hostlist_push(handle->up_nodes, buffer) == 0) {
-        free(buffer);
-        handle->errnum = NODEUPDOWN_ERR_HOSTLIST; 
-        return;
-      }
-    }
-    else {
-      if (hostlist_push(handle->down_nodes, buffer) == 0) {
-        free(buffer);
-        handle->errnum = NODEUPDOWN_ERR_HOSTLIST; 
-        return;
-      }
-    }
+    if (abs(localtime - reported) < timeout_len)
+      (void)hostlist_push(handle->up_nodes, buffer);
+    else
+      (void)hostlist_push(handle->down_nodes, buffer);
   }
 }
 
@@ -733,8 +692,7 @@ void xml_parse_end(void *data, const char *e1) {
 }
 
 int nodeupdown_compare_genders_to_gmond_nodes(nodeupdown_t handle) {
-  int i, ret, num_nodes, maxvallen;
-  char *altname = NULL;
+  int i, ret, num_nodes;
   char **genders_nodes = NULL;
 
   /* get all genders nodes */
@@ -752,18 +710,6 @@ int nodeupdown_compare_genders_to_gmond_nodes(nodeupdown_t handle) {
                               NULL)) == -1) {
     (void)genders_nodelist_destroy(handle->genders_handle, genders_nodes);
     handle->errnum = NODEUPDOWN_ERR_GENDERS;
-    goto cleanup;
-  }
-
-  if ((maxvallen = genders_getmaxvallen(handle->genders_handle)) == -1) {
-    handle->errnum = NODEUPDOWN_ERR_GENDERS;
-    goto cleanup;
-  }
-
-  maxvallen = (MAXHOSTNAMELEN > maxvallen) ? MAXHOSTNAMELEN : maxvallen;
-
-  if ((altname = (char *)malloc(maxvallen + 1)) == NULL) {
-    handle->errnum = NODEUPDOWN_ERR_OUTMEM;
     goto cleanup;
   }
   
@@ -784,8 +730,6 @@ int nodeupdown_compare_genders_to_gmond_nodes(nodeupdown_t handle) {
       }
     }
   }
-  free(altname);
-  altname = NULL;
 
   if (genders_nodelist_destroy(handle->genders_handle, genders_nodes) == -1) {
     handle->errnum = NODEUPDOWN_ERR_GENDERS;
@@ -793,15 +737,11 @@ int nodeupdown_compare_genders_to_gmond_nodes(nodeupdown_t handle) {
   }
 
   hostlist_sort(handle->down_nodes);
-
   return 0;
 
  cleanup: 
   
   (void)genders_nodelist_destroy(handle->genders_handle, genders_nodes);
-
-  free(altname);
-
   return -1;
 }
 
@@ -846,21 +786,17 @@ int nodeupdown_dump(nodeupdown_t handle, FILE *stream) {
   if (stream == NULL)
     stream = stdout;
 
-  if (handle->up_nodes != NULL) {
-    if ((str = get_hostlist_ranged_string(handle, handle->up_nodes)) == NULL)
-      return -1;
+  if ((str = get_hostlist_ranged_string(handle, handle->up_nodes)) == NULL)
+    return -1;
 
-    fprintf(stream, "up nodes: %s\n", str);
-    free(str);
-  }
+  fprintf(stream, "up nodes: %s\n", str);
+  free(str);
 
-  if (handle->down_nodes != NULL) {
-    if ((str = get_hostlist_ranged_string(handle, handle->down_nodes)) == NULL)
-      return -1;
+  if ((str = get_hostlist_ranged_string(handle, handle->down_nodes)) == NULL)
+    return -1;
 
-    fprintf(stream, "down nodes: %s\n", str);
-    free(str);
-  }
+  fprintf(stream, "down nodes: %s\n", str);
+  free(str);
 
   fprintf(stream, "\n");
 
@@ -1100,12 +1036,11 @@ int nodeupdown_check_if_node_in_hostlist(nodeupdown_t handle,
  cleanup:
 
   free(buffer);
-  
   return -1;
 }
 
 int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list) {
-  int i, j;
+  int i, j, maxnodelen;
   char **node;
   
   if (nodeupdown_loaded_handle_err_check(handle) == -1)
@@ -1116,16 +1051,18 @@ int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list) {
     return -1;
   }
 
-  node = (char **)malloc(sizeof(char *) * handle->max_nodes);
-  if (node == NULL) {
+  if ((maxnodelen = genders_getmaxnodlen(handle->genders_handle)) == -1) {
+    handle->errnum = NODEUPDOWN_ERR_GENDERS;
+    return -1;
+  }
+
+  if ((node = (char **)malloc(sizeof(char *) * handle->max_nodes)) == NULL) {
     handle->errnum = NODEUPDOWN_ERR_OUTMEM;
     return -1;
   }
 
   for (i = 0; i < handle->max_nodes; i++) {
-    node[i] = (char *)malloc(MAXHOSTNAMELEN+1);
-    if (node[i] == NULL) {
-
+    if ((node[i] = (char *)malloc(maxnodelen+1)) == NULL) {
       for (j = 0; j < i; j++) 
         free(node[j]);
       free(node);
@@ -1133,7 +1070,7 @@ int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list) {
       handle->errnum = NODEUPDOWN_ERR_OUTMEM;
       return -1;
     }
-    memset(node[i], '\0', MAXHOSTNAMELEN+1);
+    memset(node[i], '\0', maxnodelen+1);
   }
 
   *list = node;
@@ -1143,7 +1080,7 @@ int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list) {
 }
 
 int nodeupdown_nodelist_clear(nodeupdown_t handle, char **list) {
-  int i;
+  int i, maxnodelen;
   
   if (nodeupdown_loaded_handle_err_check(handle) == -1)
     return -1;
@@ -1153,12 +1090,17 @@ int nodeupdown_nodelist_clear(nodeupdown_t handle, char **list) {
     return -1;
   }
 
+  if ((maxnodelen = genders_getmaxnodlen(handle->genders_handle)) == -1) {
+    handle->errnum = NODEUPDOWN_ERR_GENDERS;
+    return -1;
+  }
+
   for (i = 0; i < handle->max_nodes; i++) {
     if (list[i] == NULL) {
       handle->errnum = NODEUPDOWN_ERR_NULLPTR;
       return -1;
     }
-    memset(list[i], '\0', MAXHOSTNAMELEN+1);
+    memset(list[i], '\0', maxnodelen+1);
   }
 
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;

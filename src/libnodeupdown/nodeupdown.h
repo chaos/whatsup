@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown.h,v 1.20 2003-05-21 20:14:50 achu Exp $
+ *  $Id: nodeupdown.h,v 1.21 2003-05-23 00:32:08 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h,v $
  *    
  */
@@ -28,14 +28,13 @@
 #define NODEUPDOWN_ERR_PARAMETERS        12 /* incorrect parameters passed in */
 #define NODEUPDOWN_ERR_NULLPTR           13 /* null pointer in list */
 #define NODEUPDOWN_ERR_OUTMEM            14 /* out of memory */
-#define NODEUPDOWN_ERR_NODE_CONFLICT     15 /* conflict between gmond & genders */
-#define NODEUPDOWN_ERR_NOTFOUND          16 /* node not found */ 
-#define NODEUPDOWN_ERR_GENDERS           17 /* internal genders error */
-#define NODEUPDOWN_ERR_GANGLIA           18 /* internal ganglia error */
-#define NODEUPDOWN_ERR_HOSTLIST          19 /* internal hostlist error */
-#define NODEUPDOWN_ERR_MAGIC             20 /* magic number error */
-#define NODEUPDOWN_ERR_INTERNAL          21 /* internal system error */
-#define NODEUPDOWN_ERR_ERRNUMRANGE       22 /* error number out of range */ 
+#define NODEUPDOWN_ERR_NOTFOUND          15 /* node not found */ 
+#define NODEUPDOWN_ERR_GENDERS           16 /* internal genders error */
+#define NODEUPDOWN_ERR_GANGLIA           17 /* internal ganglia error */
+#define NODEUPDOWN_ERR_HOSTLIST          18 /* internal hostlist error */
+#define NODEUPDOWN_ERR_MAGIC             19 /* magic number error */
+#define NODEUPDOWN_ERR_INTERNAL          20 /* internal system error */
+#define NODEUPDOWN_ERR_ERRNUMRANGE       21 /* error number out of range */ 
 
 #define NODEUPDOWN_TIMEOUT_LEN           60
 
