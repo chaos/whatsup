@@ -2,9 +2,6 @@ Albert Chu <chu11@llnl.gov>
 
 With the exception of:
 
-src/libcommon/*: By LLNL Chaos development team members Mark Grondona
-and Chris Dunlap.
+src/libcommon/*: By various LLNL Chaos development team members.
 
 src/libexpat: See README.expat for details
-
-src/libdotconf:  See README.dotconf for details

@@ -1,7 +1,14 @@
 2003-01-09  Albert Chu  <chu11@llnl.gov>
 
 	* src/libcommon/conffile.h, src/libcommon/conffile.c: New files
-	
+
+	* README.dotconf, src/libdotconf/dotconf.h,
+	src/libdotconf/dotconf.c, src/libdotconf/readdir.h,
+	src/libdotconf/readdir.c: Removed files.
+
+	* configure.ac, src/Makefile.am, AUTHORS: Updated for dotconf
+	removal.
+
 2003-12-31  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/Makefile.am,

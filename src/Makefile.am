@@ -1,12 +1,11 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.6 2003-11-24 16:13:19 achu Exp $
+## $Id: Makefile.am,v 1.7 2004-01-10 00:42:52 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
 
 SUBDIRS = \
 	libcommon     \
-	libdotconf    \
 	libexpat      \
 	libnodeupdown \
 	whatsup       \
