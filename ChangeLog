@@ -1,6 +1,7 @@
 2003-05-14 Albert Chu <chu11@llnl.gov>
 	- fixed memory leak in nodeupdown
 	- upgraded nodeupdown & whatsup to use gendersllnl library.
+	- autoconfed version() in whatsup command
 	- tagged whatsup-1-0-6
 
 2003-04-29 Albert Chu <chu11@llnl.gov>
