@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.20 2003-04-24 20:48:05 achu Exp $
+ * $Id: whatsup.c,v 1.21 2003-04-24 21:55:41 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -103,7 +103,7 @@ static int get_all_up_or_down_nodes(struct arginfo *,
                                     nodeupdown_t, 
                                     hostlist_t);
 
-static int remove_nodes(struct arginfo *, hostlist_t);
+static int remove_nodes_with_genders_attribute(struct arginfo *, hostlist_t);
 
 static int get_altnames(struct arginfo *, nodeupdown_t, hostlist_t *);
 
@@ -674,8 +674,8 @@ int get_all_up_or_down_nodes(struct arginfo *arginfo,
   return 0;
 }
 
-int remove_nodes(struct arginfo *arginfo, 
-                 hostlist_t nodes) {
+int remove_nodes_with_genders_attribute(struct arginfo *arginfo, 
+                                        hostlist_t nodes) {
 
   genders_t genders_handle = NULL;
   hostlist_iterator_t iter = NULL;
@@ -833,7 +833,7 @@ int get_up_or_down_nodes(struct arginfo *arginfo,
   }
 
   if (arginfo->genders_attribute != NULL) {
-    if (remove_nodes(arginfo, *nodes) == -1) {
+    if (remove_nodes_with_genders_attribute(arginfo, *nodes) == -1) {
       goto cleanup;
     }
   }
