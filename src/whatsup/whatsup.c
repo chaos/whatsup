@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.79 2003-12-30 17:10:03 achu Exp $
+ *  $Id: whatsup.c,v 1.80 2004-01-13 22:50:45 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -489,6 +489,7 @@ int main(int argc, char **argv) {
   int up_count, down_count, max, retval = 1;
   int buflen = WHATSUP_BUFFERLEN;
 
+  /* easter eggs */
   if (argc == 2) {
     if (strcasecmp(argv[1],"doc") == 0)
       fprintf(stderr,"Shhhhhh.  Be very very quiet.  I'm hunting wabbits.\n");
