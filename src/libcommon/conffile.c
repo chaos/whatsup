@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.9 2004-01-12 23:54:48 achu Exp $
+ *  $Id: conffile.c,v 1.10 2004-01-13 17:00:57 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -252,7 +252,6 @@ static int
 _remove_comments(conffile_t cf, char *linebuf, int linebuflen)
 {
     int i, newlen, previous_is_escape = 0, comment_remaining_buf = 0;
-    char *temp;
   
     /* Cannot do check like the following:
      *
