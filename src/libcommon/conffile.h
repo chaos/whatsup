@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.h,v 1.3 2004-01-12 19:19:52 achu Exp $
+ *  $Id: conffile.h,v 1.4 2004-01-12 19:54:22 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -61,7 +61,12 @@
  * the parser will error out because it only found one quotation mark.
  * In the second example, the comment character causes the parser to
  * ignore the continuation character.  Thus, the parser will error out
- * because "arg2" is not a valid optionname.
+ * because "arg2" is not a valid optionname.  The correct usage would
+ * be as follows:
+ *
+ * optionname1   "\#"
+ * optionname2   arg1 \ # my comment
+ *               arg2
  *
  * A continuation character at the end of a line takes precendence
  * over escape characters.  For example, the following results in a
@@ -74,7 +79,19 @@
  * and the next line is read assuming it is a continuation of the
  * previous line.  When the arguments are parsed, it is assumed a
  * stray '\' exists in the arguments.  To fix this, there must be
- * three '\' characters.
+ * three '\' characters listed like the following:
+ *
+ * optionname    arg1 arg2 \\\
+ *               arg3 arg4
+ *
+ * The writer of the configuration file is still responsible for white
+ * space between arguments when continuation characters are used.  For
+ * example:
+ *
+ * optionname    arg1 arg2\
+ * arg3
+ *
+ * This example only has 2 arguments, "arg1" and "arg2arg3".  
  *
  * When a parse error with quotes occurs, a PARSE_QUOTE error code is
  * returned.  When a parse error occurs with a '\' character, a
@@ -224,8 +241,7 @@ struct conffile_data {
  * 'app_ptr' is a pointer to data specified in conffile_setup().
  *
  * Typically, the option_ptr will point to a buffer to store argument
- * data or a flag that can be modified to indicate an option was
- * found.  The callback function then stores data into the buffer from
+ * data.  The callback function then stores data into the buffer from
  * the data pointed at by the 'data' pointer.  The app_ptr is a
  * pointer to data passed into the conffile_setup() function.  It can
  * be used for anything.  For example, it could be used to handle
@@ -234,9 +250,9 @@ struct conffile_data {
  * The function should return 0 if the argument was read properly and
  * the parser should continue parsing.  Return -1 if an error has
  * occurred and you wish the parser to quit.  If an error code is set
- * in a callback function using conffile_seterrnum() that errnum will
- * be passed back to the original caller of conffile_parse().  If no
- * error code is set, ERR_CALLBACK will be passed back from
+ * in a callback function, using conffile_seterrnum(), that errnum
+ * will be passed back to the original caller of conffile_parse().  If
+ * no error code is set, ERR_CALLBACK will be passed back from
  * conffile_parse().
  */
 typedef int (*conffile_option_func)(char *optionname,

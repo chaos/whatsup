@@ -1,6 +1,6 @@
 
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.5 2004-01-12 19:19:52 achu Exp $
+ *  $Id: conffile.c,v 1.6 2004-01-12 19:54:22 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -51,9 +51,9 @@ struct conffile {
     int options_len;
     int line_num;
     int line_count;
-    int end_of_file; 
+    int end_of_file;
     void *app_ptr;
-    int flags; 
+    int flags;
     char optionname[CONFFILE_MAX_OPTIONNAMELEN];
 };
 
@@ -323,6 +323,7 @@ _readline(conffile_t cf, char *linebuf, int linebuflen)
          *
          * optionname arg1 \    # my comment
          *
+         *                  ^^^^ need to remove this whitespace 
          */
         len = _remove_trailing_whitespace(cf, linebuf, len);
         if (len == 0) {
@@ -524,9 +525,9 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
     if ((option->option_type == CONFFILE_OPTION_LIST_INT
          || option->option_type == CONFFILE_OPTION_LIST_DOUBLE
          || option->option_type == CONFFILE_OPTION_LIST_STRING)
-        && option->option_type_arg > 0
-        && numargs != option->option_type_arg) {
-        if (numargs < option->option_type_arg)
+        && ((int)option->option_type_arg) > 0
+        && numargs != ((int)option->option_type_arg)) {
+        if (numargs < ((int)option->option_type_arg))
             cf->errnum = CONFFILE_ERR_PARSE_ARG_MISSING;
         else
             cf->errnum = CONFFILE_ERR_PARSE_ARG_TOOMANY;
@@ -640,7 +641,7 @@ conffile_parse(conffile_t cf,
           || ((options[i].option_type == CONFFILE_OPTION_LIST_INT
                || options[i].option_type == CONFFILE_OPTION_LIST_DOUBLE
                || options[i].option_type == CONFFILE_OPTION_LIST_STRING)
-              && options[i].option_type_arg == 0)
+              && ((int)options[i].option_type_arg) == 0)
           || options[i].max_count < 0
           || options[i].required_count < 0
           || options[i].count_ptr == NULL) {
