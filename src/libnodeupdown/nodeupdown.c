@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.52 2003-05-23 21:33:23 achu Exp $
+ * $Id: nodeupdown.c,v 1.53 2003-05-23 22:30:57 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -692,7 +692,6 @@ int nodeupdown_compare_genders_to_gmond_nodes(nodeupdown_t handle) {
                               num_nodes, 
                               NULL,
                               NULL)) == -1) {
-    (void)genders_nodelist_destroy(handle->genders_handle, genders_nodes);
     handle->errnum = NODEUPDOWN_ERR_GENDERS;
     goto cleanup;
   }
@@ -1041,7 +1040,6 @@ int nodeupdown_nodelist_clear(nodeupdown_t handle, char **list) {
 
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return 0;
-
 }
 
 int nodeupdown_nodelist_destroy(nodeupdown_t handle, char **list) {
