@@ -1,4 +1,4 @@
-# $Id: whatsup.spec,v 1.2 2003-02-25 01:43:20 achu Exp $
+# $Id: whatsup.spec,v 1.3 2003-02-25 01:44:37 achu Exp $
 
 Name:		whatsup
 Version:	0.0
@@ -7,7 +7,6 @@ Release:	1
 Summary:	whatsup
 Group:		Applications/Communications
 License:	GPL
-URL:		
 
 BuildRoot:	%{_tmppath}/%{name}-%{version}
 
