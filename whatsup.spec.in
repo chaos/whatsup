@@ -1,4 +1,4 @@
-# $Id: whatsup.spec.in,v 1.9 2003-11-14 01:17:55 achu Exp $
+# $Id: whatsup.spec.in,v 1.10 2003-11-14 01:46:37 achu Exp $
 
 Name:           @PROJECT@
 Version:        @VERSION@
@@ -14,6 +14,9 @@ Source0:        %{name}-%{version}.tgz
 
 Requires:       ganglia-monitor-core
 Requires:       ganglia-monitor-core-lib 
+
+# By default, we'll compile with gendersllnl if nothing else is specified
+%{!?_with_masterlist: %{!?_with_genders: %{!?_with_gendersllnl: %define _with_gendersllnl --with-gendersllnl}}}
 
 %if %{?_with_genders:1}%{!?_with_genders:0}
 Requires:       genders >= 1.2
