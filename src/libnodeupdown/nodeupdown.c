@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.6 2003-03-05 01:06:50 achu Exp $
+ * $Id: nodeupdown.c,v 1.7 2003-03-05 01:16:07 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -772,6 +772,7 @@ int nodeupdown_cleanup(nodeupdown_t handle) {
      * function that handles "destroy cluster data" or "free cluster
      * data".  
      ********************************************************/
+    free(handle->ganglia_cluster);
   }
   nodeupdown_initialization(handle);
 
