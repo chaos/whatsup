@@ -1,3 +1,4 @@
 Fix up spec file to take parameters for proper masterlist type
 Use libtool to allow pluggable loadable modules for masterlist mechanisms??
 Make Perl MakeMaker actually be good
+Create updown daemon, instead of using ganglia??
