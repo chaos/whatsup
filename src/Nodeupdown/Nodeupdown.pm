@@ -1,5 +1,5 @@
 #############################################################################
-# $Id: Nodeupdown.pm,v 1.7 2003-12-01 15:50:07 achu Exp $
+# $Id: Nodeupdown.pm,v 1.8 2003-12-05 19:36:57 achu Exp $
 # $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/Nodeupdown/Nodeupdown.pm,v $
 #############################################################################
 
@@ -18,18 +18,15 @@ our @EXPORT_OK = qw(&_errormsg
                     $handlekey
                     $hostkey
                     $portkey
-                    $NODEUPDOWN_TIMEOUT_LEN
-                    $NODEUPDOWN_CONF_FILE);
+                    $NODEUPDOWN_TIMEOUT_LEN);
 our %EXPORT_TAGS = ( 'all' => [ qw(&_errormsg 
                                    $debugkey 
                                    $handlekey
                                    $hostkey
                                    $portkey
-                                   $NODEUPDOWN_TIMEOUT_LEN
-                                   $NODEUPDOWN_CONF_FILE) ] );
+                                   $NODEUPDOWN_TIMEOUT_LEN) ] );
 
 our $NODEUPDOWN_TIMEOUT_LEN = Libnodeupdown->NODEUPDOWN_TIMEOUT_LEN;
-our $NODEUPDOWN_CONF_FILE = Libnodeupdown->NODEUPDOWN_CONF_FILE;
 our $debugkey = "_DEBUG";
 our $handlekey = "_HANDLE";
 our $hostkey = "_HOST";
