@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown.h,v 1.5 2003-03-07 23:38:50 achu Exp $
+ *  $Id: nodeupdown.h,v 1.6 2003-03-11 17:00:49 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h,v $
  *    
  */
@@ -7,19 +7,7 @@
 #ifndef _NODEUPDOWN_H
 #define _NODEUPDOWN_H
 
-#include <genders.h>
-#include <ganglia.h>
-#include <netdb.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/errno.h>
-#include <sys/param.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-
-#include "hostlist.h"
 
 /**************************************
  * Definitions                        *
@@ -34,28 +22,14 @@
 #define NODEUPDOWN_ERR_LOAD               6 /* data not loaded */
 #define NODEUPDOWN_ERR_OVERFLOW           7 /* overflow on list passed in */
 #define NODEUPDOWN_ERR_PARAMETERS         8 /* incorrect parameters passed in */
-#define NODEUPDOWN_ERR_OUTMEM             9 /* out of memory */
-#define NODEUPDOWN_ERR_NODE_CONFLICT     10 /* conflict between gmond & genders */
-#define NODEUPDOWN_ERR_NOTFOUND          11 /* node not found */ 
-#define NODEUPDOWN_ERR_GENDERS           12 /* internal genders error */
-#define NODEUPDOWN_ERR_GANGLIA           13 /* internal ganglia error */
-#define NODEUPDOWN_ERR_HOSTLIST          14 /* internal hostlist error */
-#define NODEUPDOWN_ERR_INTERNAL          15 /* internal system error */
-
-#define NODEUPDOWN_ERR_MIN               NODEUPDOWN_ERR_SUCCESS
-#define NODEUPDOWN_ERR_MAX               NODEUPDOWN_ERR_INTERNAL
-
-#define NODEUPDOWN_MAX_NODES_GUESS       4096
-
-#define NODEUPDOWN_GANGLIA_NAME          "nodeupdown_ganglia"
-
-#define NODEUPDOWN_GANGLIA_CLUSTER_NAME  "nodeupdown_ganglia_cluster"
-
-#define NODEUPDOWN_BUFFERLEN             65536
-
-#ifndef GENDERS_ALTNAME_ATTRIBUTE
-#define GENDERS_ALTNAME_ATTRIBUTE        "altname"
-#endif
+#define NODEUPDOWN_ERR_NULLPTR            9 /* null pointer in list */
+#define NODEUPDOWN_ERR_OUTMEM            10 /* out of memory */
+#define NODEUPDOWN_ERR_NODE_CONFLICT     11 /* conflict between gmond & genders */
+#define NODEUPDOWN_ERR_NOTFOUND          12 /* node not found */ 
+#define NODEUPDOWN_ERR_GENDERS           13 /* internal genders error */
+#define NODEUPDOWN_ERR_GANGLIA           14 /* internal ganglia error */
+#define NODEUPDOWN_ERR_HOSTLIST          15 /* internal hostlist error */
+#define NODEUPDOWN_ERR_INTERNAL          16 /* internal system error */
 
 typedef struct nodeupdown *nodeupdown_t;
 
@@ -117,6 +91,35 @@ void nodeupdown_perror(nodeupdown_t handle, char *msg);
  */
 int nodeupdown_dump(nodeupdown_t handle, FILE *stream);
 
+/* nodeupdown_get_up_nodes_string
+ * - retrieve a ranged string of up nodes
+ * - buffer space assumed to be preallocated with length buflen
+ * - returns 0 on success, -1 on error
+ */
+int nodeupdown_get_up_nodes_string(nodeupdown_t handle, char *buf, int buflen);
+
+/* nodeupdown_get_down_nodes_string
+ * - retrieve a ranged string of down nodes
+ * - buffer space assumed to be preallocated with length buflen
+ * - returns 0 on success, -1 on error
+ */
+int nodeupdown_get_down_nodes_string(nodeupdown_t handle, char *buf, int buflen);
+
+/* nodeupdown_get_up_nodes_list
+ * - retrieve a list of up nodes
+ * - list assumed to be preallocated with len elements
+ * - returns number of nodes copied on success, -1 on error
+ */
+int nodeupdown_get_up_nodes_list(nodeupdown_t handle, char **list, int len);
+
+/* nodeupdown_get_down_nodes_list
+ * - retrieve a list of down nodes
+ * - list assumed to be preallocated with len elements
+ * - returns number of nodes copied on success, -1 on error
+ */
+int nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len);
+
+#ifdef NODEUPDOWN_HOSTLIST_API
 /* nodeupdown_get_up_nodes_hostlist
  * - retrieve a hostlist of up nodes
  * - hostlist assumed to be pre-allocated
@@ -130,20 +133,61 @@ int nodeupdown_get_up_nodes_hostlist(nodeupdown_t handle, hostlist_t hl);
  * - returns 0 on success, -1 on error
  */
 int nodeupdown_get_down_nodes_hostlist(nodeupdown_t handle, hostlist_t hl);
+#endif
 
-/* nodeupdown_get_up_nodes_list
- * - retrieve a list of up nodes
- * - list assumed to be preallocated
+/* nodeupdown_get_up_nodes_string_altnames
+ * - retrieve ranged string of up nodes with alternate names
+ * - buffer space assumed to be preallocated with length buflen
+ * - returns 0 on success, -1 on error
+ */
+int nodeupdown_get_up_nodes_string_altnames(nodeupdown_t handle, 
+					    char *buf, 
+					    int buflen);
+
+/* nodeupdown_get_down_nodes_string_altnames
+ * - retrieve ranged string of down nodes with alternate names
+ * - buffer space assumed to be preallocated with length buflen
+ * - returns 0 on success, -1 on error
+ */
+int nodeupdown_get_down_nodes_string_altnames(nodeupdown_t handle, 
+					      char *buf, 
+					      int buflen);
+
+/* nodeupdown_get_up_nodes_list_altnames
+ * - retrieve list of up nodes with alternate names
+ * - list assumed to be preallocated with len elements
  * - returns number of nodes copied on success, -1 on error
  */
-int nodeupdown_get_up_nodes_list(nodeupdown_t handle, char **list, int len);
+int nodeupdown_get_up_nodes_list_altnames(nodeupdown_t handle, 
+					  char **list, 
+					  int len);
 
-/* nodeupdown_get_down_nodes_list
- * - retrieve a list of down nodes
- * - list assumed to be preallocated
+/* nodeupdown_get_down_nodes_list_altnames
+ * - retrieve list of down nodes with alternate names
+ * - list assumed to be preallocated with len elements
  * - returns number of nodes copied on success, -1 on error
  */
-int nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len);
+int nodeupdown_get_down_nodes_list_altnames(nodeupdown_t handle, 
+					    char **list, 
+					    int len);
+
+#ifdef NODEUPDOWN_HOSTLIST_API
+/* nodeupdown_get_up_nodes_hostlist_altnames
+ * - retrieve a hostlist of up nodes with alternate names
+ * - hostlist assumed to be pre-allocated
+ * - returns 0 on success, -1 on error
+ */
+int nodeupdown_get_up_nodes_hostlist_altnames(nodeupdown_t handle, 
+					      hostlist_t hl);
+
+/* nodeupdown_get_down_nodes_hostlist_altnames
+ * - retrieve a hostlist of down nodes with alternate names
+ * - hostlist assumed to be pre-allocated
+ * - returns 0 on success, -1 on error
+ */
+int nodeupdown_get_down_nodes_hostlist_altnames(nodeupdown_t handle, 
+						hostlist_t hl);
+#endif
 
 /* nodeupdown_is_node_up
  * - check if a node is up
@@ -157,23 +201,36 @@ int nodeupdown_is_node_up(nodeupdown_t handle, char *node);
  */
 int nodeupdown_is_node_down(nodeupdown_t handle, char *node);
 
-/* nodeupdown_get_hostlist_alternate_names
+/* nodeupdown_convert_string_to_altnames
+ * - converts the ranged string to a string of alternate names
+ * - buffer space assumed to be both preallocated with length buflen
+ * - returns 0 on success, -1 on error
+ */
+int nodeupdown_convert_string_to_altnames(nodeupdown_t handle, 
+					  char *src,
+					  char *dest,
+					  int buflen);
+
+/* nodeupdown_convert_list_to_altnames
+ * - converts the list to alternate names
+ * - lists assumed to be both preallocated with len elements
+ * - returns 0 on success, -1 on error
+ */
+int nodeupdown_convert_list_to_altnames(nodeupdown_t handle, 
+					char **src, 
+					char **dest,
+					int len);
+
+#ifdef NODEUPDOWN_HOSTLIST_API
+/* nodeupdown_convert_hostlist_to_altnames
  * - converts the hostlist to alternate names
  * - hostlists assumed to be preallocated
  * - returns 0 on success, -1 on error
  */
-int nodeupdown_get_hostlist_alternate_names(nodeupdown_t handle, 
+int nodeupdown_convert_hostlist_to_altnames(nodeupdown_t handle, 
 					    hostlist_t src, 
 					    hostlist_t dest);
-
-/* nodeupdown_get_list_alternate names
- * - converts the list to alternate names
- * - lists assumed to be preallocated
- * - returns 0 on success, -1 on error
- */
-int nodeupdown_get_list_alternate_names(nodeupdown_t handle, 
-					char **src, 
-					char **dest);
+#endif
 
 /* nodeupdown_nodelist_create
  * - allocate an array to store node names in
