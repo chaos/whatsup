@@ -1,4 +1,4 @@
-# $Id: whatsup.spec,v 1.14 2003-03-11 23:00:58 achu Exp $
+# $Id: whatsup.spec,v 1.15 2003-03-12 00:39:44 achu Exp $
 
 Name:		whatsup
 Version:	1.0
@@ -136,7 +136,7 @@ fi
 /usr/man/man3/nodeupdown_nodelist_create.3.gz
 /usr/man/man3/nodeupdown_nodelist_clear.3.gz
 /usr/man/man3/nodeupdown_nodelist_destroy.3.gz
-/usr/man/man3/nodeupdown_get_list_alternate_names.3.gz
+
 
 
 
