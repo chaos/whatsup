@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.67 2003-11-06 18:09:55 achu Exp $
+ * $Id: whatsup.c,v 1.68 2003-11-06 19:54:37 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -240,16 +240,14 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
     case 's':
       winfo->list_type = SPACE;
       break;
-#if HAVE_GENDERS
+#if (HAVE_GENDERS || HAVE_MASTERLIST)
     case 'f':
       winfo->filename = optarg;
       break;
+#endif
+#if HAVE_GENDERS
     case 'a':
       winfo->list_altnames = WHATSUP_ON;
-      break;
-#elif
-    case 'f':
-      winfo->filename = optarg;
       break;
 #endif 
     case '?':
