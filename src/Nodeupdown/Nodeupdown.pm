@@ -1,5 +1,5 @@
 #############################################################################
-# $Id: Nodeupdown.pm,v 1.4 2003-09-23 23:09:06 achu Exp $
+# $Id: Nodeupdown.pm,v 1.5 2003-11-07 20:42:38 achu Exp $
 # $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/Nodeupdown/Nodeupdown.pm,v $
 #############################################################################
 
@@ -168,10 +168,6 @@ sub down_nodes {
             return ();
         }
     }
-}
-
-sub _common_check {
-    my $up_or_down = shift;
 }
 
 sub are_up {
