@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.44 2003-05-15 20:24:50 achu Exp $
+ * $Id: nodeupdown.c,v 1.45 2003-05-16 15:54:37 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -686,7 +686,7 @@ void xml_parse_start(void *data, const char *e1, const char **attr) {
     memset(buffer, '\0', buflen);
     if (genders_to_gendname_preserve(handle->genders_handle, 
                                      attr[1],
-                                     &(((struct parse_vars *)data)->buffer),
+                                     ((struct parse_vars *)data)->buffer,
                                      buflen) == -1)
       return;
 
@@ -1031,7 +1031,7 @@ int nodeupdown_check_if_node_in_hostlist(nodeupdown_t handle,
 
   buflen = (strlen(node) > buflen) ? strlen(node) : buflen;
 
-  if ((buflen = (char *)malloc(buflen + 1)) == NULL) {
+  if ((buffer = (char *)malloc(buflen + 1)) == NULL) {
     handle->errnum = NODEUPDOWN_ERR_OUTMEM;
     goto cleanup;
   }
