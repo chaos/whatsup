@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.30 2003-05-15 19:13:23 achu Exp $
+ * $Id: whatsup.c,v 1.31 2003-05-15 20:19:37 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -38,6 +38,9 @@ extern int h_errno;
 #define WHATSUP_ON           1
 
 #define WHATSUP_BUFFERLEN    65536
+
+#define RANGED_STRING        0
+#define DERANGED_STRING      1
 
 #ifndef GENDERS_ALTNAME_ATTRIBUTE
 #define GENDERS_ALTNAME_ATTRIBUTE        "altname"
@@ -501,8 +504,6 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
 
 /* get_hostlist_string
  * - get a hostlist ranged string 
- * - which == 0, do ranged
- * - which == 1, do deranged  
  */
 char * get_hostlist_string(hostlist_t hostlist, int which) {
   char *str;
@@ -517,7 +518,7 @@ char * get_hostlist_string(hostlist_t hostlist, int which) {
     }
     memset(str, '\0', str_len);
 
-    if (which == 0)
+    if (which == RANGED_STRING)
       ret = hostlist_ranged_string(hostlist, str_len, str);
     else
       ret = hostlist_deranged_string(hostlist, str_len, str);
@@ -574,7 +575,7 @@ int check_if_nodes_are_up_or_down(struct arginfo *arginfo,
   }
   str = NULL;
 
-  if ((str = get_hostlist_string(hl, 0)) == NULL)
+  if ((str = get_hostlist_string(hl, RANGED_STRING)) == NULL)
     goto cleanup;
 
   hostlist_iterator_destroy(iter);
@@ -771,7 +772,7 @@ int output_nodes(struct arginfo *arginfo, char *nodes) {
       goto cleanup;
     }
 
-    if ((str = get_hostlist_string(hl, 1)) == NULL)
+    if ((str = get_hostlist_string(hl, DERANGED_STRING)) == NULL)
       goto cleanup;
 
     /* convert commas to appropriate break types */
