@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.9 2003-03-12 18:05:58 achu Exp $
+ * $Id: whatsup.c,v 1.10 2003-03-13 21:09:58 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -525,7 +525,7 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
       return -1;
     }
     else {
-      /* found no brackets, node input is comman or space separated */
+      /* found no brackets, node input is comma or space separated */
 
       char *temp_char;
 
@@ -628,7 +628,6 @@ char * get_hostlist_ranged_string(hostlist_t hostlist) {
   return str;
 }
 
-
 /* check_if_nodes_are_up_or_down
  * - determine if specific nodes passed in at the command line are up or down 
  */
@@ -680,7 +679,6 @@ int get_all_up_or_down_nodes(struct arginfo *arginfo,
 			     enum whatsup_output_type output_type,
 			     nodeupdown_t handle, 
 			     hostlist_t nodes) {
-
   int str_len = 0;
   char *str = NULL;
 
