@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown.h,v 1.19 2003-04-25 23:55:56 achu Exp $
+ *  $Id: nodeupdown.h,v 1.20 2003-05-21 20:14:50 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h,v $
  *    
  */
@@ -19,22 +19,23 @@
 #define NODEUPDOWN_ERR_READ               3 /* read file error */
 #define NODEUPDOWN_ERR_CONNECT            4 /* network connection error */
 #define NODEUPDOWN_ERR_TIMEOUT            5 /* network connect timeout */
-#define NODEUPDOWN_ERR_ADDRESS            6 /* network address error */
-#define NODEUPDOWN_ERR_NETWORK            7 /* network error */
-#define NODEUPDOWN_ERR_ISLOADED           8 /* data already loaded */
-#define NODEUPDOWN_ERR_NOTLOADED          9 /* data not loaded */
-#define NODEUPDOWN_ERR_OVERFLOW          10 /* overflow on list/string passed in */
-#define NODEUPDOWN_ERR_PARAMETERS        11 /* incorrect parameters passed in */
-#define NODEUPDOWN_ERR_NULLPTR           12 /* null pointer in list */
-#define NODEUPDOWN_ERR_OUTMEM            13 /* out of memory */
-#define NODEUPDOWN_ERR_NODE_CONFLICT     14 /* conflict between gmond & genders */
-#define NODEUPDOWN_ERR_NOTFOUND          15 /* node not found */ 
-#define NODEUPDOWN_ERR_GENDERS           16 /* internal genders error */
-#define NODEUPDOWN_ERR_GANGLIA           17 /* internal ganglia error */
-#define NODEUPDOWN_ERR_HOSTLIST          18 /* internal hostlist error */
-#define NODEUPDOWN_ERR_MAGIC             19 /* magic number error */
-#define NODEUPDOWN_ERR_INTERNAL          20 /* internal system error */
-#define NODEUPDOWN_ERR_ERRNUMRANGE       21 /* error number out of range */ 
+#define NODEUPDOWN_ERR_HOSTNAME           6 /* hostname invalid */
+#define NODEUPDOWN_ERR_ADDRESS            7 /* network address error */
+#define NODEUPDOWN_ERR_NETWORK            8 /* network error */
+#define NODEUPDOWN_ERR_ISLOADED           9 /* data already loaded */
+#define NODEUPDOWN_ERR_NOTLOADED         10 /* data not loaded */
+#define NODEUPDOWN_ERR_OVERFLOW          11 /* overflow on list/string passed in */
+#define NODEUPDOWN_ERR_PARAMETERS        12 /* incorrect parameters passed in */
+#define NODEUPDOWN_ERR_NULLPTR           13 /* null pointer in list */
+#define NODEUPDOWN_ERR_OUTMEM            14 /* out of memory */
+#define NODEUPDOWN_ERR_NODE_CONFLICT     15 /* conflict between gmond & genders */
+#define NODEUPDOWN_ERR_NOTFOUND          16 /* node not found */ 
+#define NODEUPDOWN_ERR_GENDERS           17 /* internal genders error */
+#define NODEUPDOWN_ERR_GANGLIA           18 /* internal ganglia error */
+#define NODEUPDOWN_ERR_HOSTLIST          19 /* internal hostlist error */
+#define NODEUPDOWN_ERR_MAGIC             20 /* magic number error */
+#define NODEUPDOWN_ERR_INTERNAL          21 /* internal system error */
+#define NODEUPDOWN_ERR_ERRNUMRANGE       22 /* error number out of range */ 
 
 #define NODEUPDOWN_TIMEOUT_LEN           60
 
