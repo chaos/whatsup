@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown_masterlist.c,v 1.7 2003-11-24 16:13:19 achu Exp $
+ *  $Id: nodeupdown_masterlist.c,v 1.8 2003-11-24 16:34:53 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown_masterlist.c,v $
  *    
  */
@@ -77,6 +77,7 @@ static int _load_hostsfile_data(nodeupdown_t handle, const char *filename) {
     return -1;
   }
 
+  /* XXX: This sucks, I need to find a good file parsing lib */
   while ((len = _readline(handle, fd, buf, NODEUPDOWN_BUFFERLEN)) > 0) {
     if (buf[0] == '#')		/* skip comments */
       continue;
@@ -330,4 +331,3 @@ int nodeupdown_masterlist_increase_max_nodes(nodeupdown_t handle) {
   return 0;
 #endif
 }
-

@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.82 2003-11-24 16:13:19 achu Exp $
+ * $Id: nodeupdown.c,v 1.83 2003-11-24 16:34:53 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -196,7 +196,7 @@ static const char *_cb_masterlist(command_t *cmd, context_t *ctx) {
   return NULL;
 }
 
-/* parse configuration file */
+/* parse configuration file and store data into confdata */
 static void _read_conffile(nodeupdown_t handle, struct confdata *cd) {
   configfile_t *cf = NULL;
   configoption_t options[] = {
@@ -348,8 +348,8 @@ static int _low_timeout_connect(nodeupdown_t handle, const char *hostname,
   return -1;
 }
 
-/* xml start function for use with ganglia XML library
- * - handle parsing of beginning tags, i.e. <FOO attr1=X attr2=Y> 
+/* xml start function for use with expat XML parsing library
+ * - parse beginning tags like <FOO attr1=X attr2=Y> 
  */
 static void _xml_parse_start(void *data, const char *e1, const char **attr) {
   nodeupdown_t handle = ((struct parse_vars *)data)->handle;
@@ -386,7 +386,7 @@ static void _xml_parse_start(void *data, const char *e1, const char **attr) {
     if (nodeupdown_masterlist_is_node_legit(handle, buffer) <= 0)
       return;
 
-    /* store up or down */
+    /* store as up or down */
     reported = atol(attr[5]);
     if (abs(localtime - reported) < timeout_len)
       ret = hostlist_push(handle->up_nodes, buffer);
@@ -401,8 +401,8 @@ static void _xml_parse_start(void *data, const char *e1, const char **attr) {
   }
 }
 
-/* xml end function for use with ganglia XML library
- * - handle parsing of end tags, ie. </FOO> 
+/* xml end function for use with expat XML parsing library
+ * - parse end tags like </FOO>
  */
 static void _xml_parse_end(void *data, const char *e1) {
   /* nothing to do at this time */
@@ -484,7 +484,8 @@ int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname,
   _read_conffile(handle, &cd); 
 
   /* Must call masterlist_init before _connect_to_gmond */
-  masterlist = (masterlist == NULL && cd.masterlist_found > 0) ? &(cd.masterlist[0]) : masterlist;
+  masterlist = (masterlist == NULL 
+                && cd.masterlist_found > 0) ? &(cd.masterlist[0]) : masterlist;
   if (nodeupdown_masterlist_init(handle, masterlist) == -1)
     goto cleanup;
 
@@ -497,7 +498,8 @@ int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname,
       goto cleanup;
 
     while ((str = list_next(itr)) != NULL) {
-      port = (gmond_port <= 0 && cd.gmond_port_found > 0) ? cd.gmond_port : gmond_port;
+      port = (gmond_port <= 0 
+              && cd.gmond_port_found > 0) ? cd.gmond_port : gmond_port;
       if ((fd = _low_timeout_connect(handle, str, port)) >= 0) 
 	break;
     }
@@ -506,7 +508,8 @@ int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname,
       list_iterator_destroy(itr);
   }
   else {
-    port = (gmond_port <= 0 && cd.gmond_port_found > 0) ? cd.gmond_port : gmond_port;
+    port = (gmond_port <= 0 
+            && cd.gmond_port_found > 0) ? cd.gmond_port : gmond_port;
     fd = _low_timeout_connect(handle, gmond_hostname, port);
   }
 
@@ -523,7 +526,8 @@ int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname,
     goto cleanup;
   }
 
-  timeout_len = (timeout_len <= 0 && cd.timeout_len_found > 0) ? cd.timeout_len : timeout_len;
+  timeout_len = (timeout_len <= 0 
+                 && cd.timeout_len_found > 0) ? cd.timeout_len : timeout_len;
   if (_get_gmond_data(handle, fd, timeout_len) == -1)
     goto cleanup;
 
