@@ -5,6 +5,9 @@
 	  more consistent with other APIs.
 	- fixed NODEUPDOWN_ERR_LOAD to NODEUPDOWN_ERR_NOTLOADED in many
 	  manpages.
+	- removed all "altname" functions from nodeupdown API.  These
+	  functions are genders specific and should be handled by
+	  user space code.
 	- updated all manpages for appropriate nodeupdown 
 	  API changes in this release.
 	- cleaned up and reworked internals of nodeupdown library code 
