@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: libnodeupdown.3,v 1.19 2005-03-31 21:04:14 achu Exp $
+\."$Id: libnodeupdown.3,v 1.20 2005-03-31 22:44:22 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -35,7 +35,7 @@ or down
 .sp
 .BI "int nodeupdown_handle_destroy(nodeupdown_t handle);"
 .sp
-.BI "int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname, int gmond_port, int timeout_len, void *masterlist);"
+.BI "int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname, int gmond_port, int timeout_len, char *reserved);"
 .sp
 .BI "int nodeupdown_errnum(nodeupdown_t handle);"
 .sp

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.h.in,v 1.12 2004-01-15 01:09:36 achu Exp $
+ *  $Id: nodeupdown.h,v 1.26 2005-03-31 22:44:22 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -82,14 +82,14 @@ int nodeupdown_handle_destroy(nodeupdown_t handle);
  * - if hostname is NULL, localhost is assumed.
  * - if port is <= 0, default port is used
  * - if timeout_len is <= 0, default timeout is used
- * - @NODEUPDOWN_MASTERLIST_COMMENT@
+ * - 'reserved' is used for backwards compatability
  * - returns 0 on success, -1 on error
  */
 int nodeupdown_load_data(nodeupdown_t handle, 
                          const char *gmond_hostname, 
                          int gmond_port,
                          int timeout_len,
-                         @NODEUPDOWN_MASTERLIST_PARAMETER@); 
+                         char *reserved); 
 
 /* nodeupdown_errnum
  * - return the most recent error number

@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.39 2005-03-31 21:04:14 achu Exp $
+## $Id: configure.ac,v 1.40 2005-03-31 22:44:22 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -60,6 +60,7 @@ AC_PATH_PROG(PERL, perl)
 #
 # Check for defaults paths
 #
+AC_HOSTSFILE
 AC_NODEUPDOWN_CONF
 AC_NODEUPDOWN_MODULE_DIR
 AC_WHATSUP_MODULE_DIR
@@ -81,8 +82,7 @@ AM_CONDITIONAL(WITH_GENDERS, [test "$ac_with_genders" = "yes"])
 AC_GENDERSLLNL
 AM_CONDITIONAL(WITH_GENDERSLLNL, [test "$ac_with_gendersllnl" = "yes"])
 
-if test "$ac_with_genders" = "yes" ||
-   test "$ac_with_gendersllnl" = "yes"; then
+if test "$ac_with_gendersllnl" = "yes"; then
    AC_CHECK_LIB(genders,
                 genders_index_attrvals,
                 AC_DEFINE(HAVE_GENDERS_INDEX_ATTRVALS, [1],
@@ -141,7 +141,6 @@ AC_CONFIG_FILES( \
   src/libcommon/Makefile \
   src/libexpat/Makefile \
   src/libnodeupdown/Makefile \
-  src/libnodeupdown/nodeupdown.h \
   src/whatsup/Makefile \
   src/Libnodeupdown/Makefile \
   src/Nodeupdown/Makefile \

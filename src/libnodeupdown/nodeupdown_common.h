@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_common.h,v 1.11 2004-01-15 01:09:36 achu Exp $
+ *  $Id: nodeupdown_common.h,v 1.12 2005-03-31 22:44:22 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -26,8 +26,6 @@
 
 #ifndef _NODEUPDOWN_COMMON_H
 #define _NODEUPDOWN_COMMON_H
-
-/* Common code for nodeupdown.c and nodeupdown_masterlist.c */
 
 #if HAVE_CONFIG_H
 #include "config.h"
@@ -62,12 +60,12 @@
 #define NODEUPDOWN_CONNECT_LEN           5 
 
 /* Configuration file keys */
-#define NODEUPDOWN_CONF_GMOND_HOSTNAME       "gmond_hostnames"
-#define NODEUPDOWN_CONF_GMOND_HOSTNAME_MAX   8
-#define NODEUPDOWN_CONF_GMOND_PORT           "gmond_port"
-#define NODEUPDOWN_CONF_TIMEOUT_LEN          "timeout_len"
-#define NODEUPDOWN_CONF_HOSTSFILE            "hostsfile"
-#define NODEUPDOWN_CONF_GENDERSFILE          "gendersfile"
+#define NODEUPDOWN_CONF_GMOND_HOSTNAME             "hostnames"
+#define NODEUPDOWN_CONF_GMOND_HOSTNAME_MAX         8
+#define NODEUPDOWN_CONF_GMOND_PORT                 "port"
+#define NODEUPDOWN_CONF_TIMEOUT_LEN                "timeout_len"
+#define NODEUPDOWN_CONF_CLUSTERLIST_MODULE         "clusterlist_module"
+#define NODEUPDOWN_CONF_CLUSTERLIST_MODULE_OPTIONS "clusterlist_module_options"
 
 struct nodeupdown {
   int magic;                  /* magic number */
@@ -76,11 +74,6 @@ struct nodeupdown {
   hostlist_t up_nodes;        /* up nodes */
   hostlist_t down_nodes;      /* down nodes */
   int max_nodes;              /* max nodes in genders file */
-#if HAVE_HOSTSFILE
-  List hosts;                 /* list of all nodes */
-#elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
-  genders_t genders_handle;   /* genders handle */
-#endif 
 };
 
 #endif /* _NODEUPDOWN_COMMON_H */

@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown.conf.5.in,v 1.10 2005-03-31 21:04:14 achu Exp $
+\."$Id: nodeupdown.conf.5.in,v 1.11 2005-03-31 22:44:22 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -60,13 +60,13 @@ Specify the port.
 .I timeout_len seconds
 Specify the timeout length in seconds.
 .TP
-.I masterlist_module ( name | filename | path)
-Specify the masterlist module to use.  Masterlist modules are
+.I clusterlist_module ( name | filename | path)
+Specify the clusterlist module to use.  Clusterlist modules are
 first searched for in the nodeupdown package library, 
 @NODEUPDOWN_MODULE_DIR@.  They are then searched for in the
 current directory.
 
-The following masterlist modules are available by default:
+The following clusterlist modules are available by default:
 
 .if @MANPAGE_GENDERSLLNL@ \{
 gendersllnl
@@ -82,12 +82,12 @@ hostsfile
   
 none
 .TP
-.I masterlist_module_options str
-Specify arguments to pass to the masterlist module.  The arguments
+.I clusterlist_module_options str
+Specify arguments to pass to the clusterlist module.  The arguments
 are typically passed as key=value pairs.
 
 The following parse options are currently supported by the default
-masterlist modules:
+clusterlist modules:
 
 .if @MANPAGE_GENDERSLLNL@ \{
 gendersllnl: filename=<file> - Specify the path to the genders database.
