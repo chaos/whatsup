@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.104 2005-03-31 00:42:37 achu Exp $
+ *  $Id: nodeupdown.c,v 1.105 2005-03-31 23:59:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -40,6 +40,7 @@
 #include <sys/time.h> 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/param.h>
 
 #include "list.h"
 #include "hostlist.h"
@@ -53,14 +54,21 @@
 #define GANGLIA_DEFAULT_XML_PORT  8649
 #endif
 
+#define NODEUPDOWN_MAX_ARGS    16
+#define NODEUPDOWN_MAX_ARGSLEN 64
+
 /* to store config file data */
 struct nodeupdown_confdata {
-  List gmond_hostnames;
-  int gmond_hostnames_found;
-  int gmond_port;
-  int gmond_port_found;
+  List hostnames;
+  int hostnames_found;
+  int port;
+  int port_found;
   int timeout_len;
   int timeout_len_found;
+  char clusterlist_module[MAXPATHLEN+1];
+  int clusterlist_module_found;
+  char clusterlist_module_options[NODEUPDOWN_MAX_ARGS][NODEUPDOWN_MAX_ARGSLEN+1];
+  int clusterlist_module_options_found;
 #if HAVE_HOSTSFILE
   char hostsfile[MAXPATHLEN+1];
   int hostsfile_found; 
@@ -194,15 +202,15 @@ nodeupdown_handle_destroy(nodeupdown_t handle)
 }  
 
 static int 
-_cb_gmond_hostnames(conffile_t cf, struct conffile_data *data, char *optionname,
-                    int option_type, void *option_ptr, int option_data,
-                    void *app_ptr, int app_data) 
+_cb_hostnames(conffile_t cf, struct conffile_data *data, char *optionname,
+              int option_type, void *option_ptr, int option_data,
+              void *app_ptr, int app_data) 
 {
   List l = (List)option_ptr;
   char *str;
   int i;
   
-  if (data->stringlist_len > NODEUPDOWN_CONF_GMOND_HOSTNAME_MAX)
+  if (data->stringlist_len > NODEUPDOWN_CONF_HOSTNAME_MAX)
     return -1;
 
   for (i = 0; i < data->stringlist_len; i++) {
@@ -216,25 +224,49 @@ _cb_gmond_hostnames(conffile_t cf, struct conffile_data *data, char *optionname,
   return 0;
 }
 
+static int
+_cb_module_options(conffile_t cf, struct conffile_data *data,
+                   char *optionname, int option_type, void *option_ptr,
+                   int option_data, void *app_ptr, int app_data)
+{
+
+  if (data->stringlist_len > NODEUPDOWN_MAX_ARGS)
+    return -1;
+
+  if (data->stringlist_len > 0)
+    {
+      char **p = (char **)option_ptr;
+      int i;
+
+      for (i = 0; i < data->stringlist_len; i++)
+        {
+          if (strlen(data->stringlist[i]) > NODEUPDOWN_MAX_ARGSLEN)
+            return -1;
+          strncpy(p[i], data->stringlist[i], NODEUPDOWN_MAX_ARGSLEN);
+        }
+    }
+
+  return 0;
+}
+
 /* parse configuration file and store data into confdata */
 static int 
 _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd) 
 {
   struct conffile_option options[] = {
-    {NODEUPDOWN_CONF_GMOND_HOSTNAME, CONFFILE_OPTION_LIST_STRING, -1, 
-     _cb_gmond_hostnames, 1, 0, &(cd->gmond_hostnames_found),
-     cd->gmond_hostnames, 0},
-    {NODEUPDOWN_CONF_GMOND_PORT, CONFFILE_OPTION_INT, 0, 
-     conffile_int, 1, 0, &(cd->gmond_port_found), &(cd->gmond_port), 0},
+    {NODEUPDOWN_CONF_HOSTNAME, CONFFILE_OPTION_LIST_STRING, -1, 
+     _cb_hostnames, 1, 0, &(cd->hostnames_found),
+     cd->hostnames, 0},
+    {NODEUPDOWN_CONF_PORT, CONFFILE_OPTION_INT, 0, 
+     conffile_int, 1, 0, &(cd->port_found), &(cd->port), 0},
     {NODEUPDOWN_CONF_TIMEOUT_LEN, CONFFILE_OPTION_INT, 0, 
      conffile_int, 1, 0, &(cd->timeout_len_found), &(cd->timeout_len), 0},
-#if HAVE_HOSTSFILE
-    {NODEUPDOWN_CONF_HOSTSFILE, CONFFILE_OPTION_STRING, 0, 
-     conffile_string, 1, 0, &(cd->hostsfile_found), cd->hostsfile, MAXPATHLEN},
-#elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
-    {NODEUPDOWN_CONF_GENDERSFILE, CONFFILE_OPTION_STRING, 0, 
-     conffile_string, 1, 0, &(cd->gendersfile_found), cd->gendersfile, MAXPATHLEN}
-#endif
+    {NODEUPDOWN_CONF_CLUSTERLIST_MODULE, CONFFILE_OPTION_STRING, 0,
+     conffile_string, 1, 0, &(cd->clusterlist_module_found), 
+     cd->clusterlist_module, MAXPATHLEN},
+    {NODEUPDOWN_CONF_CLUSTERLIST_MODULE_OPTIONS, CONFFILE_OPTION_LIST_STRING, -1,
+     _cb_module_options, 1, 0, &(cd->clusterlist_module_options_found),
+     &(cd->clusterlist_module_options), 0},
   };
   conffile_t cf = NULL;
   int num, ret = -1;
@@ -516,26 +548,19 @@ _get_gmond_data(nodeupdown_t handle, int fd, int timeout_len)
 }
 
 int 
-nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname, 
-                     int gmond_port, int timeout_len, 
-#if HAVE_NOMASTERLIST
-                         void *ptr
-#elif HAVE_HOSTSFILE
-                         char *hostsfile
-#elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
-                         char *gendersfile
-#endif
-                         ) 
+nodeupdown_load_data(nodeupdown_t handle, const char *hostname, 
+                     int port, int timeout_len, 
+                     char *reserved)
 {
   struct nodeupdown_confdata cd;
-  int port, fd = -1;
+  int port_l, fd = -1;
 
   if (_unloaded_handle_error_check(handle) == -1)
     return -1;
 
   /* Read conffile */
   memset(&cd, '\0', sizeof(struct nodeupdown_confdata));
-  if ((cd.gmond_hostnames = list_create((ListDelF)free)) == NULL) {
+  if ((cd.hostnames = list_create((ListDelF)free)) == NULL) {
     handle->errnum = NODEUPDOWN_ERR_INTERNAL;
     goto cleanup;
   }
@@ -544,6 +569,10 @@ nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname,
     goto cleanup;
 
   /* Must call masterlist_init before _connect_to_gmond */
+  /* 
+   * XXX
+   */
+#if 0
 #if HAVE_NOMASTERLIST
   if (nodeupdown_masterlist_init(handle, ptr) == -1)
     goto cleanup;
@@ -558,19 +587,20 @@ nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname,
   if (nodeupdown_masterlist_init(handle, gendersfile) == -1)
     goto cleanup;
 #endif
+#endif
 
-  if (gmond_hostname == NULL && cd.gmond_hostnames_found > 0) {
+  if (hostname == NULL && cd.hostnames_found > 0) {
     ListIterator itr = NULL;
     char *str;
 
     /* Use conffile hostnames as default */
-    if ((itr = list_iterator_create(cd.gmond_hostnames)) == NULL)
+    if ((itr = list_iterator_create(cd.hostnames)) == NULL)
       goto cleanup;
 
     while ((str = list_next(itr)) != NULL) {
-      port = (gmond_port <= 0 && cd.gmond_port_found > 0) ? 
-        cd.gmond_port : gmond_port;
-      if ((fd = _low_timeout_connect(handle, str, port)) >= 0) 
+      port_l = (port <= 0 && cd.port_found > 0) ? 
+        cd.port : port;
+      if ((fd = _low_timeout_connect(handle, str, port_l)) >= 0) 
         break;
     }
 
@@ -578,9 +608,9 @@ nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname,
       list_iterator_destroy(itr);
   }
   else {
-    port = (gmond_port <= 0 && cd.gmond_port_found > 0) ? 
-      cd.gmond_port : gmond_port;
-    fd = _low_timeout_connect(handle, gmond_hostname, port);
+    port_l = (port <= 0 && cd.port_found > 0) ? 
+      cd.port : port;
+    fd = _low_timeout_connect(handle, hostname, port_l);
   }
 
   if (fd < 0)
@@ -614,14 +644,14 @@ nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname,
   handle->is_loaded++;
 
   close(fd);
-  list_destroy(cd.gmond_hostnames);
+  list_destroy(cd.hostnames);
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return 0;
 
  cleanup:
   close(fd);
-  if (cd.gmond_hostnames)
-    list_destroy(cd.gmond_hostnames);
+  if (cd.hostnames)
+    list_destroy(cd.hostnames);
   _free_handle_data(handle);
   return -1;
 }

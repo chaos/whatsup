@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.h,v 1.26 2005-03-31 22:44:22 achu Exp $
+ *  $Id: nodeupdown.h,v 1.27 2005-03-31 23:59:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -86,8 +86,8 @@ int nodeupdown_handle_destroy(nodeupdown_t handle);
  * - returns 0 on success, -1 on error
  */
 int nodeupdown_load_data(nodeupdown_t handle, 
-                         const char *gmond_hostname, 
-                         int gmond_port,
+                         const char *hostname, 
+                         int port,
                          int timeout_len,
                          char *reserved); 
 

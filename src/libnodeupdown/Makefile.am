@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.19 2005-01-11 00:14:21 achu Exp $
+## $Id: Makefile.am,v 1.20 2005-03-31 23:59:28 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -16,8 +16,49 @@ libnodeupdown_la_CFLAGS = -D_REENTRANT -I ../../config \
 	                  -I $(srcdir)/../libcommon -I $(srcdir)/../libexpat
 libnodeupdown_la_SOURCES = nodeupdown.c nodeupdown_masterlist.c
 libnodeupdown_la_LIBADD = ../libcommon/libcommon.la ../libexpat/libexpat.la $(GENDERS_LIBS) $(GENDERSLLNL_LIBS)
-libnodeupdown_la_LDFLAGS = -version-info @LIBNODEUPDOWN_VERSION_INFO@ $(OTHER_FLAGS)
+libnodeupdown_la_LDFLAGS = -version-info @LIBNODEUPDOWN_VERSION_INFO@ -export-dynamic $(OTHER_FLAGS)
 EXTRA_DIST = nodeupdown.map
+
+#
+# Modules
+#
+
+MODULE_FLAGS = -module -avoid-version
+
+nodeupdownmodulelibdir = $(NODEUPDOWN_MODULE_DIR)
+nodeupdownmodulelib_LTLIBRARIES = \
+	nodeupdown_ganglia_clusterlist_gendersllnl.la \
+	nodeupdown_ganglia_clusterlist_genders.la \
+	nodeupdown_ganglia_clusterlist_hostsfile.la \
+	nodeupdown_ganglia_clusterlist_none.la
+
+nodeupdown_ganglia_clusterlist_gendersllnl_la_SOURCES = \
+	nodeupdown_ganglia_clusterlist_gendersllnl.c
+nodeupdown_ganglia_clusterlist_gendersllnl_la_LDFLAGS = \
+	$(MODULE_FLAGS) $(GENDERSLLNL_LIBS)
+nodeupdown_ganglia_clusterlist_gendersllnl_la_CFLAGS  = \
+	-I$(srcdir)/../libcommon
+ 
+nodeupdown_ganglia_clusterlist_genders_la_SOURCES = \
+	nodeupdown_ganglia_clusterlist_genders.c
+nodeupdown_ganglia_clusterlist_genders_la_LDFLAGS = \
+	$(MODULE_FLAGS) $(GENDERS_LIBS)
+nodeupdown_ganglia_clusterlist_genders_la_CFLAGS  = \
+	-I$(srcdir)/../libcommon
+ 
+nodeupdown_ganglia_clusterlist_hostsfile_la_SOURCES = \
+	nodeupdown_ganglia_clusterlist_hostsfile.c
+nodeupdown_ganglia_clusterlist_hostsfile_la_LDFLAGS = \
+	$(MODULE_FLAGS)
+nodeupdown_ganglia_clusterlist_hostsfile_la_CFLAGS  = \
+	-I$(srcdir)/../libcommon
+ 
+nodeupdown_ganglia_clusterlist_none_la_SOURCES = \
+	nodeupdown_ganglia_clusterlist_none.c
+nodeupdown_ganglia_clusterlist_none_la_LDFLAGS = \
+	$(MODULE_FLAGS)
+nodeupdown_ganglia_clusterlist_none_la_CFLAGS  = \
+        -I$(srcdir)/../libcommon
 
 ../libcommon/libcommon.la: force-dependency-check
 	@cd `dirname $@` && make `basename $@`

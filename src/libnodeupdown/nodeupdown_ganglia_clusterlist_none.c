@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_none.c,v 1.1 2005-03-31 22:44:22 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_none.c,v 1.2 2005-03-31 23:59:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -121,13 +121,13 @@ none_ganglia_clusterlist_increase_max_nodes(nodeupdown_t handle)
 
 struct nodeupdown_ganglia_clusterlist_module_info ganglia_clusterlist_module_info =
   {
-    "none";
-    &none_ganglia_clusterlist_parse_options;
-    &none_ganglia_clusterlist_init;
-    &none_ganglia_clusterlist_finish;
-    &none_ganglia_clusterlist_cleanup;
-    &none_ganglia_clusterlist_compare_to_clusterlist;
-    &none_ganglia_clusterlist_is_node_in_cluster;
-    &none_ganglia_clusterlist_is_node_discovered;
-    &none_ganglia_clusterlist_get_nodename;
+    "none",
+    &none_ganglia_clusterlist_parse_options,
+    &none_ganglia_clusterlist_init,
+    &none_ganglia_clusterlist_finish,
+    &none_ganglia_clusterlist_cleanup,
+    &none_ganglia_clusterlist_compare_to_clusterlist,
+    &none_ganglia_clusterlist_is_node_in_cluster,
+    &none_ganglia_clusterlist_is_node_discovered,
+    &none_ganglia_clusterlist_get_nodename,
   };

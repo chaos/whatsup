@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_hostsfile.c,v 1.1 2005-03-31 22:44:22 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_hostsfile.c,v 1.2 2005-03-31 23:59:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -32,6 +32,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
@@ -122,8 +125,6 @@ _remove_trailing_whitespace(char *buf, int buflen)
 static char *
 _move_past_whitespace(char *buf)
 {
-  assert(buf);
-                                                                                     
   while (*buf != '\0' && isspace(*buf))
     buf++;
                                                                                      
@@ -157,7 +158,7 @@ _load_hostsfile_data(nodeupdown_t handle)
       goto cleanup;
     }
                                                                                      
-  while ((len = _readline(fd, buf, NODEUPDOWN_BUFFERLEN)) > 0)
+  while ((len = _readline(handle, fd, buf, NODEUPDOWN_BUFFERLEN)) > 0)
     {
       char *hostPtr;
       char *str;
@@ -180,7 +181,7 @@ _load_hostsfile_data(nodeupdown_t handle)
           goto cleanup;
         }
                                                                                      
-      if (strlen(hostPtr) > CEREBRO_MAXNODENAMELEN)
+      if (strlen(hostPtr) > MAXHOSTNAMELEN)
         {
           handle->errnum = NODEUPDOWN_ERR_MASTERLIST_PARSE;
           goto cleanup;
@@ -319,13 +320,13 @@ hostsfile_ganglia_clusterlist_increase_max_nodes(nodeupdown_t handle)
 
 struct nodeupdown_ganglia_clusterlist_module_info ganglia_clusterlist_module_info =
   {
-    "hostsfile";
-    &hostsfile_ganglia_clusterlist_parse_options;
-    &hostsfile_ganglia_clusterlist_init;
-    &hostsfile_ganglia_clusterlist_finish;
-    &hostsfile_ganglia_clusterlist_cleanup;
-    &hostsfile_ganglia_clusterlist_compare_to_clusterlist;
-    &hostsfile_ganglia_clusterlist_is_node_in_cluster;
-    &hostsfile_ganglia_clusterlist_is_node_discovered;
-    &hostsfile_ganglia_clusterlist_get_nodename;
+    "hostsfile",
+    &hostsfile_ganglia_clusterlist_parse_options,
+    &hostsfile_ganglia_clusterlist_init,
+    &hostsfile_ganglia_clusterlist_finish,
+    &hostsfile_ganglia_clusterlist_cleanup,
+    &hostsfile_ganglia_clusterlist_compare_to_clusterlist,
+    &hostsfile_ganglia_clusterlist_is_node_in_cluster,
+    &hostsfile_ganglia_clusterlist_is_node_discovered,
+    &hostsfile_ganglia_clusterlist_get_nodename,
   };

@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.40 2005-03-31 22:44:22 achu Exp $
+## $Id: configure.ac,v 1.41 2005-03-31 23:59:28 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -146,7 +146,6 @@ AC_CONFIG_FILES( \
   src/Nodeupdown/Makefile \
   man/Makefile \
   man/nodeupdown.conf.5 \
-  man/nodeupdown_hostsfile.conf.5 \
   man/whatsup.1 \
   src/Libnodeupdown/Libnodeupdown.pm \
   src/Nodeupdown/Nodeupdown.pm \

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_common.h,v 1.12 2005-03-31 22:44:22 achu Exp $
+ *  $Id: nodeupdown_common.h,v 1.13 2005-03-31 23:59:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -60,9 +60,9 @@
 #define NODEUPDOWN_CONNECT_LEN           5 
 
 /* Configuration file keys */
-#define NODEUPDOWN_CONF_GMOND_HOSTNAME             "hostnames"
-#define NODEUPDOWN_CONF_GMOND_HOSTNAME_MAX         8
-#define NODEUPDOWN_CONF_GMOND_PORT                 "port"
+#define NODEUPDOWN_CONF_HOSTNAME                   "hostnames"
+#define NODEUPDOWN_CONF_HOSTNAME_MAX               8
+#define NODEUPDOWN_CONF_PORT                       "port"
 #define NODEUPDOWN_CONF_TIMEOUT_LEN                "timeout_len"
 #define NODEUPDOWN_CONF_CLUSTERLIST_MODULE         "clusterlist_module"
 #define NODEUPDOWN_CONF_CLUSTERLIST_MODULE_OPTIONS "clusterlist_module_options"
