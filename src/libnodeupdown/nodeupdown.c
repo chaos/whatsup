@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.94 2003-12-29 20:27:17 achu Exp $
+ *  $Id: nodeupdown.c,v 1.95 2003-12-29 20:35:48 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -175,7 +175,9 @@ int nodeupdown_handle_destroy(nodeupdown_t handle) {
   return 0;
 }  
 
-/* Called when bad config name specified in config file */
+/* Called when bad config name specified in config file or config name
+ * missing value
+ */
 static int _cb_error(configfile_t *configfile, int type, 
                      long dc_errno, const char *msg) {
   configfile->errors++;
