@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.48 2003-05-30 00:38:34 achu Exp $
+ * $Id: whatsup.c,v 1.49 2003-05-30 19:22:15 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -193,11 +193,11 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
       break;
     case 'o':
       oopt++;
-      arginfo->gmond_hostname = hostname;
+      arginfo->gmond_hostname = optarg;
       break;
     case 'i':
       iopt++;
-      arginfo->gmond_ip = ip;
+      arginfo->gmond_ip = optarg;
       break;
     case 'p':
       arginfo->gmond_port = atoi(optarg);
