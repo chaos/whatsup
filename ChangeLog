@@ -1,3 +1,7 @@
+2003-12-09  Albert Chu  <chu11@llnl.gov>
+
+	* man/whatsup.1.in: Cleaned up wording.
+	
 2003-12-08  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown.c,
