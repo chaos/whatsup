@@ -1,12 +1,12 @@
 /*
- * $Id: whatsup.c,v 1.28 2003-05-08 16:13:31 achu Exp $
+ * $Id: whatsup.c,v 1.29 2003-05-15 16:47:37 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
 
 #include <errno.h>
 #include <ganglia.h>
-#include <genders.h>
+#include <gendersllnl.h>
 #include <getopt.h>
 #include <netdb.h>
 #include <stdio.h>
@@ -41,6 +41,10 @@ extern int h_errno;
 
 #ifndef GENDERS_ALTNAME_ATTRIBUTE
 #define GENDERS_ALTNAME_ATTRIBUTE        "altname"
+#endif
+
+#ifndef MAXHOSTNAMELEN
+#define MAXHOSTNAMELEN 64
 #endif
 
 /* whatsup_output_type
@@ -105,8 +109,6 @@ static int get_all_up_or_down_nodes(struct arginfo *,
                                     nodeupdown_t, 
                                     hostlist_t);
 
-static int get_alternate_nodename(genders_t, char *, char **);
-
 static int convert_to_altnames(hostlist_t *);
 
 static int get_up_or_down_nodes(struct arginfo *, 
@@ -137,7 +139,7 @@ static void usage(void) {
           "  -s         --space             List nodes in space separated list\n"
           "  -a         --altnames          List nodes by alternate name (default=off)\n"
           "\n",
-          DEFAULT_GENDERS_FILE, GANGLIA_DEFAULT_XML_PORT);
+          GENDERS_DEFAULT_FILE, GANGLIA_DEFAULT_XML_PORT);
   exit(1);
 }
 
@@ -209,7 +211,7 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
   int uopt = 0, dopt = 0, lopt = 0, copt = 0, nopt = 0, sopt = 0, aopt = 0;
   int c, index, i, ret;
 
-  char *filename = DEFAULT_GENDERS_FILE;
+  char *filename = GENDERS_DEFAULT_FILE;
   char *hostname = "localhost";
   char *ip = "127.0.0.1";
   char *attribute = NULL;
@@ -631,121 +633,49 @@ int get_all_up_or_down_nodes(struct arginfo *arginfo,
   return 0;
 }
 
-/* get_alternate_nodename
- * - get alternate name for a node
- */
-int get_alternate_nodename(genders_t handle,
-                           char *node,
-                           char **buffer) {
-  int ret, len;
-  char *buf = NULL;
-
-  ret = genders_testnode(handle, node);
-  if (ret == -1) {
-    output_error("genders_testnode()",
-                 genders_errormsg(handle));
-    goto cleanup;
-  }
-  else if (ret == 1) {
-    /* get alternate name */
-    if ((len = genders_getmaxvallen(handle)) == -1) {
-      output_error("genders_getmaxvallen() error",
-                   genders_errormsg(handle));
-      goto cleanup;
-    }
-
-    if (len < strlen(node))
-      len = strlen(node);
-
-    if ((buf = (char *)malloc(len + 1)) == NULL) {
-      output_error("out of memory", NULL);
-      goto cleanup;
-    }
-    memset(buf, '\0', len + 1);
-
-    ret = genders_testattr(handle,
-                           node,
-                           GENDERS_ALTNAME_ATTRIBUTE,
-                           buf,
-                           len);
-    if (ret == 0) {
-      /* no alternate name, so genders node name is the
-       * alternate name
-       */
-      strcpy(buf, node);
-    }
-    else if (ret == -1) {
-      output_error("genders_testattr() error",
-                   genders_errormsg(handle));
-      goto cleanup;
-    }
-    /* else, found alternate name, is stored in buffer */
-  }
-  else {
-    /* node is the alternate name */
-    if ((buf = (char *)malloc(strlen(node) + 1)) == NULL) {
-      output_error("out of memory", NULL);
-      goto cleanup;
-    }
-    memset(buf, '\0', strlen(node) + 1);
-    strcpy(buf, node);
-  }
-  
-  *buffer = buf;
-
-  return 0;
-
- cleanup:
-
-  free(buf);
-
-  return -1;
-
-}
-
-int convert_to_altnames(hostlist_t *hl) {
+int convert_to_altnames(struct arginfo *arginfo, hostlist_t *hl) {
   
   genders_t handle = NULL;
   char *nodename = NULL;
+  char *str = NULL;
   char *buffer = NULL;
+  int ret, buflen = 0;
   hostlist_t altnodes = NULL;
-  hostlist_iterator_t iter;
 
   if ((handle = genders_handle_create()) == NULL) {
     output_error("genders_handle_create() error", NULL);
     goto cleanup;
   }
 
-  if (genders_load_data(handle, NULL) == -1) {
+  if (genders_load_data(handle, arginfo->genders_filename) == -1) {
     output_error("genders_load_data() error",
                  genders_errormsg(handle));
     goto cleanup;
   }
   
-  if ((altnodes = hostlist_create(NULL)) == NULL) {
-    output_error("hostlist_create() error", NULL);
+  if ((str = get_hostlist_ranged_string(*hl)) == NULL)
     goto cleanup;
-  }
-  
-  if ((iter = hostlist_iterator_create(*hl)) == NULL) {
-    output_error("hostlist_iterator_create() error", NULL);
-    goto cleanup;
-  }
-  
-  while ((nodename = hostlist_next(iter)) != NULL) {
-    if (get_alternate_nodename(handle, nodename, &buffer) == -1)
-      goto cleanup;
-    
-    if (hostlist_push_host(altnodes, buffer) == 0) {
-      output_error("hostlist_push_host() error", NULL);
+
+  do {
+    free(buffer);
+    buflen += WHATSUP_BUFFERLEN;
+    if ((buffer = (char *)malloc(buflen)) == NULL) {
+      output_error("out of memory", NULL);
       goto cleanup;
     }
+    memset(buffer, '\0', buflen);
 
-    free(buffer);
-    free(nodename);
+    ret = genders_string_to_altnames_preserve(handle, 
+                                              str,
+                                              buffer,
+                                              buflen);
+  } while (ret == -1 && genders_errnum(handle) == GENDERS_ERR_OVERFLOW);
+
+  if (ret == -1) {
+    output_error("genders_string_to_altnames_preserve() error",
+                 genders_errormsg(handle));
+    goto cleanup;
   }
-  nodename = NULL;
-  buffer = NULL;
   
   if (genders_handle_destroy(handle) == -1) {
     output_error("genders_handle_destroy() error",
@@ -753,9 +683,15 @@ int convert_to_altnames(hostlist_t *hl) {
     goto cleanup;
   }
 
-  hostlist_iterator_destroy(iter);
+  if ((altnodes = hostlist_create(buffer)) == NULL) {
+    output_error("hostlist_create() error", NULL);
+    goto cleanup;
+  }
+
   hostlist_destroy(*hl);
-  
+  free(str);
+  free(buffer);
+
   *hl = altnodes;
 
   return 0;
@@ -764,7 +700,7 @@ int convert_to_altnames(hostlist_t *hl) {
 
   (void)genders_handle_destroy(handle);
 
-  free(nodename);
+  free(str);
   free(buffer);
 
   hostlist_iterator_destroy(iter);
@@ -772,7 +708,6 @@ int convert_to_altnames(hostlist_t *hl) {
 
   return -1;
 }
-
 
 /* get_up_or_down_nodes
  * - a wrapper function used to avoid duplicate code.
