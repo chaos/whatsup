@@ -23,7 +23,7 @@ Summary: whatsup gendersllnl modules package
 Group: System Environment/Base
 Requires: whatsup
 Requires: gendersllnl
-%description genders
+%description gendersllnl
 Gendersllnl modules packages.
 
 %prep
