@@ -17,8 +17,8 @@ Requires:       gendersllnl
 %description
 Whatsup is a cluster node up/down detection utility.  Node up/down
 information is calculated based on information gathered from ganglia
-and a master list of cluster nodes.  C and perl libraries for
-detecting up/down nodes are also supplied.
+and a master list of cluster nodes.  C and perl libraries are also
+supplied for detecting up/down nodes.
 
 %prep
 %setup -q -n %{name}-%{version}-%{release}
