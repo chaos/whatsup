@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.49 2003-05-30 19:22:15 achu Exp $
+ * $Id: whatsup.c,v 1.50 2003-05-30 19:26:45 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -77,7 +77,6 @@ struct arginfo {
 static void usage(void);
 static void version(void);
 static void err_msg(char *, char *);
-static void cleanup_struct_arginfo(struct arginfo *);
 static int cmdline_parse(struct arginfo *, int, char **);
 static char *get_hostlist_string(hostlist_t, int);
 static int get_arg_nodes_common(struct arginfo *, int, nodeupdown_t, char **); 
@@ -139,14 +138,6 @@ static int initialize_struct_arginfo(struct arginfo *arginfo) {
   arginfo->list_altnames = WHATSUP_OFF;
   arginfo->nodes = NULL;
   return 0;
-}
-
-/* cleanup_struct_arginfo
- * - free memory allocated in a struct arginfo structure
- */
-static void cleanup_struct_arginfo(struct arginfo *arginfo) {
-  hostlist_destroy(arginfo->nodes);
-  free(arginfo);
 }
 
 /* cmdline_parse
@@ -610,7 +601,9 @@ int main(int argc, char **argv) {
       goto cleanup;
   }
 
-  cleanup_struct_arginfo(arginfo);
+
+  hostlist_destroy(arginfo->nodes);
+  free(arginfo);
   (void)nodeupdown_handle_destroy(handle);
   free(up_nodes);
   free(down_nodes);
@@ -619,7 +612,8 @@ int main(int argc, char **argv) {
 
  cleanup:
 
-  cleanup_struct_arginfo(arginfo);
+  hostlist_destroy(arginfo->nodes);
+  free(arginfo);
   (void)nodeupdown_handle_destroy(handle);
   free(up_nodes);
   free(down_nodes);
