@@ -1,4 +1,4 @@
-# $Id: whatsup.spec,v 1.17 2003-04-08 22:58:45 achu Exp $
+# $Id: whatsup.spec,v 1.18 2003-04-22 20:54:27 achu Exp $
 
 Name:		whatsup
 Version:	1.0
@@ -116,38 +116,8 @@ fi
 %{_bindir}/*
 %{_includedir}/*
 %{_libdir}/*
-/usr/man/man1/whatsup.1.gz
-/usr/man/man3/libnodeupdown.3.gz
-/usr/man/man3/nodeupdown.3.gz
-/usr/man/man3/nodeupdown_create.3.gz
-/usr/man/man3/nodeupdown_load_data.3.gz
-/usr/man/man3/nodeupdown_destroy.3.gz
-/usr/man/man3/nodeupdown_errnum.3.gz
-/usr/man/man3/nodeupdown_strerror.3.gz
-/usr/man/man3/nodeupdown_errormsg.3.gz
-/usr/man/man3/nodeupdown_perror.3.gz
-/usr/man/man3/nodeupdown_dump.3.gz
-/usr/man/man3/nodeupdown_get_up_nodes_string.3.gz 
-/usr/man/man3/nodeupdown_get_down_nodes_string.3.gz 
-/usr/man/man3/nodeupdown_get_up_nodes_list.3.gz 
-/usr/man/man3/nodeupdown_get_down_nodes_list.3.gz 
-/usr/man/man3/nodeupdown_get_up_nodes_string_altnames.3.gz 
-/usr/man/man3/nodeupdown_get_down_nodes_string_altnames.3.gz 
-/usr/man/man3/nodeupdown_get_up_nodes_list_altnames.3.gz 
-/usr/man/man3/nodeupdown_get_down_nodes_list_altnames.3.gz 
-/usr/man/man3/nodeupdown_is_node_up.3.gz
-/usr/man/man3/nodeupdown_is_node_down.3.gz
-/usr/man/man3/nodeupdown_convert_string_to_altnames.3.gz 
-/usr/man/man3/nodeupdown_convert_list_to_altnames.3.gz 
-/usr/man/man3/nodeupdown_nodelist_create.3.gz
-/usr/man/man3/nodeupdown_nodelist_clear.3.gz
-/usr/man/man3/nodeupdown_nodelist_destroy.3.gz
-/usr/man/man3/nodeupdown_errors.3.gz
-/usr/man/man3/nodeupdown_nodelist.3.gz
-/usr/man/man3/nodeupdown_get_nodes_string.3.gz
-/usr/man/man3/nodeupdown_get_nodes_list.3.gz
-/usr/man/man3/nodeupdown_is_node.3.gz
-/usr/man/man3/nodeupdown_convert_altnames.3.gz
+/usr/man/man1/
+/usr/man/man3/
 
 
 
