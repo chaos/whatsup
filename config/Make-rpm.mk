@@ -2,7 +2,7 @@
 # Makefile Include for RPM Construction
 #   by Chris Dunlap <cdunlap@llnl.gov>
 ##
-# $Id: Make-rpm.mk,v 1.5 2003-11-14 01:20:11 achu Exp $
+# $Id: Make-rpm.mk,v 1.6 2003-11-14 01:39:22 achu Exp $
 ##
 # REQUIREMENTS:
 # - requires project to be under CVS version control
@@ -76,11 +76,9 @@ tar rpm:
 	test "$$tag" = "HEAD" && rel="`date +%Y%m%d%H%M`"; \
 	if test -z "$$rel"; then \
 	  pkg=$$name-$$ver; rel=1; else pkg=$$name-$$ver-$$rel; fi; \
-	if test -x "$$tmp/$$proj/autogen.sh"; then \
-          (cd $$tmp/$$proj && ln -sf autogen.sh bootstrap); fi; \
-        if test -x "$$tmp/$$proj/bootstrap"; then \
+        if test -x "$$tmp/$$proj/bootstarp.sh"; then \
 	  mv "$$tmp/$$proj" "$$tmp/$$proj.bak" || exit 1; \
-	  (cd "$$tmp/$$proj.bak"; ./bootstrap; ./configure; \
+	  (cd "$$tmp/$$proj.bak"; ./bootstarp; ./configure; \
 	   $(MAKE) -s distdir) || exit 1; \
 	  mv "$$tmp/$$proj.bak/$$name-$$rver" "$$tmp/$$pkg" || exit 1; \
 	  rm -rf "$$tmp/$$proj.bak"; \
@@ -97,7 +95,6 @@ tar-internal:
 
 rpm-internal: tar-internal
 	@echo "Creating $$pkg*rpm ..."; \
-	rpm=`type -p rpmbuild || type -p rpm`; \
 	for d in BUILD RPMS SOURCES SPECS SRPMS TMP; do \
 	  if ! $$mkdir $$tmp/$$d >/dev/null; then \
 	    echo "ERROR: Cannot create \"$$tmp/$$d\" dir." 1>&2; exit 1; fi; \
@@ -115,15 +112,9 @@ rpm-internal: tar-internal
 	    <$$spec >$$tmp/SPECS/$$proj.spec; \
 	if ! test -s $$tmp/SPECS/$$proj.spec; then \
 	  echo "ERROR: Cannot create $$proj.spec." 1>&2; exit 1; fi; \
-	$$rpm --showrc | egrep "_(gpg|pgp)_nam" >/dev/null && sign="--sign"; \
-	args="-ba --define '_tmppath $$tmp/TMP' --define '_topdir $$tmp'"; \
-	for pkg in $$WITH_OPTIONS; do \
-	   args="$$args --define '_with_$$pkg --with-$$pkg'"; \
-    done; \
-	for pkg in $$WITHOUT_OPTIONS; do \
-	   args="$$args --define '_without_$$pkg --without-$$pkg'"; \
-    done; \
-	args="$$args $$sign --quiet $$tmp/SPECS/$$proj.spec"; \
-	if ! sh -c "$$rpm $$args" >$$tmp/rpm.log 2>&1; then \
+	rpmbuild --showrc | egrep "_(gpg|pgp)_nam" >/dev/null && sign="--sign"; \
+	if ! rpmbuild -ba --define "_tmppath $$tmp/TMP" --define "_topdir $$tmp" \
+	  $$sign --quiet $$rpmargs $$tmp/SPECS/$$proj.spec \
+            >$$tmp/rpm.log 2>&1; then \
 	        cat $$tmp/rpm.log; exit 1; fi; \
 	cp -p $$tmp/RPMS/*/$$proj-*.rpm $$tmp/SRPMS/$$proj-*.src.rpm . || exit 1
