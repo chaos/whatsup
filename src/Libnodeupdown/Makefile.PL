@@ -20,9 +20,9 @@ WriteMakefile(
     'DEFINE'		=> '-DHAVE_CONFIG_H -UVERSION',
     'INC'		=> '-I../../config -I../libcommon -I../libexpat -I../libnodeupdown',
      
-    # If you do hostlist.o nodeupdown.o ... etc.  MakeMaker fails.  I don't
-    # know why.  Its the responsibility of the Makefile.am file to copy only
-    # the C files we must use.
+    # If you do hostlist.o nodeupdown.o ... etc.  MakeMaker fails.  I
+    # don't know why.  I've made it the responsibility of Makefile.am
+    # to copy only the C files we must use.
 
     'OBJECT'		=> '$(O_FILES)',
 );
