@@ -30,6 +30,7 @@
 	   - updated whatsup command for new API
 	   - added -V (version) option to whatsup
 	   - updated manpages appropriately
+	   - tagged whatsup-1-0-3 
 
 2003-03-07 Albert Chu <chu11@llnl.gov>
            - added manpages for libnodeupdown
