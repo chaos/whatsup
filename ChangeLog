@@ -2,7 +2,7 @@
 
 	* man/whatsup.1.in: Cleaned up wording.
 
-	* man/nodeupdown.conf.5.in: Fixed wording.
+	* man/nodeupdown.conf.5.in: Fixed wording and typos.
 
 	* src/libdotconf/dotconf.h: Added errors count to configfile_t.
 

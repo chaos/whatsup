@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown.conf.5.in,v 1.4 2003-12-09 19:05:39 achu Exp $
+\."$Id: nodeupdown.conf.5.in,v 1.5 2003-12-09 19:32:54 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -31,7 +31,7 @@ An example configuration file is shown below.
 .br
 # hostsfile           /etc/my_hostsfile
 .br
-gmond_hostname      mymachine1
+gmond_hostnames     mymachine1
 .br
 gmond_port          8689
 .br
@@ -42,7 +42,7 @@ hostsfile           /etc/hostsfile2
 .if (@WITH_GENDERS@ : @WITH_GENDERSLLNL@) \{
 # Nodeupdown configuration
 .br
-# gmond_hostname      localhost host2 host3
+# gmond_hostnames     localhost host2 host3
 .br
 # gmond_port          8649 
 .br
@@ -50,7 +50,7 @@ hostsfile           /etc/hostsfile2
 .br
 # gendersfile         /etc/my_gendersfile
 .br
-gmond_hostname      mymachine1
+gmond_hostnames     mymachine1
 .br
 gmond_port          8689
 .br
@@ -61,7 +61,7 @@ gendersfile         /etc/genders2
 
 The configuration values may be separated by any amount of whitespace
 after the configuration keyword.  Multiple hosts can be specified
-after the gmond_hostname configuration keyword, up to a maximum of 8.
+after the gmond_hostnames configuration keyword, up to a maximum of 8.
 Each host must be separated by whitespace.  The user is not required
 to specify all of the configuration keywords.  Comments can be
 specified with a '#'.
