@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.23 2003-04-25 19:07:14 achu Exp $
+ * $Id: whatsup.c,v 1.24 2003-04-25 19:46:59 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -776,6 +776,7 @@ int convert_to_altnames(hostlist_t *hl) {
     goto cleanup;
   }
 
+  hostlist_iterator_destroy(iter);
   hostlist_destroy(*hl);
   
   *hl = altnodes;
