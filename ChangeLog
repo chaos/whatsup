@@ -1,3 +1,8 @@
+2004-12-14  Albert Chu  <chu11@llnl.gov>
+
+	* whatsup.spec.in, src/Nodeupdown/Makefile.am,
+	src/Libnodeupdown/Makefile.am: Fix 64bit build issue.
+	
 2004-11-17  Albert Chu  <chu11@llnl.gov>
 
 	* whatsup.spec.in: Added license.  Built RPM name based on

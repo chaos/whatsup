@@ -48,7 +48,7 @@ supplied for detecting up/down nodes.
 
 %build
 %configure --program-prefix=%{?_program_prefix:%{_program_prefix}} \
-        --with-perl-install-prefix="$RPM_BUILD_ROOT/usr" \
+        --with-perl-install-prefix="$RPM_BUILD_ROOT" \
         %{?_with_nomasterlist} \
         %{?_without_nomasterlist} \
         %{?_with_hostsfile} \
