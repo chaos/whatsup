@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.12 2003-03-05 18:18:11 achu Exp $
+ * $Id: nodeupdown.c,v 1.13 2003-03-05 22:44:42 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -1130,7 +1130,7 @@ int nodeupdown_copy_nodes_into_list(nodeupdown_t handle,
     return -1;
   }
   
-  while ((nodename = hostlist_next(iter)) != NULL && count < len) {
+  while ((nodename = hostlist_next(iter)) != NULL) {
     if (count >= len) {
       free(nodename);
       hostlist_iterator_destroy(iter);
