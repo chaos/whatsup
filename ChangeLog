@@ -9,6 +9,8 @@
 
 	* src/whatsup/whatsup.c (main): Added support for --count option.
 
+	* src/whatsup.whatsup.c (main): Cleaned up exit and cleanup code.
+
 2003-09-23  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown.c (nodeupdown_up_count,
