@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.27 2003-05-08 00:22:34 achu Exp $
+ * $Id: whatsup.c,v 1.28 2003-05-08 16:13:31 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -578,11 +578,9 @@ int check_if_nodes_are_up_or_down(struct arginfo *arginfo,
 
  cleanup:
 
-  if (str != NULL)
-    free(str);
-
-  if (iter != NULL)
-    hostlist_iterator_destroy(iter);
+  free(str);
+  
+  hostlist_iterator_destroy(iter);
 
   return -1;
 }
@@ -640,6 +638,7 @@ int get_alternate_nodename(genders_t handle,
                            char *node,
                            char **buffer) {
   int ret, len;
+  char *buf = NULL;
 
   ret = genders_testnode(handle, node);
   if (ret == -1) {
@@ -658,22 +657,22 @@ int get_alternate_nodename(genders_t handle,
     if (len < strlen(node))
       len = strlen(node);
 
-    if ((*buffer = (char *)malloc(len + 1)) == NULL) {
+    if ((buf = (char *)malloc(len + 1)) == NULL) {
       output_error("out of memory", NULL);
       goto cleanup;
     }
-    memset(*buffer, '\0', len + 1);
+    memset(buf, '\0', len + 1);
 
     ret = genders_testattr(handle,
                            node,
                            GENDERS_ALTNAME_ATTRIBUTE,
-                           *buffer,
+                           buf,
                            len);
     if (ret == 0) {
       /* no alternate name, so genders node name is the
        * alternate name
        */
-      strcpy(*buffer, node);
+      strcpy(buf, node);
     }
     else if (ret == -1) {
       output_error("genders_testattr() error",
@@ -684,22 +683,21 @@ int get_alternate_nodename(genders_t handle,
   }
   else {
     /* node is the alternate name */
-    if ((*buffer = (char *)malloc(strlen(node) + 1)) == NULL) {
+    if ((buf = (char *)malloc(strlen(node) + 1)) == NULL) {
       output_error("out of memory", NULL);
       goto cleanup;
     }
-    memset(*buffer, '\0', strlen(node) + 1);
-    strcpy(*buffer, node);
+    memset(buf, '\0', strlen(node) + 1);
+    strcpy(buf, node);
   }
   
+  *buffer = buf;
+
   return 0;
 
  cleanup:
 
-  if (*buffer != NULL) {
-    free(*buffer);
-    *buffer = NULL;
-  }
+  free(buf);
 
   return -1;
 
@@ -746,6 +744,8 @@ int convert_to_altnames(hostlist_t *hl) {
     free(buffer);
     free(nodename);
   }
+  nodename = NULL;
+  buffer = NULL;
   
   if (genders_handle_destroy(handle) == -1) {
     output_error("genders_handle_destroy() error",
@@ -762,20 +762,13 @@ int convert_to_altnames(hostlist_t *hl) {
 
  cleanup:
 
-  if (handle != NULL)
-    (void)genders_handle_destroy(handle);
+  (void)genders_handle_destroy(handle);
 
-  if (nodename != NULL)
-    free(nodename);
+  free(nodename);
+  free(buffer);
 
-  if (buffer != NULL)
-    free(buffer);
-
-  if (altnodes != NULL)
-    hostlist_destroy(altnodes);
-
-  if (iter != NULL)
-    hostlist_iterator_destroy(iter);
+  hostlist_iterator_destroy(iter);
+  hostlist_destroy(altnodes);
 
   return -1;
 }
@@ -789,16 +782,16 @@ int get_up_or_down_nodes(struct arginfo *arginfo,
                          nodeupdown_t handle, 
                          hostlist_t *nodes) {
   
-  *nodes = NULL;
+  hostlist_t hl = NULL;
 
-  if ((*nodes = hostlist_create(NULL)) == NULL)
+  if ((hl = hostlist_create(NULL)) == NULL)
     goto cleanup;
 
   if (hostlist_count(arginfo->nodes) > 0) {
     if (check_if_nodes_are_up_or_down(arginfo, 
                                       output_type, 
                                       handle, 
-                                      *nodes) != 0)
+                                      hl) != 0)
       goto cleanup;
   }
   else {
@@ -806,7 +799,7 @@ int get_up_or_down_nodes(struct arginfo *arginfo,
     if (get_all_up_or_down_nodes(arginfo, 
                                  output_type, 
                                  handle, 
-                                 *nodes) != 0)
+                                 hl) != 0)
       goto cleanup;
   }
 
@@ -815,14 +808,13 @@ int get_up_or_down_nodes(struct arginfo *arginfo,
       goto cleanup;
   }
 
+  *nodes = hl;
+
   return 0;
 
  cleanup:
 
-  if (*nodes != NULL) {
-    hostlist_destroy(*nodes);
-    *nodes = NULL;
-  }
+  hostlist_destroy(hl);
 
   return -1;
 }
@@ -978,23 +970,20 @@ int main(int argc, char **argv) {
   }
 
   cleanup_struct_arginfo(arginfo);
-
   (void)nodeupdown_handle_destroy(handle);
 
-  if (up_nodes != NULL)
-    hostlist_destroy(up_nodes);
-
-  if (down_nodes != NULL)
-    hostlist_destroy(down_nodes);
+  hostlist_destroy(up_nodes);
+  hostlist_destroy(down_nodes);
 
   exit(0);
 
  cleanup:
-  if (arginfo != NULL)
-    cleanup_struct_arginfo(arginfo);
 
-  if (handle != NULL)
-    (void)nodeupdown_handle_destroy(handle);
+  cleanup_struct_arginfo(arginfo);
+  (void)nodeupdown_handle_destroy(handle);
+
+  hostlist_destroy(up_nodes);
+  hostlist_destroy(down_nodes);
 
   exit(1);
 }
