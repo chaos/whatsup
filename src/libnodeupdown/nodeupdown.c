@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.19 2003-03-12 18:11:37 achu Exp $
+ * $Id: nodeupdown.c,v 1.20 2003-03-14 18:20:51 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -12,15 +12,19 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-
 /********************************************************
  * FIX LATER
  *
- * sys/socket.h and sys/types.h are needed by socket() and
- * connect().  Once fixes below are made, these headers
- * can be removed.
+ * sys/socket.h and sys/types.h are needed by socket().  sys/socket.h,
+ * sys/types.h, and errno.h are needed by connect().  fnctl.h is
+ * needed by fcntl().  sys/types.h and sys/time.h are needed by
+ * select().  sys/types.h and errno.h are needed by getsockopt().
+ * Once fixes below are made, these headers can be removed.
  ********************************************************/
+#include <errno.h>
+#include <fcntl.h>
 #include <sys/socket.h>
+#include <sys/time.h> 
 #include <sys/types.h>
 
 #include "hostlist.h"
@@ -48,6 +52,11 @@
 #ifndef MAXHOSTNAMELEN
 #define MAXHOSTNAMELEN 64
 #endif
+
+/* FIX LATER
+ * - following definition not needed once fixes made below
+ */
+#define CONNECT_TIMEOUT_LEN              5 
 
 /* struct nodeupdown
  * - handle for all nodeupdown API functions
@@ -83,6 +92,7 @@ static char * errmsg[] = {
   "open file error",
   "read file error",
   "connection to server error",
+  "connection to server timeout",
   "improper address error",
   "network error",
   "data not loaded",
@@ -416,14 +426,15 @@ int nodeupdown_retrieve_gmond_data(nodeupdown_t handle) {
    * the following block of code can be replaced with the
    * appropriate API call.
    ********************************************************/
-
   {
     FILE *temp;
     FILE *dv;
     int sockfd;
     struct sockaddr_in servaddr;
-    int ret;
+    int ret, old_flags, error, error_len;
     char buffer[1000];
+    fd_set rset, wset;
+    struct timeval tval;
 
     /* FIX LATER
      *
@@ -458,11 +469,78 @@ int nodeupdown_retrieve_gmond_data(nodeupdown_t handle) {
       return -1;
     }
 
-    if (connect(sockfd, 
-		(struct sockaddr *)&servaddr, 
-		sizeof(struct sockaddr_in)) == -1) {
+    /* Set the socket non-blocking.  We will do this so we can set a
+     * smaller timeout on the connect() than the long default timeout
+     * of around 3 minutes.
+     */
+    if ((old_flags = fcntl(sockfd, F_GETFL, 0)) == -1) {
+      close(sockfd);
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
+
+    if (fcntl(sockfd, F_SETFL, old_flags | O_NONBLOCK) == -1) {
+      close(sockfd);
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
+
+    ret = connect(sockfd, (struct sockaddr *)&servaddr, sizeof(struct sockaddr_in));
+    if (ret == -1 && errno != EINPROGRESS) {
       close(sockfd);
       handle->errnum = NODEUPDOWN_ERR_CONNECT;
+      return -1;
+    }
+    else if (ret == -1 && errno == EINPROGRESS) {
+      /* We will use a timeout of 5 seconds, a "reasonable" timeout
+       * length.
+       */
+      FD_ZERO(&rset);
+      FD_SET(sockfd, &rset);
+      FD_ZERO(&wset);
+      FD_SET(sockfd, &wset);
+      tval.tv_sec = CONNECT_TIMEOUT_LEN;
+      tval.tv_usec = 0;
+      
+      if ((ret = select(sockfd+1, &rset, &wset, NULL, &tval)) == -1) {
+	close(sockfd);
+	handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+	return -1;
+      }
+
+      if (ret == 0) {
+	close(sockfd);
+	handle->errnum = NODEUPDOWN_ERR_TIMEOUT;
+	return -1;
+      }
+      else {
+	if (FD_ISSET(sockfd, &rset) || FD_ISSET(sockfd, &wset)) {
+	  error_len = sizeof(int);
+	  if (getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &error, &error_len) == -1) {
+	    close(sockfd);
+	    handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+	    return -1;
+	  }
+	  
+	  if (error != 0) {
+	    close(sockfd);
+	    errno = error;
+	    handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+	    return -1;
+	  }
+	}
+	else {
+	  close(sockfd);
+	  handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+	  return -1;
+	}
+      }
+    }
+
+    /* reset flags */
+    if (fcntl(sockfd, F_SETFL, old_flags) == -1) {
+      close(sockfd);
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
       return -1;
     }
 
@@ -512,7 +590,6 @@ int nodeupdown_retrieve_gmond_data(nodeupdown_t handle) {
    * and is probably faster overall than doing repeated calls to 
    * gethostbyname().
    */
-
   ch.cluster = handle->ganglia_cluster;
   ch.hostlist = handle->gmond_nodes;
   if (hash_foreach(handle->ganglia_cluster->host_cache, 
