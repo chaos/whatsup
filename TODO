@@ -3,3 +3,4 @@
 - Make Perl MakeMaker actually be good
 - Screw ganglia, write a updownd daemon.
 - Make distcheck work.
+- repackage for multilib
