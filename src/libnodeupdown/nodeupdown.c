@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.26 2003-03-19 21:45:18 achu Exp $
+ * $Id: nodeupdown.c,v 1.27 2003-03-24 18:43:18 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -250,6 +250,11 @@ int nodeupdown_load_data(nodeupdown_t handle,
 
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
     handle->errnum = NODEUPDOWN_ERR_MAGIC;
+    return -1;
+  }
+
+  if (gmond_port < -1) {
+    handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
   }
 
