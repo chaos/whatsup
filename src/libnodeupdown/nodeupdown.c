@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.25 2003-03-18 18:21:12 achu Exp $
+ * $Id: nodeupdown.c,v 1.26 2003-03-19 21:45:18 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -106,7 +106,7 @@ static char * errmsg[] = {
   "null pointer reached in list",
   "out of memory",
   "gmond lists a node that genders has no knowledge of",
-  "node not know by genders",
+  "node not known by genders",
   "internal genders error",
   "internal ganglia error",
   "internal hostlist error",
