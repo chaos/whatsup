@@ -1,3 +1,8 @@
+2005-03-21  Albert Chu  <chu11@llnl.gov>
+
+	* src/libcommon/conffile.c (conffile_parse): Remove compiler
+	warning.
+	
 2005-01-10  Albert Chu  <chu11@llnl.gov>
 	 
         * src/libcommon/hostlist.h, src/libcommon/hostlist.c:
