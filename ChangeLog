@@ -1,6 +1,7 @@
-2004-11-16  Albert Chu  <chu11@llnl.gov>
+2004-11-17  Albert Chu  <chu11@llnl.gov>
 
-	* whatsup.spec.in: Added license.
+	* whatsup.spec.in: Added license.  Built RPM name based on
+	rpmbuild options.
 
 	* README, configure.ac: If genders or gendersllnl isn't found,
 	default to hostsfile masterlist mechanism.
