@@ -2,6 +2,8 @@
 
 	* man/whatsup.1.in: Cleaned up wording.
 
+	* man/nodeupdown.conf.5.in: Fixed wording.
+
 	* src/libdotconf/dotconf.h: Added errors count to configfile_t.
 
 	* src/libnodeupdown/nodeupdown.c (_cb_error): New function.
