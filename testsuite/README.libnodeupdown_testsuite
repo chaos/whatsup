@@ -66,10 +66,12 @@ The libnodeupdown testsuite tests the functionality of libnodeupdown
 by closing and starting gmond ganglia server daemons on the listed
 test nodes.  This is done to simulate a set of nodes to be up or down.
 
-Due to the constant restarting of gmond servers, it is possible for
-nodeupdown_load_data() to fail connecting to a server or for functionality
-tests to fail if the gmond servers have not had time to re-establish
-themselves after being restarted.
+Due to the constant closing and restarting of gmond servers, it is
+possible for nodeupdown_load_data() to fail connecting to a server or
+for functionality tests to fail if the gmond servers have not had time
+to re-establish themselves after being restarted.  If a
+nodeupdown_load_data() connection error occurs during the test suite,
+simply try again.
 
 Pauses have been put within the test suite to give the gmonds daemons
 time to re-establish themselves.  However, there is always the

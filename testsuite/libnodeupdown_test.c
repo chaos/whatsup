@@ -1,5 +1,5 @@
 /*
- * $Id: libnodeupdown_test.c,v 1.3 2003-03-07 01:10:20 achu Exp $
+ * $Id: libnodeupdown_test.c,v 1.4 2003-03-07 20:13:08 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/testsuite/libnodeupdown_test.c,v $
  *    
  */
@@ -33,37 +33,99 @@
 #define LIBNODEUPDOWN_TEST_CONF             "libnodeupdown_test.conf"
 #define LIBNODEUPDOWN_TEST_MAXNODES                                 3
 #define LIBNODEUPDOWN_TEST_GMOND_PORT                            8659
-#define LIBNODEUPDOWN_TEST_SLEEPTIME                               20
+#define LIBNODEUPDOWN_TEST_SLEEPTIME                               30
 #define MAXBUFFERLEN                                             4096
 
 /* struct test_env
- * - stores information about the test environment, in particular
- *   things from the configuration file.
+ * - stores information about the test environment
  */
 struct test_env {
+  
+  /* information from the configuration file */
   char *pdsh;
   char *pkill;
   char *gmond;
   char *conffile;
   char **nodes; 
 
+  /* static information.  See initialize_test_env() for details */
+  char *conf;
+  char *nodes_ab;
+  char *nodes_ac;
+  char *nodes_bc;
+  char *nodes_abc;
+
+  /* test environment for individual tests */
   nodeupdown_t handle_not_loaded;
   nodeupdown_t handle_loaded;
   hostlist_t empty_hostlist_1;
   hostlist_t empty_hostlist_2;
   char ** empty_list_1;
   char ** empty_list_2;
-
-  char *conf;
-  char *nodes_ab;
-  char *nodes_ac;
-  char *nodes_bc;
-  char *nodes_abc;
 };
 
 /*****************************************************************
  * FUNCTION DECLARATIONS                                         *
  *****************************************************************/
+
+void usage();
+
+int read_and_store_line_from_file(FILE *, char **);
+
+int initialize_test_env(struct test_env *);
+
+void cleanup_test_env(struct test_env *);
+
+int compare_nodes_to_hostlist(struct test_env *, hostlist_t, int);
+
+int compare_nodes_to_list_helper(struct test_env *, char **, int, int, int, char *);
+
+int compare_nodes_to_list(struct test_env *, char **, int, int);
+
+int map_nodes_to_char_ptr(struct test_env *, int, char **);
+
+int start_gmonds(struct test_env *, int);
+
+int close_gmonds(struct test_env *, int);
+
+void output_param_test_result(int, nodeupdown_t, int, int, int);
+
+void load_data_param_test(struct test_env *, int, int, char *, char *, char *, int, int, int);
+
+void get_nodes_hostlist_param_test(struct test_env *, int, int, int, int, int, int, int);
+
+void get_up_nodes_list_param_test(struct test_env *, int, int, int, int, int, int, int, int);
+
+void is_node_param_test(struct test_env *, int, int, int, char *, int, int, int) ;
+
+void alternate_param_test(struct test_env *, int, int, int, int, int, int, int, int);
+
+void nodelist_param_test(struct test_env *, int, int, int, int, int, int, int);
+
+void func_test(struct test_env *, int, int, int, int, int, int);
+
+int initialize_test_env_parameter_tests(struct test_env *);
+
+int cleanup_test_env_parameter_tests(struct test_env *);
+
+int initialize_test_env_func_tests(struct test_env *, int, int, int);
+
+int cleanup_test_env_func_tests(struct test_env *, int, int);
+
+int run_param_tests(struct test_env *);
+
+int run_func_tests(struct test_env *);
+
+/*****************************************************************
+ * FUNCTIONS                                                     *
+ *****************************************************************/
+
+void usage() {
+  printf("libnodeupdown_test <int>\n");
+  printf("   int - 0 to run parameter tests\n");
+  printf("       - 1 to run functionality tests\n");
+  exit(1);
+}
 
 /* read_and_store_line_from_file
  * - reads a line from a file and stores it
@@ -140,7 +202,7 @@ int initialize_test_env(struct test_env * test_env) {
 
   /* a variety of string concatenations are needed in this test suite.
    * Instead of wasting time concatenating strings throughout the code,
-   * just make then one time and save them in the test environment
+   * just make them one time and save them in the test environment
    */
   
   if ((test_env->conf = 
@@ -201,7 +263,6 @@ int initialize_test_env(struct test_env * test_env) {
   }
 
   return -1;
-
 }
 
 /* cleanup_test_env
@@ -230,7 +291,6 @@ void cleanup_test_env(struct test_env *test_env) {
     }
     free(test_env->nodes);
   }
-
   if (test_env->conf != NULL) {
     free(test_env->conf);
   }
@@ -250,57 +310,178 @@ void cleanup_test_env(struct test_env *test_env) {
   return;
 }
 
-/* get_nodes_ptr
+/* compare_nodes_to_hostlist
+ * - compare the set of nodes to the hostlist.  Whatever nodes
+ *   are indicated should be in the hostlist, and whatever nodes
+ *   are not indicated must not be in the hostlist.
+ * - returns 1 if nodes and hostlist match, 0 if not.
+ */
+int compare_nodes_to_hostlist(struct test_env *test_env, 
+			      hostlist_t hl, 
+			      int nodes) {
+
+  int retval = 1;
+
+  if (nodes & NODE_A) {
+    if (hostlist_find(hl, test_env->nodes[0]) == -1) 
+      retval = 0;
+  }
+  else {
+    if (hostlist_find(hl, test_env->nodes[0]) >= 0)
+      retval = 0;
+  }
+
+  if (nodes & NODE_B) {
+    if (hostlist_find(hl, test_env->nodes[1]) == -1) 
+      retval = 0;
+  }
+  else {
+    if (hostlist_find(hl, test_env->nodes[1]) >= 0)
+      retval = 0;
+  }
+
+  if (nodes & NODE_C) {
+    if (hostlist_find(hl, test_env->nodes[2]) == -1) 
+      retval = 0;
+  }
+  else {
+    if (hostlist_find(hl, test_env->nodes[2]) >= 0)
+      retval = 0;
+  }
+
+  return retval;
+}
+
+/* compare_nodes_to_list_helper
+ * - helper for compare_nodes_to_list, handles the common
+ *   operation of the function.  Checks if 
+ *   'checknode' is in the list or not.
+ */
+int compare_nodes_to_list_helper(struct test_env *test_env,
+				 char **list,
+				 int len,
+				 int nodes,
+				 int node_to_check,
+				 char *checknode) {
+
+  int i, retval = 1;
+
+  if (nodes & node_to_check) {
+    int flag = 0;
+    for (i = 0; i < len; i++) {
+      if (strcmp(list[i], checknode) == 0) {
+	flag = 1;
+	break;
+      }
+    }
+    if (flag == 0)
+      retval = 0;
+  }
+  else {
+    for (i = 0; i < len; i++) {
+      if (strcmp(list[i],checknode) == 0) {
+	retval = 0;
+	break;
+      }
+    }
+  }
+
+  return retval;
+}
+
+/* compare_nodes_to_list
+ * - compare the set of nodes to the list.  Whatever nodes
+ *   are indicated should be in the list, and whatever nodes
+ *   are not indicated must not be in the list.
+ * - returns 1 if nodes and list match, 0 if not.
+ */ 
+int compare_nodes_to_list(struct test_env *test_env, 
+			  char **list,
+			  int len,
+			  int nodes) {
+  int retval = 1;
+
+  if (compare_nodes_to_list_helper(test_env, 
+				   list, 
+				   len, 
+				   nodes, 
+				   NODE_A, 
+				   test_env->nodes[0]) == 0) {
+    retval = 0;
+  }
+
+  if (compare_nodes_to_list_helper(test_env,
+				   list, 
+				   len,
+				   nodes,
+				   NODE_B,
+				   test_env->nodes[1]) == 0) {
+    retval = 0;
+  }
+
+  if (compare_nodes_to_list_helper(test_env,
+				   list, 
+				   len,
+				   nodes,
+				   NODE_C,
+				   test_env->nodes[2]) == 0) {
+    retval = 0;
+  }
+
+
+  return retval;
+}
+
+/* map_nodes_to_char_ptr
  * - maps one of the node sets to a comma separated list of the nodes
  *   stored in the test_env;
  */
-char * get_nodes_ptr(struct test_env *test_env, int nodes) {
-  char * ptr;
+int map_nodes_to_char_ptr(struct test_env *test_env, int nodes, char **ptr) {
 
   switch(nodes) {
   case NODE_A:
-    ptr = test_env->nodes[0];
+    *ptr = test_env->nodes[0];
     break;
   case NODE_B:
-    ptr = test_env->nodes[1];
+    *ptr = test_env->nodes[1];
     break;
   case NODE_C:
-    ptr = test_env->nodes[2];
+    *ptr = test_env->nodes[2];
     break;
   case NODE_AB:
-    ptr = test_env->nodes_ab;
+    *ptr = test_env->nodes_ab;
     break;
   case NODE_AC:
-    ptr = test_env->nodes_ac;
+    *ptr = test_env->nodes_ac;
     break;
   case NODE_BC:
-    ptr = test_env->nodes_bc;
+    *ptr = test_env->nodes_bc;
     break;
   case NODE_ABC:
-    ptr = test_env->nodes_abc; 
+    *ptr = test_env->nodes_abc; 
     break;
   case NODE_NONE:
   case LOCALHOST:
-    ptr = NULL;
+    *ptr = NULL;
     break;
   default:
-    printf("INTERNAL ERROR: incorrect nodes value in get_nodes_ptr()\n");
-    ptr = NULL;
+    printf("INTERNAL ERROR: incorrect nodes value in map_nodes_to_char_ptr()\n");
+    return -1;
     break;
   }
 
-  return ptr;
+  return 0;
 }
 
 /* start_gmonds
- * - run gmond on the specified nodes
+ * - run gmond on the specified nodes using pdsh 
  */
 int start_gmonds(struct test_env *test_env, int nodes) {
   int pid, ret;
   char *ptr;
   pid = fork();
   if (pid == 0) {
-    if ((ptr = get_nodes_ptr(test_env, nodes)) == NULL) {
+    if (map_nodes_to_char_ptr(test_env, nodes, &ptr) == -1) {
       printf("INTERNAL ERROR: incorrect nodes value in start_gmonds()\n");
       exit(1);
     }
@@ -333,7 +514,7 @@ int start_gmonds(struct test_env *test_env, int nodes) {
 }
 
 /* close_gmonds
- * - close gmond on the specified nodes
+ * - close gmond on the specified nodes using pdsh and pkill
  */
 int close_gmonds(struct test_env *test_env, int nodes) {
   int pid, ret;
@@ -341,7 +522,7 @@ int close_gmonds(struct test_env *test_env, int nodes) {
 
   pid = fork();
   if (pid == 0) {
-    if ((ptr = get_nodes_ptr(test_env, nodes)) == NULL) {
+    if (map_nodes_to_char_ptr(test_env, nodes, &ptr) == -1) {
       printf("INTERNAL ERROR: incorrect nodes value in close_gmonds()\n");
       exit(1);
     }
@@ -373,16 +554,21 @@ int close_gmonds(struct test_env *test_env, int nodes) {
   }
 }
 
-/* output_result
+/* output_param_test_result
  * - output pass or fail based on inputs
  */
-void output_parameter_test_result(int index, nodeupdown_t handle, int result, int return_value, int return_errnum) {
+void output_param_test_result(int index, 
+				  nodeupdown_t handle, 
+				  int result, 
+				  int return_value, 
+				  int return_errnum) {
   if (return_errnum != NO_ERRNUM) {
     if (result == return_value && nodeupdown_errnum(handle) == return_errnum) {
       printf("Test %d: PASS\n", index);
     }
     else {
-      printf("Test %d: ***FAIL*** return value = %d, return errnum = %d\n", index, result, nodeupdown_errnum(handle));
+      printf("Test %d: ***FAIL*** return value = %d, return errnum = %d\n", 
+	     index, result, nodeupdown_errnum(handle));
     }
   }
   else {
@@ -395,10 +581,10 @@ void output_parameter_test_result(int index, nodeupdown_t handle, int result, in
   }
 }
 
-/* run_load_data_param_test
+/* load_data_param_test
  * - run parameters tests for nodeupdown_load_data()
  */
-void run_load_data_param_test(struct test_env *test_env, 
+void load_data_param_test(struct test_env *test_env, 
 			      int index, 
 			      int nodeupdown_handle, 
 			      char *genders_filename, 
@@ -420,9 +606,13 @@ void run_load_data_param_test(struct test_env *test_env,
     }
   }
 
-  result = nodeupdown_load_data(handle, genders_filename, gmond_hostname, gmond_ip, gmond_port); 
+  result = nodeupdown_load_data(handle, 
+				genders_filename, 
+				gmond_hostname, 
+				gmond_ip, 
+				gmond_port); 
   
-  output_parameter_test_result(index, handle, result, return_value, return_errnum);
+  output_param_test_result(index, handle, result, return_value, return_errnum);
 
   if (nodeupdown_handle == IS_NOT_NULL) {
     if (nodeupdown_destroy(handle) == -1) {
@@ -432,11 +622,11 @@ void run_load_data_param_test(struct test_env *test_env,
   }
 }
 
-/* run_get_nodes_hostlist_param_test
+/* get_nodes_hostlist_param_test
  * - run parameters tests for nodeupdown_get_up_nodes_hostlist() and
  *   nodeupdown_get_down_nodes_hostlist()
  */
-void run_get_nodes_hostlist_param_test(struct test_env *test_env, 
+void get_nodes_hostlist_param_test(struct test_env *test_env, 
 				       int function, 
 				       int index, 
 				       int nodeupdown_handle, 
@@ -467,15 +657,15 @@ void run_get_nodes_hostlist_param_test(struct test_env *test_env,
     result = nodeupdown_get_down_nodes_hostlist(handle, hl);
   }
 
-  output_parameter_test_result(index, handle, result, return_value, return_errnum);
+  output_param_test_result(index, handle, result, return_value, return_errnum);
   
 }
 
-/* run_get_nodes_list_param_test
+/* get_nodes_list_param_test
  * - run parameters tests for nodeupdown_get_up_nodes_list() and
  *   nodeupdown_get_down_nodes_list()
  */
-void run_get_up_nodes_list_param_test(struct test_env *test_env, 
+void get_up_nodes_list_param_test(struct test_env *test_env, 
 				      int function, 
 				      int index, 
 				      int nodeupdown_handle, 
@@ -507,15 +697,15 @@ void run_get_up_nodes_list_param_test(struct test_env *test_env,
     result = nodeupdown_get_down_nodes_list(handle, list, len);
   }
 
-  output_parameter_test_result(index, handle, result, return_value, return_errnum);
+  output_param_test_result(index, handle, result, return_value, return_errnum);
 	    
 }
 
-/* run_is_node_param_test
+/* is_node_param_test
  * - run parameter tests for nodeupdown_is_node_up() and
  *   nodeupdown_is_node_down()
  */
-void run_is_node_param_test(struct test_env *test_env, 
+void is_node_param_test(struct test_env *test_env, 
 			    int function, 
 			    int index,
 			    int nodeupdown_handle, 
@@ -541,14 +731,14 @@ void run_is_node_param_test(struct test_env *test_env,
     result = nodeupdown_is_node_down(handle, node);
   }
 
-  output_parameter_test_result(index, handle, result, return_value, return_errnum);
+  output_param_test_result(index, handle, result, return_value, return_errnum);
 }
 
-/* run_alternate_param_test
+/* alternate_param_test
  * - run parameter tests for nodeupdown_get_alternate_names_hostlist()
  *   and nodeupdown_get_alternate_names_list()
  */
-void run_alternate_param_test(struct test_env *test_env, 
+void alternate_param_test(struct test_env *test_env, 
 			      int function,
 			      int index,
 			      int nodeupdown_handle, 
@@ -596,15 +786,15 @@ void run_alternate_param_test(struct test_env *test_env,
     result = nodeupdown_get_list_alternate_names(handle, src_c, dest_c);
   }
 
-  output_parameter_test_result(index, handle, result, return_value, return_errnum);
+  output_param_test_result(index, handle, result, return_value, return_errnum);
 
 }
 
-/* run_nodelist_param_test
+/* nodelist_param_test
  * - run parameter tests for nodeupdown_nodelist_create(), 
  *   nodeupdown_nodelist_clear(), and nodeupdown_nodelist_destroy()
  */
-void run_nodelist_param_test(struct test_env *test_env, 
+void nodelist_param_test(struct test_env *test_env, 
 			     int function, 
 			     int index, 
 			     int nodeupdown_handle, 
@@ -644,8 +834,106 @@ void run_nodelist_param_test(struct test_env *test_env,
     result = nodeupdown_nodelist_destroy(handle, ptr);
   }
 
-  output_parameter_test_result(index, handle, result, return_value, return_errnum);
+  output_param_test_result(index, handle, result, return_value, return_errnum);
   
+}
+
+/* func_test
+ * - the main tester for functionality tests
+ */
+void func_test(struct test_env *test_env,
+			      int function,
+			      int index,
+			      int nodes_to_check,
+			      int host_to_query,
+			      int return_value,
+			      int return_errnum) {
+  int result, i;
+  hostlist_t hostlist;
+  char **list;
+  char *node;
+  int len;
+  char buffer[MAXBUFFERLEN];
+
+  if (function == GET_UP_NODES_HOSTLIST || function == GET_DOWN_NODES_HOSTLIST) {
+    if ((hostlist = hostlist_create(NULL)) == NULL) {
+      printf("Test %d: hostlist_create() error\n", index);
+      return;
+    }
+  }
+  else if (function == GET_UP_NODES_LIST || function == GET_DOWN_NODES_LIST) {
+    if ((len = nodeupdown_nodelist_create(test_env->handle_loaded, &list)) == -1) {
+      printf("Test %d: nodeupdown_nodelist_create() error\n", index);
+      return;
+    }
+  }
+  else {
+    if (map_nodes_to_char_ptr(test_env, nodes_to_check, &node) == -1) {
+      printf("Test %d: map_nodes_to_char_ptr() error\n", index);
+      return;
+    }
+  }
+
+  if (function == GET_UP_NODES_HOSTLIST) {
+    result = nodeupdown_get_up_nodes_hostlist(test_env->handle_loaded, hostlist);
+  }
+  else if (function == GET_DOWN_NODES_HOSTLIST){
+    result = nodeupdown_get_down_nodes_hostlist(test_env->handle_loaded, hostlist);
+  }
+  else if (function == GET_UP_NODES_LIST) {
+    result = nodeupdown_get_up_nodes_list(test_env->handle_loaded, list, len);
+  }
+  else if (function == GET_DOWN_NODES_LIST) {
+    result = nodeupdown_get_down_nodes_list(test_env->handle_loaded, list, len);
+  }
+  else if (function == IS_NODE_UP) {
+    result = nodeupdown_is_node_up(test_env->handle_loaded, node);
+  }
+  else if (function == IS_NODE_DOWN) {
+    result = nodeupdown_is_node_down(test_env->handle_loaded, node);
+  }
+
+  if (result == return_value && 
+      nodeupdown_errnum(test_env->handle_loaded) == return_errnum) {
+    if (function == GET_UP_NODES_HOSTLIST || function == GET_DOWN_NODES_HOSTLIST) {
+       if (compare_nodes_to_hostlist(test_env, hostlist, nodes_to_check)) {
+	printf("Test %d: PASS\n", index);
+      }
+      else {
+	memset(buffer, '\0', MAXBUFFERLEN);
+	hostlist_ranged_string(hostlist, MAXBUFFERLEN, buffer);
+	printf("Test %d: ***FAIL*** returned hostlists = %s\n", index, buffer);
+      }
+    }
+    else if (function == GET_UP_NODES_LIST || function == GET_DOWN_NODES_LIST) {
+      if (compare_nodes_to_list(test_env, list, len, nodes_to_check)) {
+	printf("Test %d: PASS\n", index);
+      }
+      else {
+	printf("Test %d: ***FAIL*** returned nodes ", index);
+	i = 0;
+	while (strlen(list[i]) > 0 && i < len) {
+	  if (list[i] != NULL) 
+	    printf("%s ", list[i++]);
+	}
+	printf("\n");
+      }
+    }
+    else {
+      printf("Test %d: PASS\n", index);
+    }
+  }
+  else {
+    printf("Test %d: ***FAIL*** return value = %d, return errnum = %d\n", 
+	   index, result, nodeupdown_errnum(test_env->handle_loaded));
+  }
+
+  if (function == GET_UP_NODES_HOSTLIST || function == GET_DOWN_NODES_HOSTLIST) {
+    hostlist_destroy(hostlist);
+  }
+  else if (function == GET_UP_NODES_LIST || function == GET_DOWN_NODES_LIST) {
+    (void)nodeupdown_nodelist_destroy(test_env->handle_loaded, list);
+  }
 }
 
 /* initialize_test_env_parameter_tests
@@ -688,7 +976,8 @@ int initialize_test_env_parameter_tests(struct test_env *test_env) {
 			   NULL, 
 			   NULL, 
 			   LIBNODEUPDOWN_TEST_GMOND_PORT) == -1) {
-    printf("nodeupdown_load_data() error: %s\n",nodeupdown_strerror(nodeupdown_errnum(test_env->handle_loaded))); 
+    printf("nodeupdown_load_data() error: %s\n",
+	   nodeupdown_strerror(nodeupdown_errnum(test_env->handle_loaded))); 
     return -1;
   }
   
@@ -732,14 +1021,16 @@ int cleanup_test_env_parameter_tests(struct test_env *test_env) {
   }
 
   if (test_env->empty_list_1 != NULL) {
-    if (nodeupdown_nodelist_destroy(test_env->handle_loaded, test_env->empty_list_1) == -1) {
+    if (nodeupdown_nodelist_destroy(test_env->handle_loaded, 
+				    test_env->empty_list_1) == -1) {
       printf("nodeupdown_nodelist_destroy() error\n");
       retval = -1;
     }
   }
   
   if (test_env->empty_list_2 != NULL) {
-    if (nodeupdown_nodelist_destroy(test_env->handle_loaded, test_env->empty_list_2) == -1) {
+    if (nodeupdown_nodelist_destroy(test_env->handle_loaded, 
+				    test_env->empty_list_2) == -1) {
       printf("nodeupdown_nodelist_destroy() error\n");
       retval = -1;
     }
@@ -767,6 +1058,86 @@ int cleanup_test_env_parameter_tests(struct test_env *test_env) {
   return retval;
 }
 
+/* initialize_test_env_func_tests
+ * - setup test environment for functionality tests
+ */
+int initialize_test_env_func_tests(struct test_env *test_env, 
+			     int nodes, 
+			     int host_to_query, 
+			     int restart_gmonds_flag) {
+  char * ptr;
+
+  test_env->handle_loaded = NULL;
+
+  /* don't restart gmonds if we don't have to */
+  if (restart_gmonds_flag == 1) {
+    if (start_gmonds(test_env, nodes) == -1) {
+      printf("start_gmonds() error\n");
+      return -1;
+    }
+
+    /* sleep a bit, wait for gmonds to get going */
+    sleep(LIBNODEUPDOWN_TEST_SLEEPTIME);
+
+  }
+
+  /* sleep a bit more */
+  sleep(LIBNODEUPDOWN_TEST_SLEEPTIME);
+
+  if ((test_env->handle_loaded = nodeupdown_create()) == NULL) {
+    printf("nodeupdown_create() error\n");
+    return -1;
+  }
+
+  if ((test_env->handle_loaded = nodeupdown_create()) == NULL) {
+    printf("nodeupdown_create() error\n");
+    return -1;
+  }
+
+  if (map_nodes_to_char_ptr(test_env, host_to_query, &ptr) == -1) {
+    printf("map_nodes_to_char_ptr() error\n");
+    return -1;
+  }
+  
+  if (nodeupdown_load_data(test_env->handle_loaded, 
+			   NULL, 
+			   ptr,
+			   NULL, 
+			   LIBNODEUPDOWN_TEST_GMOND_PORT) == -1) {
+    printf("nodeupdown_load_data() error: %s\n", 
+	   nodeupdown_strerror(nodeupdown_errnum(test_env->handle_loaded)));
+    return -1;
+  }
+
+  return 0;
+}
+
+/* cleanup_test_env_func_tests
+ * - cleanup functionality test environment
+ */
+int cleanup_test_env_func_tests(struct test_env *test_env, 
+				int nodes, 
+				int restart_gmonds_flag) {
+  int retval = 0;
+
+  if (test_env->handle_loaded != NULL) {
+    if (nodeupdown_destroy(test_env->handle_loaded) == -1) {
+      printf("nodeupdown_destroy() error\n");
+      retval = -1;
+    }
+  }
+
+  /* don't restart gmonds if we don't have to */
+  if (restart_gmonds_flag == 1) {
+    if (close_gmonds(test_env, nodes) == -1) {
+      printf("close_gmonds() error\n");
+      retval = -1;
+    }
+  }
+
+  return retval;
+}
+
 /* run_param_tests
  * - run all parameter tests
  */
@@ -782,15 +1153,15 @@ int run_param_tests(struct test_env *test_env) {
   printf("nodeupdown_load_data(), parameter tests                       \n");
   printf("--------------------------------------------------------------\n");
   while (load_data_param_tests[i].nodeupdown_handle != -1) {
-    run_load_data_param_test(test_env, 
-			     i, 
-			     load_data_param_tests[i].nodeupdown_handle, 
-			     load_data_param_tests[i].genders_filename,
-			     load_data_param_tests[i].gmond_hostname,
-			     load_data_param_tests[i].gmond_ip,
-			     load_data_param_tests[i].gmond_port,
-			     load_data_param_tests[i].return_value, 
-			     load_data_param_tests[i].return_errnum);  
+    load_data_param_test(test_env, 
+			 i, 
+			 load_data_param_tests[i].nodeupdown_handle, 
+			 load_data_param_tests[i].genders_filename,
+			 load_data_param_tests[i].gmond_hostname,
+			 load_data_param_tests[i].gmond_ip,
+			 load_data_param_tests[i].gmond_port,
+			 load_data_param_tests[i].return_value, 
+			 load_data_param_tests[i].return_errnum);  
     i++;
   }
   printf("\n\n");
@@ -799,14 +1170,14 @@ int run_param_tests(struct test_env *test_env) {
   printf("nodeupdown_get_up_nodes_hostlist(), parameter tests           \n");
   printf("--------------------------------------------------------------\n");
   while (get_hostlist_param_tests[i].nodeupdown_handle != -1) {
-    run_get_nodes_hostlist_param_test(test_env, 
-				      GET_UP_NODES_HOSTLIST, 
-				      i, 
-				      get_hostlist_param_tests[i].nodeupdown_handle, 
-				      get_hostlist_param_tests[i].hostlist, 
-				      get_hostlist_param_tests[i].nodeupdown_load_data, 
-				      get_hostlist_param_tests[i].return_value, 
-				      get_hostlist_param_tests[i].return_errnum);  
+    get_nodes_hostlist_param_test(test_env, 
+				  GET_UP_NODES_HOSTLIST, 
+				  i, 
+				  get_hostlist_param_tests[i].nodeupdown_handle, 
+				  get_hostlist_param_tests[i].hostlist, 
+				  get_hostlist_param_tests[i].nodeupdown_load_data, 
+				  get_hostlist_param_tests[i].return_value, 
+				  get_hostlist_param_tests[i].return_errnum);  
     i++;
   }
   printf("\n\n");
@@ -815,14 +1186,14 @@ int run_param_tests(struct test_env *test_env) {
   printf("nodeupdown_get_down_nodes_hostlist(), parameter tests         \n");
   printf("--------------------------------------------------------------\n");
   while (get_hostlist_param_tests[i].nodeupdown_handle != -1) {
-    run_get_nodes_hostlist_param_test(test_env, 
-				      GET_DOWN_NODES_HOSTLIST, 
-				      i, 
-				      get_hostlist_param_tests[i].nodeupdown_handle, 
-				      get_hostlist_param_tests[i].hostlist, 
-				      get_hostlist_param_tests[i].nodeupdown_load_data, 
-				      get_hostlist_param_tests[i].return_value, 
-				      get_hostlist_param_tests[i].return_errnum);  
+    get_nodes_hostlist_param_test(test_env, 
+				  GET_DOWN_NODES_HOSTLIST, 
+				  i, 
+				  get_hostlist_param_tests[i].nodeupdown_handle, 
+				  get_hostlist_param_tests[i].hostlist, 
+				  get_hostlist_param_tests[i].nodeupdown_load_data, 
+				  get_hostlist_param_tests[i].return_value, 
+				  get_hostlist_param_tests[i].return_errnum);  
     i++;
   }
   printf("\n\n");
@@ -831,15 +1202,15 @@ int run_param_tests(struct test_env *test_env) {
   printf("nodeupdown_get_up_nodes_list(), parameter tests               \n");
   printf("--------------------------------------------------------------\n");
   while (get_list_param_tests[i].nodeupdown_handle != -1) {
-    run_get_up_nodes_list_param_test(test_env, 
-				     GET_UP_NODES_LIST, 
-				     i, 
-				     get_list_param_tests[i].nodeupdown_handle, 
-				     get_list_param_tests[i].list, 
-				     get_list_param_tests[i].len, 
-				     get_list_param_tests[i].nodeupdown_load_data, 
-				     get_list_param_tests[i].return_value, 
-				     get_list_param_tests[i].return_errnum);  
+    get_up_nodes_list_param_test(test_env, 
+				 GET_UP_NODES_LIST, 
+				 i, 
+				 get_list_param_tests[i].nodeupdown_handle, 
+				 get_list_param_tests[i].list, 
+				 get_list_param_tests[i].len, 
+				 get_list_param_tests[i].nodeupdown_load_data, 
+				 get_list_param_tests[i].return_value, 
+				 get_list_param_tests[i].return_errnum);  
     i++;
   }
   printf("\n\n");
@@ -848,15 +1219,15 @@ int run_param_tests(struct test_env *test_env) {
   printf("nodeupdown_get_down_nodes_list(), parameter tests             \n");
   printf("--------------------------------------------------------------\n");
   while (get_list_param_tests[i].nodeupdown_handle != -1) {
-    run_get_up_nodes_list_param_test(test_env, 
-				     GET_DOWN_NODES_LIST, 
-				     i, 
-				     get_list_param_tests[i].nodeupdown_handle, 
-				     get_list_param_tests[i].list,
-				     get_list_param_tests[i].len,  
-				     get_list_param_tests[i].nodeupdown_load_data, 
-				     get_list_param_tests[i].return_value, 
-				     get_list_param_tests[i].return_errnum);  
+    get_up_nodes_list_param_test(test_env, 
+				 GET_DOWN_NODES_LIST, 
+				 i, 
+				 get_list_param_tests[i].nodeupdown_handle, 
+				 get_list_param_tests[i].list,
+				 get_list_param_tests[i].len,  
+				 get_list_param_tests[i].nodeupdown_load_data, 
+				 get_list_param_tests[i].return_value, 
+				 get_list_param_tests[i].return_errnum);  
     i++;
   }
   printf("\n\n");
@@ -865,14 +1236,14 @@ int run_param_tests(struct test_env *test_env) {
   printf("nodeupdown_is_node_up(), parameter tests                      \n");
   printf("--------------------------------------------------------------\n");
   while (is_node_param_tests[i].nodeupdown_handle != -1) {
-    run_is_node_param_test(test_env, 
-			   IS_NODE_UP, 
-			   i, 
-			   is_node_param_tests[i].nodeupdown_handle, 
-			   is_node_param_tests[i].node,
-			   is_node_param_tests[i].nodeupdown_load_data, 
-			   is_node_param_tests[i].return_value, 
-			   is_node_param_tests[i].return_errnum);  
+    is_node_param_test(test_env, 
+		       IS_NODE_UP, 
+		       i, 
+		       is_node_param_tests[i].nodeupdown_handle, 
+		       is_node_param_tests[i].node,
+		       is_node_param_tests[i].nodeupdown_load_data, 
+		       is_node_param_tests[i].return_value, 
+		       is_node_param_tests[i].return_errnum);  
     i++;
   }
   printf("\n\n");
@@ -881,14 +1252,14 @@ int run_param_tests(struct test_env *test_env) {
   printf("nodeupdown_is_node_down(), parameter tests                    \n");
   printf("--------------------------------------------------------------\n");
   while (is_node_param_tests[i].nodeupdown_handle != -1) {
-    run_is_node_param_test(test_env, 
-			   IS_NODE_DOWN, 
-			   i, 
-			   is_node_param_tests[i].nodeupdown_handle, 
-			   is_node_param_tests[i].node,
-			   is_node_param_tests[i].nodeupdown_load_data, 
-			   is_node_param_tests[i].return_value, 
-			   is_node_param_tests[i].return_errnum);  
+    is_node_param_test(test_env, 
+		       IS_NODE_DOWN, 
+		       i, 
+		       is_node_param_tests[i].nodeupdown_handle, 
+		       is_node_param_tests[i].node,
+		       is_node_param_tests[i].nodeupdown_load_data, 
+		       is_node_param_tests[i].return_value, 
+		       is_node_param_tests[i].return_errnum);  
     i++;
   }
   printf("\n\n");
@@ -897,15 +1268,15 @@ int run_param_tests(struct test_env *test_env) {
   printf("nodeupdown_get_hostlist_alternate_names(), parameter tests    \n");
   printf("--------------------------------------------------------------\n");
   while (alternate_param_tests[i].nodeupdown_handle != -1) {
-    run_alternate_param_test(test_env, 
-			     GET_HOSTLIST_ALTERNATE_NAMES, 
-			     i, 
-			     alternate_param_tests[i].nodeupdown_handle, 
-			     alternate_param_tests[i].src,
-			     alternate_param_tests[i].dest,
-			     alternate_param_tests[i].nodeupdown_load_data, 
-			     alternate_param_tests[i].return_value, 
-			     alternate_param_tests[i].return_errnum);  
+    alternate_param_test(test_env, 
+			 GET_HOSTLIST_ALTERNATE_NAMES, 
+			 i, 
+			 alternate_param_tests[i].nodeupdown_handle, 
+			 alternate_param_tests[i].src,
+			 alternate_param_tests[i].dest,
+			 alternate_param_tests[i].nodeupdown_load_data, 
+			 alternate_param_tests[i].return_value, 
+			 alternate_param_tests[i].return_errnum);  
     i++;
   }
   printf("\n\n");
@@ -914,15 +1285,15 @@ int run_param_tests(struct test_env *test_env) {
   printf("nodeupdown_get_list_alternate_names(), parameter tests        \n");
   printf("--------------------------------------------------------------\n");
   while (alternate_param_tests[i].nodeupdown_handle != -1) {
-    run_alternate_param_test(test_env, 
-			     GET_LIST_ALTERNATE_NAMES, 
-			     i, 
-			     alternate_param_tests[i].nodeupdown_handle, 
-			     alternate_param_tests[i].src,
-			     alternate_param_tests[i].dest,
-			     alternate_param_tests[i].nodeupdown_load_data, 
-			     alternate_param_tests[i].return_value, 
-			     alternate_param_tests[i].return_errnum);  
+    alternate_param_test(test_env, 
+			 GET_LIST_ALTERNATE_NAMES, 
+			 i, 
+			 alternate_param_tests[i].nodeupdown_handle, 
+			 alternate_param_tests[i].src,
+			 alternate_param_tests[i].dest,
+			 alternate_param_tests[i].nodeupdown_load_data, 
+			 alternate_param_tests[i].return_value, 
+			 alternate_param_tests[i].return_errnum);  
     i++;
   }
   printf("\n\n");
@@ -931,14 +1302,14 @@ int run_param_tests(struct test_env *test_env) {
   printf("nodeupdown_nodelist_create(), parameter tests                 \n");
   printf("--------------------------------------------------------------\n");
   while (nodelist_param_tests[i].nodeupdown_handle != -1) {
-    run_nodelist_param_test(test_env, 
-			    NODELIST_CREATE, 
-			    i, 
-			    nodelist_param_tests[i].nodeupdown_handle, 
-			    nodelist_param_tests[i].list,
-			    nodelist_param_tests[i].nodeupdown_load_data, 
-			    nodelist_param_tests[i].return_value, 
-			    nodelist_param_tests[i].return_errnum);  
+    nodelist_param_test(test_env, 
+			NODELIST_CREATE, 
+			i, 
+			nodelist_param_tests[i].nodeupdown_handle, 
+			nodelist_param_tests[i].list,
+			nodelist_param_tests[i].nodeupdown_load_data, 
+			nodelist_param_tests[i].return_value, 
+			nodelist_param_tests[i].return_errnum);  
     i++;
   }
   printf("\n\n");
@@ -947,14 +1318,14 @@ int run_param_tests(struct test_env *test_env) {
   printf("nodeupdown_nodelist_clear(), parameter tests                  \n");
   printf("--------------------------------------------------------------\n");
   while (nodelist_param_tests[i].nodeupdown_handle != -1) {
-    run_nodelist_param_test(test_env, 
-			    NODELIST_CLEAR, 
-			    i, 
-			    nodelist_param_tests[i].nodeupdown_handle, 
-			    nodelist_param_tests[i].list,
-			    nodelist_param_tests[i].nodeupdown_load_data, 
-			    nodelist_param_tests[i].return_value, 
-			    nodelist_param_tests[i].return_errnum);  
+    nodelist_param_test(test_env, 
+			NODELIST_CLEAR, 
+			i, 
+			nodelist_param_tests[i].nodeupdown_handle, 
+			nodelist_param_tests[i].list,
+			nodelist_param_tests[i].nodeupdown_load_data, 
+			nodelist_param_tests[i].return_value, 
+			nodelist_param_tests[i].return_errnum);  
     i++;
   }
   printf("\n\n");
@@ -963,14 +1334,14 @@ int run_param_tests(struct test_env *test_env) {
   printf("nodeupdown_nodelist_destroy(), parameter tests                \n");
   printf("--------------------------------------------------------------\n");
   while (nodelist_param_tests[i].nodeupdown_handle != -1) {
-    run_nodelist_param_test(test_env, 
-			    NODELIST_DESTROY, 
-			    i, 
-			    nodelist_param_tests[i].nodeupdown_handle, 
-			    nodelist_param_tests[i].list,
-			    nodelist_param_tests[i].nodeupdown_load_data, 
-			    nodelist_param_tests[i].return_value, 
-			    nodelist_param_tests[i].return_errnum);  
+    nodelist_param_test(test_env, 
+			NODELIST_DESTROY, 
+			i, 
+			nodelist_param_tests[i].nodeupdown_handle, 
+			nodelist_param_tests[i].list,
+			nodelist_param_tests[i].nodeupdown_load_data, 
+			nodelist_param_tests[i].return_value, 
+			nodelist_param_tests[i].return_errnum);  
     i++;
   }
   printf("\n\n");
@@ -981,340 +1352,22 @@ int run_param_tests(struct test_env *test_env) {
   }
 
   return 0;
-
+  
  cleanup:
-
+  
   (void)cleanup_test_env_parameter_tests(test_env);
   
   return -1;
 }
 
-int compare_nodes_to_hostlist(struct test_env *test_env, 
-			      hostlist_t hl, 
-			      int nodes) {
-
-  int retval = 0;
-
-  switch(nodes) {
-  case NODE_NONE:
-    if (!((hostlist_find(hl, test_env->nodes[0])) >= 0 ||
-	  (hostlist_find(hl, test_env->nodes[1])) >= 0 ||
-	  (hostlist_find(hl, test_env->nodes[2])) >= 0)) {
-      retval = 1;
-    }
-    break;
-  case NODE_A:
-    if (((hostlist_find(hl, test_env->nodes[0])) >= 0) &&
-	((hostlist_find(hl, test_env->nodes[1])) == -1) &&
-	((hostlist_find(hl, test_env->nodes[2])) == -1)) {
-      return 1;
-    }
-    break;
-  case NODE_B:
-    if (((hostlist_find(hl, test_env->nodes[0])) == -1) &&
-	((hostlist_find(hl, test_env->nodes[1])) >= 0) &&
-	((hostlist_find(hl, test_env->nodes[2])) == -1)) {
-      return 1;
-    }
-    break;
-  case NODE_C:
-    if (((hostlist_find(hl, test_env->nodes[0])) == -1) &&
-	((hostlist_find(hl, test_env->nodes[1])) == -1) &&
-	((hostlist_find(hl, test_env->nodes[2])) >= 0)) {
-      return 1;
-    }
-    break;
-  case NODE_AB:
-    if (((hostlist_find(hl, test_env->nodes[0])) >= 0) &&
-	((hostlist_find(hl, test_env->nodes[1])) >= 0) &&
-	((hostlist_find(hl, test_env->nodes[2])) == -1)) {
-      return 1;
-    }
-    break;
-  case NODE_AC:
-    if (((hostlist_find(hl, test_env->nodes[0])) >= 0) &&
-	((hostlist_find(hl, test_env->nodes[1])) == -1) &&
-	((hostlist_find(hl, test_env->nodes[2])) >= 0)) {
-      return 1;
-    }
-    break;
-  case NODE_BC:
-    if (((hostlist_find(hl, test_env->nodes[0])) == -1) &&
-	((hostlist_find(hl, test_env->nodes[1])) >= 0) &&
-	((hostlist_find(hl, test_env->nodes[2])) >= 0)) {
-      return 1;
-    }
-    break;
-  case NODE_ABC:
-    if (((hostlist_find(hl, test_env->nodes[0])) >= 0) &&
-	((hostlist_find(hl, test_env->nodes[1])) >= 0) &&
-	((hostlist_find(hl, test_env->nodes[2])) >= 0)) {
-      return 1;
-    }
-    break;
-  default:
-    printf("incorrect nodes value in compare_nodes_to_hostlist()\n");
-    return -1;
-    break;
-  }
-
-  return retval;
-}
-
-int compare_nodes_to_list_helper(struct test_env *test_env, 
-				 char **list,
-				 int len,
-				 int a, 
-				 int b, 
-				 int c) {
-  int i;
-  int retval = 1;
-
-  if (a == 1) {
-    retval = 0;
-    for (i = 0; i < len; i++) {
-      if (strcmp(list[i], test_env->nodes[0]) == 0) {
-	retval = 1;
-	break;
-      }
-    }
-  }
-  if (b == 1) {
-    retval = 0;
-    for (i = 0; i < len; i++) {
-      if (strcmp(list[i], test_env->nodes[1]) == 0) {
-	retval = 1;
-	break;
-      }
-    }
-  }
-  if (c == 1) {
-    retval = 0;
-    for (i = 0; i < len; i++) {
-      if (strcmp(list[i], test_env->nodes[2]) == 0) {
-	retval = 1;
-	break;
-      }
-    }
-  }
-
-  if (a == 0 || b == 0 || c == 0) {
-    for (i = 0; i < len; i++) {
-      if (a == 0 && strcmp(list[i],test_env->nodes[0]) == 0) {
-	retval = 0;
-	break;
-      }
-      if (b == 0 && strcmp(list[i],test_env->nodes[1]) == 0) {
-	retval = 0;
-	break;
-      }
-      if (c == 0 && strcmp(list[i],test_env->nodes[2]) == 0) {
-	retval = 0;
-	break;
-      }
-    }
-  }
-
-  return retval;
-}
-
-int compare_nodes_to_list(struct test_env *test_env, 
-			  char **list, 
-			  int len, 
-			  int nodes) {
-
-  switch(nodes) {
-  case NODE_NONE:
-    return compare_nodes_to_list_helper(test_env, list, len, 0, 0, 0);
-    break;
-  case NODE_A:
-    return compare_nodes_to_list_helper(test_env, list, len, 1, 0, 0);
-    break;
-  case NODE_B:
-    return compare_nodes_to_list_helper(test_env, list, len, 0, 1, 0);
-    break;
-  case NODE_C:
-    return compare_nodes_to_list_helper(test_env, list, len, 0, 0, 1);
-    break;
-  case NODE_AB:
-    return compare_nodes_to_list_helper(test_env, list, len, 1, 1, 0);
-    break;
-  case NODE_AC:
-    return compare_nodes_to_list_helper(test_env, list, len, 1, 0, 1);
-    break;
-  case NODE_BC:
-    return compare_nodes_to_list_helper(test_env, list, len, 0, 1, 1);
-    break;
-  case NODE_ABC:
-    return compare_nodes_to_list_helper(test_env, list, len, 1, 1, 1);
-    break;
-  default:
-    printf("incorrect nodes value in compare_nodes_to_list()\n");
-    return -1;
-    break;
-  }
-
-  return -1;
-}
-
-void run_a_functionality_test(struct test_env *test_env,
-			      int function,
-			      int index,
-			      int nodes_to_check,
-			      int host_to_query,
-			      int return_value,
-			      int return_errnum) {
-  int result, i;
-  hostlist_t hostlist;
-  char **list;
-  char *node;
-  int len;
-  char buffer[MAXBUFFERLEN];
-
-  if (function == GET_UP_NODES_HOSTLIST || function == GET_DOWN_NODES_HOSTLIST) {
-    if ((hostlist = hostlist_create(NULL)) == NULL) {
-      printf("Test %d: hostlist_create() error\n", index);
-      return;
-    }
-  }
-  else if (function == GET_UP_NODES_LIST || function == GET_DOWN_NODES_LIST) {
-    if ((len = nodeupdown_nodelist_create(test_env->handle_loaded, &list)) == -1) {
-      printf("Test %d: nodeupdown_nodelist_create() error\n", index);
-      return;
-    }
-  }
-  else {
-    if ((node = get_nodes_ptr(test_env, nodes_to_check)) == NULL) {
-      printf("Test %d: get_nodes_ptr() error\n", index);
-      return;
-    }
-  }
-
-  if (function == GET_UP_NODES_HOSTLIST) {
-    result = nodeupdown_get_up_nodes_hostlist(test_env->handle_loaded, hostlist);
-  }
-  else if (function == GET_DOWN_NODES_HOSTLIST){
-    result = nodeupdown_get_down_nodes_hostlist(test_env->handle_loaded, hostlist);
-  }
-  else if (function == GET_UP_NODES_LIST) {
-    result = nodeupdown_get_up_nodes_list(test_env->handle_loaded, list, len);
-  }
-  else if (function == GET_DOWN_NODES_LIST) {
-    result = nodeupdown_get_down_nodes_list(test_env->handle_loaded, list, len);
-  }
-  else if (function == IS_NODE_UP) {
-    result = nodeupdown_is_node_up(test_env->handle_loaded, node);
-  }
-  else if (function == IS_NODE_DOWN) {
-    result = nodeupdown_is_node_down(test_env->handle_loaded, node);
-  }
-
-  if (result == return_value && nodeupdown_errnum(test_env->handle_loaded) == return_errnum) {
-    if (function == GET_UP_NODES_HOSTLIST || function == GET_DOWN_NODES_HOSTLIST) {
-      if (compare_nodes_to_hostlist(test_env, hostlist, nodes_to_check)) {
-	printf("Test %d: PASS\n", index);
-      }
-      else {
-	memset(buffer, '\0', MAXBUFFERLEN);
-	hostlist_ranged_string(hostlist, MAXBUFFERLEN, buffer);
-	printf("Test %d: ***FAIL*** returned hostlists = %s\n", index, buffer);
-      }
-    }
-    else if (function == GET_UP_NODES_LIST || function == GET_DOWN_NODES_LIST) {
-      if (compare_nodes_to_list(test_env, list, len, nodes_to_check)) {
-	printf("Test %d: PASS\n", index);
-      }
-      else {
-	printf("Test %d: ***FAIL*** returned nodes ", index);
-	i = 0;
-	while (strlen(list[i]) > 0 && i < len) {
-	  printf("%s ", list[i++]);
-	}
-	printf("\n");
-      }
-    }
-    else {
-      printf("Test %d: PASS\n", index);
-    }
-  }
-  else {
-    printf("Test %d: ***FAIL*** return value = %d, return errnum = %d\n", 
-	   index, result, nodeupdown_errnum(test_env->handle_loaded));
-  }
-
-  if (function == GET_UP_NODES_HOSTLIST || function == GET_DOWN_NODES_HOSTLIST) {
-    hostlist_destroy(hostlist);
-  }
-  else if (function == GET_UP_NODES_LIST || function == GET_DOWN_NODES_LIST) {
-    (void)nodeupdown_nodelist_destroy(test_env->handle_loaded, list);
-  }
-}
-
-int setup_functionality_test(struct test_env *test_env, int nodes, int host_to_query, int restart_gmonds_flag) {
-  char * ptr;
-
-  test_env->handle_loaded = NULL;
-
-  if (restart_gmonds_flag == 1) {
-    if (start_gmonds(test_env, nodes) == -1) {
-      printf("start_gmonds() error\n");
-      return -1;
-    }
-
-    /* sleep a bit, wait for gmonds to get going */
-    sleep(LIBNODEUPDOWN_TEST_SLEEPTIME);
-
-  }
-
-  /* sleep a bit, wait for gmonds to get going */
-  sleep(LIBNODEUPDOWN_TEST_SLEEPTIME);
-
-  if ((test_env->handle_loaded = nodeupdown_create()) == NULL) {
-    printf("nodeupdown_create() error\n");
-    return -1;
-  }
-
-  if ((test_env->handle_loaded = nodeupdown_create()) == NULL) {
-    printf("nodeupdown_create() error\n");
-    return -1;
-  }
-
-  ptr = get_nodes_ptr(test_env, host_to_query);
-  
-  if (nodeupdown_load_data(test_env->handle_loaded, 
-			   NULL, 
-			   ptr,
-			   NULL, 
-			   LIBNODEUPDOWN_TEST_GMOND_PORT) == -1) {
-    printf("nodeupdown_load_data() error: %s\n", nodeupdown_strerror(nodeupdown_errnum(test_env->handle_loaded)));
-    return -1;
-  }
-
-  return 0;
-}
-
-int cleanup_functionality_test(struct test_env *test_env, int nodes, int restart_gmonds_flag) {
-  int retval = 0;
-
-  if (test_env->handle_loaded != NULL) {
-    if (nodeupdown_destroy(test_env->handle_loaded) == -1) {
-      printf("nodeupdown_destroy() error\n");
-      retval = -1;
-    }
-  }
-
-  if (restart_gmonds_flag == 1) {
-    if (close_gmonds(test_env, nodes) == -1) {
-      printf("close_gmonds() error\n");
-      retval = -1;
-    }
-  }
-
-  return retval;
-}
-
-int run_functionality_tests(struct test_env *test_env) {
+/* run_func_tests
+ * - run all of the functionality tests
+ */
+int run_func_tests(struct test_env *test_env) {
   int i, restart_gmonds_flag, old_nodes_up, old_host_to_query;
+
+  printf("functionality tests                                           \n");
+  printf("--------------------------------------------------------------\n");
 
   /* kill existing gmonds first */
   if (close_gmonds(test_env, NODE_ALL) == -1) {
@@ -1324,49 +1377,59 @@ int run_functionality_tests(struct test_env *test_env) {
 
   /* we use the "restart_gmonds_flag" variable to minimize
    * the number of times gmonds must be closed and started
-   * up again.
+   * up again.  if restart_gmonds_flag = 1, restart, else
+   * don't restart.
    */
 
   i = 0;
   restart_gmonds_flag = 1;
-  while(functionality_tests[i].function != -1) {
-    if (setup_functionality_test(test_env, 
-				 functionality_tests[i].nodes_up, 
-				 functionality_tests[i].host_to_query,
-				 restart_gmonds_flag) == -1) {
-      printf("setup_functionality_test() error\n");
+  while(func_tests[i].function != -1) {
+    if (initialize_test_env_func_tests(test_env, 
+						func_tests[i].nodes_up, 
+						func_tests[i].host_to_query,
+						restart_gmonds_flag) == -1) {
+      printf("initialize_test_env_func_tests() error\n");
       return -1;
     }
     
-    old_nodes_up = functionality_tests[i].nodes_up;
-    old_host_to_query = functionality_tests[i].host_to_query;
+    old_nodes_up = func_tests[i].nodes_up;
+    old_host_to_query = func_tests[i].host_to_query;
 
-    while (functionality_tests[i].function != -1 &&
-	   functionality_tests[i].nodes_up == old_nodes_up &&
-	   functionality_tests[i].host_to_query == old_host_to_query) {
-      run_a_functionality_test(test_env, 
-			       functionality_tests[i].function,
-			       i, 
-			       functionality_tests[i].nodes_to_check,
-			       functionality_tests[i].host_to_query,
-			       functionality_tests[i].return_value, 
-			       functionality_tests[i].return_errnum);  
+    /* if the "host_to_query" or "nodes_up" in the test
+     * cases changes, we have re-initialize the environment.
+     * A change in nodes_up, requires us to close and restart
+     * a new set of gmonds.  A change in host_to_query requires us
+     * to re-call nodeupdown_load_data().  
+     */
+    while (func_tests[i].function != -1 &&
+	   func_tests[i].nodes_up == old_nodes_up &&
+	   func_tests[i].host_to_query == old_host_to_query) {
+      func_test(test_env, 
+			 func_tests[i].function,
+			 i, 
+			 func_tests[i].nodes_to_check,
+			 func_tests[i].host_to_query,
+			 func_tests[i].return_value, 
+			 func_tests[i].return_errnum);  
       i++;
       sleep(1);
     }
 
-    if (functionality_tests[i].nodes_up != old_nodes_up)
+    /* check if we have to restart gmonds?? */
+    if (func_tests[i].nodes_up != old_nodes_up)
       restart_gmonds_flag = 1;
     else
       restart_gmonds_flag = 0;
 
-    if (cleanup_functionality_test(test_env, NODE_ALL, restart_gmonds_flag) == -1) {
-      printf("cleanup_functionality_test() error\n");
+    if (cleanup_test_env_func_tests(test_env, 
+				    old_nodes_up, 
+				    restart_gmonds_flag) == -1) {
+      printf("cleanup_test_env_func_tests() error\n");
       return -1;
     }
 
     if (restart_gmonds_flag == 1) {
-      /* sleep a bit, wait for gmonds to get going */
+      /* sleep a bit, wait for gmonds get closed */
       sleep(LIBNODEUPDOWN_TEST_SLEEPTIME);
     }
   }
@@ -1375,6 +1438,16 @@ int run_functionality_tests(struct test_env *test_env) {
 
 int main(int argc, char **argv) {
   struct test_env *test_env = NULL;
+  int which_test_type;
+
+  if (argc != 2) {
+    usage();
+  }
+  else {
+    which_test_type = atoi(argv[1]);
+    if (which_test_type != 0 && which_test_type != 1)
+      usage();
+  }
 
   if (signal(SIGCHLD, SIG_IGN) == SIG_ERR) {
     printf("signal() error\n");
@@ -1391,16 +1464,17 @@ int main(int argc, char **argv) {
     goto cleanup;
   }
   
-  if (run_param_tests(test_env) == -1) {
-    printf("run_param_tests() error\n");
-    goto cleanup;
+  if (which_test_type == 0) {
+    if (run_param_tests(test_env) == -1) {
+      printf("run_param_tests() error\n");
+      goto cleanup;
+    }
   }
-
-  sleep(LIBNODEUPDOWN_SLEEPTIME);
-
-  if (run_functionality_tests(test_env) == -1) {
-    printf("run_functionality_tests() error\n");
-    goto cleanup;
+  else {
+    if (run_func_tests(test_env) == -1) {
+      printf("func_tests() error\n");
+      goto cleanup;
+    }
   }
 
   cleanup_test_env(test_env);

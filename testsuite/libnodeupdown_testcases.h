@@ -1,5 +1,5 @@
 /*
- * $Id: libnodeupdown_testcases.h,v 1.1 2003-03-07 01:10:20 achu Exp $
+ * $Id: libnodeupdown_testcases.h,v 1.2 2003-03-07 20:13:08 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/testsuite/libnodeupdown_testcases.h,v $
  *    
  */
@@ -26,7 +26,7 @@
 #define NODELIST_DESTROY              10
 
 /*
- * Flags for test situations
+ * Flags for test cases
  * funny note: Amazingly, there is a machine here at LLNL named
  *             "foobar."  This caused me some headaches when I was
  *             trying to debug the testsuite and the libnodeupdown
@@ -59,27 +59,26 @@
 #define GOOD_PORT                                 8659
 #define BAD_PORT                                  9999
 
-#define BAD_NODE                        "foobar-fubar"
+#define BAD_NODE                       "foobar-fuhbar"
 #define NULL_NODE                                 NULL
 
 /*
  * Node Sets
  */
 #define NODE_NONE              0
-#define NODE_A                 1
+#define NODE_A                 4
 #define NODE_B                 2
-#define NODE_C                 3
-#define NODE_AB                4
+#define NODE_C                 1
+#define NODE_AB                6
 #define NODE_AC                5
-#define NODE_BC                6
+#define NODE_BC                3
 #define NODE_ABC               7
 #define NODE_ALL               7
 #define LOCALHOST              8
 
-
 /*****************************************************************
  * PARAMETER TESTS                                               *
- * - time for the time being, we will not execute any tests that *
+ * - for the time being, we will not execute any tests that      *
  *   "succeed", they are commented out.                          * 
  *****************************************************************/
 
@@ -258,7 +257,7 @@ struct {
   int host_to_query;
   int return_value;
   int return_errnum;
-} functionality_tests[] = {
+} func_tests[] = {
   {GET_UP_NODES_HOSTLIST,   NODE_ALL, NODE_ALL,  LOCALHOST, 0, NODEUPDOWN_ERR_SUCCESS},
   {GET_DOWN_NODES_HOSTLIST, NODE_ALL, NODE_NONE, LOCALHOST, 0, NODEUPDOWN_ERR_SUCCESS},
   {GET_UP_NODES_LIST,       NODE_ALL, NODE_ALL,  LOCALHOST, 0, NODEUPDOWN_ERR_SUCCESS},
