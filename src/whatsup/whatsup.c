@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.47 2003-05-29 22:13:56 achu Exp $
+ * $Id: whatsup.c,v 1.48 2003-05-30 00:38:34 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -155,7 +155,6 @@ static void cleanup_struct_arginfo(struct arginfo *arginfo) {
  */
 static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
   int c, index, oopt = 0, iopt = 0;
-  char *hostname, *ip;
 
   char *options = "hVf:o:i:p:budlcnsag:";
   struct option long_options[] = {
@@ -194,11 +193,11 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
       break;
     case 'o':
       oopt++;
-      hostname = optarg;
+      arginfo->gmond_hostname = hostname;
       break;
     case 'i':
       iopt++;
-      ip = optarg;
+      arginfo->gmond_ip = ip;
       break;
     case 'p':
       arginfo->gmond_port = atoi(optarg);
@@ -238,14 +237,10 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
     }
   }
 
-  if ((oopt + iopt) > 1) {
+  if (oopt && iopt) {
     err_msg("you cannot specify --gmond_hostname and --gmond_ip", NULL);
     return -1;
   }
-  else if (oopt > 0)
-    arginfo->gmond_hostname = hostname;
-  else if (iopt > 0)
-    arginfo->gmond_ip = ip;
 
   if ((arginfo->nodes = hostlist_create(NULL)) == NULL) {
     err_msg("hostlist_create() error", NULL);
