@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.60 2003-09-24 22:13:26 achu Exp $
+ * $Id: whatsup.c,v 1.61 2003-09-24 23:14:15 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -35,6 +35,8 @@ extern int optind, opterr, optopt;
 #define WHATSUP_ON           1
 
 #define WHATSUP_BUFFERLEN    65536
+
+#define WHATSUP_FORMATLEN    64
 
 #define RANGED_STRING        0
 #define DERANGED_STRING      1
@@ -118,6 +120,20 @@ static void err_msg(char *msg, char *errno_msg) {
   else
     fprintf(stderr, "whatsup error: %s, %s\n", msg, errno_msg);
 }
+
+/* _log10
+ * - a simple log 10 function for ints
+ */
+static int _log10(int num) {
+  int count = 0;
+
+  if (num > 0) {
+    while ((num /= 10) > 0)
+      count++;
+  }
+
+  return count;
+} 
 
 /* initialize_struct_arginfo
  * - initialize struct arginfo structure
@@ -604,7 +620,16 @@ int main(int argc, char **argv) {
   else {
     /* output up, down, or both up and down nodes */
     if (arginfo->output == UP_AND_DOWN) {
-      fprintf(stdout, "up: %d:\t", up_count);
+      char ufmt[WHATSUP_FORMATLEN];
+      char dfmt[WHATSUP_FORMATLEN];
+      int max;
+
+      /* hacks to get the numbers to align */
+      max = (up_count > down_count) ? _log10(up_count) : _log10(down_count);
+      snprintf(ufmt, WHATSUP_FORMATLEN, "up:   %%%dd: ", ++max);
+      snprintf(dfmt, WHATSUP_FORMATLEN, "down: %%%dd: ", max);
+
+      fprintf(stdout, ufmt, up_count);
       
       /* handle odd situation with output formatting */
       if (arginfo->list_type == NEWLINE)
@@ -616,8 +641,8 @@ int main(int argc, char **argv) {
       /* handle odd situation with output formatting */
       if (arginfo->list_type == NEWLINE)
         fprintf(stdout, "\n");
-      
-      fprintf(stdout, "down: %d:\t", down_count);
+
+      fprintf(stdout, dfmt, down_count);
 
       /* handle odd situation with output formatting */
       if (arginfo->list_type == NEWLINE)
