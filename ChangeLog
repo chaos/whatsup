@@ -1,4 +1,4 @@
-2004-11-16  Albert Chu  <chu11@llnl.gov>
+2004-11-17  Albert Chu  <chu11@llnl.gov>
 
 	* whatsup.spec.in, README, README.genders_install,
 	README.hostsfile_install, config/Make-rpm.mk, Makefile.am,

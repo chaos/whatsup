@@ -1,11 +1,34 @@
+# Check for incorrect rpm build options before moving on
+%{?_with_nomasterlist: %{?_with_hostsfile: %{error: both nomasterlist and hostsfile specified}}}
+%{?_with_nomasterlist: %{?_with_genders: %{error: both nomasterlist and genders specified}}}
+%{?_with_nomasterlist: %{?_with_gendersllnl: %{error: both nomasterlist and gendersllnl specified}}}
+%{?_with_hostsfile: %{?_with_genders: %{error: both hostsfile and genders specified}}}
+%{?_with_hostsfile: %{?_with_gendersllnl: %{error: both hostsfile and gendersllnl specified}}}
+%{?_with_genders: %{?_with_gendersllnl: %{error: both genders and gendersllnl specified}}}
+
 Name:    @PROJECT@
 Version: @VERSION@
+# Base release name on type of masterlist
+%if %{?_with_nomasterlist:1}%{!?_with_nomasterlist:0}
+Release: @RELEASE@.nomasterlist
+%endif
+%if %{?_with_hostsfile:1}%{!?_with_hostsfile:0}
+Release: @RELEASE@.hostsfile
+%endif
+%if %{?_with_genders:1}%{!?_with_genders:0}
+Release: @RELEASE@.genders
+%endif
+%if %{?_with_gendersllnl:1}%{!?_with_gendersllnl:0}
+Release: @RELEASE@.gendersllnl
+%endif
+%if %{!?_with_nomasterlist: %{!?_with_hostsfile: %{!?_with_genders: %{!_with_gendersllnl: 1}}}}%{?_with_nomasterlist: 0}%{?_hostsfile: 0}%{?_with_genders: 0}%{?_with_gendersllnl: 0}
 Release: @RELEASE@
+%endif
 Summary: whatsup node up/down detection utility
 Group: Applications/Communications
 License: GPL
-Source: %{name}-%{version}-%{release}.tgz
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}
+Source: %{name}-%{version}-@RELEASE@.tgz
+BuildRoot: %{_tmppath}/%{name}-%{version}-@RELEASE@
 
 %if %{?_with_genders:1}%{!?_with_genders:0}
 Requires:       genders >= 1.2
@@ -21,7 +44,7 @@ and a master list of cluster nodes.  C and perl libraries are also
 supplied for detecting up/down nodes.
 
 %prep
-%setup -q -n %{name}-%{version}-%{release}
+%setup -q -n %{name}-%{version}-@RELEASE@
 
 %build
 %configure --program-prefix=%{?_program_prefix:%{_program_prefix}} \
