@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.32 2004-10-28 22:08:32 achu Exp $
+## $Id: configure.ac,v 1.33 2004-11-17 01:22:48 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -173,8 +173,8 @@ if test "$withnomasterlist" != "yes" &&
       withgenders=yes
       AC_MSG_NOTICE([genders chosen as masterlist mechanism])
    else
-      withnomasterlist=yes
-      AC_MSG_NOTICE([no masterlist mechanism chosen by default])
+      withhostsfile=yes
+      AC_MSG_NOTICE([hostsfile chosen by as masterlist mechanism])
    fi
 fi   
 
