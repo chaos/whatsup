@@ -1,3 +1,12 @@
+2004-11-16  Albert Chu  <chu11@llnl.gov>
+
+	* whatsup.spec.in: Add license.
+	
+2004-11-13  Albert Chu  <chu11@llnl.gov>
+
+	* README, README.hostsfile_install, README.genders_install,
+	whatsup.spec.in: Updated descriptions and documentation.
+	
 2004-11-08  Albert Chu  <chu11@llnl.gov>
 
 	* whatsup.spec.in: Fix up description.

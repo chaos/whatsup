@@ -1,9 +1,9 @@
 Name:    @PROJECT@
 Version: @VERSION@
 Release: @RELEASE@
-Summary: whatsup cluster utility
-Copyright: none
+Summary: whatsup node up/down detection utility
 Group: Applications/Communications
+License: GPL
 Source: %{name}-%{version}-%{release}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}
 
@@ -17,10 +17,8 @@ Requires:       gendersllnl
 %description
 whatsup is a cluster node up/down detection utility.  Node up/down
 information is calculated based on information gathered from ganglia
-and a master list of cluster nodes.
-
-The nodeupdown library is supplies an API to determine the up and down
-nodes in a cluster.
+and a master list of cluster nodes.  A C and perl nodeupdown library
+is also supplied.
 
 %prep
 %setup -q -n %{name}-%{version}-%{release}

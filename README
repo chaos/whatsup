@@ -1,54 +1,51 @@
-Whatsup determines and outputs the cluster nodes that are currently
-up and down based on information gathered from ganglia.  It includes
-the following:
+Whatsup is cluster node up/down detection utility. Working in
+conjunction with Ganglia and a master list of cluster machine names,
+whatsup quickly calculates and outputs the up and down nodes of a
+cluster.  
+
+This package includes:
 
 * libnodeupdown
-  - A C library to determine up or down nodes in a cluster.  Linked
-    with -lnodeupdown.  See libnodeupdown(3)
+  - A C library to determine up or down nodes in a cluster.  See
+    libnodeupdown(3)
 
 * Libnodeupdown.pm
-  - A Perl module developed with Perl Extensions that accesses
-    the C library.  Perl extensions is limited and provides
-    a very strange Perl API.  It is therefore recommended most users
-    use Nodeupdown.pm.  See Libnodeupdown(3).
+  - A Perl module developed with Perl Extensions that takes advantage
+    of the already available C library.  Perl extensions is limited
+    and provides an unorthodox Perl API.  It is therefore recommended
+    most users use Nodeupdown.pm.  See Libnodeupdown(3).
 
 * Nodeupdown.pm
   - A Perl module that interfaces with Libnodeupdown.pm, hiding away
-    the yuckiness of Libnodeupdown.pm.  See Nodeupdown(3).
+    the ugliness of Libnodeupdown.pm.  See Nodeupdown(3).
 
 * whatsup
   - A command that outputs the up and down nodes in a cluster. See
     whatsup(1).
 
 When dealing with up and down nodes in a cluster, there is a
-deficiency in ganglia that requires a work around.  Ganglia can report
-nodes as down only if it has had previous communication with the node.
-Therefore, if a node has never sent a ganglia message, ganglia has no
-means of reporting the node as down.  For example, suppose a node from
-your cluster was removed for servicing, then the remaining nodes were
-rebooted.  The node that was removed for servicing will not be listed
-by ganglia as down.
+deficiency in ganglia that requires use of a master list of cluster
+machines as a work around.  Ganglia can report nodes as down only if
+it has had previous communication with the node.  For example, suppose
+a node from your cluster was removed for servicing, then the node
+running a non-deaf ganglia daemon is rebooted.  After the reboot, the
+node that was removed for servicing will not be listed by ganglia as
+down since it has no prior knowledge of that machine's existence.
 
-Therefore, to determine all of the down nodes in a cluster, a "master
-list" of nodes is required by whatsup and the nodeupdown libraries.
-There are a number of mechanisms that could be used for a "master
-list" of nodes.  Currently the following "master list" mechanisms are
-programmed.  The one you choose for your system must be selected by
-selecting one of the following options in configure.
-
-* None (--with-nomasterlist)
-  - Whatsup and nodeupdown will only use ganglia data to determine the
-    difference between up nodes, down nodes, and nodes in the cluster.
+A master list of cluster machines can be input several ways.
+Currently the following master list mechanisms are supported.  The one
+you choose for your system must be selected by selecting one of the
+following options in configure.
 
 * Hosts file (--with-hostsfile)
-  - This mechanism simply uses a file that lists the shortened
-    hostname of every node in the cluster, one per line.  Comments can
-    be placed in the file using a pound sign ('#') at the beginning of
-    a line.  Configure can be used to specify a default location of this
+  - This mechanism uses a file that lists the shortened hostname of
+    every node in the cluster, one per line.  Comments can be placed
+    in the file using a pound sign ('#') at the beginning of a line.
+    Configure can be used to specify a default location of this
     file.  If no default is chosen, the nodeupdown library and whatsup
     will assume /etc/nodeupdown_hostsfile.conf is the default file.
     If a default file is not put in the default location, nodeupdown
-    and whatsup will always require the file location be specified.
+    and whatsup will always require the file location to be specified.
     Please read the README.hostsfile_install file for installation
     instructions.
 
@@ -65,18 +62,17 @@ selecting one of the following options in configure.
     particular way that we like.  I have high doubts anyone else will
     ever use this option.
 
+* None (--with-nomasterlist)
+  - Whatsup and nodeupdown will only use ganglia data to determine the
+    difference between up nodes, down nodes, and nodes in the cluster.
+    This is not recommended.
+
 Other mechanisms may be implemented in the future.  If you are interested
 in seeing some new mechanism implemented, feel free to e-mail me and I'll
 see what I can do.
 
-Comments, patches, fixes, suggestions are always welcome.
-
-Please read DISCLAIMER and COPYING for copyright and license
-information.
-
-By the way, whatsup.spec.in defaults to the gendersllnl mechanism.
-You'll probably want to specify a different one at the command line if
-you plan on building a rpm package.
+Comments, patches, fixes, suggestions are always welcome.  Please read
+DISCLAIMER and COPYING for copyright and license information.
 
 Albert Chu
 chu11@llnl.gov
