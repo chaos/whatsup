@@ -1,5 +1,5 @@
-;#############################################################################
-# $Id: Nodeupdown.pm,v 1.2 2003-08-18 20:14:05 achu Exp $
+#############################################################################
+# $Id: Nodeupdown.pm,v 1.3 2003-08-18 20:24:39 achu Exp $
 # $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/Nodeupdown/Nodeupdown.pm,v $
 #############################################################################
 
@@ -66,7 +66,7 @@ sub new {
         $self->{$portkey} = $port;
     }
     else {
-        $self->{$portkey} = undef;
+        $self->{$portkey} = 0;
     }
 
     $self->{$debugkey} = 0;
@@ -80,12 +80,10 @@ sub new {
     $self->{$handlekey} = $handle;
 
     $ret = $self->{$handlekey}->nodeupdown_load_data(undef,
+                                                     $self->{$hostkey},
                                                      undef,
-                                                     #$self->{$hostkey},
-                                                     undef,
-                                                     undef,
-                                                     #$self->{$portkey},
-                                                     undef);
+                                                     $self->{$portkey},
+                                                     0);
     if ($ret == -1) {
         _errormsg($self, "nodeupdown_load_data()");
         return undef;
