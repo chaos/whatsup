@@ -1,4 +1,4 @@
-# $Id: whatsup.spec.in,v 1.17 2004-04-27 15:59:24 achu Exp $
+# $Id: whatsup.spec.in,v 1.18 2004-04-27 16:45:33 achu Exp $
 
 Name:           @PROJECT@
 Version:        @VERSION@
@@ -59,15 +59,4 @@ rm -rf "$RPM_BUILD_ROOT"
 %defattr(-,root,root,0755)
 %doc AUTHORS COPYING ChangeLog DISCLAIMER INSTALL NEWS README README.expat 
 %doc README.hostsfile_install README.genders_install README.troubleshooting
-%{_bindir}/*
-%{_includedir}/*
-%{_libdir}/*
-/usr/man/man1/
-/usr/man/man3/
-/usr/man/man5/
-/usr/share/man/
-
-
-
-
-
+/usr
