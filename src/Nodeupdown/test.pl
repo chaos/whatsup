@@ -10,7 +10,7 @@ print "$ret\n\n";
 $ret = $obj->down_nodes();
 print "$ret\n\n";
 
-@list = $obj->get_up_nodes();
+@list = $obj->up_nodes();
 foreach $i (@list) {
     print "$i ";
 }
@@ -25,18 +25,18 @@ print "\n\n";
 $obj->up_nodes();
 $obj->down_nodes();
 
-print $obj->are_up("mdevi"),"\n";
-print $obj->are_up("emdevi"),"\n";
-print $obj->are_up("foomdevi"),"\n";
-print $obj->are_up("mdevi","mdevj"),"\n";
-print $obj->are_up("emdevi","mdevj"),"\n";
-print $obj->are_up("foomdevi","mdevj"),"\n";
+print $obj->are_up("devi"),"\n";
+print $obj->are_up("edevi"),"\n";
+print $obj->are_up("foodevi"),"\n";
+print $obj->are_up("devi","dev0"),"\n";
+print $obj->are_up("edevi","dev0"),"\n";
+print $obj->are_up("foodevi","dev0"),"\n";
 print $obj->are_up(),"\n";
 
-print $obj->are_down("mdevi"),"\n";
-print $obj->are_down("emdevi"),"\n";
-print $obj->are_down("foomdevi"),"\n";
-print $obj->are_down("mdevi","mdevj"),"\n";
-print $obj->are_down("emdevi","mdevj"),"\n";
-print $obj->are_down("foomdevi","mdevj"),"\n";
+print $obj->are_down("devi"),"\n";
+print $obj->are_down("edevi"),"\n";
+print $obj->are_down("foodevi"),"\n";
+print $obj->are_down("devi","dev0"),"\n";
+print $obj->are_down("edevi","dev0"),"\n";
+print $obj->are_down("foodevi","dev0"),"\n";
 print $obj->are_down(),"\n";

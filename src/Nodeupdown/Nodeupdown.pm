@@ -1,5 +1,5 @@
 ;#############################################################################
-# $Id: Nodeupdown.pm,v 1.1 2003-08-18 16:28:01 achu Exp $
+# $Id: Nodeupdown.pm,v 1.2 2003-08-18 20:14:05 achu Exp $
 # $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/Nodeupdown/Nodeupdown.pm,v $
 #############################################################################
 
@@ -17,7 +17,7 @@ our @EXPORT_OK = qw(&_errormsg
                     $debugkey 
                     $handlekey
                     $hostkey
-                    $portkey,
+                    $portkey
                     $NODEUPDOWN_TIMEOUT_LEN
                     $NODEUPDOWN_CONF_FILE);
 our %EXPORT_TAGS = ( 'all' => [ qw(&_errormsg 
@@ -28,8 +28,8 @@ our %EXPORT_TAGS = ( 'all' => [ qw(&_errormsg
                                    $NODEUPDOWN_TIMEOUT_LEN
                                    $NODEUPDOWN_CONF_FILE) ] );
 
-our $NODEUPDOWN_TIMEOUT_LEN = Libnodeupdown->NODEUPDOWN_TIMEOUT_LEN
-our $NODEUPDOWN_CONF_FILE = Libnodeupdown->NODEUPDOWN_CONF_FILE
+our $NODEUPDOWN_TIMEOUT_LEN = Libnodeupdown->NODEUPDOWN_TIMEOUT_LEN;
+our $NODEUPDOWN_CONF_FILE = Libnodeupdown->NODEUPDOWN_CONF_FILE;
 our $debugkey = "_DEBUG";
 our $handlekey = "_HANDLE";
 our $hostkey = "_HOST";
@@ -52,6 +52,8 @@ sub new {
     my $hostname = shift;
     my $port = shift;
     my $self = {};
+    my $handle;
+    my $ret;
     
     if (defined($hostname)) {
         $self->{$hostkey} = $hostname;
@@ -78,9 +80,11 @@ sub new {
     $self->{$handlekey} = $handle;
 
     $ret = $self->{$handlekey}->nodeupdown_load_data(undef,
-                                                     $self->{$hostkey},
                                                      undef,
-                                                     $self->{$portkey},
+                                                     #$self->{$hostkey},
+                                                     undef,
+                                                     undef,
+                                                     #$self->{$portkey},
                                                      undef);
     if ($ret == -1) {
         _errormsg($self, "nodeupdown_load_data()");
@@ -188,7 +192,7 @@ sub _common_check {
                 $found = $self->{$handlekey}->nodeupdown_is_node_up($testnode);
             }
             else {
-                 $found = $self->{$handlekey}->nodeupdown_is_node_down($testnode);
+                $found = $self->{$handlekey}->nodeupdown_is_node_down($testnode);
             }
             
             if ($found == -1) {
