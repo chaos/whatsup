@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.103 2004-01-16 00:13:42 achu Exp $
+ *  $Id: nodeupdown.c,v 1.104 2005-03-31 00:42:37 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -422,7 +422,7 @@ _xml_parse_start(void *data, const char *e1, const char **attr)
     if ((ptr = strchr(shorthostname, '.')) != NULL)
       *ptr = '\0';
 
-    if (nodeupdown_masterlist_is_node_legit(handle, shorthostname) <= 0)
+    if (nodeupdown_masterlist_is_node_in_cluster(handle, shorthostname) <= 0)
       return;
 
     if (nodeupdown_masterlist_get_nodename(handle, shorthostname, 
@@ -780,7 +780,7 @@ _is_node(nodeupdown_t handle, const char *node, int up_or_down)
     return -1;
   }
 
-  if ((ret = nodeupdown_masterlist_is_node_in_cluster(handle, node)) == -1)
+  if ((ret = nodeupdown_masterlist_is_node_found(handle, node)) == -1)
     return -1;
 
   if (ret == 0) {

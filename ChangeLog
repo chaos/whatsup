@@ -6,7 +6,20 @@
 	config/ac_perl_install_destdir.m4: New files.
 
 	* configure.ac, whatsup.spec.in: Significant cleanup.
-	
+
+	* src/libnodeupdown/nodeupdown_masterlist.h,
+	src/libnodeupdown/nodeupdown_masterlist.c
+	(nodeupdown_masterlist_is_node_in_cluster): Renamd to
+	nodeupdown_masterlist_is_node_found.
+
+	* src/libnodeupdown/nodeupdown_masterlist.h,
+	src/libnodeupdown/nodeupdown_masterlist.c
+	(nodeupdown_masterlist_is_node_legit): Renamd to
+	nodeupdown_masterlist_is_node_in_cluster.
+
+	* src/libnodeupdown/nodeupdown.c: Updated for function name
+	changes throughout.
+
 2005-03-21  Albert Chu  <chu11@llnl.gov>
 
 	* src/libcommon/conffile.c (conffile_parse): Remove compiler

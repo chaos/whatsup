@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_masterlist.c,v 1.16 2004-10-07 18:31:04 achu Exp $
+ *  $Id: nodeupdown_masterlist.c,v 1.17 2005-03-31 00:42:37 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -332,7 +332,7 @@ _is_node_common(nodeupdown_t handle, const char *node)
 }
 
 int 
-nodeupdown_masterlist_is_node_legit(nodeupdown_t handle, const char *node) 
+nodeupdown_masterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) 
 {
 #if (HAVE_HOSTSFILE || HAVE_GENDERS || HAVE_GENDERSLLNL)
   return _is_node_common(handle, node);
@@ -343,7 +343,7 @@ nodeupdown_masterlist_is_node_legit(nodeupdown_t handle, const char *node)
 }
 
 int 
-nodeupdown_masterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) 
+nodeupdown_masterlist_is_node_found(nodeupdown_t handle, const char *node) 
 {
 #if (HAVE_HOSTSFILE || HAVE_GENDERS || HAVE_GENDERSLLNL)
   return _is_node_common(handle, node);

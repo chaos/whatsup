@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_masterlist.h,v 1.3 2004-01-15 01:09:36 achu Exp $
+ *  $Id: nodeupdown_masterlist.h,v 1.4 2005-03-31 00:42:37 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -48,14 +48,14 @@ int nodeupdown_masterlist_finish(nodeupdown_t);
  */
 int nodeupdown_masterlist_compare_gmond_to_masterlist(nodeupdown_t);
 
-/* Returns 1 if the specified node name is legitimate 
- * - Identical to nodeupdown_masterlist_is_node_in_cluster except
- *   when no masterlist is available.
- */
-int nodeupdown_masterlist_is_node_legit(nodeupdown_t, const char *);
-
 /* Returns 1 if the specified node is in the cluster, 0 if not, -1 on error */
 int nodeupdown_masterlist_is_node_in_cluster(nodeupdown_t, const char *);
+
+/* Returns 1 if the specified node name is found
+ * - Usually identical to nodeupdown_masterlist_is_node_in_cluster.
+ * Necessary when no masterlist is available.
+ */
+int nodeupdown_masterlist_is_node_found(nodeupdown_t, const char *);
 
 /* Returns the appropriate nodename to use in the specified buffer
  * - Used if multiple node names may be used to specify a single node
