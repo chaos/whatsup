@@ -12,41 +12,46 @@ down.
 
 Therefore, to determine all of the down nodes in a cluster, a "master
 list" of nodes is required by whatsup and the nodeupdown library which
-is uses.  There are a number of mechanisms that could be used for a
+it uses.  There are a number of mechanisms that could be used for a
 "master list" of nodes.  Currently the following "master list"
 mechanisms are programmed into the nodeupdown library and whatsup.
-Either one can be selected by selecting the appropriate option in
-configure.
+
+The one you choose for your system can be selected by selecting the
+option in configure.
 
 * Master List Hosts file
   - This mechanism simply uses a file that lists the shortened
-    hostname of every node in teh cluster, one per line.  Comments can
+    hostname of every node in the cluster, one per line.  Comments can
     be placed in the file using a pound sign ('#') at the beginning of
     a line.  Configure can be used to specify a default location of this
     file.  If no default is chosen, the nodeupdown library and whatsup
-    will assume /etc/nodeupdown_masterlist.
+    will assume /etc/nodeupdown_masterlist is the default file.  If
+    a default file is not put in the default location, nodeupdown and
+    whatsup will always require the file location be specified.
 
 * Genders
   - Uses a genders database and the genders library to determine all 
     of the nodes in the cluster.  In addition, it uses the gendersllnl
     library to convert between node names and alternate node names.  For
-    the most part, this will used in house at Lawrence Livermore National
-    Laboratories and sister labs that also use genders.
+    the most part, this is used in house at Lawrence Livermore National
+    Laboratories and sister labs that have clusters and genders setup in
+    a particular way that we like :-)
 
 * None
   - Whatsup and nodeupdown will only use ganglia data to determine the
-    difference between up nodes, down nodes, and nodes that are not part
-    of the cluster.
+    difference between up nodes, down nodes, and nodes in the cluster.
 
 Other mechanisms may be implemented in the future.  If you are interested
-in seeing some new mechanism implemented, feel free to e-mail me.
+in seeing some new mechanism implemented, feel free to e-mail me and I'll
+see what I can do.
 
 This package also includes two Perl libraries to interface into the
 nodeupdown C library.  Libnodeupdown is a library developed using Perl
 Extensions.  In my own personal opinion and experience, Perl
-Extensions has a pretty limited ability to offer a nice Perl API.  The
-Nodeupdown library offers a more familiar Perl API that hides the
-yuckiness of Perl Extensions.
+Extensions gives the user limited pathetic Perl API.  The Nodeupdown
+library is another Perl library built of Libnodeupdown.  It offers a
+more familiar Perl API to the user that hides the yuckiness of Perl
+Extensions.
 
 Feel free to e-mail me to tell how much you use like/dislike this
 tool.  I'd like to hear.

@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.4 2003-11-06 20:18:41 achu Exp $
+## $Id: Makefile.am,v 1.5 2003-11-07 03:20:06 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -13,14 +13,10 @@ all: Makefile.xs
 	$(MAKE) -f Makefile.xs
 
 Makefile.xs: Makefile.PL Libnodeupdown.xs Libnodeupdown.pm
-	cp ../libnodeupdown/nodeupdown.c .
-	cp ../libnodeupdown/nodeupdown.h .
-	cp ../libcommon/hostlist.c .
-	cp ../libcommon/hostlist.h .
-	cp ../libcommon/fd.c .
-	cp ../libcommon/fd.h .
-	cp ../libcommon/list.c .
-	cp ../libcommon/list.h .
+	cp -f ../libnodeupdown/*.c .
+	cp -f ../libnodeupdown/*.h .
+	cp -f ../libcommon/*.c .
+	cp -f ../libcommon/*.h .
 	$(PERL) Makefile.PL PREFIX=$(PERL_INSTALL_PREFIX) MAKEFILE=Makefile.xs FIRST_MAKEFILE=Makefile.xs
 
 test: Makefile.xs 
@@ -39,8 +35,5 @@ clean:
 	$(MAKE) -f Makefile.xs clean
 	rm -f Makefile.xs
 	rm -f Makefile.xs.old
-	rm -f nodeupdown.c
-	rm -f nodeupdown.h
-	rm -f hostlist.c
-	rm -f hostlist.h
-
+	rm -f *.c
+	rm -f *.h

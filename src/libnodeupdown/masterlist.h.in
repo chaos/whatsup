@@ -1,0 +1,44 @@
+/*
+ *  $Id: masterlist.h.in,v 1.1 2003-11-07 03:20:07 achu Exp $
+ *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/masterlist.h.in,v $
+ *    
+ */
+
+#ifndef _MASTERLIST_H
+#define _MASTERLIST_H
+
+#define MASTERLIST_DEFAULT    @MASTERLIST_DEFAULT@
+
+/* masterlist functions hide most of the master list
+ * mechanism specifics from nodeupdown.c
+ */
+
+/* Initialize masterlist items in the nodeupdown_t handle */
+void masterlist_initialize_handle(nodeupdown_t);
+
+/* Free masterlist handle data from the nodeupdown_t handle */
+void masterlist_free_handle_data(nodeupdown_t);
+
+/* Initialize any masterlist info, for example, loading data from a file */
+int masterlist_init(nodeupdown_t, void *);
+
+/* Compare all nodes retrieved from gmond with nodes from the master list 
+ * - Adds nodes not found from gmond into the down nodes hostlist
+ */
+int masterlist_compare_gmond_to_masterlist(nodeupdown_t);
+
+/* Returns 1 if the specified node name is legitimate */
+int masterlist_is_nodename_legit(nodeupdown_t, const char *);
+
+/* Returns 1 if the specified node is in the cluster, 0 if not, -1 on error */
+int masterlist_is_node_in_cluster(nodeupdown_t, const char *);
+
+/* Returns the appropriate nodename to use in the specified buffer
+ * - Useful if multiple node names may be used to specify a single node
+ */
+int masterlist_get_nodename(nodeupdown_t, const char *, char *, int);
+
+/* Increase the number of nodes in the system */
+int masterlist_increase_max_nodes(nodeupdown_t);
+
+#endif /* _MASTERLIST_H */

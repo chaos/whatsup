@@ -1,5 +1,29 @@
 2003-11-07  Albert Chu  <chu11@llnl.gov>
 
+	Created new masterlist.c and masterlist.h.in, to encapsulate
+	most of the master list mechanisms from nodeupdown.c.
+	
+	* src/libnodeupdown/masterlist.h.in,
+	src/libnodeupdown/masterlist.c: New files.
+
+	* src/libnodeupdown/nodeupdown.c (nodeupdown_load_data,
+	_xml_parse_start, _is_node): Modified to use new masterlist code.
+
+	* src/libnodeupdown/nodeupdown.c (_find_str, _load_genders_data,
+	_load_msterlist_data, _compare_gmond_nodes_to_master_list): Moved
+	to masterlist.c.
+
+	* src/libnodeupdown/nodeupdown_common.c,
+	src/libnodeupdown/nodeupdown_common.h: Common functions for
+	nodeupdown and masterlist.
+	
+	* src/libnodeupdown/Makefile.am: Updated with masterlist.c and
+	nodeupdown_common.c
+
+	* src/Libnodeupdown/Makefile.am: Cleaned up makefile.
+
+2003-11-07  Albert Chu  <chu11@llnl.gov>
+
 	* configure.ac, src/libnodeupdown/nodeupdown.c,
 	  src/whatsup/whatsup.c, man/libnodeupdown.3,
 	  man/nodeupdown_load_data.3, man/whatsup.1: Re-ordered things so

@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: whatsup.1.in,v 1.4 2003-11-06 20:31:12 achu Exp $
+\."$Id: whatsup.1.in,v 1.5 2003-11-07 03:20:06 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -80,7 +80,6 @@ List nodes in space separated list
 .TP
 .B \-f \fISTRING\fR, \fB\-\-filename\fR=\fISTRING\fR
 Location of master list file (default=@NODEUPDOWN_MASTERLIST_DEFAULT@)
-.TP
 \}
 .if @WITH_GENDERS@ \{
 .TP
@@ -90,8 +89,7 @@ Location of genders file (default=/etc/genders)
 .B \-a, \-\-altnames
 List nodes by alternate names (default=off)
 \}
-.TP
-
+.LP
 .SH "HOST RANGES"
 As noted in sections above,
 .B whatsup
