@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.3 2003-02-21 01:24:25 achu Exp $
+ * $Id: whatsup.c,v 1.4 2003-02-22 01:14:43 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/whatsup.c,v $
  *    
  */
@@ -51,7 +51,7 @@ extern int h_errno;
 /* whatsup_output_type
  * - indicates if output should be nodes that are up or down
  */
-enum whatsup_output_type {WHATSUP_UP, WHATSUP_DOWN};
+enum whatsup_output_type {WHATSUP_UP_AND_DOWN, WHATSUP_UP, WHATSUP_DOWN};
 
 /* whatsup_list_type
  * - indicates how output should be listed, in hostlist, comma separated, 
@@ -102,9 +102,20 @@ static void err_usage(char *);
 static void output_error(char *, char *);
 static void cleanup_struct_arginfo(struct arginfo *);
 static int cmdline_parse(struct arginfo *, int, char **);
-static int check_if_nodes_are_up_or_down(struct arginfo *, nodeupdown_t, hostlist_t);
-static int get_up_or_down_nodes(struct arginfo *, nodeupdown_t, hostlist_t);
+static int check_if_nodes_are_up_or_down(struct arginfo *, 
+					 enum whatsup_output_type,
+					 nodeupdown_t, 
+					 hostlist_t); 
+static int get_all_up_or_down_nodes(struct arginfo *, 
+				    enum whatsup_output_type,
+				    nodeupdown_t, 
+				    hostlist_t);
 static int output_nodes(struct arginfo *, hostlist_t);
+int handle_up_or_down_nodes(struct arginfo *, 
+			    enum whatsup_output_type, 
+			    nodeupdown_t, 
+			    hostlist_t *);
+
 
 /* usage
  * - output usage and exit
@@ -116,14 +127,15 @@ static void usage(void) {
   fprintf(stderr,"  -oSTRING  --hostname=STRING  gmond server hostname (default=localhost)\n");
   fprintf(stderr,"  -iSTRING  --ip=STRING        gmond server IP address (default=127.0.0.1)\n");
   fprintf(stderr,"  -pINT     --port=INT         gmond server port (default=%d)\n",GANGLIA_DEFAULT_XML_PORT);
-  fprintf(stderr,"  -u        --up               List up nodes(default)\n");
-  fprintf(stderr,"  -d        --down             List down nodes\n");
+  fprintf(stderr,"  -b        --updown           List both up and down nodes (default)\n");
+  fprintf(stderr,"  -u        --up               List only up nodes\n");
+  fprintf(stderr,"  -d        --down             List only down nodes\n");
   fprintf(stderr,"  -l        --hostlist         List nodes in hostlist format (default)\n");
   fprintf(stderr,"  -c        --comma            List nodes in comma separated list\n");
   fprintf(stderr,"  -n        --newline          List nodes in newline separated list\n");
   fprintf(stderr,"  -s        --space            List nodes in space separated list\n");
   fprintf(stderr,"  -a        --altnames         List nodes by alternate names (default=off)\n");
-  fprintf(stderr,"  nodes ...                    List of nodes to test (default=all noes)\n");
+  fprintf(stderr,"  nodes ...                    List of nodes to test (default=all nodes)\n");
   fprintf(stderr,"\n");
   exit(1);
 }
@@ -160,7 +172,7 @@ static int initialize_struct_arginfo(struct arginfo *arginfo) {
   arginfo->gmond_hostname = NULL;
   arginfo->gmond_ip = NULL;
   arginfo->gmond_port = GANGLIA_DEFAULT_XML_PORT;
-  arginfo->output_type = WHATSUP_UP;
+  arginfo->output_type = WHATSUP_UP_AND_DOWN;
   arginfo->list_type = WHATSUP_HOSTLIST;
   arginfo->list_altnames = WHATSUP_OFF;
   arginfo->nodes = NULL;
@@ -191,7 +203,7 @@ static void cleanup_struct_arginfo(struct arginfo *arginfo) {
  * - store info in a struct arginfo strcuture
  */
 static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
-  int hopt = 0, fopt = 0, oopt = 0, iopt = 0, popt = 0;
+  int hopt = 0, fopt = 0, oopt = 0, iopt = 0, popt = 0, bopt = 0;
   int uopt = 0, dopt = 0, lopt = 0, copt = 0, nopt = 0, sopt = 0, aopt = 0;
   int c, index, i, ret;
 
@@ -200,13 +212,14 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
   char *ip = "127.0.0.1";
   int port = GANGLIA_DEFAULT_XML_PORT;
 
-  char *options = "hf:o:i:p:udlcnsa";
+  char *options = "hf:o:i:p:budlcnsa";
   struct option long_options[] = {
     {"help",     0, NULL, 'h'},
     {"filename", 1, NULL, 'f'},
     {"hostname", 1, NULL, 'o'},
     {"ip",       1, NULL, 'i'},
     {"port",     1, NULL, 'p'},
+    {"updown",   0, NULL, 'b'},
     {"up",       0, NULL, 'u'},
     {"down",     0, NULL, 'd'},
     {"altnames", 0, NULL, 'a'},
@@ -241,7 +254,10 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
       popt++;
       port = atoi(optarg);
       break;
-     case 'u':
+    case 'b':
+      bopt++;
+      break;
+    case 'u':
       uopt++;
       break;
     case 'd':
@@ -372,8 +388,11 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
     arginfo->gmond_port = port;
   }
 
-  if ((uopt + dopt) > 1) {
-    err_usage("you can only specify the --up ('-u') or --down ('-d') options once");
+  if (bopt == 1  && (uopt == 1 || dopt == 1)) {
+    err_usage("you cannot specify --upanddown ('b') and --up ('u') or --down ('d')");
+  }
+  else if (bopt == 1 || (uopt == 1 && dopt == 1)) {
+    arginfo->output_type = WHATSUP_UP_AND_DOWN;
   }
   else if (uopt == 1) {
     arginfo->output_type = WHATSUP_UP;
@@ -564,6 +583,7 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
  * - determine if specific nodes passed in at the command line are up or down 
  */
 int check_if_nodes_are_up_or_down(struct arginfo *arginfo, 
+				  enum whatsup_output_type output_type,
 				  nodeupdown_t handle, 
 				  hostlist_t nodes) {
   hostlist_iterator_t iter;
@@ -576,7 +596,7 @@ int check_if_nodes_are_up_or_down(struct arginfo *arginfo,
   }
 
   while ((str = hostlist_next(iter)) != NULL) {
-    if (arginfo->output_type == WHATSUP_UP) {
+    if (output_type == WHATSUP_UP) {
       ret = nodeupdown_is_node_up(handle, str);
     }
     else {
@@ -603,14 +623,15 @@ int check_if_nodes_are_up_or_down(struct arginfo *arginfo,
   return 0;
 }
 
-/* get_up_or_down_nodes
+/* get_all_up_or_down_nodes
  * - get all up or down nodes
  */
-int get_up_or_down_nodes(struct arginfo *arginfo, 
-			 nodeupdown_t handle, 
-			 hostlist_t nodes) {
+int get_all_up_or_down_nodes(struct arginfo *arginfo, 
+			     enum whatsup_output_type output_type,
+			     nodeupdown_t handle, 
+			     hostlist_t nodes) {
 
-  if (arginfo->output_type == WHATSUP_UP) {
+  if (output_type == WHATSUP_UP) {
     if (nodeupdown_get_up_nodes_hostlist(handle, nodes) == -1) {
       output_error("nodeupdown_get_up_nodes_hostlist",
 		   nodeupdown_strerror(nodeupdown_errnum(handle)));
@@ -636,7 +657,7 @@ int output_nodes(struct arginfo *arginfo, hostlist_t nodes) {
   char *str = NULL;
   int i, str_len, num_nodes;
   char break_type;
-  hostlist_iterator_t iter;
+  hostlist_iterator_t iter = NULL;
 
   /* sort nodes ahead of time */
   hostlist_sort(nodes);
@@ -660,7 +681,6 @@ int output_nodes(struct arginfo *arginfo, hostlist_t nodes) {
       }
       memset(str, '\0', str_len);
     }
-
     fprintf(stdout, "%s\n", str);
     free(str);
     
@@ -682,6 +702,11 @@ int output_nodes(struct arginfo *arginfo, hostlist_t nodes) {
       output_error("output_nodes", "invalid list type");
       return -1;
       break;
+    }
+
+    /* handle odd situation to ensure output doesn't look odd */
+    if (break_type == '\n' && arginfo->output_type == WHATSUP_UP_AND_DOWN) {
+      fprintf(stdout, "\n");
     }
 
     if ((num_nodes = hostlist_count(nodes)) < 0) {
@@ -712,11 +737,65 @@ int output_nodes(struct arginfo *arginfo, hostlist_t nodes) {
   return 0;
 }
 
+int handle_up_or_down_nodes(struct arginfo *arginfo, 
+			    enum whatsup_output_type output_type, 
+			    nodeupdown_t handle, 
+			    hostlist_t *nodes) {
+  hostlist_t alternate_nodes = NULL;
+
+  if (hostlist_count(arginfo->nodes) > 0) {
+    if (check_if_nodes_are_up_or_down(arginfo, 
+				      output_type, 
+				      handle, 
+				      *nodes) != 0) {
+      goto cleanup;
+    }
+  }
+  else {
+    /* get all nodes */
+    if (get_all_up_or_down_nodes(arginfo, 
+			     output_type, 
+			     handle, 
+			     *nodes) != 0) {
+      goto cleanup;
+    }
+  }
+
+  if (arginfo->list_altnames == WHATSUP_ON) {
+  
+    if ((alternate_nodes = hostlist_create(NULL)) == NULL) {
+      output_error("hostlist_create", NULL);
+      goto cleanup;
+    }
+    
+    if (nodeupdown_get_hostlist_alternate_names(handle, 
+						*nodes, 
+						alternate_nodes)) {
+      output_error("nodeupdown_get_hostlist_alternate_names", 
+		   nodeupdown_strerror(nodeupdown_errnum(handle)));
+      goto cleanup;
+    }
+    
+    hostlist_destroy(*nodes);
+    *nodes = alternate_nodes;
+    alternate_nodes = NULL;
+  }    
+
+  return 0;
+
+ cleanup:
+
+  if (alternate_nodes != NULL) {
+    hostlist_destroy(alternate_nodes);
+  }
+  return -1;
+}
+
 int main(int argc, char **argv) {
   struct arginfo *arginfo = NULL;
   nodeupdown_t handle = NULL;
-  hostlist_t nodes = NULL;
-  hostlist_t alternate_nodes = NULL;
+  hostlist_t up_nodes = NULL;
+  hostlist_t down_nodes = NULL;
 
 #ifdef WHATSUP_DEBUG
   mtrace();
@@ -749,50 +828,69 @@ int main(int argc, char **argv) {
     goto cleanup;
   }
 
-  if ((nodes = hostlist_create(NULL)) == NULL) {
-    goto cleanup;
-  }
-
-  /* get nodes based on whether we want all nodes or we need to check
-   * just some of them
-   */
-
-  if (hostlist_count(arginfo->nodes) > 0) {
-    if (check_if_nodes_are_up_or_down(arginfo, handle, nodes) != 0) {
-      goto cleanup;
-    }
-  }
-  else {
-    if (get_up_or_down_nodes(arginfo, handle, nodes) != 0) {
-      goto cleanup;
-    }
-  }
-
-  /* get alternate names if we should output those instead */
-
-  if (arginfo->list_altnames == WHATSUP_ON) {
-    if ((alternate_nodes = hostlist_create(NULL)) == NULL) {
-      output_error("hostlist_create", NULL);
+  if (arginfo->output_type == WHATSUP_UP ||
+      arginfo->output_type == WHATSUP_UP_AND_DOWN) {
+    if ((up_nodes = hostlist_create(NULL)) == NULL) {
       goto cleanup;
     }
     
-    if (nodeupdown_get_hostlist_alternate_names(handle, 
-						nodes, 
-						alternate_nodes)) {
-      output_error("nodeupdown_get_hostlist_alternate_names", 
-		   nodeupdown_strerror(nodeupdown_errnum(handle)));
+    if (handle_up_or_down_nodes(arginfo, 
+				WHATSUP_UP, 
+				handle, 
+				&up_nodes) == -1) {
+      goto cleanup;
+    }
+  }
+  if (arginfo->output_type == WHATSUP_DOWN ||
+      arginfo->output_type == WHATSUP_UP_AND_DOWN) {
+    if ((down_nodes = hostlist_create(NULL)) == NULL) {
+      goto cleanup;
+    }
+    
+    if (handle_up_or_down_nodes(arginfo, 
+				WHATSUP_DOWN, 
+				handle, 
+				&down_nodes) == -1) {
+      goto cleanup;
+    }
+  }
+
+  if (arginfo->output_type == WHATSUP_UP_AND_DOWN) {
+    fprintf(stdout, "up:\t");
+    if (output_nodes(arginfo, up_nodes) != 0) {
       goto cleanup;
     }
 
-    if (output_nodes(arginfo, alternate_nodes) != 0) {
+    /* odd situation with output formatting */
+    if (arginfo->list_type == WHATSUP_NEWLINE) {
+      fprintf(stdout, "\n");
+    }
+
+    fprintf(stdout, "down:\t");
+    if (output_nodes(arginfo, down_nodes) != 0) {
       goto cleanup;
     }
   }
-  else {
-    if (output_nodes(arginfo, nodes) != 0) {
+  else if (arginfo->output_type == WHATSUP_UP) {
+    if (output_nodes(arginfo, up_nodes) != 0) {
       goto cleanup;
     }
   }
+  else if (arginfo->output_type == WHATSUP_DOWN) {
+    if (output_nodes(arginfo, down_nodes) != 0) {
+      goto cleanup;
+    }
+  }
+
+  cleanup_struct_arginfo(arginfo);
+  (void)nodeupdown_destroy(handle);
+  if (up_nodes != NULL) {
+    hostlist_destroy(up_nodes);
+  }
+  if (down_nodes != NULL) {
+    hostlist_destroy(down_nodes);
+  }
+  exit(0);
 
  cleanup:
   if (arginfo != NULL) {
@@ -803,12 +901,12 @@ int main(int argc, char **argv) {
    (void)nodeupdown_destroy(handle);
   }
 
-  if (nodes != NULL) {
-    hostlist_destroy(nodes);
+  if (up_nodes != NULL) {
+    hostlist_destroy(up_nodes);
   }
 
-  if (alternate_nodes != NULL) {
-    hostlist_destroy(alternate_nodes);
+  if (down_nodes != NULL) {
+    hostlist_destroy(down_nodes);
   }
 
   exit(1);
