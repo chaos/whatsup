@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.87 2003-12-05 23:26:30 achu Exp $
+ * $Id: nodeupdown.c,v 1.88 2003-12-05 23:38:50 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -230,8 +230,16 @@ static int _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd) {
   int ret = -1;
 
   /* NODEUPDOWN_CONF_FILE defined in config.h */
-  if (!(cf = dotconf_create(NODEUPDOWN_CONF_FILE, options, 0, CASE_INSENSITIVE)))
-    return 0;                   /* not an error if the file isn't found */
+
+  /* Not an error if the conffile doesn't exist */
+  if (access(NODEUPDOWN_CONF_FILE, F_OK) < 0)
+    return 0;
+
+  if (!(cf = dotconf_create(NODEUPDOWN_CONF_FILE, options, 0, CASE_INSENSITIVE))) {
+    handle->errnum = NODEUPDOWN_ERR_CONF;
+    goto cleanup;
+  }
+
 
   if (dotconf_command_loop_until_error(cf) != NULL) {
     handle->errnum = NODEUPDOWN_ERR_CONF;
