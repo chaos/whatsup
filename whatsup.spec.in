@@ -70,4 +70,8 @@ rm -rf "$RPM_BUILD_ROOT"
 %defattr(-,root,root,0755)
 %doc AUTHORS COPYING ChangeLog DISCLAIMER INSTALL NEWS README README.expat 
 %doc README.hostsfile_install README.genders_install README.troubleshooting
-/
+%{_bindir}/whatsup
+%{_includedir}/*
+%{_libdir}/*
+%{_mandir}/*
+%{_datadir}/*
