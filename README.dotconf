@@ -1,8 +1,8 @@
 The dotconf configuration file parsing library is written by Lukas
-Schröder <lukas@azzit.de>.  The dotconf library has been modifiedd
+Schröder <lukas@azzit.de>.  The dotconf library has been modified
 very slightly from its original.  The changes involve:
 
-A) Removal of all error messages output to stderr.
+A) Removal of all error message output to stderr.
 
 B) Addition of an "errors" count variable in struct configfile_t. 
 
