@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.2 2003-02-25 23:33:59 achu Exp $
+ * $Id: whatsup.c,v 1.3 2003-02-26 01:31:27 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -119,12 +119,12 @@ int handle_up_or_down_nodes(struct arginfo *,
  * - output usage and exit
  */
 static void usage(void) {
-  fprintf(stderr, "Usage: whatsup [OPTIONS] [nodes ...]\n");
+  fprintf(stderr, "Usage: whatsup [OPTIONS]... [NODES]...\n");
   fprintf(stderr,"  -h        --help             Print help and exit\n");
-  fprintf(stderr,"  -fSTRING  --filename=STRING  Location of genders file (default=%s)\n", DEFAULT_GENDERS_FILE);
-  fprintf(stderr,"  -oSTRING  --hostname=STRING  gmond server hostname (default=localhost)\n");
-  fprintf(stderr,"  -iSTRING  --ip=STRING        gmond server IP address (default=127.0.0.1)\n");
-  fprintf(stderr,"  -pINT     --port=INT         gmond server port (default=%d)\n",GANGLIA_DEFAULT_XML_PORT);
+  fprintf(stderr,"  -f STRING  --filename=STRING  Location of genders file (default=%s)\n", DEFAULT_GENDERS_FILE);
+  fprintf(stderr,"  -o STRING  --hostname=STRING  gmond server hostname (default=localhost)\n");
+  fprintf(stderr,"  -i STRING  --ip=STRING        gmond server IP address (default=127.0.0.1)\n");
+  fprintf(stderr,"  -p INT     --port=INT         gmond server port (default=%d)\n",GANGLIA_DEFAULT_XML_PORT);
   fprintf(stderr,"  -b        --updown           List both up and down nodes (default)\n");
   fprintf(stderr,"  -u        --up               List only up nodes\n");
   fprintf(stderr,"  -d        --down             List only down nodes\n");
@@ -133,7 +133,6 @@ static void usage(void) {
   fprintf(stderr,"  -n        --newline          List nodes in newline separated list\n");
   fprintf(stderr,"  -s        --space            List nodes in space separated list\n");
   fprintf(stderr,"  -a        --altnames         List nodes by alternate names (default=off)\n");
-  fprintf(stderr,"  nodes ...                    List of nodes to test (default=all nodes)\n");
   fprintf(stderr,"\n");
   exit(1);
 }
@@ -812,7 +811,7 @@ int main(int argc, char **argv) {
     output_error("initialize_struct_arginfo() error", NULL);
     goto cleanup;
   }
-
+  
   if (cmdline_parse(arginfo, argc, argv) != 0) {
     goto cleanup;
   }
@@ -827,6 +826,8 @@ int main(int argc, char **argv) {
 			   arginfo->gmond_hostname, 
 			   arginfo->gmond_ip, 
 			   arginfo->gmond_port) == -1) {
+    output_error("nodeupdown_create() error", 
+		 nodeupdown_strerror(nodeupdown_errnum(handle))); 
     goto cleanup;
   }
 
@@ -897,18 +898,15 @@ int main(int argc, char **argv) {
   if (arginfo != NULL) {
     cleanup_struct_arginfo(arginfo);
   }
-  
-  if (handle != NULL) {
-   (void)nodeupdown_destroy(handle);
-  }
 
+  if (handle != NULL) {
+    (void)nodeupdown_destroy(handle);
+  }
   if (up_nodes != NULL) {
     hostlist_destroy(up_nodes);
   }
-
   if (down_nodes != NULL) {
     hostlist_destroy(down_nodes);
   }
-
   exit(1);
 }

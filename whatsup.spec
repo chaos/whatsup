@@ -1,4 +1,4 @@
-# $Id: whatsup.spec,v 1.8 2003-02-25 16:40:27 achu Exp $
+# $Id: whatsup.spec,v 1.9 2003-02-26 01:31:27 achu Exp $
 
 Name:		whatsup
 Version:	1.0
@@ -13,9 +13,12 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}
 Source0:	%{name}-%{version}.tgz
 
 %description
-whatsup is a tool that works with genders and ganglia to determine what
-nodes of a cluster of up or down.  libnodeupdown is a C library that 
-allows users to programmatically determine if a node is up or donw.
+whatsup is a tool that lists which nodes are currently up or down in a
+cluster.  It determines which nodes are up or down bsaed on
+information gathered from genders and ganglia.
+
+The nodeupdown library is a C library that allows users to 
+programmatically determine if a node is up or down.
 
 %prep
 %setup

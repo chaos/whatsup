@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.2 2003-02-25 23:33:59 achu Exp $
+ * $Id: nodeupdown.c,v 1.3 2003-02-26 01:31:27 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -763,6 +763,7 @@ int nodeupdown_compare_genders_to_gmond_down_nodes(nodeupdown_t handle) {
 
 int nodeupdown_destroy(nodeupdown_t handle) {
   nodeupdown_cleanup(handle);
+  free(handle);
   return 0;
 }  
 
@@ -844,11 +845,8 @@ int nodeupdown_cleanup(nodeupdown_t handle) {
       free(handle->ganglia_cluster);
 
     }
-
   }
   nodeupdown_initialization(handle);
-
-  free(handle);
 
   return 0;
 }

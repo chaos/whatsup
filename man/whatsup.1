@@ -1,0 +1,94 @@
+\."#################################################################
+\."$Id: whatsup.1,v 1.1 2003-02-26 01:31:27 achu Exp $
+\."by Albert Chu <chu11@llnl.gov>
+\."#################################################################
+.\"
+.TH Whatsup 1 "Release 1.0" "LLNL" "Whatsup"
+.SH NAME
+whatsup \- list up and/or down nodes in a cluster
+.SH SYNOPSIS
+.B whatsup
+[\fIOPTION\fR]... [\fINODES\fR]...
+.br
+.SH DESCRIPTION
+.B whatsup
+lists which nodes are currently up or down in a
+cluster.  It determines which nodes are up or down bsaed on
+information gathered from genders and ganglia.
+
+.B whatsup
+will check on the status of every node in the cluster unless
+specific nodes are listed at the command line.  The nodes can be 
+listed in hostlist format, comma separated lists, or 
+space separated lists.  What information is listed and how it
+is listed is dependent on the options listed below.
+
+As a reminder to the reader, some shells will interpret brackets
+('[' and ']').  Therefore, it may be necessary to enclose 
+hostlist formatted lists within quotes.
+.br
+.SH OPTIONS
+.TP
+.B "-h, --help"
+Print help and exit
+.TP
+.B \-f \fISTRING\fR, \fB\-\-filename\fR=\fISTRING\fR
+Location of genders file (default=/etc/genders)
+.TP
+.B \-o \fISTRING\fR, \fB\-\-hostname\fR=\fISTRING\fR
+gmond server hostname (default=localhost)
+.TP
+.B \-i \fISTRING\fR, \fB\-\-ip\fR=\fISTRING\fR
+gmond server IP address (default=127.0.0.1)
+.TP
+.B \-p \fIINT\fR, \fB\-\-port\fR=\fIINT\fR
+gmond server port (default=8649)
+.TP
+.B \-b, \-\-updown
+List both up and down nodes (default)
+.TP
+.B \-u, \-\-up
+List only up nodes
+.TP
+.B \-d, \-\-down
+List only down nodes
+.TP
+.B \-l, \-\-hostlist
+List nodes in hostlist format (default)
+.TP
+.B \-c, \-\-comma
+List nodes in comma separated list
+.TP
+.B \-n, \-\-newline
+List nodes in newline separated list
+.TP
+.B \-s, \-\-space
+List nodes in space separated list
+.TP
+.B \-a, \-\-altnames"
+List nodes by alternate names (default=off)
+.SH "EXAMPLES"
+.LP
+List all nodes that are up and down.
+     whatsup
+.LP
+List all nodes that are down
+     whatsup -d
+.LP
+List all nodes among foo[0-20] that are down
+     whatsup -d "foo[0-20]"
+.LP
+List all nodes that are up and down by their alternate names
+     whatsup -a
+.LP
+List all nodes that are up in comma separated lists.	
+     whatsup -u -c
+.LP
+List all nodes that are up among the nodes foo2, foo4, and foo8
+     whatsup -u foo2, foo4, foo8
+.SH "FILES"
+/usr/bin/whatsup
+.SH "ORIGIN"
+Developed by Albert Chu <chu11@llnl.gov> on LLNL's Linux 
+clusters.  This software is open source and distributed under
+the terms of the Gnu GPL.  
