@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.33 2003-04-24 20:57:43 achu Exp $
+ * $Id: nodeupdown.c,v 1.34 2003-04-24 23:47:30 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -442,6 +442,10 @@ int nodeupdown_load_data(nodeupdown_t handle,
   }
   else if (gmond_ip != NULL) {
     /* we don't care about hostname, just store IP address */
+    if (strlen(gmond_ip)+1 > INET_ADDRSTRLEN) {
+      handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
+      goto cleanup;
+    }
     strcpy(ip_buffer, gmond_ip);
   }
 
