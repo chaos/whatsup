@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.59 2003-06-28 15:47:53 achu Exp $
+ * $Id: nodeupdown.c,v 1.60 2003-06-28 16:18:50 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -208,91 +208,6 @@ int _get_genders_data(nodeupdown_t handle, const char *filename) {
   return 0;
 }
 
-
-int _get_gmond_data(nodeupdown_t handle, 
-                   const char *gmond_ip, 
-                   int gmond_port, 
-                   int timeout_len) {
-
-  XML_Parser xml_parser = NULL;
-  int sockfd = -1;
-  struct parse_vars pv;
-  struct timeval tv;
-  pv.buf = NULL;
-
-  if ((sockfd = _low_timeout_connect(handle, gmond_ip, gmond_port)) == -1)
-    goto cleanup;
-
-  pv.handle = handle;
-  pv.timeout_len = timeout_len;
-
-  if (gettimeofday(&tv, NULL) == -1) {
-    handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-    goto cleanup;
-  } 
-
-  pv.localtime = tv.tv_sec;
-
-  /* create buffer here instead of in _xml_parse_start, so we don't
-   * have to continually re-malloc buffer space
-   */
-  if ((pv.buflen = genders_getmaxnodelen(handle->genders_handle)) == -1) {
-    handle->errnum = NODEUPDOWN_ERR_GENDERS;
-    goto cleanup;
-  }
-  pv.buflen++;
-                 
-  if ((pv.buf = (char *)malloc(pv.buflen)) == NULL) {
-    handle->errnum = NODEUPDOWN_ERR_OUTMEM;
-    goto cleanup;
-  }
-
-  xml_parser = XML_ParserCreate(NULL);
-
-  XML_SetElementHandler(xml_parser, _xml_parse_start, _xml_parse_end);
-  XML_SetUserData(xml_parser, (void *)&pv);
-
-  while (1) {
-    int bytes_read;
-    void *buff = XML_GetBuffer(xml_parser, BUFSIZ);
-
-    if (buff == NULL) {
-      handle->errnum = NODEUPDOWN_ERR_GANGLIA;
-      goto cleanup;
-    }
-
-    if ((bytes_read = read(sockfd, buff, BUFSIZ)) == -1) {
-      handle->errnum = NODEUPDOWN_ERR_NETWORK;
-      goto cleanup;
-    }
-
-    if (XML_ParseBuffer(xml_parser, bytes_read, bytes_read == 0) == 0) {
-      handle->errnum = NODEUPDOWN_ERR_GANGLIA;
-      goto cleanup;
-    }
-
-    if (bytes_read == 0)
-      break;
-  }
-
-  close(sockfd);
-  free(pv.buf);
-  XML_ParserFree(xml_parser);
-
-  return 0;
-
- cleanup:
-
-  close(sockfd);
-
-  if (xml_parser != NULL)
-    XML_ParserFree(xml_parser);
-
-  free(pv.buf);
-
-  return -1;
-}
-
 int _low_timeout_connect(nodeupdown_t handle, const char *ip, int port) {
   int ret, old_flags, error, len, sockfd = -1;
   int sa_in_size = sizeof(struct sockaddr_in);
@@ -495,6 +410,90 @@ int _compare_genders_to_gmond_nodes(nodeupdown_t handle) {
  cleanup: 
   
   (void)genders_nodelist_destroy(handle->genders_handle, nlist);
+  return -1;
+}
+
+int _get_gmond_data(nodeupdown_t handle, 
+                   const char *gmond_ip, 
+                   int gmond_port, 
+                   int timeout_len) {
+
+  XML_Parser xml_parser = NULL;
+  int sockfd = -1;
+  struct parse_vars pv;
+  struct timeval tv;
+  pv.buf = NULL;
+
+  if ((sockfd = _low_timeout_connect(handle, gmond_ip, gmond_port)) == -1)
+    goto cleanup;
+
+  pv.handle = handle;
+  pv.timeout_len = timeout_len;
+
+  if (gettimeofday(&tv, NULL) == -1) {
+    handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+    goto cleanup;
+  } 
+
+  pv.localtime = tv.tv_sec;
+
+  /* create buffer here instead of in _xml_parse_start, so we don't
+   * have to continually re-malloc buffer space
+   */
+  if ((pv.buflen = genders_getmaxnodelen(handle->genders_handle)) == -1) {
+    handle->errnum = NODEUPDOWN_ERR_GENDERS;
+    goto cleanup;
+  }
+  pv.buflen++;
+                 
+  if ((pv.buf = (char *)malloc(pv.buflen)) == NULL) {
+    handle->errnum = NODEUPDOWN_ERR_OUTMEM;
+    goto cleanup;
+  }
+
+  xml_parser = XML_ParserCreate(NULL);
+
+  XML_SetElementHandler(xml_parser, _xml_parse_start, _xml_parse_end);
+  XML_SetUserData(xml_parser, (void *)&pv);
+
+  while (1) {
+    int bytes_read;
+    void *buff = XML_GetBuffer(xml_parser, BUFSIZ);
+
+    if (buff == NULL) {
+      handle->errnum = NODEUPDOWN_ERR_GANGLIA;
+      goto cleanup;
+    }
+
+    if ((bytes_read = read(sockfd, buff, BUFSIZ)) == -1) {
+      handle->errnum = NODEUPDOWN_ERR_NETWORK;
+      goto cleanup;
+    }
+
+    if (XML_ParseBuffer(xml_parser, bytes_read, bytes_read == 0) == 0) {
+      handle->errnum = NODEUPDOWN_ERR_GANGLIA;
+      goto cleanup;
+    }
+
+    if (bytes_read == 0)
+      break;
+  }
+
+  close(sockfd);
+  free(pv.buf);
+  XML_ParserFree(xml_parser);
+
+  return 0;
+
+ cleanup:
+
+  close(sockfd);
+
+  if (xml_parser != NULL)
+    XML_ParserFree(xml_parser);
+
+  free(pv.buf);
+
   return -1;
 }
 
