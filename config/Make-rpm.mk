@@ -2,7 +2,7 @@
 # Makefile Include for RPM Construction
 #   by Chris Dunlap <cdunlap@llnl.gov>
 ##
-# $Id: Make-rpm.mk,v 1.10 2004-11-19 17:21:58 achu Exp $
+# $Id: Make-rpm.mk,v 1.11 2005-04-01 01:02:55 achu Exp $
 ##
 # REQUIREMENTS:
 # - requires project to be under CVS version control
@@ -112,9 +112,9 @@ rpm-internal: tar-internal
 	  || spec=$$tmp/$$pkg/$$proj.spec; \
 	if ! test -f $$spec; then \
 	  echo "ERROR: Cannot find $$proj spec file in CVS." 1>&2; exit 1; fi; \
-	sed -e "s/\@PROJECT\@/$$proj/g" \
-	    -e "s/\@VERSION\@/$$ver/g" \
-	    -e "s/\@RELEASE\@/$$rel/g" \
+	sed -e "s/^\([ 	]*Name:\).*/\1 $$proj/i" \
+	    -e "s/^\([ 	]*Version:\).*/\1 $$ver/i" \
+	    -e "s/^\([ 	]*Release:\).*/\1 $$rel/i" \
 	    -e "s/^\([ 	]*Source0?:\).*/\1 $$pkg.tgz/i" \
 	    <$$spec >$$tmp/SPECS/$$proj.spec; \
 	if ! test -s $$tmp/SPECS/$$proj.spec; then \
