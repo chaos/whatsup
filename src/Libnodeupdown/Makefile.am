@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.16 2005-01-11 00:14:21 achu Exp $
+## $Id: Makefile.am,v 1.17 2005-03-31 01:24:38 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -20,11 +20,6 @@ all: Makefile.xs
 	$(MAKE) -f Makefile.xs
 
 Makefile.xs: Makefile.PL Libnodeupdown.xs Libnodeupdown.pm
-	cp -f $(srcdir)/../libcommon/*.c .
-	cp -f $(srcdir)/../libexpat/xmlparse.c .
-	cp -f $(srcdir)/../libexpat/xmlrole.c .
-	cp -f $(srcdir)/../libexpat/xmltok.c .
-	cp -f $(srcdir)/../libnodeupdown/*.c .
 # Hacks to make distcheck work
 	if ! test -a Makefile.PL; then \
 		cp $(srcdir)/Makefile.PL .; \
@@ -38,7 +33,7 @@ Makefile.xs: Makefile.PL Libnodeupdown.xs Libnodeupdown.pm
 	if ! test -a Libnodeupdown.xs; then \
 		cp $(srcdir)/Libnodeupdown.xs .; \
 	fi
-	$(PERL) Makefile.PL $(MAKEMAKERFLAGS) INC=$(PERL_INC) 
+	$(PERL) Makefile.PL $(MAKEMAKERFLAGS) INC=$(PERL_INC) LIBS="-L../libnodeupdown/.libs -lnodeupdown"
 
 test: Makefile.xs 
 	$(MAKE) -f Makefile.xs test

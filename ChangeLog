@@ -20,6 +20,9 @@
 	* src/libnodeupdown/nodeupdown.c: Updated for function name
 	changes throughout.
 
+	* src/Libnodeupdown/Makefile.am, src/Libnodeupdown/Makefile.PL:
+	Make Libnodeupdown not dependent on c file building.
+
 2005-03-21  Albert Chu  <chu11@llnl.gov>
 
 	* src/libcommon/conffile.c (conffile_parse): Remove compiler
