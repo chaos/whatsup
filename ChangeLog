@@ -1,6 +1,10 @@
+2003-09-27  Albert Chu  <chu11@llnl.gov>
+
+	* src/whatsup/whatsup.c: Code significantly cleaned up.
+	
 2003-09-24  Albert Chu  <chu11@llnl.gov>
 
-	: src/whatsup/whatsup.c (get_arg_nodes, get_all_nodes, get_nodes):
+	* src/whatsup/whatsup.c (get_arg_nodes, get_all_nodes, get_nodes):
 	New functions, renamed from get_arg_nodes_common,
 	get_all_nodes_common, get_nodes_common.
 
