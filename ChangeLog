@@ -1,3 +1,68 @@
+2003-11-05  Albert Chu  <chu11@llnl.gov>
+
+	various code/configuration  cleaned up
+
+	* src/whatsup/hostlist.h, src/whatsup/hostlist.c,
+	src/libnodeupdown/hostlist.h, src/libnodeupdown/hostlist.c:
+	Updated hostlist files.
+
+	* src/libnodeupdown/fd.h, src/libnodeupdown/fd.c: New files.
+	
+	* src/libnodeupdown/nodeupdown.c (_get_ipaddr): Renamed to
+	_get_ip_and_port.
+
+	* src/whatsup/whatsup.c (_readline): Use fd library.
+
+	* src/libnodeupdown/nodeupdown.c (_read_conffile,
+	_get_ip_and_port, _connect_to_gmond, _xml_parse_start,
+	_get_gmond_data, _is_node, nodeupdown_nodelist_create): Re-written
+	to be cleaner.
+
+	* src/libnodeupdown/nodeupdown.c
+	(_compare_genders_to_gmond_nodes): Moved genders_getmaxnodelen
+	code code from nodeupdown_load_data into here.
+
+	* configure.ac: Replaced --with-xs-prefix and
+	--with-nodeupdown-pm-refix with --with-perl-install-prefix.
+
+	* src/Libnodeupdown/Makefile.am, src/Nodeupdown/Makefile.am: Fixed
+	for new --with-perl-install-prefix configuration option.
+
+	Code and configuration updated so genders is a build option, rather
+	than a build requirement.
+
+	* src/libnodeupdown/nodeupdown.c (_initialize_handle,
+	_free_handle_data, _load_genders_data, _xml_parse_start,
+	_compare_genders_to_gmond_nodes, nodeupdown_load_data, _is_node):
+	Modified to support genders or no master list builds.
+
+	* src/whatsup/whatsup.c (usage, initialize_struct_winfo,
+	cmdline_parse, convert_to_altnames, get_nodes, main): Modified to
+	support genders or no master list builds.
+	
+	* src/Libnodeupdown/Libnodeupdown.pm: Minor documentation
+	modifications to support non-genders specific builds.
+
+	* src/Libnodeupdown/Libnodeupdown.xs (nodeupdown_load_data): Fixed
+	to support non-genders specific code.
+
+	* src/Libnodeupdown/Makefile.PL: Added -DHAVE_CONFIG_H, -UVERSION,
+	and -I../../config/ to support new build.
+	
+	* man/nodeupdown_get_nodes_list.3,
+	man/nodeupdown_get_nodes_string.3, man/nodeupdown_is_node.3,
+	man/nodeupdown_nodelist.3: Modified to support non-genders
+	specific build.
+
+	* man/whatsup.1, man/libnodeupdown.3, man/nodeupdown_load_data.3:
+	Renamed to man/whatsup.1.in, man/libnodeupdown.3.in, and
+	man/nodeupdown_load_data.3.in respectively.  
+	Modified to support varying output types based on configuration.
+
+	* configure.ac: 
+	Added --with-genders option.
+	Added output of whatsup.1, libnodeupdown.3, nodeupdown_load_data.3
+
 2003-09-27  Albert Chu  <chu11@llnl.gov>
 
 	* src/whatsup/whatsup.c: Code significantly cleaned up.

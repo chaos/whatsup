@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.65 2003-09-28 00:35:16 achu Exp $
+ * $Id: whatsup.c,v 1.66 2003-11-06 00:53:30 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -9,12 +9,16 @@
 #endif
 
 #include <errno.h>
-#include <gendersllnl.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+
+#if HAVE_GENDERS
+#include <genders.h>
+#include <gendersllnl.h>
+#endif /* HAVE_GENDERS */
 
 #include "hostlist.h"
 #include "nodeupdown.h"
@@ -55,30 +59,18 @@ extern int optind, opterr, optopt;
  */
 struct winfo {
   nodeupdown_t handle;        /* nodeupdown handle */
-  char *filename;             /* genders filename */
   char *hostname;             /* hostname of gmond server */
   char *ip;                   /* ip of gmond server */
   int port;                   /* port of gmond server */  
   int output;                 /* output type */ 
   char list_type;             /* list type */
-  int list_altnames;          /* list altnames? */
   int count;                  /* list count? */
   hostlist_t nodes;           /* nodes entered at command line */
+#if HAVE_GENDERS
+  char *filename;             /* genders filename */
+  int list_altnames;          /* list altnames? */
+#endif /* HAVE_GENDERS */
 };
-
-/********************************
- * Function Declarations        *
- ********************************/
-
-static void   usage(void);
-static void   version(void);
-static void   err_msg(char *, char *);
-static int    cmdline_parse(struct winfo *, int, char **);
-static int    check_arg_nodes(struct winfo *, int, char *, int); 
-static int    get_all_nodes(struct winfo *, int, char *, int);
-static int    convert_to_altnames(struct winfo *, char *, int);
-static int    get_nodes(struct winfo *, int, char *, int, int *);
-static int    output_nodes(struct winfo *, char *nodes);
 
 /* usage
  * - output usage
@@ -88,7 +80,6 @@ static void usage(void) {
     "Usage: whatsup [OPTIONS]... [NODES]...\n"
     "  -h         --help              Print help and exit\n"
     "  -V         --version           Print version and exit\n"
-    "  -f STRING  --filename=STRING   Location of genders file\n"
     "  -o STRING  --hostname=STRING   gmond server hostname\n"
     "  -i STRING  --ip=STRING         gmond server IP address\n"
     "  -p INT     --port=INT          gmond server port\n"
@@ -99,9 +90,13 @@ static void usage(void) {
     "  -l         --hostlist          List nodes in hostlist format\n"
     "  -c         --comma             List nodes in comma separated list\n"
     "  -n         --newline           List nodes in newline separated list\n"
-    "  -s         --space             List nodes in space separated list\n"
-    "  -a         --altnames          List nodes by alternate name\n"
-    "\n");
+    "  -s         --space             List nodes in space separated list\n");
+#if HAVE_GENDERS
+  fprintf(stderr,
+    "  -f STRING  --filename=STRING   Location of genders file\n"
+    "  -a         --altnames          List nodes by alternate name\n");
+#endif /* HAVE_GENDERS */
+    fprintf(stderr, "\n");
 }
 
 /* version
@@ -139,15 +134,17 @@ static int _log10(int num) {
  * - initialize struct winfo structure
  */
 static int initialize_struct_winfo(struct winfo *winfo) {
-  winfo->filename = NULL;
   winfo->hostname = NULL;
   winfo->ip = NULL;
   winfo->port = 0;
   winfo->output = UP_AND_DOWN;
   winfo->list_type = HOSTLIST;
-  winfo->list_altnames = WHATSUP_OFF;
   winfo->count = WHATSUP_OFF;
   winfo->nodes = NULL;
+#if HAVE_GENDERS
+  winfo->filename = NULL;
+  winfo->list_altnames = WHATSUP_OFF;
+#endif /* HAVE_GENDERS */
   return 0;
 }
 
@@ -158,11 +155,14 @@ static int initialize_struct_winfo(struct winfo *winfo) {
 static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
   int c, index, oopt = 0, iopt = 0;
 
-  char *options = "hVf:o:i:p:budtlcnsa";
+#if HAVE_GENDERS
+  char *options = "hVo:i:p:budtlcnsf:a";
+#else
+  char *options = "hVo:i:p:budtlcns";
+#endif /* HAVE_GENDERS */
   struct option long_options[] = {
     {"help",      0, NULL, 'h'},
     {"version",   0, NULL, 'V'},
-    {"filename",  1, NULL, 'f'},
     {"hostname",  1, NULL, 'o'},
     {"ip",        1, NULL, 'i'},
     {"port",      1, NULL, 'p'},
@@ -174,7 +174,10 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
     {"comma",     0, NULL, 'c'},
     {"newline",   0, NULL, 'n'},
     {"space",     0, NULL, 's'},
+#if HAVE_GENDERS
+    {"filename",  1, NULL, 'f'},
     {"altnames",  0, NULL, 'a'},
+#endif /* HAVE_GENDERS */
     {0, 0, 0, 0}
   };
 
@@ -190,9 +193,6 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
     case 'V':
       version();
       return -1;
-      break;
-    case 'f':
-      winfo->filename = optarg;
       break;
     case 'o':
       oopt++;
@@ -229,9 +229,14 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
     case 's':
       winfo->list_type = SPACE;
       break;
+#if HAVE_GENDERS
+    case 'f':
+      winfo->filename = optarg;
+      break;
     case 'a':
       winfo->list_altnames = WHATSUP_ON;
       break;
+#endif /* HAVE_GENDERS */
     case '?':
       err_msg("invalid command line option entered", NULL);
       return -1;
@@ -360,6 +365,7 @@ static int get_all_nodes(struct winfo *winfo, int which, char *buf, int buflen) 
   return 0;
 }
 
+#if HAVE_GENDERS
 /* convert_to_altnames
  * - convert nodes in buf to alternate node names
  */
@@ -400,6 +406,7 @@ static int convert_to_altnames(struct winfo *winfo, char *buf, int buflen) {
   (void)genders_handle_destroy(handle);
   return exit_value;
 }
+#endif /* HAVE_GENDERS */
 
 /* get_nodes
  * - a wrapper function used to avoid duplicate code.
@@ -416,10 +423,12 @@ int get_nodes(struct winfo *winfo, int which, char *buf, int buflen, int *count)
   if (ret != 0)
     goto cleanup;
 
+#if HAVE_GENDERS
   if (winfo->list_altnames == WHATSUP_ON) {
     if (convert_to_altnames(winfo, buf, buflen) == -1)
       goto cleanup;
   }
+#endif /* HAVE_GENDERS */
 
   /* can't use nodeupdown_up/down_count, b/c we may be counting the
    * nodes specified by the user 
@@ -519,8 +528,13 @@ int main(int argc, char **argv) {
     goto cleanup;
   }
 
-  if (nodeupdown_load_data(winfo->handle, winfo->filename, winfo->hostname, 
-                           winfo->ip, winfo->port, 0) == -1) {
+  if (nodeupdown_load_data(winfo->handle, 
+#if HAVE_GENDERS
+                           winfo->filename, 
+#else
+                           NULL,
+#endif /* HAVE_GENDERS */
+                           winfo->hostname, winfo->ip, winfo->port, 0) == -1) {
     err_msg("nodeupdown_load_data()", nodeupdown_errormsg(winfo->handle)); 
     goto cleanup;
   }

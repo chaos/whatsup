@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown.h.in,v 1.4 2003-09-23 23:09:06 achu Exp $
+ *  $Id: nodeupdown.h.in,v 1.5 2003-11-06 00:53:29 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h.in,v $
  *    
  */
@@ -29,7 +29,7 @@
 #define NODEUPDOWN_ERR_NULLPTR           13 /* null pointer in list */
 #define NODEUPDOWN_ERR_OUTMEM            14 /* out of memory */
 #define NODEUPDOWN_ERR_NOTFOUND          15 /* node not found */ 
-#define NODEUPDOWN_ERR_GENDERS           16 /* internal genders error */
+#define NODEUPDOWN_ERR_MASTERLIST        16 /* internal master list error */
 #define NODEUPDOWN_ERR_GANGLIA           17 /* internal ganglia error */
 #define NODEUPDOWN_ERR_HOSTLIST          18 /* internal hostlist error */
 #define NODEUPDOWN_ERR_MAGIC             19 /* magic number error */
@@ -56,7 +56,6 @@ int nodeupdown_handle_destroy(nodeupdown_t handle);
 
 /* nodeupdown_load_data
  * - loads data from genders and ganglia
- * - if filename is null, default genders filename is used.
  * - user may pass in hostname, or IP address (presentable format), or both.  
  * - if both hostname and IP are passed in, IP address is used.
  * - if hostname and IP address is NULL, default IP is used.
@@ -65,7 +64,7 @@ int nodeupdown_handle_destroy(nodeupdown_t handle);
  * - returns 0 on success, -1 on error
  */
 int nodeupdown_load_data(nodeupdown_t handle, 
-                         const char *genders_filename, 
+                         @NODEUPDOWN_MASTER_LIST_PTR@, 
                          const char *gmond_hostname, 
                          const char *gmond_ip, 
                          int gmond_port,
@@ -101,8 +100,7 @@ void nodeupdown_perror(nodeupdown_t handle, const char *msg);
  * - returns 0 on success, -1 on error
  */
 int nodeupdown_get_up_nodes_string(nodeupdown_t handle, 
-                                   char *buf, 
-                                   int buflen);
+                                   char *buf, int buflen);
 
 /* nodeupdown_get_down_nodes_string
  * - retrieve a ranged string of down nodes
@@ -110,8 +108,7 @@ int nodeupdown_get_up_nodes_string(nodeupdown_t handle,
  * - returns 0 on success, -1 on error
  */
 int nodeupdown_get_down_nodes_string(nodeupdown_t handle, 
-                                     char *buf, 
-                                     int buflen);
+                                     char *buf, int buflen);
 
 /* nodeupdown_get_up_nodes_list
  * - retrieve a list of up nodes
@@ -174,4 +171,4 @@ int nodeupdown_nodelist_destroy(nodeupdown_t handle, char **list);
  */      
 void nodeupdown_set_errnum(nodeupdown_t handle, int errnum);
 
-#endif /* _NODEUPDOWN_H */ 
+#endif /* _NODEUPDOWN_H */

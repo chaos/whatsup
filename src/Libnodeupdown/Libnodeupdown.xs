@@ -139,10 +139,10 @@ NODEUPDOWN_ERR_NOTFOUND (sv=&PL_sv_undef)
         RETVAL    
 
 int
-NODEUPDOWN_ERR_GENDERS (sv=&PL_sv_undef)
+NODEUPDOWN_ERR_MASTERLIST (sv=&PL_sv_undef)
     SV *sv    
     CODE:
-        RETVAL = NODEUPDOWN_ERR_GENDERS;
+        RETVAL = NODEUPDOWN_ERR_MASTERLIST;
     OUTPUT:
         RETVAL    
 
@@ -217,16 +217,16 @@ nodeupdown_handle_create(CLASS)
         RETVAL
 
 int
-nodeupdown_load_data(handle, genders_filename=NULL, gmond_hostname=NULL, gmond_ip=NULL, gmond_port=0, timeout_len=0)
+nodeupdown_load_data(handle, master_list=NULL, gmond_hostname=NULL, gmond_ip=NULL, gmond_port=0, timeout_len=0)
     nodeupdown_t handle
-    char *genders_filename
+    char *master_list
     char *gmond_hostname
     char *gmond_ip
     int gmond_port
     int timeout_len
     CODE:
         RETVAL = nodeupdown_load_data(handle,
-                                      genders_filename, 
+                                      master_list, 
                                       gmond_hostname, 
                                       gmond_ip, 
                                       gmond_port, 

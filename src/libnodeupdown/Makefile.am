@@ -1,8 +1,10 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.2 2003-04-24 21:01:15 achu Exp $
+## $Id: Makefile.am,v 1.3 2003-11-06 00:53:29 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
+
+CPPFLAGS = -I ../../config
 
 include_HEADERS = \
 	nodeupdown.h 
@@ -12,5 +14,7 @@ lib_LTLIBRARIES = \
 
 libnodeupdown_la_SOURCES = \
 	nodeupdown.c \
-	hostlist.c
+	hostlist.c \
+	fd.c
 
+libnodeupdown_la_LIBADD = $(GANGLIA_LIBS) $(GENDERS_LIBS)

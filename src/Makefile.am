@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.3 2003-08-18 16:28:01 achu Exp $
+## $Id: Makefile.am,v 1.4 2003-11-06 00:53:29 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -8,4 +8,4 @@ SUBDIRS = \
 	libnodeupdown \
 	Libnodeupdown \
 	Nodeupdown \
-	whatsup 
+	whatsup

@@ -1,11 +1,13 @@
 /*
- * $Id: nodeupdown.c,v 1.69 2003-09-27 03:50:08 achu Exp $
+ * $Id: nodeupdown.c,v 1.70 2003-11-06 00:53:29 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
 
-#include <gendersllnl.h>
-#include <ganglia.h>
+#if HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <netdb.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,40 +16,35 @@
 #include <netinet/in.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <ganglia.h>
 #include <ganglia/xmlparse.h>
 #include <sys/socket.h>
 #include <sys/time.h> 
 #include <sys/types.h>
 
+#if HAVE_GENDERS
+#include <genders.h>
+#include <gendersllnl.h>
+#endif /* HAVE_GENDERS */
+
 #include "hostlist.h"
 #include "nodeupdown.h"
-
-/*********************************
- * Definitions                   *
- *********************************/
-
-#define NODEUPDOWN_ERR_MIN               NODEUPDOWN_ERR_SUCCESS
-#define NODEUPDOWN_ERR_MAX               NODEUPDOWN_ERR_ERRNUMRANGE
+#include "fd.h"
 
 #define NODEUPDOWN_UP_NODES              1
 #define NODEUPDOWN_DOWN_NODES            0
-
-#define NODEUPDOWN_DATA_LOADED           1
-#define NODEUPDOWN_DATA_NOT_LOADED       0
 
 #define NODEUPDOWN_MAGIC_NUM             0xfeedbeef
 
 #define NODEUPDOWN_BUFFERLEN             65536
 
-#ifndef CONNECT_TIMEOUT_LEN
-#define CONNECT_TIMEOUT_LEN              5 
-#endif
+#define NODEUPDOWN_CONNECT_LEN           5 
 
 #ifndef MAXHOSTNAMELEN
 #define MAXHOSTNAMELEN 64
 #endif
 
-/* Configuration file tags */
+/* Configuration file keys */
 #define NODEUPDOWN_CONF_HOSTNAME         "gmond_hostname"
 #define NODEUPDOWN_CONF_IP               "gmond_ip"
 #define NODEUPDOWN_CONF_PORT             "gmond_port"
@@ -58,11 +55,13 @@ extern int h_errno;
 struct nodeupdown {
   int magic;                  /* magic number */
   int errnum;                 /* error code */
-  int loaded_flag;            /* nodeupdown data loaded? */
+  int is_loaded;              /* nodeupdown data loaded? */
   hostlist_t up_nodes;        /* up nodes */
   hostlist_t down_nodes;      /* down nodes */
-  genders_t genders_handle;   /* genders handle */
   int max_nodes;              /* max nodes in genders file */
+#if HAVE_GENDERS
+  genders_t genders_handle;   /* genders handle */
+#endif /* HAVE_GENDERS */
 };
 
 /* used so multiple variables can be passed as one variable */
@@ -70,8 +69,6 @@ struct parse_vars {
   nodeupdown_t handle;
   int timeout_len;
   unsigned long localtime;
-  char *buf;
-  int buflen;
 };
 
 /* error messages */
@@ -91,8 +88,8 @@ static char * errmsg[] = {
   "incorrect parameters passed in",
   "null pointer reached in list",
   "out of memory",
-  "node not known by genders",
-  "internal genders error",
+  "node not found",
+  "internal master list error",
   "internal ganglia error",
   "internal hostlist error",
   "nodeupdown handle magic number incorrect, improper handle passed in",
@@ -100,43 +97,18 @@ static char * errmsg[] = {
   "error number out of range",
 };
 
-/**********************************
- * Static Function Declarations   *
- **********************************/
-
-static int  _handle_error_check(nodeupdown_t);
-static int  _unloaded_handle_error_check(nodeupdown_t);
-static int  _loaded_handle_error_check(nodeupdown_t);
-static void _initialize_handle(nodeupdown_t handle);
-static void _free_handle_data(nodeupdown_t handle);
-static int  _get_genders_data(nodeupdown_t, const char *);
-static int  _readline(int, char *, int);
-static int  _read_conffile(char **, char **, int *);
-static int  _get_ipaddr(nodeupdown_t, const char *, const char *, char *, int);
-static int  _low_timeout_connect(nodeupdown_t, const char *, int);
-static int  _connect_to_gmond(nodeupdown_t, const char *, const char *, int);
-static void _xml_parse_start(void *, const char *, const char **);
-static void _xml_parse_end(void *, const char *);
-static int  _get_gmond_data(nodeupdown_t, int, int);
-static int  _compare_genders_to_gmond_nodes(nodeupdown_t);
-static int  _get_nodes_string(nodeupdown_t, char *, int, int);
-static int  _get_nodes_list(nodeupdown_t, char **, int, int);
-static int  _is_node(nodeupdown_t, const char *, int);
-
-int _handle_error_check(nodeupdown_t handle) {
-
+static int _handle_error_check(nodeupdown_t handle) {
   if (handle == NULL || handle->magic != NODEUPDOWN_MAGIC_NUM)
     return -1;
 
   return 0;
 }
 
-int _unloaded_handle_error_check(nodeupdown_t handle) {
-
+static int _unloaded_handle_error_check(nodeupdown_t handle) {
   if (_handle_error_check(handle) == -1)
     return -1;
 
-  if (handle->loaded_flag == NODEUPDOWN_DATA_LOADED) {
+  if (handle->is_loaded) {
     handle->errnum = NODEUPDOWN_ERR_ISLOADED;
     return -1;
   }
@@ -144,12 +116,11 @@ int _unloaded_handle_error_check(nodeupdown_t handle) {
   return 0;
 }
 
-int _loaded_handle_error_check(nodeupdown_t handle) {
-
+static int _loaded_handle_error_check(nodeupdown_t handle) {
   if (_handle_error_check(handle) == -1)
     return -1;
 
-  if (handle->loaded_flag == NODEUPDOWN_DATA_NOT_LOADED) {
+  if (!handle->is_loaded) {
     handle->errnum = NODEUPDOWN_ERR_NOTLOADED;
     return -1;
   }
@@ -157,13 +128,15 @@ int _loaded_handle_error_check(nodeupdown_t handle) {
   return 0;
 }
 
-void _initialize_handle(nodeupdown_t handle) {
+static void _initialize_handle(nodeupdown_t handle) {
   handle->magic = NODEUPDOWN_MAGIC_NUM;
-  handle->loaded_flag = NODEUPDOWN_DATA_NOT_LOADED;
+  handle->is_loaded = 0;
   handle->up_nodes = NULL;
   handle->down_nodes = NULL;
+  handle->max_nodes = 0;
+#if HAVE_GENDERS
   handle->genders_handle = NULL;
-  handle->max_nodes = -1;
+#endif /* HAVE_GENDERS */
 }
 
 nodeupdown_t nodeupdown_handle_create() {
@@ -178,33 +151,31 @@ nodeupdown_t nodeupdown_handle_create() {
   return handle;
 }
 
-void _free_handle_data(nodeupdown_t handle) {
-
+static void _free_handle_data(nodeupdown_t handle) {
   hostlist_destroy(handle->up_nodes);
   hostlist_destroy(handle->down_nodes);
+#if HAVE_GENDERS
   (void)genders_handle_destroy(handle->genders_handle);
+#endif /* HAVE_GENDERS */
 
   _initialize_handle(handle);
 }
 
 int nodeupdown_handle_destroy(nodeupdown_t handle) {
-
   if (_handle_error_check(handle) == -1)
     return -1;
 
   _free_handle_data(handle);
 
-  /* "clean" magic number 
-   * ~0xfeedbeef = 0xeatbeef?
-   */ 
-  handle->magic = ~NODEUPDOWN_MAGIC_NUM;
+  /* "clean" magic number */ 
+  handle->magic = ~NODEUPDOWN_MAGIC_NUM; /* ~0xfeedbeef = 0xeatbeef :-) */
 
   free(handle);
   return 0;
 }  
 
-int _get_genders_data(nodeupdown_t handle, const char *filename) {
-  
+#if HAVE_GENDERS
+static int _load_genders_data(nodeupdown_t handle, const char *filename) {
   /* determine filename */
   if (filename == NULL)
     filename = GENDERS_DEFAULT_FILE;
@@ -221,133 +192,9 @@ int _get_genders_data(nodeupdown_t handle, const char *filename) {
 
   return 0;
 }
+#endif /* HAVE_GENDERS */
 
-int _readline(int fd,  char *buf, int buflen) {
-  int ret, count = 0;
-  char chr;
-
-  memset(buf, '\0', buflen);
-
-  do {
-    if ((ret = read(fd, &chr, 1)) == -1)
-      return -1;
-
-    if (ret == 1)
-      buf[count++] = chr;
-
-  } while (ret == 1 && chr != '\n' && count < buflen);
-
-  /* overflow counts as a parse error */
-  if (count >= buflen)
-    return -1;
-
-  return count;
-}
-
-/* parse configuration file if it exists
- * - caller responsible for freeing memory.  
- */
-int _read_conffile(char **hostname_buf, char **ip_buf, int *port_buf) {
-  int fd, len, port_temp = -1;
-  char buf[NODEUPDOWN_BUFFERLEN];
-  char *hostname_temp = NULL, *ip_temp = NULL;
-  char *conf_name, *conf_val;
-
-  if ((fd = open(NODEUPDOWN_CONF_FILE, O_RDONLY)) < 0)
-    goto cleanup;
-
-  while ((len = _readline(fd, buf, NODEUPDOWN_BUFFERLEN)) > 0) {
-
-    if (buf[0] == '#')
-      continue;        /* comment */
-    
-    if ((conf_name = strtok(buf, " \t\n")) == NULL)
-      continue;        /* empty line */ 
-
-    if ((conf_val = strtok(NULL, " \t\n")) == NULL)
-      goto cleanup;    /* parse error, no value */
-
-    if (strcmp(conf_name, NODEUPDOWN_CONF_HOSTNAME) == 0) {
-      if ((hostname_temp = strdup(conf_val)) == NULL)
-        goto cleanup;
-    }
-    else if (strcmp(conf_name, NODEUPDOWN_CONF_IP) == 0) {
-      if ((ip_temp = strdup(conf_val)) == NULL)
-        goto cleanup;
-    }
-    else if (strcmp(conf_name, NODEUPDOWN_CONF_PORT) == 0)
-      port_temp = atoi(conf_val);
-    else  
-      goto cleanup;  /* parse error, invalid key */
-  }
-
-  if (len == -1)
-    goto cleanup;
-
-  /* did we find anything? */
-  if (hostname_temp == NULL && ip_temp == NULL && port_temp == -1)
-    goto cleanup;
-
-  if (hostname_temp != NULL)
-    *hostname_buf = hostname_temp;
-  if (ip_temp != NULL)
-    *ip_buf = ip_temp;
-  if (port_temp != -1)
-    *port_buf = port_temp;
-
-  return 0;
-
- cleanup:
-  free(hostname_temp);
-  free(ip_temp);
-  close(fd);
-  return -1;
-}
-
-/* get proper IP address given gmond_hostname or ip 
- * - caller responsible for large enough ip_buf
- */ 
-int _get_ipaddr(nodeupdown_t handle,
-                const char *gmond_hostname,
-                const char *gmond_ip,
-                char *ip_buf,
-                int iplen) {
-
-  if (gmond_hostname == NULL && gmond_ip == NULL) {
-    /* default */
-    strcpy(ip_buf, "127.0.0.1");
-  }
-  else if (gmond_hostname != NULL && gmond_ip == NULL) {
-    /* if only hostname is given, determine ip address */
-    struct hostent *hptr;
-
-    /* valgrind will report a mem-leak in gethostbyname() */
-    if ((hptr = gethostbyname(gmond_hostname)) == NULL) {
-      if (h_errno == HOST_NOT_FOUND)
-        handle->errnum = NODEUPDOWN_ERR_HOSTNAME;
-      else
-        handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      return -1;
-    }
-
-    if (inet_ntop(AF_INET, (void *)hptr->h_addr, ip_buf, iplen) == NULL) {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      return -1;
-    }
-  }
-  else if (gmond_ip != NULL) {
-    /* we don't care about hostname, just use IP address */
-    if (strlen(gmond_ip)+1 > iplen) {
-      handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
-      return -1;
-    }
-    strcpy(ip_buf, gmond_ip);
-  }
-
-  return 0;
-}
-
-int _low_timeout_connect(nodeupdown_t handle, const char *ip, int port) {
+static int _low_timeout_connect(nodeupdown_t handle, const char *ip, int port) {
   int ret, old_flags, error, len, sockfd = -1;
   int sa_in_size = sizeof(struct sockaddr_in);
   struct sockaddr_in servaddr;
@@ -395,7 +242,7 @@ int _low_timeout_connect(nodeupdown_t handle, const char *ip, int port) {
     FD_SET(sockfd, &rset);
     FD_ZERO(&wset);
     FD_SET(sockfd, &wset);
-    tval.tv_sec = CONNECT_TIMEOUT_LEN;
+    tval.tv_sec = NODEUPDOWN_CONNECT_LEN;
     tval.tv_usec = 0;
       
     if ((ret = select(sockfd+1, &rset, &wset, NULL, &tval)) == -1) {
@@ -439,81 +286,181 @@ int _low_timeout_connect(nodeupdown_t handle, const char *ip, int port) {
   return sockfd;
 
  cleanup:
-
   close(sockfd);
   return -1;
 }
 
-int _connect_to_gmond(nodeupdown_t handle,
-                      const char *gmond_hostname,
-                      const char *gmond_ip,
-                      int gmond_port) {
+static int _readline(int fd,  char *buf, int buflen) {
+  int ret;
+
+  if ((ret = fd_read_line(fd, buf, buflen)) < 0)
+    return -1;
+  
+  /* overflow counts as a parse error */
+  /* XXX assumes buflen >= 2 */
+  if (ret == buflen && buf[buflen-2] != '\n')
+    return -1;
+
+  return ret;
+}
+
+/* get proper IP address and port given gmond_hostname, ip, and port.
+ * - caller responsible for large enough ip_buf
+ */ 
+static int _get_ip_and_port(nodeupdown_t handle, const char *gmond_hostname,
+                            const char *gmond_ip, int gmond_port,
+                            char *ip_buf, int iplen, int *port_buf) {
+
+  if (gmond_hostname == NULL && gmond_ip == NULL)
+    strcpy(ip_buf, "127.0.0.1");
+  else if (gmond_hostname != NULL && gmond_ip == NULL) {
+    /* if only hostname is given, determine ip address */
+    struct hostent *hptr;
+
+    /* valgrind will report a mem-leak in gethostbyname() */
+    if ((hptr = gethostbyname(gmond_hostname)) == NULL) {
+      if (h_errno == HOST_NOT_FOUND)
+        handle->errnum = NODEUPDOWN_ERR_HOSTNAME;
+      else
+        handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
+
+    if (inet_ntop(AF_INET, (void *)hptr->h_addr, ip_buf, iplen) == NULL) {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
+  }
+  else if (gmond_ip != NULL) {
+    /* we don't care about hostname, just use IP address */
+    if (strlen(gmond_ip)+1 > iplen) {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
+    strcpy(ip_buf, gmond_ip);
+  }
+
+  if (gmond_port <= 0) 
+    *port_buf = GANGLIA_DEFAULT_XML_PORT;
+  else
+    *port_buf = gmond_port;
+
+  return 0;
+}
+
+/* parse configuration file 
+ * - return ip and port of what's in the conf file
+ */
+static int _read_conffile(nodeupdown_t handle, char *ip_buf, int iplen, 
+                          int *port_buf) {
+  char buf[NODEUPDOWN_BUFFERLEN];
+  char hostbuf[MAXHOSTNAMELEN+1];
+  char ipbuf[INET_ADDRSTRLEN+1];
+  int hostname_flag = 0, ip_flag = 0, port_flag = 0;
+  int len, retval = -1;
+  int fd = -1;
+  int port_val = -1;
+  char *conf_name, *conf_val;
+
+  if ((fd = open(NODEUPDOWN_CONF_FILE, O_RDONLY)) < 0)
+    goto cleanup;
+
+  while ((len = _readline(fd, buf, NODEUPDOWN_BUFFERLEN)) > 0) {
+
+    if (buf[0] == '#')
+      continue;        /* comment */
+    
+    if ((conf_name = strtok(buf, " \t\n")) == NULL)
+      continue;        /* empty line */ 
+
+    if ((conf_val = strtok(NULL, " \t\n")) == NULL)
+      goto cleanup;    /* parse error, no value */
+
+    if (strcmp(conf_name, NODEUPDOWN_CONF_HOSTNAME) == 0) {
+      strncpy(hostbuf, conf_val, MAXHOSTNAMELEN+1);
+      hostbuf[MAXHOSTNAMELEN] = '\0';
+      hostname_flag++;
+    }
+    else if (strcmp(conf_name, NODEUPDOWN_CONF_IP) == 0) {
+      strncpy(ipbuf, conf_val, MAXHOSTNAMELEN+1);
+      ipbuf[INET_ADDRSTRLEN] = '\0';
+      ip_flag++;
+    }
+    else if (strcmp(conf_name, NODEUPDOWN_CONF_PORT) == 0) {
+      port_val = atoi(conf_val);
+      port_flag++;
+    }
+    else
+      goto cleanup;  /* parse error, invalid key */ 
+  }
+
+  if (len == -1)
+    goto cleanup;
+
+  /* did we find anything? */
+  if (hostname_flag == 0 && ip_flag == 0 && port_flag == 0)
+    goto cleanup;
+
+  if (_get_ip_and_port(handle, 
+                       (hostname_flag > 0) ? hostbuf : NULL,
+                       (ip_flag > 0) ? ipbuf : NULL, 
+                       (port_flag > 0) ? port_val : -1, 
+                       ip_buf, iplen, port_buf) == -1)
+    goto cleanup; 
+
+  retval = 0;
+ cleanup:
+  close(fd);
+  return retval;
+}
+
+static int _connect_to_gmond(nodeupdown_t handle, const char *gmond_hostname,
+                             const char *gmond_ip, int gmond_port) {
   int sockfd = -1;
   char ip_buf[INET_ADDRSTRLEN+1];
+  char conf_ip_buf[INET_ADDRSTRLEN+1];
   int iplen = INET_ADDRSTRLEN+1;
+  int port, conf_port;
+
+  if (_get_ip_and_port(handle, gmond_hostname, gmond_ip, gmond_port, 
+                       ip_buf, iplen, &port) < 0)
+    return -1;
 
   /* read conf file, see if we should first try different defaults */
   if ((gmond_hostname == NULL && gmond_ip == NULL) || gmond_port <= 0) {
-    char *temp_host = NULL, *temp_ip = NULL, *conf_host, *conf_ip; 
-    int conf_port = GANGLIA_DEFAULT_XML_PORT;
 
-    if (_read_conffile(&temp_host, &temp_ip, &conf_port) < 0) 
+    if (_read_conffile(handle, conf_ip_buf, iplen, &conf_port) < 0) 
       goto try_again;
 
-    /* Agh! This is ugly.  But this seems to be the best way overall given
-     * that I only want to parse the config file once */
-
-    if (gmond_hostname != NULL || gmond_ip != NULL) {
-      conf_host = (char *)gmond_hostname;
-      conf_ip = (char *)gmond_ip;
-    }
-    else {
-      conf_host = temp_host;
-      conf_ip = temp_ip;
-    }
-
-    if (gmond_port > 0)
-      conf_port = gmond_port;
-
-    if (_get_ipaddr(handle, conf_host, conf_ip, ip_buf, iplen) < 0)
-      goto cleanup;
-
-    sockfd = _low_timeout_connect(handle, ip_buf, conf_port);
-  
-  cleanup:
-    free(temp_host);
-    free(temp_ip);
-
+    /* connect using values specified in conf file */
+    sockfd = _low_timeout_connect(handle, 
+                                  (!gmond_hostname && !gmond_ip) ? 
+                                          conf_ip_buf : ip_buf,
+                                  (gmond_port <= 0) ? conf_port : port);
     if (sockfd > -1)
-      goto done;
+      return sockfd;
+    /* else fallthrough and try with defaults */
   }
 
  try_again:
 
-  if (gmond_port <= 0) 
-    gmond_port = GANGLIA_DEFAULT_XML_PORT;
-
-  if (_get_ipaddr(handle, gmond_hostname, gmond_ip, ip_buf, iplen) < 0)
-    goto done;
-
-  sockfd = _low_timeout_connect(handle, ip_buf, gmond_port);
-
- done:
-  return sockfd;
+  return _low_timeout_connect(handle, ip_buf, port);
 }
 
 /* xml start function for use with ganglia XML library
  * - handle parsing of beginning tags
  */
-void _xml_parse_start(void *data, const char *e1, const char **attr) {
+static void _xml_parse_start(void *data, const char *e1, const char **attr) {
   nodeupdown_t handle = ((struct parse_vars *)data)->handle;
   int timeout_len = ((struct parse_vars *)data)->timeout_len;
   unsigned long localtime = ((struct parse_vars *)data)->localtime;
-  char *buf = ((struct parse_vars *)data)->buf;
-  int buflen = ((struct parse_vars *)data)->buflen;
-  genders_t genders_handle = handle->genders_handle;
+#if HAVE_GENDERS
+  genders_t gh = handle->genders_handle;
+#endif /* HAVE_GENDERS */
   char *ptr;
+  char buffer[MAXHOSTNAMELEN+1];
   unsigned long reported;
+  int ret;
 
   /* ignore "CLUSTER" and "METRIC" tags.  Assume ganglia executed on
    * only 1 cluster
@@ -538,42 +485,50 @@ void _xml_parse_start(void *data, const char *e1, const char **attr) {
       return;
     }
 
+    memset(buffer, '\0', MAXHOSTNAMELEN+1);
+#if HAVE_GENDERS
     /* The following turns the alternate gendname into a genders nodename,
      * but coincidently also has the feature that if a node in the 
      * gmond daemon is not part of this cluster, then that node is ignored
      */
-    memset(buf, '\0', buflen);
-    if (genders_to_gendname(genders_handle, attr[1], buf, buflen) == -1)
+    if (genders_to_gendname(gh, attr[1], buffer, MAXHOSTNAMELEN+1) == -1)
       return;
+#else
+    strcpy(buffer, attr[1]);
+    buffer[MAXHOSTNAMELEN] = '\0';
+#endif /* HAVE_GENDERS */
 
     /* shorten hostname if necessary */
-    if ((ptr = strchr(buf, '.')) != NULL)
+    if ((ptr = strchr(buffer, '.')) != NULL)
       *ptr = '\0';
 
     /* store up or down */
     reported = atol(attr[5]);
     if (abs(localtime - reported) < timeout_len)
-      (void)hostlist_push(handle->up_nodes, buf);
+      ret = hostlist_push(handle->up_nodes, buffer);
     else
-      (void)hostlist_push(handle->down_nodes, buf);
+      ret = hostlist_push(handle->down_nodes, buffer);
+
+#if HAVE_NOMASTERLIST
+    /* If using genders, genders_numnodes determines max nodes */
+    if (ret)
+      handle->max_nodes++;
+#endif /* HAVE_NOMASTERLIST */   
   }
 }
 
 /* xml end function for use with ganglia XML library
  * - handle parsing of end tags
  */
-void _xml_parse_end(void *data, const char *e1) {
+static void _xml_parse_end(void *data, const char *e1) {
   /* do nothing for the time being */
 }
 
-int _get_gmond_data(nodeupdown_t handle, 
-                    int sockfd,
-                    int timeout_len) {
-
+static int _get_gmond_data(nodeupdown_t handle, int sockfd, int timeout_len) {
   XML_Parser xml_parser = NULL;
   struct parse_vars pv;
   struct timeval tv;
-  pv.buf = NULL;
+  int retval = -1;
 
   pv.handle = handle;
 
@@ -581,20 +536,6 @@ int _get_gmond_data(nodeupdown_t handle,
     pv.timeout_len = NODEUPDOWN_TIMEOUT_LEN;
   else
     pv.timeout_len = timeout_len;
-
-  /* create buffer here instead of in _xml_parse_start, so we don't
-   * have to continually re-malloc buffer space
-   */
-  if ((pv.buflen = genders_getmaxnodelen(handle->genders_handle)) == -1) {
-    handle->errnum = NODEUPDOWN_ERR_GENDERS;
-    goto cleanup;
-  }
-  pv.buflen++;
-                 
-  if ((pv.buf = (char *)malloc(pv.buflen)) == NULL) {
-    handle->errnum = NODEUPDOWN_ERR_OUTMEM;
-    goto cleanup;
-  }
 
   /* Call gettimeofday at the latest point right before XML stuff. */
   if (gettimeofday(&tv, NULL) == -1) {
@@ -631,42 +572,35 @@ int _get_gmond_data(nodeupdown_t handle,
       break;
   }
 
-  free(pv.buf);
-  XML_ParserFree(xml_parser);
-
-  return 0;
-
+  retval = 0;
  cleanup:
-
   if (xml_parser != NULL)
     XML_ParserFree(xml_parser);
-
-  free(pv.buf);
-
-  return -1;
+  return retval;
 }
 
+#if HAVE_GENDERS
 /* compare genders nodes to gmond nodes to identify additional
  * nodes that are down. 
  * Return -1 on error, 0 on success
  */
-int _compare_genders_to_gmond_nodes(nodeupdown_t handle) {
+static int _compare_genders_to_gmond_nodes(nodeupdown_t handle) {
   int i, ret, num;
   char **nlist = NULL;
-  genders_t genders_handle = handle->genders_handle;
+  genders_t gh = handle->genders_handle;
 
   /* get all genders nodes */
-  if ((num = genders_nodelist_create(genders_handle, &nlist)) == -1) {
-    handle->errnum = NODEUPDOWN_ERR_GENDERS;
+  if ((num = genders_nodelist_create(gh, &nlist)) == -1) {
+    handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
     goto cleanup;
   }
   
-  if ((ret = genders_getnodes(genders_handle, nlist, num, NULL, NULL)) == -1) {
-    handle->errnum = NODEUPDOWN_ERR_GENDERS;
+  if ((handle->max_nodes = genders_getnodes(gh, nlist, num, NULL, NULL)) == -1) {
+    handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
     goto cleanup;
   }
   
-  for (i = 0; i < num; i++) {
+  for (i = 0; i < handle->max_nodes; i++) {
     /* check if gmond knows of this genders node */
     if ((hostlist_find(handle->up_nodes, nlist[i]) == -1) &&
         (hostlist_find(handle->down_nodes, nlist[i]) == -1)) {
@@ -679,8 +613,8 @@ int _compare_genders_to_gmond_nodes(nodeupdown_t handle) {
     }
   }
 
-  if (genders_nodelist_destroy(handle->genders_handle, nlist) == -1) {
-    handle->errnum = NODEUPDOWN_ERR_GENDERS;
+  if (genders_nodelist_destroy(gh, nlist) == -1) {
+    handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
     goto cleanup;
   }
 
@@ -688,25 +622,30 @@ int _compare_genders_to_gmond_nodes(nodeupdown_t handle) {
   return 0;
 
  cleanup: 
-  
-  (void)genders_nodelist_destroy(handle->genders_handle, nlist);
+  (void)genders_nodelist_destroy(gh, nlist);
   return -1;
 }
+#endif /* HAVE_GENDERS */
 
 int nodeupdown_load_data(nodeupdown_t handle, 
+#if HAVE_GENDERS
                          const char *genders_filename, 
-                         const char *gmond_hostname, 
-                         const char *gmond_ip, 
-                         int gmond_port,
-                         int timeout_len) {
+#else
+                         void *ptr,
+#endif
+                         const char *gmond_hostname, const char *gmond_ip, 
+                         int gmond_port, int timeout_len) {
 
   int sockfd = -1;
 
   if (_unloaded_handle_error_check(handle) == -1)
     return -1;
 
-  if (_get_genders_data(handle, genders_filename) == -1)
+#if HAVE_GENDERS
+  /* Must call before _get_gmond_data */
+  if (_load_genders_data(handle, genders_filename) == -1)
     goto cleanup;
+#endif /* HAVE_GENDERS */
 
   sockfd = _connect_to_gmond(handle, gmond_hostname, gmond_ip, gmond_port);
   if (sockfd == -1)
@@ -725,19 +664,16 @@ int nodeupdown_load_data(nodeupdown_t handle,
   if (_get_gmond_data(handle, sockfd, timeout_len) == -1)
     goto cleanup;
 
+#if HAVE_GENDERS
   if (_compare_genders_to_gmond_nodes(handle))
     goto cleanup;
-
-  if ((handle->max_nodes = genders_getnumnodes(handle->genders_handle)) == -1) {
-    handle->errnum = NODEUPDOWN_ERR_GENDERS;
-    goto cleanup;
-  }
+#endif /* HAVE_GENDERS */
 
   hostlist_sort(handle->up_nodes);
   hostlist_sort(handle->down_nodes);
 
   /* loading complete */
-  handle->loaded_flag = NODEUPDOWN_DATA_LOADED;
+  handle->is_loaded++;
 
   close(sockfd);
 
@@ -745,7 +681,6 @@ int nodeupdown_load_data(nodeupdown_t handle,
   return 0;
 
  cleanup:
-
   close(sockfd);
   _free_handle_data(handle);
   return -1;
@@ -761,7 +696,7 @@ int nodeupdown_errnum(nodeupdown_t handle) {
 }
 
 char *nodeupdown_strerror(int errnum) {
-  if (errnum < NODEUPDOWN_ERR_MIN || errnum > NODEUPDOWN_ERR_MAX)
+  if (errnum < NODEUPDOWN_ERR_SUCCESS || errnum > NODEUPDOWN_ERR_ERRNUMRANGE)
     return errmsg[NODEUPDOWN_ERR_ERRNUMRANGE];
 
   return errmsg[errnum];
@@ -780,10 +715,8 @@ void nodeupdown_perror(nodeupdown_t handle, const char *msg) {
     fprintf(stderr, "%s: %s\n", msg, errormsg);
 }
 
-int _get_nodes_string(nodeupdown_t handle, 
-                      char *buf, 
-                      int buflen,
-                      int up_or_down) {
+static int _get_nodes_string(nodeupdown_t handle, char *buf, int buflen,
+                             int up_or_down) {
   hostlist_t hl;
  
   if (_loaded_handle_error_check(handle) == -1)
@@ -809,18 +742,17 @@ int _get_nodes_string(nodeupdown_t handle,
 }
 
 int nodeupdown_get_up_nodes_string(nodeupdown_t handle, 
-                                   char *buf, 
-                                   int buflen) {
+                                   char *buf, int buflen) {
   return _get_nodes_string(handle, buf, buflen, NODEUPDOWN_UP_NODES);
 }
 
 int nodeupdown_get_down_nodes_string(nodeupdown_t handle, 
-                                     char *buf, 
-                                     int buflen) {
+                                     char *buf, int buflen) {
   return _get_nodes_string(handle, buf, buflen, NODEUPDOWN_DOWN_NODES);
 }
 
-int _get_nodes_list(nodeupdown_t handle, char **list, int len, int up_or_down) {
+static int _get_nodes_list(nodeupdown_t handle, char **list, int len, 
+                           int up_or_down) {
   int count = 0;
   hostlist_t hl;
   hostlist_iterator_t iter;
@@ -865,7 +797,6 @@ int _get_nodes_list(nodeupdown_t handle, char **list, int len, int up_or_down) {
   return count;
 
  cleanup:
-
   free(nodename);
   hostlist_iterator_destroy(iter);
   return -1;
@@ -879,10 +810,13 @@ int nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len) {
   return _get_nodes_list(handle, list, len, NODEUPDOWN_DOWN_NODES);
 }
 
-int _is_node(nodeupdown_t handle, const char *node, int up_or_down) {
-  char *buf = NULL;
+static int _is_node(nodeupdown_t handle, const char *node, int up_or_down) {
   int buflen;
-  int ret, return_value;
+  char buffer[MAXHOSTNAMELEN+1];
+  int ret, return_value = -1;
+#if HAVE_GENDERS
+  genders_t gh;
+#endif /* HAVE_GENDERS */
 
   if (_loaded_handle_error_check(handle) == -1)
     return -1;
@@ -892,9 +826,12 @@ int _is_node(nodeupdown_t handle, const char *node, int up_or_down) {
     return -1;
   }
 
+#if HAVE_GENDERS
+  gh = handle->genders_handle;
+
   /* make sure node passed in is legitimate */
-  if ((ret = genders_isnode_or_altnode(handle->genders_handle, node)) == -1) {
-    handle->errnum = NODEUPDOWN_ERR_GENDERS;
+  if ((ret = genders_isnode_or_altnode(gh, node)) == -1) {
+    handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
     return -1;
   }
   else if (ret == 0) {
@@ -902,41 +839,38 @@ int _is_node(nodeupdown_t handle, const char *node, int up_or_down) {
     return -1;
   }
 
-  if ((buflen = genders_getmaxnodelen(handle->genders_handle)) == -1) {
-    handle->errnum = NODEUPDOWN_ERR_GENDERS;
-    goto cleanup;
-  }
-
-  if ((buf = (char *)malloc(buflen + 1)) == NULL) {
-    handle->errnum = NODEUPDOWN_ERR_OUTMEM;
-    goto cleanup;
-  }
-
   /* get genders nodename */
-  memset(buf, '\0', buflen + 1);
-  if (genders_to_gendname(handle->genders_handle, node, buf, buflen+1) == -1) {
-    handle->errnum = NODEUPDOWN_ERR_GENDERS;
-    goto cleanup;
+  if (genders_to_gendname(gh, node, buffer, MAXHOSTNAMELEN+1) == -1) {
+    handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
+    return -1;
   }
+#else
+  if (strlen(node) > MAXHOSTNAMELEN) {
+    handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
+    return -1;
+  }
+  strcpy(buffer, node);
+
+  /* Without a master list, this is the best we can do */
+  if (hostlist_find(handle->up_nodes, buffer) == -1 &&
+      hostlist_find(handle->down_nodes, buffer) == -1) {
+    handle->errnum = NODEUPDOWN_ERR_NOTFOUND;
+    return -1;
+  }
+#endif /* HAVE_GENDERS */
 
   if (up_or_down == NODEUPDOWN_UP_NODES)
-    ret = hostlist_find(handle->up_nodes, buf);
+    ret = hostlist_find(handle->up_nodes, buffer);
   else
-    ret = hostlist_find(handle->down_nodes, buf);
+    ret = hostlist_find(handle->down_nodes, buffer);
 
   if (ret != -1)
     return_value = 1;
   else
     return_value = 0;
   
-  free(buf);
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return return_value;
-
- cleanup:
-
-  free(buf);
-  return -1;
 }
 
 int nodeupdown_is_node_up(nodeupdown_t handle, const char *node) {
@@ -947,7 +881,7 @@ int nodeupdown_is_node_down(nodeupdown_t handle, const char *node) {
   return _is_node(handle, node, NODEUPDOWN_DOWN_NODES);
 }
 
-int _node_count(nodeupdown_t handle, int up_or_down) {
+static int _node_count(nodeupdown_t handle, int up_or_down) {
   int ret;
 
   if (_loaded_handle_error_check(handle) == -1)
@@ -970,10 +904,9 @@ int nodeupdown_down_count(nodeupdown_t handle) {
   return _node_count(handle, NODEUPDOWN_DOWN_NODES);
 }
 
-
 int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list) {
-  int i, j, maxnodelen;
-  char **node;
+  int i, j;
+  char **nodes;
   
   if (_loaded_handle_error_check(handle) == -1)
     return -1;
@@ -983,50 +916,37 @@ int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list) {
     return -1;
   }
 
-  /* we use maxnodelen b/c all nodes in nodeupdown_t are stored
-   * as genders nodes
-   */
-  if ((maxnodelen = genders_getmaxnodelen(handle->genders_handle)) == -1) {
-    handle->errnum = NODEUPDOWN_ERR_GENDERS;
-    return -1;
-  }
-
-  if ((node = (char **)malloc(sizeof(char *) * handle->max_nodes)) == NULL) {
+  if ((nodes = (char **)malloc(sizeof(char *) * handle->max_nodes)) == NULL) {
     handle->errnum = NODEUPDOWN_ERR_OUTMEM;
     return -1;
   }
 
   for (i = 0; i < handle->max_nodes; i++) {
-    if ((node[i] = (char *)malloc(maxnodelen+1)) == NULL) {
+    if ((nodes[i] = (char *)malloc(MAXHOSTNAMELEN+1)) == NULL) {
       for (j = 0; j < i; j++) 
-        free(node[j]);
-      free(node);
+        free(nodes[j]);
+      free(nodes);
 
       handle->errnum = NODEUPDOWN_ERR_OUTMEM;
       return -1;
     }
-    memset(node[i], '\0', maxnodelen+1);
+    memset(nodes[i], '\0', MAXHOSTNAMELEN+1);
   }
 
-  *list = node;
+  *list = nodes;
 
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return handle->max_nodes;
 }
 
 int nodeupdown_nodelist_clear(nodeupdown_t handle, char **list) {
-  int i, maxnodelen;
+  int i;
   
   if (_loaded_handle_error_check(handle) == -1)
     return -1;
 
   if (list == NULL) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
-    return -1;
-  }
-
-  if ((maxnodelen = genders_getmaxnodelen(handle->genders_handle)) == -1) {
-    handle->errnum = NODEUPDOWN_ERR_GENDERS;
     return -1;
   }
 
@@ -1035,7 +955,7 @@ int nodeupdown_nodelist_clear(nodeupdown_t handle, char **list) {
       handle->errnum = NODEUPDOWN_ERR_NULLPTR;
       return -1;
     }
-    memset(list[i], '\0', maxnodelen+1);
+    memset(list[i], '\0', MAXHOSTNAMELEN+1);
   }
 
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
@@ -1062,11 +982,10 @@ int nodeupdown_nodelist_destroy(nodeupdown_t handle, char **list) {
 }
 
 void nodeupdown_set_errnum(nodeupdown_t handle, int errnum) {
-
   if (_handle_error_check(handle) == -1)
     return;
 
-  if (errnum >= NODEUPDOWN_ERR_MIN && errnum <= NODEUPDOWN_ERR_MAX) 
+  if (errnum >= NODEUPDOWN_ERR_SUCCESS && errnum <= NODEUPDOWN_ERR_ERRNUMRANGE) 
     handle->errnum = errnum;
   else
     handle->errnum = NODEUPDOWN_ERR_INTERNAL;

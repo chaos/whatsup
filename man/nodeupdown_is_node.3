@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_is_node.3,v 1.11 2003-08-18 23:06:11 achu Exp $
+\."$Id: nodeupdown_is_node.3,v 1.12 2003-11-06 00:53:29 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -44,8 +44,7 @@ with
 .TP
 .B NODEUPDOWN_ERR_NOTLOADED
 .BR nodeupdown_load_data (3)
-has not been called and no data has been retrieved from genders and
-ganglia.
+has not been called and no data has been retrieved from ganglia.
 .TP
 .B NODEUPDOWN_ERR_PARAMETERS
 An incorrect parameter has been passed in.
@@ -54,14 +53,11 @@ An incorrect parameter has been passed in.
 .BR malloc (3)
 has failed internally, system is out of memory.
 .TP
-.B NODEUPDOWN_ERR_NODE_CONFLICT
-gmond lists a node that genders has no knowledge of
-.TP
 .B NODEUPDOWN_ERR_NOTFOUND
-The node pointed to by \fInode\fR is not found in the genders file.
+The node pointed to by \fInode\fR is not known.
 .TP
-.B NODEUPDOWN_ERR_GENDERS
-genders C API has failed internally.
+.B NODEUPDOWN_ERR_MASTERLIST
+internal error with the Nodeupdown master list of nodes.
 .TP
 .B NODEUPDOWN_ERR_HOSTLIST
 hostlist API has failed internally.

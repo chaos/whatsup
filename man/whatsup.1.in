@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: whatsup.1,v 1.18 2003-09-25 00:20:17 achu Exp $
+\."$Id: whatsup.1.in,v 1.1 2003-11-06 00:53:29 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -14,7 +14,7 @@ whatsup \- list up and/or down nodes in a cluster
 .B whatsup
 lists which nodes are currently up or down in a cluster.  It
 determines which nodes are up or down based on information gathered
-from genders and ganglia.
+from ganglia.
 
 .B whatsup
 will check on the status of every node in the cluster unless specific
@@ -43,9 +43,6 @@ Print help and exit
 .TP
 .B "-V, --version"
 Print version and exit
-.TP
-.B \-f \fISTRING\fR, \fB\-\-filename\fR=\fISTRING\fR
-Location of genders file (default=/etc/genders)
 .TP
 .B \-o \fISTRING\fR, \fB\-\-hostname\fR=\fISTRING\fR
 gmond server hostname (default=localhost)
@@ -79,9 +76,15 @@ List nodes in newline separated list
 .TP
 .B \-s, \-\-space
 List nodes in space separated list
+.if @WITH_GENDERS@ \{
+.TP
+.B \-f \fISTRING\fR, \fB\-\-filename\fR=\fISTRING\fR
+Location of genders file (default=/etc/genders)
 .TP
 .B \-a, \-\-altnames
 List nodes by alternate names (default=off)
+\}
+
 .SH "HOST RANGES"
 As noted in sections above,
 .B whatsup

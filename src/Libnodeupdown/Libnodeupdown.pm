@@ -45,7 +45,7 @@ Libnodeupdown - Perl extension for libnodeupdown
  Libnodeupdown::NODEUPDOWN_ERR_NULLPTR
  Libnodeupdown::NODEUPDOWN_ERR_OUTMEM
  Libnodeupdown::NODEUPDOWN_ERR_NOTFOUND
- Libnodeupdown::NODEUPDOWN_ERR_GENDERS
+ Libnodeupdown::NODEUPDOWN_ERR_MASTERLIST
  Libnodeupdown::NODEUPDOWN_ERR_GANGLIA
  Libnodeupdown::NODEUPDOWN_ERR_HOSTLIST
  Libnodeupdown::NODEUPDOWN_ERR_MAGIC
@@ -58,7 +58,7 @@ Libnodeupdown - Perl extension for libnodeupdown
  $handle = Libnodeupdown->nodeupdown_handle_create();
 
  $handle->nodeupdown_load_data();
- $handle->nodeupdown_load_data($genders_filename,
+ $handle->nodeupdown_load_data($master_list,
                                $gmond_hostname,
                                $gmond_ip,
                                $gmond_port,
@@ -99,13 +99,14 @@ Returns a nodeupdown object on success, undef on error.
 
 =item B<$handle-E<gt>nodeupdown_load_data()>
 
-=item B<$handle-E<gt>nodeupdown_load_data($genders_filename, $gmond_hostname, $gmond_ip, $gmond_port, $timeout_len)>
+=item B<$handle-E<gt>nodeupdown_load_data($master_list, $gmond_hostname, $gmond_ip, $gmond_port, $timeout_len)>
 
-Loads data from genders and ganglia for the remainder of the
-nodeupdown library to use.  To use default values, pass in undef for
-any of the specified parameters.  To use all defaults, simply call
-nodeupdown_load_data without any parameters.  Returns 0 on success, -1
-on error.
+Loads data for the remainder of the nodeupdown library to use.  Please
+read the nodeupdown_load_data manpage to determine the type of
+parameter that should be passed $master_list.  To use default values,
+pass in undef for any of the specified parameters.  To use all
+defaults, simply call nodeupdown_load_data without any parameters.
+Returns 0 on success, -1 on error.
 
 =back
 
@@ -196,7 +197,7 @@ can be accessed through the following functions:
  Libnodeupdown::NODEUPDOWN_ERR_NULLPTR
  Libnodeupdown::NODEUPDOWN_ERR_OUTMEM
  Libnodeupdown::NODEUPDOWN_ERR_NOTFOUND
- Libnodeupdown::NODEUPDOWN_ERR_GENDERS
+ Libnodeupdown::NODEUPDOWN_ERR_MASTERLIST
  Libnodeupdown::NODEUPDOWN_ERR_GANGLIA
  Libnodeupdown::NODEUPDOWN_ERR_HOSTLIST
  Libnodeupdown::NODEUPDOWN_ERR_MAGIC

@@ -1,34 +1,53 @@
 \."#################################################################
-\."$Id: nodeupdown_load_data.3,v 1.17 2003-08-18 23:06:11 achu Exp $
+\."$Id: nodeupdown_load_data.3.in,v 1.1 2003-11-06 00:53:29 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
 .TH NODEUPDOWN_LOAD_DATA 3 "August 2003" "LLNL" "LIBNODEUPDOWN"
 .SH NAME
-nodeupdown_load_data \- load data from genders and ganglia
+nodeupdown_load_data \- load data from ganglia
 .SH SYNOPSIS
 .B #include <nodeupdown.h>
 .sp
+.if @WITH_GENDERS@ \{
 .BI "int nodeupdown_load_data(nodeupdown_t handle, const char *genders_filename, const char *gmond_hostname, const char *gmond_ip, int gmond_port, int timeout_len);"
+\}
+.if @WITH_NOMASTERLIST@ \{
+.BI "int nodeupdown_load_data(nodeupdown_t handle, void *ptr, const char *gmond_hostname, const char *gmond_ip, int gmond_port, int timeout_len);"
+\}
 .br
 .SH DESCRIPTION
-\fBnodeupdown_load_data()\fR loads data from genders and ganglia so
+\fBnodeupdown_load_data()\fR loads data from ganglia so
 that the remaining nodeupdown library functions can properly return
-information about up and down nodes.  \fIhandle\fR is a nodeupdown
+information about up and down nodes.  
+
+\fIhandle\fR is a nodeupdown
 handle created by
 .BR nodeupdown_handle_create (3).  
+
+.if @WITH_GENDERS@ \{
 \fIgenders_filename\fR should indicate the genders file to be loaded.
 If \fIgenders_filename\fR is NULL, the default genders file
-DEFAULT_GENDERS_FILE will be used.  \fIgmond_hostname\fR and
-\fIgmond_ip\fR should respectively indicate the location of a non-deaf
-gmond daemon server.  If \fIgmond_hostname\fR and \fIgmond_ip\fR are
-NULL, nodeupdown assumes the server is on the current node.
+GENDERS_DEFAULT_FILE will be used.
+\}
+.if @WITH_NOMASTERLIST@ \{
+\fIptr\fR can be set to anything, it will be ignored in this
+configuration of nodeupdown.
+\}
+
+\fIgmond_hostname\fR and \fIgmond_ip\fR should respectively indicate
+the location of a non-deaf gmond daemon server.  If
+\fIgmond_hostname\fR and \fIgmond_ip\fR are NULL, nodeupdown assumes
+the server is on the current node.  
+
 \fIgmond_port\fR should indicate the port number of the server.  If
 \fIgmond_port\fR less than or equal to 0, nodeupdown assumes the
-server is running on the default port.  \fItimeout_len\fR should
-indicate the timeout length in seconds that determines if a node is up
-or down.  If \fItimeout_len\fR is less than or equal to 0, nodeupdown
-assumes the default timeout length defined by NODEUPDOWN_TIMEOUT_LEN.
+server is running on the default port.  
+
+\fItimeout_len\fR should indicate the timeout length in seconds that
+determines if a node is up or down.  If \fItimeout_len\fR is less than
+or equal to 0, nodeupdown assumes the default timeout length defined
+by NODEUPDOWN_TIMEOUT_LEN.
  
 If the server is not on the current node, the programmer does not have
 to pass in both the hostname and IP address of the server's location.
@@ -56,9 +75,11 @@ The handle parameter is NULL.  The nodeupdown handle must be created
 with
 .BR nodeupdown_handle_create (3).
 .TP
+.if @WITH_GENDERS@ \{
 .B NODEUPDOWN_ERR_OPEN
 The genders file pointed to by \fIgenders_filename\fR cannot be
 opened.
+\}
 .TP
 .B NODEUPDOWN_ERR_CONNECT	
 Error connecting to gmond server specified by \fIgmond_hostname\fR,
@@ -87,8 +108,8 @@ An incorrect parameter has been passed in.
 .BR malloc (3)
 has failed internally, system is out of memory.
 .TP
-.B NODEUPDOWN_ERR_GENDERS
-genders C API has failed internally.
+.B NODEUPDOWN_ERR_MASTERLIST
+internal error with the Nodeupdown master list of nodes.
 .TP
 .B NODEUPDOWN_ERR_GANGLIA 
 ganglia library has failed internally.

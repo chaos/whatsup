@@ -1,1 +1,21 @@
-Read INSTALL.
+1) Read INSTALL.
+
+2) Ganglia only has knowledge about cluster nodes in which it has
+   has previous communication with.  Therefore, if a node has never
+   sent a ganglia message (for example, 1 node was out for servicing when
+   the entire cluster was rebooted), ganglia will not be able to report
+   this node as down.
+   
+   In order to determine all of the down nodes in a cluster,
+   whatsup and the nodeupdown library require a "master list" of
+   nodes in the cluster.  "master list" mechanisms can be compiled
+   into whatsup by specifying a master list options with ./configure.
+
+   Currently, the following "master list" mechanisms are implemented
+   in whatsup.
+   - genders
+
+   Other mechanisms may be implemented in the future.
+
+   If no "master list" mechanism is specified, whatsup will use only
+   ganglia data to determine the difference between up and down nodes.

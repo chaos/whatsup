@@ -1,13 +1,13 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.1 2003-08-18 16:28:01 achu Exp $
+## $Id: Makefile.am,v 1.2 2003-11-06 00:53:29 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
 
-# We will cheat and use ExtUtils::MakeMaker to install this
-# Perl Module instead of doing some whacked out autoconf
+# Use Perl's ExtUtils::MakeMaker to get autoconf/automake to install
+# into the correct location
 
-NODEUPDOWN_PM_PREFIX = @NODEUPDOWN_PM_PREFIX@
+PERL_INSTALL_PREFIX = @PERL_INSTALL_PREFIX@
 
 all: Makefile.pm
 	$(MAKE) -f Makefile.pm

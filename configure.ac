@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.11 2003-09-11 16:05:58 achu Exp $
+## $Id: configure.ac,v 1.12 2003-11-06 00:53:29 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -19,6 +19,19 @@ AC_CANONICAL_SYSTEM
 AM_INIT_AUTOMAKE($PROJECT, $VERSION)
 AM_CONFIG_HEADER([config/config.h])
 AM_MAINTAINER_MODE
+
+##
+# Check for libraries
+##
+AC_CHECK_LIB(ganglia, XML_ParserCreate, [haveganglia=yes], [])
+if test "$haveganglia" != "yes"; then
+   AC_MSG_ERROR([libganglia not found!]) 
+else
+   GANGLIA_LIBS="-lganglia"
+   AC_SUBST(GANGLIA_LIBS) 
+fi
+AC_CHECK_LIB(genders, genders_handle_create, [havegenders=yes], [])
+AC_CHECK_LIB(gendersllnl, genders_get_cluster, [havegendersllnl=yes], [])
 
 # default location for nodeupdown conf file
 AC_MSG_CHECKING(for --with-nodeupdown-conf )
@@ -43,49 +56,63 @@ if test -z "$NODEUPDOWN_CONF_FILE"; then
 fi
 AC_SUBST(NODEUPDOWN_CONF_FILE)
 
-# Libnodeupdown install location
-AC_MSG_CHECKING(for --with-xs-prefix )
-AC_ARG_WITH(xs-prefix,
-    AC_HELP_STRING([--with-xs-prefix=path], [define perl xs prefix dir]),
+# Build with genders support
+# - For the most part only used at LLNL
+AC_MSG_CHECKING(for --with-genders )
+AC_ARG_WITH(genders,
+    AC_HELP_STRING([--with-genders=path], 
+                   [build with genders support, optionally 
+                    supplying genders database path]),
     [ case "$withval" in
     yes)
-        withxsprefix=yes
+        withgenders=yes
         ;;
     no)
         ;;
     *)
-        withxsprefix=yes
-        XS_PREFIX="$withval"
+        withgenders=yes
         ;;
     esac ]
 )
-AC_MSG_RESULT(${withxsprefix=no})
-if test -z "$XS_PREFIX"; then
-   XS_PREFIX='${prefix}'
+AC_MSG_RESULT(${withgenders=no})
+if test "$withgenders" = "yes"; then
+   if test "$havegenders" != "yes" || test "$havegendersllnl" != "yes"; then
+     AC_MSG_ERROR([genders library files not found])
+   else
+     GENDERS_LIBS="-lgenders -lgendersllnl"
+     AC_DEFINE(HAVE_GENDERS, [1], [Define use of genders])
+     NODEUPDOWN_MASTER_LIST_PTR="const char *genders_filename"
+     WITH_GENDERS=1
+   fi
+else
+   WITH_GENDERS=0
 fi
-AC_SUBST(XS_PREFIX)
+AC_SUBST(WITH_GENDERS)
+AC_SUBST(HAVE_GENDERS)
+AC_SUBST(GENDERS_LIBS)
 
-# Nodeupdown.pm install location
-AC_MSG_CHECKING(for --with-nodeupdown-pm-prefix )
-AC_ARG_WITH(nodeupdown-pm-prefix,
-    AC_HELP_STRING([--with-nodeupdown-pm-prefix=path], [define nodeupdown.pm prefix dir]),
+# Perl Install Prefix
+# - Used almost exclusively so perl install works with rpm builds
+AC_MSG_CHECKING(for --with-perl-install-prefix )
+AC_ARG_WITH(perl-install-prefix,
+    AC_HELP_STRING([--with-perl-install-prefix=path], [define perl modules install prefix]),
     [ case "$withval" in
     yes)
-        withnodeupdownpm=yes
+        withperllinstallprefix=yes
         ;;
     no)
         ;;
     *)
-        withnodeupdownpm=yes
-        NODEUPDOWN_PM_PREFIX="$withval"
+        withperllinstallprefix=yes
+        PERL_INSTALL_PREFIX="$withval"
         ;;
     esac ]
 )
-AC_MSG_RESULT(${withnodeupdownpm=no})
-if test -z "$NODEUPDOWN_PM_PREFIX"; then
-   NODEUPDOWN_PM_PREFIX='${prefix}'
+AC_MSG_RESULT(${withperllinstallprefix=no})
+if test -z "$PERL_INSTALL_PREFIX"; then
+   PERL_INSTALL_PREFIX='${prefix}'
 fi
-AC_SUBST(NODEUPDOWN_PM_PREFIX)
+AC_SUBST(PERL_INSTALL_PREFIX)
 
 ##
 # Checks for programs.
@@ -102,7 +129,6 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS( \
   errno.h \
   fcntl.h \
-  gendersllnl.h \
   ganglia.h \
   socket.h \
   time.h \
@@ -134,10 +160,17 @@ AC_CHECK_FUNCS( \
 )
 
 ##
-# Check for genders and ganglia libraries that we need
-##
-AC_CHECK_LIB(ganglia, XML_ParserCreate)
-AC_CHECK_LIB(gendersllnl, genders_string_to_altnames_preserve)
+
+if test -z "$NODEUPDOWN_MASTER_LIST_PTR"; then
+   NODEUPDOWN_MASTER_LIST_PTR="void *ptr"
+   AC_DEFINE(HAVE_NOMASTERLIST, [1], [Define no master list])
+   WITH_NOMASTERLIST=1
+else
+   WITH_NOMASTERLIST=0
+fi
+AC_SUBST(WITH_NOMASTERLIST)
+AC_SUBST(NODEUPDOWN_MASTER_LIST_PTR)
+AC_SUBST(NODEUPDOWN_NOMASTERLIST)
 
 ##
 # Epilogue.
@@ -152,6 +185,9 @@ AC_CONFIG_FILES( \
   src/libnodeupdown/nodeupdown.h
   src/Libnodeupdown/Makefile \
   src/Nodeupdown/Makefile \
+  man/libnodeupdown.3 \
+  man/nodeupdown_load_data.3 \
+  man/whatsup.1 \
 )
 AC_OUTPUT
 

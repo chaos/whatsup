@@ -1,19 +1,13 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.1 2003-08-16 00:15:29 achu Exp $
+## $Id: Makefile.am,v 1.2 2003-11-06 00:53:29 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
 
-# This is a hack to get autoconf, automake, and ExtUtils::MakeMaker
-# to work together.  
-#
-# Currently, it only supports the common MakeMaker options of
-#
-# make install
-# make pure_install
-# make test
+# Use Perl's ExtUtils::MakeMaker to get autoconf/automake to install
+# into the correct location
 
-XS_PREFIX = @XS_PREFIX@
+PERL_INSTALL_PREFIX = @PERL_INSTALL_PREFIX@
 
 all: Makefile.xs
 	$(MAKE) -f Makefile.xs
@@ -23,7 +17,9 @@ Makefile.xs: Makefile.PL Libnodeupdown.xs Libnodeupdown.pm
 	cp ../libnodeupdown/nodeupdown.h .
 	cp ../libnodeupdown/hostlist.c .
 	cp ../libnodeupdown/hostlist.h .
-	$(PERL) Makefile.PL PREFIX=$(XS_PREFIX) MAKEFILE=Makefile.xs FIRST_MAKEFILE=Makefile.xs
+	cp ../libnodeupdown/fd.c .
+	cp ../libnodeupdown/fd.h .
+	$(PERL) Makefile.PL PREFIX=$(PERL_INSTALL_PREFIX) MAKEFILE=Makefile.xs FIRST_MAKEFILE=Makefile.xs
 
 test: Makefile.xs 
 	$(MAKE) -f Makefile.xs test
