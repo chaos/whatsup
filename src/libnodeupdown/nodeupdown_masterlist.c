@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown_masterlist.c,v 1.2 2003-11-08 16:55:16 achu Exp $
+ *  $Id: nodeupdown_masterlist.c,v 1.3 2003-11-08 16:59:25 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown_masterlist.c,v $
  *    
  */
@@ -138,7 +138,7 @@ int nodeupdown_masterlist_init(nodeupdown_t handle, void *ptr) {
 #endif
 }
 
-int nodeupdown_masterlist_finish(nodeupdown_t handle, void *ptr) {
+int nodeupdown_masterlist_finish(nodeupdown_t handle) {
 #if HAVE_MASTERLIST
   /* set max_nodes */
   handle->max_nodes = list_count(handle->masterlist);
