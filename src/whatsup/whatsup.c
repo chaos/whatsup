@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.40 2003-05-23 01:03:07 achu Exp $
+ * $Id: whatsup.c,v 1.41 2003-05-23 01:06:32 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -138,7 +138,7 @@ static void usage(void) {
  * - output version and exit
  */
 static void version(void) {
-  fprintf(stderr, "whatsup 1.0-5\n");
+  fprintf(stderr, "whatsup 1.0-6\n");
   exit(1);
 }
 
