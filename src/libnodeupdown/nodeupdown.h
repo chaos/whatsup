@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown.h,v 1.6 2003-03-11 17:00:49 achu Exp $
+ *  $Id: nodeupdown.h,v 1.7 2003-03-12 00:08:46 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h,v $
  *    
  */
@@ -213,7 +213,9 @@ int nodeupdown_convert_string_to_altnames(nodeupdown_t handle,
 
 /* nodeupdown_convert_list_to_altnames
  * - converts the list to alternate names
- * - lists assumed to be both preallocated with len elements
+ * - len indicates the number of nodes stored in src
+ * - lists assumed to be both preallocated lists of atleast len
+ *   elements
  * - returns 0 on success, -1 on error
  */
 int nodeupdown_convert_list_to_altnames(nodeupdown_t handle, 
