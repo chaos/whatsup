@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.93 2005-04-05 01:32:44 achu Exp $
+ *  $Id: whatsup.c,v 1.94 2005-04-05 21:51:54 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -253,6 +253,8 @@ _cmdline_parse(struct whatsup_data *w, int argc, char **argv)
 
 	  if (long_options_count >= WHATSUP_LONG_OPTIONS_LEN)
 	    break;
+          
+          c++;
 	}
     }
   

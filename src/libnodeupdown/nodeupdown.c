@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.110 2005-04-04 20:23:29 achu Exp $
+ *  $Id: nodeupdown.c,v 1.111 2005-04-05 21:51:54 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -36,29 +36,10 @@
 #if HAVE_UNISTD_H
 #include <unistd.h>
 #endif /* HAVE_UNISTD_H */
-#if HAVE_FCNTL_H
-#include <fcntl.h>
-#endif /* HAVE_FCNTL_H */
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <sys/select.h>
-#if TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else  /* !TIME_WITH_SYS_TIME */
-# if HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else /* !HAVE_SYS_TIME_H */
-#  include <time.h>
-# endif /* !HAVE_SYS_TIME_H */
-#endif /* !TIME_WITH_SYS_TIME */
-#include <errno.h>
 
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
+#include "nodeupdown_util.h"
 #include "nodeupdown_ganglia.h"
 #include "nodeupdown_ganglia_clusterlist.h"
 #include "conffile.h"
@@ -285,140 +266,6 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd)
   return ret;
 }
 
-static int 
-_low_timeout_connect(nodeupdown_t handle, 
-                     const char *hostname, 
-                     int port) 
-{
-  int ret, old_flags, sockfd = -1;
-  struct sockaddr_in servaddr;
-  char ipbuf[INET_ADDRSTRLEN+1];
-  struct hostent *hptr;
-
-  /* valgrind will report a mem-leak in gethostbyname() */
-  if (!(hptr = gethostbyname(hostname))) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_HOSTNAME;
-      return -1;
-    }
-      
-  if (!inet_ntop(AF_INET, (void *)hptr->h_addr, ipbuf, INET_ADDRSTRLEN)) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      return -1;
-    }
-
-  /* Alot of this code is from Unix Network Programming, by Stevens */
-
-  if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      goto cleanup;
-    }
-
-  bzero(&servaddr, sizeof(servaddr));
-  servaddr.sin_family = AF_INET;
-  servaddr.sin_port = htons(port);
-
-  if ((ret = inet_pton(AF_INET, ipbuf, (void *)&servaddr.sin_addr)) < 0) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      goto cleanup;
-    }
-
-  if (!ret) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_ADDRESS;
-      goto cleanup;
-    }
-
-  if ((old_flags = fcntl(sockfd, F_GETFL, 0)) < 0) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      goto cleanup;
-    }
-  
-  if (fcntl(sockfd, F_SETFL, old_flags | O_NONBLOCK) < 0) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      goto cleanup;
-    }
-  
-  ret = connect(sockfd, 
-                (struct sockaddr *)&servaddr, 
-                sizeof(struct sockaddr_in));
-  if (ret < 0 && errno != EINPROGRESS) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_CONNECT;
-      goto cleanup;
-    }
-  else if (ret < 0 && errno == EINPROGRESS) 
-    {
-      fd_set rset, wset;
-      struct timeval tval;
-
-      FD_ZERO(&rset);
-      FD_SET(sockfd, &rset);
-      FD_ZERO(&wset);
-      FD_SET(sockfd, &wset);
-      tval.tv_sec = NODEUPDOWN_CONNECT_LEN;
-      tval.tv_usec = 0;
-      
-      if ((ret = select(sockfd+1, &rset, &wset, NULL, &tval)) < 0) 
-        {
-          handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-          goto cleanup;
-        }
-
-      if (!ret) 
-        {
-          handle->errnum = NODEUPDOWN_ERR_TIMEOUT;
-          goto cleanup;
-        }
-      else 
-        {
-          if (FD_ISSET(sockfd, &rset) || FD_ISSET(sockfd, &wset)) 
-            {
-              int len, error;
-
-              len = sizeof(int);
-              
-              if (getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &error, &len) < 0) 
-                {
-                  handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-                  goto cleanup;
-                }
-        
-              if (error != 0) 
-                {
-                  errno = error;
-                  handle->errnum = NODEUPDOWN_ERR_CONNECT;
-                  goto cleanup;
-                }
-              /* else no error, connected within timeout length */
-            }
-          else 
-            {
-              handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-              goto cleanup;
-            }
-        }
-    }
-  
-  /* reset flags */
-  if (fcntl(sockfd, F_SETFL, old_flags) < 0) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      goto cleanup;
-    }
-  
-  return sockfd;
-
- cleanup:
-  close(sockfd);
-  return -1;
-}
-
 int 
 nodeupdown_load_data(nodeupdown_t handle, 
                      const char *hostname, 
@@ -428,7 +275,6 @@ nodeupdown_load_data(nodeupdown_t handle,
 {
   struct nodeupdown_confdata cd;
   char *clusterlist_module = NULL;
-  int fd = -1;
 
   if (_unloaded_handle_error_check(handle) < 0)
     return -1;
@@ -451,6 +297,18 @@ nodeupdown_load_data(nodeupdown_t handle,
   if (nodeupdown_ganglia_clusterlist_init(handle) < 0)
     goto cleanup;
 
+  if (!(handle->up_nodes = hostlist_create(NULL))) 
+    {
+      handle->errnum = NODEUPDOWN_ERR_OUTMEM;
+      goto cleanup;
+    }
+
+  if (!(handle->down_nodes = hostlist_create(NULL))) 
+    {
+      handle->errnum = NODEUPDOWN_ERR_OUTMEM;
+      goto cleanup;
+    }
+
   if (port <= 0)
     {
       if (cd.port_found)
@@ -459,21 +317,35 @@ nodeupdown_load_data(nodeupdown_t handle,
         port = nodeupdown_ganglia_get_default_port(handle);
     }
   
-  if (!hostname && cd.hostnames_found) 
+  if (timeout_len <= 0)
+    {
+      if (cd.timeout_len_found)
+        timeout_len = cd.timeout_len;
+      else
+        timeout_len = NODEUPDOWN_TIMEOUT_LEN;
+    }
+
+  if (!hostname && cd.hostnames_found)
     {
       ListIterator itr = NULL;
-      char *str;
+      char *hostnamePtr;
       
       if (!(itr = list_iterator_create(cd.hostnames)))
         goto cleanup;
       
-      while ((str = list_next(itr)) != NULL) 
+      while ((hostnamePtr = list_next(itr)) != NULL)
         {
-          if ((fd = _low_timeout_connect(handle, 
-                                         str, 
-                                         port)) >= 0) 
+          if (nodeupdown_ganglia_get_updown_data(handle, 
+                                                 hostnamePtr,
+                                                 port,
+                                                 timeout_len) < 0)
+            continue;
+          else
             break;
         }
+
+      if (!hostnamePtr)
+        goto cleanup;
 
       if (itr)
         list_iterator_destroy(itr);
@@ -496,35 +368,13 @@ nodeupdown_load_data(nodeupdown_t handle,
       else
         hostnamePtr = (char *)hostname;
 
-      fd = _low_timeout_connect(handle, hostnamePtr, port);
+      if (nodeupdown_ganglia_get_updown_data(handle, 
+                                             hostnamePtr,
+                                             port, 
+                                             timeout_len) < 0)
+        goto cleanup;
     }
   
-  if (fd < 0)
-    goto cleanup;
-
-  if (!(handle->up_nodes = hostlist_create(NULL))) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_OUTMEM;
-      goto cleanup;
-    }
-
-  if (!(handle->down_nodes = hostlist_create(NULL))) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_OUTMEM;
-      goto cleanup;
-    }
-
-  if (timeout_len <= 0)
-    {
-      if (cd.timeout_len_found)
-        timeout_len = cd.timeout_len;
-      else
-        timeout_len = NODEUPDOWN_TIMEOUT_LEN;
-    }
-
-  if (nodeupdown_ganglia_get_gmond_data(handle, fd, timeout_len) < 0)
-    goto cleanup;
-
   if (nodeupdown_ganglia_clusterlist_compare_to_clusterlist(handle) < 0)
     goto cleanup;
 
@@ -537,14 +387,12 @@ nodeupdown_load_data(nodeupdown_t handle,
   /* loading complete */
   handle->is_loaded++;
 
-  close(fd);
   if (cd.hostnames)
     list_destroy(cd.hostnames);
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return 0;
 
  cleanup:
-  close(fd);
   if (cd.hostnames)
     list_destroy(cd.hostnames);
   _free_handle_data(handle);

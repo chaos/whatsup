@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia.c,v 1.5 2005-04-05 01:32:44 achu Exp $
+ *  $Id: nodeupdown_ganglia.c,v 1.6 2005-04-05 21:51:54 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -52,6 +52,7 @@
 #include "nodeupdown_common.h"
 #include "nodeupdown_ganglia.h"
 #include "nodeupdown_ganglia_clusterlist.h"
+#include "nodeupdown_util.h"
 #include "hostlist.h"
 #include "xmlparse.h"
 
@@ -128,15 +129,23 @@ _xml_parse_end(void *data, const char *e1)
 }
 
 int 
-nodeupdown_ganglia_get_gmond_data(nodeupdown_t handle, int fd, int timeout_len) 
+nodeupdown_ganglia_get_updown_data(nodeupdown_t handle, 
+                                   const char *hostname,
+                                   int port,
+                                   int timeout_len) 
 {
   XML_Parser xml_parser = NULL;
   struct parse_vars pv;
   struct timeval tv;
-  int retval = -1;
+  int fd, retval = -1;
+
+  if ((fd = nodeupdown_util_low_timeout_connect(handle,
+                                                hostname,
+                                                port,
+                                                NODEUPDOWN_GANGLIA_CONNECT_LEN)) < 0)
+    goto cleanup;
 
   /* Setup parse vars to pass to _xml_parse_start */
-
   pv.handle = handle;
   pv.timeout_len = timeout_len;
 
@@ -184,7 +193,9 @@ nodeupdown_ganglia_get_gmond_data(nodeupdown_t handle, int fd, int timeout_len)
     }
   
   retval = 0;
+
  cleanup:
+  close(fd);
   if (xml_parser != NULL)
     XML_ParserFree(xml_parser);
   return retval;

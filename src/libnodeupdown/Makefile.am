@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.26 2005-04-02 05:51:16 achu Exp $
+## $Id: Makefile.am,v 1.27 2005-04-05 21:51:54 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -12,6 +12,8 @@ endif
 #
 # libnodeupdown
 #
+# no export dynamic, b/c of nodeupdown.map
+#
 
 nodeupdown_module_builddir=`cd $(top_builddir)/src/libnodeupdown && pwd`
 
@@ -21,7 +23,8 @@ noinst_HEADERS  = nodeupdown_common.h \
 		  nodeupdown_ganglia.h \
 		  nodeupdown_ganglia_clusterlist.h \
 		  nodeupdown_ganglia_clusterlist_util.h \
-		  nodeupdown_ganglia_clusterlist_genders_util.h
+		  nodeupdown_ganglia_clusterlist_genders_util.h \
+		  nodeupdown_util.h
 
 lib_LTLIBRARIES = libnodeupdown.la
 
@@ -32,13 +35,13 @@ libnodeupdown_la_CFLAGS = -D_REENTRANT -I ../../config \
 
 libnodeupdown_la_SOURCES = nodeupdown.c \
 			   nodeupdown_ganglia.c \
-			   nodeupdown_ganglia_clusterlist.c
+			   nodeupdown_ganglia_clusterlist.c \
+			   nodeupdown_util.c
 
 libnodeupdown_la_LIBADD = ../libcommon/libcommon.la \
 			  ../libexpat/libexpat.la
 
 libnodeupdown_la_LDFLAGS = -version-info @LIBNODEUPDOWN_VERSION_INFO@ \
-			   -export-dynamic \
 			   $(OTHER_FLAGS) 
 
 EXTRA_DIST = nodeupdown.map
@@ -73,6 +76,8 @@ nodeupdown_ganglia_clusterlist_gendersllnl_la_LDFLAGS = \
 	$(GENDERSLLNL_LIBS)
 nodeupdown_ganglia_clusterlist_gendersllnl_la_CFLAGS  = \
 	-I$(srcdir)/../libcommon
+nodeupdown_ganglia_clusterlist_gendersllnl_la_LIBADD = \
+	../libcommon/libcommon.la
  
 nodeupdown_ganglia_clusterlist_genders_la_SOURCES = \
 	nodeupdown_ganglia_clusterlist_genders.c \
@@ -83,6 +88,8 @@ nodeupdown_ganglia_clusterlist_genders_la_LDFLAGS = \
 	$(GENDERS_LIBS)
 nodeupdown_ganglia_clusterlist_genders_la_CFLAGS  = \
 	-I$(srcdir)/../libcommon
+nodeupdown_ganglia_clusterlist_genders_la_LIBADD = \
+	../libcommon/libcommon.la
  
 nodeupdown_ganglia_clusterlist_hostsfile_la_SOURCES = \
 	nodeupdown_ganglia_clusterlist_hostsfile.c \
@@ -91,6 +98,8 @@ nodeupdown_ganglia_clusterlist_hostsfile_la_LDFLAGS = \
 	$(MODULE_FLAGS)
 nodeupdown_ganglia_clusterlist_hostsfile_la_CFLAGS  = \
 	-I$(srcdir)/../libcommon
+nodeupdown_ganglia_clusterlist_hostsfile_la_LIBADD = \
+	../libcommon/libcommon.la
  
 nodeupdown_ganglia_clusterlist_none_la_SOURCES = \
 	nodeupdown_ganglia_clusterlist_none.c \
