@@ -67,9 +67,9 @@ see what I can do.
 
 Comments, patches, fixes, suggestions are always welcome.
 
-By the way, whatsup.spec.in defaults to no materlist mechanism.
-You'll want to specify one at the command line if you plan on building
-an rpm with masterlist functionality.
+By the way, whatsup.spec.in defaults to the gendersllnl mechanisms.
+You'll probably want to specify a different one at the command line if
+you plan on building a rpm package.
 
 Albert Chu
 chu11@llnl.gov

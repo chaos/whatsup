@@ -1,4 +1,4 @@
-# $Id: whatsup.spec.in,v 1.4 2003-11-14 00:25:49 achu Exp $
+# $Id: whatsup.spec.in,v 1.5 2003-11-14 00:38:04 achu Exp $
 
 Name:           @PROJECT@
 Version:        @VERSION@
@@ -31,7 +31,13 @@ programmatically determine if a node is up or down.
 
 %build
 ./bootstrap
-./configure --prefix=/usr --with-perl-install-prefix="$RPM_BUILD_ROOT/usr" %{?_with_masterlist} %{?_without_masterlist} %{?_with_genders} %{?_without_genders} %{?_with_gendersllnl} %{?_without_gendersllnl}
+./configure --prefix=/usr --with-perl-install-prefix="$RPM_BUILD_ROOT/usr" \
+        %{?_with_masterlist} \
+        %{?_without_masterlist} \       
+        %{?_with_genders} \
+        %{?_without_genders} \
+        %{?_with_gendersllnl} \
+        %{?_without_gendersllnl}
 make
 
 %install
