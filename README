@@ -41,8 +41,15 @@ configure.
 Other mechanisms may be implemented in the future.  If you are interested
 in seeing some new mechanism implemented, feel free to e-mail me.
 
-Also, feel free to e-mail me to tell how much you use like/dislike this
-tool.
+This package also includes two Perl libraries to interface into the
+nodeupdown C library.  Libnodeupdown is a library developed using Perl
+Extensions.  In my own personal opinion and experience, Perl
+Extensions has a pretty limited ability to offer a nice Perl API.  The
+Nodeupdown library offers a more familiar Perl API that hides the
+yuckiness of Perl Extensions.
+
+Feel free to e-mail me to tell how much you use like/dislike this
+tool.  I'd like to hear.
 
 Albert Chu
 chu11@llnl.gov
