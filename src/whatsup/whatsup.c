@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.6 2003-03-11 22:00:24 achu Exp $
+ * $Id: whatsup.c,v 1.7 2003-03-11 23:50:57 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -684,7 +684,7 @@ int get_all_up_or_down_nodes(struct arginfo *arginfo,
       output_error("out of memory", NULL);
       return -1;
     }
-    memset(str, '\0', WHATSUP_BUFFERLEN);
+    memset(str, '\0', str_len);
     
     if (output_type == WHATSUP_UP) {
       if (nodeupdown_get_up_nodes_string(handle, str, str_len) == -1) {
