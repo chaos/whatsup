@@ -1,4 +1,4 @@
-# $Id: whatsup.spec,v 1.7 2003-02-25 16:29:35 achu Exp $
+# $Id: whatsup.spec,v 1.8 2003-02-25 16:40:27 achu Exp $
 
 Name:		whatsup
 Version:	1.0
@@ -21,7 +21,7 @@ allows users to programmatically determine if a node is up or donw.
 %setup
 
 %build
-%configure 
+%configure --program-prefix=%{?_program_prefix:%{_program_prefix}}
 make
 
 %install
@@ -72,7 +72,6 @@ fi
 %doc AUTHORS
 %doc COPYING
 %doc ChangeLog
-%doc DISCLAIMER
 %doc INSTALL
 %doc NEWS
 %doc README
