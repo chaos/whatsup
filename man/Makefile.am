@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.3 2003-07-24 18:20:26 achu Exp $
+## $Id: Makefile.am,v 1.4 2003-07-24 18:27:38 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -29,5 +29,6 @@ man3_MANS = \
 	nodeupdown_handle_create.3 \
 	nodeupdown_errormsg.3 \
 	nodeupdown_errors.3 \
-	nodeupdown_nodelist.3 \
-	nodeupdown.conf.5 \
+	nodeupdown_nodelist.3
+
+man5_MANS = nodeupdown.conf.5
