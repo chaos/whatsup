@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.56 2003-05-30 17:49:16 achu Exp $
+ * $Id: nodeupdown.c,v 1.57 2003-05-30 18:03:46 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -69,7 +69,6 @@ struct nodeupdown {
 /* parse_vars
  * - variables used when parsing ganglia XML data
  * - used so multiple variables can be passed as one variable
- *   to the xml parsing function
  */
 struct parse_vars {
   nodeupdown_t handle;
@@ -109,21 +108,6 @@ static char * errmsg[] = {
  * Function Definitions           *
  **********************************/
 
-/* common error checks for genders handle 
- * Returns -1 on error, 0 on success
- */
-static int handle_err_check(nodeupdown_t handle);
-
-/* common error checks for non-loaded nodeupdown data 
- * Returns -1 on error, 0 on success
- */
-static int unloaded_handle_err_check(nodeupdown_t handle);
-
-/* common error checks for loaded nodeupdown data 
- * Returns -1 on error, 0 on success
- */
-static int loaded_handle_err_check(nodeupdown_t handle);
-
 /* initialize nodeupdown handle 
  */
 static void initialize_handle(nodeupdown_t handle);
@@ -160,11 +144,7 @@ static void xml_parse_start(void *data, const char *e1, const char **attr);
  */
 static void xml_parse_end(void *data, const char *e1);
 
-/* compare genders nodes to gmond nodes
- * - There is a chance gmond does not know of a node listed in genders, 
- *   because gmond never received a multicast message from that noe.
- * - Comparing gmond nodes to genders nodes can identify additional 
- *   down nodes
+/* compare genders nodes to gmond nodes to identify addition down nodes
  * Return -1 on error, 0 on success
  */
 static int compare_genders_to_gmond_nodes(nodeupdown_t handle);
@@ -193,38 +173,20 @@ static int get_nodes_list(nodeupdown_t handle,
  */
 static int is_node(nodeupdown_t handle, const char *node, int up_or_down);
 
-int handle_err_check(nodeupdown_t handle) {
-  if (handle == NULL || handle->magic != NODEUPDOWN_MAGIC_NUM)
-    return -1;
+/* common error checks for genders handle 
+ * Returns -1 on error, 0 on success
+ */
+static int handle_err_check(nodeupdown_t handle);
 
-  return 0;
-}
+/* common error checks for non-loaded nodeupdown data 
+ * Returns -1 on error, 0 on success
+ */
+static int unloaded_handle_err_check(nodeupdown_t handle);
 
-int unloaded_handle_err_check(nodeupdown_t handle) {
-
-  if (handle_err_check(handle) == -1)
-    return -1;
-
-  if (handle->loaded_flag == NODEUPDOWN_DATA_LOADED) {
-    handle->errnum = NODEUPDOWN_ERR_ISLOADED;
-    return -1;
-  }
-
-  return 0;
-}
-
-int loaded_handle_err_check(nodeupdown_t handle) {
-
-  if (handle_err_check(handle) == -1)
-    return -1;
-
-  if (handle->loaded_flag == NODEUPDOWN_DATA_NOT_LOADED) {
-    handle->errnum = NODEUPDOWN_ERR_NOTLOADED;
-    return -1;
-  }
-
-  return 0;
-}
+/* common error checks for loaded nodeupdown data 
+ * Returns -1 on error, 0 on success
+ */
+static int loaded_handle_err_check(nodeupdown_t handle);
 
 nodeupdown_t nodeupdown_handle_create() {
   nodeupdown_t handle;
@@ -389,7 +351,7 @@ int get_genders_data(nodeupdown_t handle, const char *filename) {
 
 int get_gmond_data(nodeupdown_t handle, 
                    const char *gmond_ip, 
-                   int gmond_port,
+                   int gmond_port, 
                    int timeout_len) {
   XML_Parser xml_parser = NULL;
   int sockfd = -1;
@@ -699,17 +661,13 @@ void nodeupdown_perror(nodeupdown_t handle, const char *msg) {
 int nodeupdown_get_up_nodes_string(nodeupdown_t handle, 
                                    char *buf, 
                                    int buflen) {
-  int up_or_down = NODEUPDOWN_UP_NODES;
-
-  return get_nodes_string(handle, buf, buflen, up_or_down);
+  return get_nodes_string(handle, buf, buflen, NODEUPDOWN_UP_NODES);
 }
 
 int nodeupdown_get_down_nodes_string(nodeupdown_t handle, 
                                      char *buf, 
                                      int buflen) {
-  int up_or_down = NODEUPDOWN_DOWN_NODES;
-
-  return get_nodes_string(handle, buf, buflen, up_or_down);
+  return get_nodes_string(handle, buf, buflen, NODEUPDOWN_DOWN_NODES);
 }
 
 int get_nodes_string(nodeupdown_t handle, 
@@ -840,6 +798,7 @@ int is_node(nodeupdown_t handle, const char *node, int up_or_down) {
     goto cleanup;
   }
 
+  /* get genders nodename */
   memset(buf, '\0', buflen + 1);
   if (genders_to_gendname(handle->genders_handle, node, buf, buflen+1) == -1) {
     handle->errnum = NODEUPDOWN_ERR_GENDERS;
@@ -953,5 +912,38 @@ int nodeupdown_nodelist_destroy(nodeupdown_t handle, char **list) {
   free(list);
 
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
+  return 0;
+}
+
+int handle_err_check(nodeupdown_t handle) {
+  if (handle == NULL || handle->magic != NODEUPDOWN_MAGIC_NUM)
+    return -1;
+
+  return 0;
+}
+
+int unloaded_handle_err_check(nodeupdown_t handle) {
+
+  if (handle_err_check(handle) == -1)
+    return -1;
+
+  if (handle->loaded_flag == NODEUPDOWN_DATA_LOADED) {
+    handle->errnum = NODEUPDOWN_ERR_ISLOADED;
+    return -1;
+  }
+
+  return 0;
+}
+
+int loaded_handle_err_check(nodeupdown_t handle) {
+
+  if (handle_err_check(handle) == -1)
+    return -1;
+
+  if (handle->loaded_flag == NODEUPDOWN_DATA_NOT_LOADED) {
+    handle->errnum = NODEUPDOWN_ERR_NOTLOADED;
+    return -1;
+  }
+
   return 0;
 }
