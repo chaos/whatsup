@@ -2,8 +2,9 @@
            - moved unnecessary #defines and #includes from nodeupdown.h
 	     to nodeupdown.c
 	   - updated library to use new genders_testnode() function
+	     from genders-1-1-3
 	   - added corner case check for NODEUPDOWN_ERR_NULLPTR 
-	     possibility, and appropriate error handling for it.
+	     possibility, and added appropriate error handling for it.
 	   - renamed nodeupdown_get_hostlist_alternate_names() and
 	             nodeupdown_get_list_alternate_names() into
 	             nodeupdown_convert_hostlist_to_altnames() and
@@ -29,6 +30,8 @@
 	     - int nodeupdown_get_down_nodes_hostlist_altnames();
 	   - updated whatsup command for new API
 	   - added -V (version) option to whatsup
+	   - added -g (genders attribute) option to whatsup
+	   - added error checks for non short hostnames in whatsup
 	   - updated manpages appropriately
 	   - tagged whatsup-1-0-3 
 

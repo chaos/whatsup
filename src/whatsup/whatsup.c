@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.10 2003-03-13 21:09:58 achu Exp $
+ * $Id: whatsup.c,v 1.11 2003-03-13 22:31:54 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -80,6 +80,7 @@ char *debug_buffer_ptr;
  * list_type - how nodes should be outputted (hostlist/comma/newline/space)
  * list_altnames - indicates if alternate names should be listed instead
  * nodes - stores the nodes (if any) were input in the command line
+ * genders_attribute - gender's attribute
  */
 struct arginfo {
   char *genders_filename; 
@@ -90,6 +91,7 @@ struct arginfo {
   enum whatsup_list_type list_type;    
   int list_altnames;
   hostlist_t nodes;
+  char *genders_attribute;
 };
 
 /********************************
@@ -123,20 +125,21 @@ int handle_up_or_down_nodes(struct arginfo *,
  */
 static void usage(void) {
   fprintf(stderr, "Usage: whatsup [OPTIONS]... [NODES]...\n");
-  fprintf(stderr,"  -h         --help             Print help and exit\n");
-  fprintf(stderr,"  -V         --version          Print version and exit\n");
-  fprintf(stderr,"  -f STRING  --filename=STRING  Location of genders file (default=%s)\n", DEFAULT_GENDERS_FILE);
-  fprintf(stderr,"  -o STRING  --hostname=STRING  gmond server hostname (default=localhost)\n");
-  fprintf(stderr,"  -i STRING  --ip=STRING        gmond server IP address (default=127.0.0.1)\n");
-  fprintf(stderr,"  -p INT     --port=INT         gmond server port (default=%d)\n",GANGLIA_DEFAULT_XML_PORT);
-  fprintf(stderr,"  -b         --updown           List both up and down nodes (default)\n");
-  fprintf(stderr,"  -u         --up               List only up nodes\n");
-  fprintf(stderr,"  -d         --down             List only down nodes\n");
-  fprintf(stderr,"  -l         --hostlist         List nodes in hostlist format (default)\n");
-  fprintf(stderr,"  -c         --comma            List nodes in comma separated list\n");
-  fprintf(stderr,"  -n         --newline          List nodes in newline separated list\n");
-  fprintf(stderr,"  -s         --space            List nodes in space separated list\n");
-  fprintf(stderr,"  -a         --altnames         List nodes by alternate names (default=off)\n");
+  fprintf(stderr,"  -h         --help              Print help and exit\n");
+  fprintf(stderr,"  -V         --version           Print version and exit\n");
+  fprintf(stderr,"  -f STRING  --filename=STRING   Location of genders file (default=%s)\n", DEFAULT_GENDERS_FILE);
+  fprintf(stderr,"  -o STRING  --hostname=STRING   gmond server hostname (default=localhost)\n");
+  fprintf(stderr,"  -i STRING  --ip=STRING         gmond server IP address (default=127.0.0.1)\n");
+  fprintf(stderr,"  -p INT     --port=INT          gmond server port (default=%d)\n",GANGLIA_DEFAULT_XML_PORT);
+  fprintf(stderr,"  -b         --updown            List both up and down nodes (default)\n");
+  fprintf(stderr,"  -u         --up                List only up nodes\n");
+  fprintf(stderr,"  -d         --down              List only down nodes\n");
+  fprintf(stderr,"  -l         --hostlist          List nodes in hostlist format (default)\n");
+  fprintf(stderr,"  -c         --comma             List nodes in comma separated list\n");
+  fprintf(stderr,"  -n         --newline           List nodes in newline separated list\n");
+  fprintf(stderr,"  -s         --space             List nodes in space separated list\n");
+  fprintf(stderr,"  -a         --altnames          List nodes by alternate names (default=off)\n");
+  fprintf(stderr,"  -g STRING  --attribute=STRING  List only nodes with the specified genders attribute\n"); 
   fprintf(stderr,"\n");
   exit(1);
 }
@@ -182,6 +185,7 @@ static int initialize_struct_arginfo(struct arginfo *arginfo) {
   arginfo->list_type = WHATSUP_HOSTLIST;
   arginfo->list_altnames = WHATSUP_OFF;
   arginfo->nodes = NULL;
+  arginfo->genders_attribute = NULL;
   return 0;
 }
 
@@ -201,6 +205,9 @@ static void cleanup_struct_arginfo(struct arginfo *arginfo) {
   if (arginfo->nodes != NULL) {
     hostlist_destroy(arginfo->nodes);
   }
+  if (arginfo->genders_attribute != NULL) {
+    free(arginfo->genders_attribute);
+  }
   free(arginfo);
 }
 
@@ -211,29 +218,32 @@ static void cleanup_struct_arginfo(struct arginfo *arginfo) {
 static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
   int hopt = 0, Vopt = 0, fopt = 0, oopt = 0, iopt = 0, popt = 0, bopt = 0;
   int uopt = 0, dopt = 0, lopt = 0, copt = 0, nopt = 0, sopt = 0, aopt = 0;
+  int gopt = 0;
   int c, index, i, ret;
 
   char *filename = DEFAULT_GENDERS_FILE;
   char *hostname = "localhost";
   char *ip = "127.0.0.1";
+  char *attribute = NULL;
   int port = GANGLIA_DEFAULT_XML_PORT;
 
-  char *options = "hf:o:i:p:budlcnsaV";
+  char *options = "hVf:o:i:p:budlcnsag:";
   struct option long_options[] = {
-    {"help",     0, NULL, 'h'},
-    {"version",  0, NULL, 'V'},
-    {"filename", 1, NULL, 'f'},
-    {"hostname", 1, NULL, 'o'},
-    {"ip",       1, NULL, 'i'},
-    {"port",     1, NULL, 'p'},
-    {"updown",   0, NULL, 'b'},
-    {"up",       0, NULL, 'u'},
-    {"down",     0, NULL, 'd'},
-    {"altnames", 0, NULL, 'a'},
-    {"hostlist", 0, NULL, 'l'},
-    {"comma",    0, NULL, 'c'},
-    {"newline",  0, NULL, 'n'},
-    {"space",    0, NULL, 's'},
+    {"help",      0, NULL, 'h'},
+    {"version",   0, NULL, 'V'},
+    {"filename",  1, NULL, 'f'},
+    {"hostname",  1, NULL, 'o'},
+    {"ip",        1, NULL, 'i'},
+    {"port",      1, NULL, 'p'},
+    {"updown",    0, NULL, 'b'},
+    {"up",        0, NULL, 'u'},
+    {"down",      0, NULL, 'd'},
+    {"altnames",  0, NULL, 'a'},
+    {"hostlist",  0, NULL, 'l'},
+    {"comma",     0, NULL, 'c'},
+    {"newline",   0, NULL, 'n'},
+    {"space",     0, NULL, 's'},
+    {"attribute", 1, NULL, 'g'},
     {0, 0, 0, 0}
   };
 
@@ -244,6 +254,9 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
     switch(c) {
     case 'h':
       hopt++;
+      break;
+    case 'V':
+      Vopt++;
       break;
     case 'f':
       fopt++;
@@ -285,8 +298,9 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
     case 'a':
       aopt++;
       break;
-    case 'V':
-      Vopt++;
+    case 'g':
+      gopt++;
+      attribute = optarg;
       break;
     case '?':
       err_usage("invalid command line option entered");
@@ -436,6 +450,16 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
   }
   else if (aopt == 1) {
     arginfo->list_altnames = WHATSUP_ON;
+  }
+
+  if (gopt > 1) {
+    err_usage("you can only specify --attribute ('-g') once");
+  }
+  else if (gopt == 1) {
+    if ((arginfo->genders_attribute = strdup(attribute)) == NULL) {
+      output_error("out of memory", NULL);
+      return -1;
+    }
   }
 
   if ((arginfo->nodes = hostlist_create(NULL)) == NULL) {
@@ -804,10 +828,14 @@ int handle_up_or_down_nodes(struct arginfo *arginfo,
 			    nodeupdown_t handle, 
 			    hostlist_t *nodes) {
 
+  genders_t genders_handle = NULL;
   hostlist_t alternate_nodes = NULL; 
+  hostlist_iterator_t iter = NULL;
+  char *nodename = NULL;
   char *src = NULL;
   char *dest = NULL;
   int dest_len = 0;
+  int retval; 
 
   if (hostlist_count(arginfo->nodes) > 0) {
     if (check_if_nodes_are_up_or_down(arginfo, 
@@ -827,6 +855,61 @@ int handle_up_or_down_nodes(struct arginfo *arginfo,
     }
   }
   
+  /* output nodes based on a genders attribute?? */
+  if (arginfo->genders_attribute != NULL) {
+    if ((genders_handle = genders_handle_create()) == NULL) {
+      output_error("genders_handle_create() error", NULL);
+      goto cleanup;
+    }
+
+    if (genders_open(genders_handle, arginfo->genders_filename) == -1) {
+      output_error("genders_open() error", 
+		   genders_strerror(genders_errnum(genders_handle)));
+      goto cleanup;
+    }
+
+    if ((iter = hostlist_iterator_create(*nodes)) == NULL) {
+      output_error("hostlist_iterator_create() error", NULL);
+      goto cleanup;
+    }
+
+    while ((nodename = hostlist_next(iter)) != NULL) {
+      if ((retval = genders_testattr(genders_handle, nodename, 
+				     arginfo->genders_attribute, NULL)) == -1) {
+	output_error("genders_testattr() error", 
+		     genders_strerror(genders_errnum(genders_handle)));
+	goto cleanup;
+      }
+
+      if (retval == 0) {
+	if (hostlist_remove(iter) == 0) {
+	  output_error("hostlist_remove() error", NULL);
+	  goto cleanup;
+	}
+      }
+
+      free(nodename);
+    }
+    nodename = NULL;
+
+    if (genders_close(genders_handle) == -1) {
+      output_error("genders_close() error", 
+		   genders_strerror(genders_errnum(genders_handle)));
+      goto cleanup;
+    }
+
+    if (genders_handle_destroy(genders_handle) == -1) {
+      output_error("genders_handle_destroy() error", 
+		   genders_strerror(genders_errnum(genders_handle)));
+      goto cleanup;
+    }
+    genders_handle = NULL;
+
+    hostlist_iterator_destroy(iter);
+    iter = NULL;
+  }
+
+  /* get alternate names?? */
   if (arginfo->list_altnames == WHATSUP_ON) {
     
     if ((src = get_hostlist_ranged_string(*nodes)) == NULL) {
@@ -860,6 +943,8 @@ int handle_up_or_down_nodes(struct arginfo *arginfo,
     alternate_nodes = NULL;
     free(src);
     free(dest);
+    src = NULL;
+    dest = NULL;
   }    
 
   return 0;
@@ -872,8 +957,17 @@ int handle_up_or_down_nodes(struct arginfo *arginfo,
   if (dest != NULL) {
     free(dest);
   }
+  if (nodename != NULL) {
+    free(nodename);
+  }
   if (alternate_nodes != NULL) {
     hostlist_destroy(alternate_nodes);
+  }
+  if (iter != NULL) {
+    hostlist_iterator_destroy(iter);
+  }
+  if (genders_handle != NULL) {
+    (void)genders_handle_destroy(genders_handle);
   }
   return -1;
 }
@@ -930,6 +1024,7 @@ int main(int argc, char **argv) {
       goto cleanup;
     }
   }
+
   if (arginfo->output_type == WHATSUP_DOWN ||
       arginfo->output_type == WHATSUP_UP_AND_DOWN) {
     if ((down_nodes = hostlist_create(NULL)) == NULL) {
