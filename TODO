@@ -1,15 +1,15 @@
-- Fix up spec file to take parameters for proper masterlist type
-- Use libtool to allow pluggable loadable modules for masterlist mechanisms??
-- Make Perl MakeMaker actually be good
 - Screw ganglia, write a updownd daemon.
 - Make distcheck work.
 - repackage for multilib
 
 for rework
-- fix code style to GNU
-- filename options in whatsup?
 - error checking in clusterlist modules
-- #if stuff all over
 - nodename vs. hostname
-- #include order consistency
-- allow re-load
+- allow re-load?
+- static modules
+- doc updates
+  - manpages and readmes
+- whatsup modules
+- spec file work around
+  - llnl specific - 1 rpm
+  - outside llnl - multiple rpms
