@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.12 2004-01-13 19:47:50 achu Exp $
+ *  $Id: conffile.c,v 1.13 2004-01-15 16:51:31 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -310,6 +310,12 @@ _readline(conffile_t cf, char *linebuf, int linebuflen)
              */
             cf->end_of_file++; 
             break;
+        }
+
+        /* MAX_LINELEN - 1 b/c fd_read_line guarantees null termination */
+        if (ret >= (CONFFILE_MAX_LINELEN-1)) {
+            cf->errnum = CONFFILE_ERR_PARSE_OVERFLOW_LINELEN;
+            return -1;
         }
 
         if ((ret + len) >= linebuflen) {
