@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.13 2003-03-18 18:37:19 achu Exp $
+ * $Id: whatsup.c,v 1.14 2003-03-25 00:47:16 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -674,6 +674,7 @@ int check_if_nodes_are_up_or_down(struct arginfo *arginfo,
 
     if (ret == 1) {
       if (hostlist_push_host(nodes, str) == 0) {
+	free(str);
 	hostlist_iterator_destroy(iter);
 	output_error("hostlist_push_host() error", NULL);
 	return -1;
@@ -686,6 +687,7 @@ int check_if_nodes_are_up_or_down(struct arginfo *arginfo,
       return -1;
     }
 			
+    free(str);
   }
   hostlist_iterator_destroy(iter);
 
