@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.90 2003-12-09 18:38:19 achu Exp $
+ * $Id: nodeupdown.c,v 1.91 2003-12-09 18:46:56 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -169,15 +169,15 @@ static const char *_cb_gmond_hostnames(command_t *cmd, context_t *ctx) {
   int i;
   
   if (cmd->arg_count > NODEUPDOWN_CONF_GMOND_HOSTNAME_MAX)
-    cmd->arg_count = NODEUPDOWN_CONF_GMOND_HOSTNAME_MAX;
+    return (char *)"";		/* non-null string is error */
 
   for (i = 0; i < cmd->arg_count; i++) {
     if (strlen(cmd->data.list[i]) > MAXHOSTNAMELEN) /* bad config value */
       continue;
     if ((str = strdup(cmd->data.list[i])) == NULL)
-      return (char *)(-1);		/* dotconf uses non-null as error */
+      return (char *)"";		/* non-null string is error */
     if (list_append(cd->gmond_hostnames, str) == NULL)
-      return (char *)(-1);		/* dotconf uses non-null as error */
+      return (char *)"";		/* non-null string is error */
   }
 
   cd->gmond_hostnames_found++;

@@ -9,6 +9,9 @@
 	* src/libnodeupdown/nodeupdown.c (_read_conffile): Added support
 	of new errors count variable and error out if any errors occurred
 	during file parsing.
+
+	* src/libnodeupdown/nodeupdown.c (_cb_gmond_hostnames): Error if
+	too many hostnames.  Return (char *)"" instead of (char *)(-1);
 	
 2003-12-08  Albert Chu  <chu11@llnl.gov>
 
