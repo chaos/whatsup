@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown.h,v 1.14 2003-03-25 01:00:02 achu Exp $
+ *  $Id: nodeupdown.h,v 1.15 2003-03-25 01:02:16 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h,v $
  *    
  */
@@ -193,14 +193,14 @@ int nodeupdown_get_down_nodes_hostlist_altnames(nodeupdown_t handle,
 
 /* nodeupdown_is_node_up
  * - check if a node is up
- * - node must be shortened hostname of hostname
+ * - node must be shortened name of hostname
  * - returns 1 if up, 0 if down, -1 on error
  */
 int nodeupdown_is_node_up(nodeupdown_t handle, char *node);
 
 /* nodeupdown_is_node_down
  * - check if a node is down
- * - node must be shortened hostname of hostname
+ * - node must be shortened name of hostname
  * - returns 1 if down, 0 if up, -1 on error
  */
 int nodeupdown_is_node_down(nodeupdown_t handle, char *node);
