@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.99 2004-01-12 23:54:48 achu Exp $
+ *  $Id: nodeupdown.c,v 1.100 2004-01-13 22:25:26 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -393,13 +393,13 @@ static void _xml_parse_start(void *data, const char *e1, const char **attr) {
     if ((ptr = strchr(shorthostname, '.')) != NULL)
       *ptr = '\0';
 
+    if (nodeupdown_masterlist_is_node_legit(handle, shorthostname) <= 0)
+      return;
+
     if (nodeupdown_masterlist_get_nodename(handle, shorthostname, 
                                            buffer, MAXHOSTNAMELEN+1) == -1)
       return;
       
-    if (nodeupdown_masterlist_is_node_legit(handle, buffer) <= 0)
-      return;
-
     /* store as up or down */
     reported = atol(attr[5]);
     if (abs(localtime - reported) < timeout_len)
@@ -725,17 +725,17 @@ static int _is_node(nodeupdown_t handle, const char *node, int up_or_down) {
     return -1;
   }
 
-  if (nodeupdown_masterlist_get_nodename(handle, node, 
-                                         buffer, MAXHOSTNAMELEN+1) == -1)
-    return -1;
-
-  if ((ret = nodeupdown_masterlist_is_node_in_cluster(handle, buffer)) == -1)
+  if ((ret = nodeupdown_masterlist_is_node_in_cluster(handle, node)) == -1)
     return -1;
 
   if (ret == 0) {
     handle->errnum = NODEUPDOWN_ERR_NOTFOUND;
     return -1;
   }
+
+  if (nodeupdown_masterlist_get_nodename(handle, node, 
+                                         buffer, MAXHOSTNAMELEN+1) == -1)
+    return -1;
 
   if (up_or_down == NODEUPDOWN_UP_NODES)
     ret = hostlist_find(handle->up_nodes, buffer);

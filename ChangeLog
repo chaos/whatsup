@@ -14,6 +14,9 @@
 
 	* man/nodeupdown.conf.5.in: Cleaned up.
 
+	* src/libnodeupdown/nodeupdown.c (_is_node, _xml_parse_start):
+	Fixed function call ordering bug.
+
 2003-01-09  Albert Chu  <chu11@llnl.gov>
 
 	* src/libcommon/conffile.h, src/libcommon/conffile.c: New files
