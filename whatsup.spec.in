@@ -1,16 +1,11 @@
-# $Id: whatsup.spec.in,v 1.19 2004-04-30 20:47:51 achu Exp $
-
-Name:           @PROJECT@
-Version:        @VERSION@
-Release:        @RELEASE@
-
-Summary:        whatsup
-Group:          Applications/Communications
-License:        GPL
-
-BuildRoot:      %{_tmppath}/%{name}-%{version}
-
-Source0:        %{name}-%{version}.tgz
+Name:    @PROJECT@
+Version: @VERSION@
+Release: @RELEASE@
+Summary: whatsup cluster utility
+Copyright: none
+Group: Applications/Communications
+Source: %{name}-%{version}-%{release}.tgz
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}
 
 # By default, we'll compile with gendersllnl if nothing else is specified
 # Most of you don't have this library, pick something at the command line :-)
@@ -32,10 +27,9 @@ The nodeupdown library is a C library that allows users to
 programmatically determine if a node is up or down.
 
 %prep
-%setup
+%setup -q -n %{name}-%{version}-%{release}
 
 %build
-./bootstrap
 %configure --program-prefix=%{?_program_prefix:%{_program_prefix}} \
         --with-perl-install-prefix="$RPM_BUILD_ROOT/usr" \
         %{?_with_nomasterlist} \
@@ -59,4 +53,4 @@ rm -rf "$RPM_BUILD_ROOT"
 %defattr(-,root,root,0755)
 %doc AUTHORS COPYING ChangeLog DISCLAIMER INSTALL NEWS README README.expat 
 %doc README.hostsfile_install README.genders_install README.troubleshooting
-/usr
+/
