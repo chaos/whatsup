@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.36 2003-05-16 17:15:41 achu Exp $
+ * $Id: whatsup.c,v 1.37 2003-05-16 17:18:00 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -189,14 +189,11 @@ static int initialize_struct_arginfo(struct arginfo *arginfo) {
  * - free memory allocated in a struct arginfo structure
  */
 static void cleanup_struct_arginfo(struct arginfo *arginfo) {
-  if (arginfo->genders_filename != NULL)
-    free(arginfo->genders_filename);
-
-  if (arginfo->gmond_ip != NULL)
-    free(arginfo->gmond_ip);
-
-  if (arginfo->nodes != NULL)
-    hostlist_destroy(arginfo->nodes);
+  
+  free(arginfo->genders_filename);
+  free(arginfo->gmond_ip);
+  
+  hostlist_destroy(arginfo->nodes);
 
   free(arginfo);
 }
