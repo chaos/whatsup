@@ -1,4 +1,4 @@
-# $Id: whatsup.spec.in,v 1.6 2003-11-14 00:40:59 achu Exp $
+# $Id: whatsup.spec.in,v 1.7 2003-11-14 01:13:12 achu Exp $
 
 Name:           @PROJECT@
 Version:        @VERSION@
@@ -15,8 +15,12 @@ Source0:        %{name}-%{version}.tgz
 Requires:       ganglia-monitor-core
 Requires:       ganglia-monitor-core-lib 
 
-%{?_with_genders: Requires: genders >= 1.2}
-%{?_with_gendersllnl: Requires: gendersllnl}
+%if %{?_with_genders: 1}
+Requires:       genders >= 1.2
+%endif
+%if %{?_with_gendersllnl: 1}
+Requires: gendersllnl
+%endif
 
 %description
 whatsup is a tool that lists which nodes are currently up or down in a
