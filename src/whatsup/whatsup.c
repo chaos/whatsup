@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.59 2003-09-24 22:04:03 achu Exp $
+ * $Id: whatsup.c,v 1.60 2003-09-24 22:13:26 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -471,8 +471,6 @@ int get_nodes(struct arginfo *arginfo,
       goto cleanup;
   }
 
-  *nodes = str;
-  
   /* can't use nodeupdown_up/down_count, b/c we may be counting the
    * nodes specified by the user 
    */
@@ -480,7 +478,9 @@ int get_nodes(struct arginfo *arginfo,
     err_msg("hostlist_create() error", NULL);
     goto cleanup;
   }
+
   *count = hostlist_count(hl);
+  *nodes = str;
 
   hostlist_destroy(hl);
   return 0;
