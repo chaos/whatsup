@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.39 2003-05-08 00:05:16 achu Exp $
+ * $Id: nodeupdown.c,v 1.40 2003-05-08 16:03:39 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -536,8 +536,7 @@ int nodeupdown_retrieve_gmond_data(nodeupdown_t handle,
 
  cleanup:
 
-  if (sockfd != -1)
-    close(sockfd);
+  close(sockfd);
 
   if (xml_parser != NULL)
     XML_ParserFree(xml_parser);
@@ -651,8 +650,8 @@ int low_timeout_connect(nodeupdown_t handle, const char *ip, int port) {
   return sockfd;
 
  cleanup:
-  if (sockfd != -1)
-    close(sockfd);
+
+  close(sockfd);
   
   return -1;
 }
@@ -777,8 +776,7 @@ int get_genders_nodename(nodeupdown_t handle,
 
  cleanup:
 
-  if (buf != NULL)
-    free(buf);
+  free(buf);
 
   return -1;
 }
@@ -858,11 +856,10 @@ int nodeupdown_compare_genders_to_gmond_nodes(nodeupdown_t handle) {
   return 0;
 
  cleanup: 
-  if (genders_nodes != NULL)
-    (void)genders_nodelist_destroy(handle->genders_handle, genders_nodes);
+  
+  (void)genders_nodelist_destroy(handle->genders_handle, genders_nodes);
 
-  if (altname != NULL)
-    free(altname);
+  free(altname);
 
   return -1;
 }
@@ -1149,8 +1146,7 @@ int nodeupdown_check_if_node_in_hostlist(nodeupdown_t handle,
 
  cleanup:
 
-  if (buffer != NULL)
-    free(buffer);
+  free(buffer);
   
   return -1;
 }
