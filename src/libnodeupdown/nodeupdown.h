@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown.h,v 1.12 2003-03-18 18:21:32 achu Exp $
+ *  $Id: nodeupdown.h,v 1.13 2003-03-19 20:41:46 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h,v $
  *    
  */
@@ -22,7 +22,7 @@
 #define NODEUPDOWN_ERR_NETWORK            6 /* network error */
 #define NODEUPDOWN_ERR_ISLOADED           7 /* data already loaded */
 #define NODEUPDOWN_ERR_LOAD               8 /* data not loaded */
-#define NODEUPDOWN_ERR_OVERFLOW           9 /* overflow on list passed in */
+#define NODEUPDOWN_ERR_OVERFLOW           9 /* overflow on list/string passed in */
 #define NODEUPDOWN_ERR_PARAMETERS        10 /* incorrect parameters passed in */
 #define NODEUPDOWN_ERR_NULLPTR           11 /* null pointer in list */
 #define NODEUPDOWN_ERR_OUTMEM            12 /* out of memory */
