@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.7 2004-01-12 22:39:27 achu Exp $
+ *  $Id: conffile.c,v 1.8 2004-01-12 23:17:06 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -715,7 +715,7 @@ CONFFILE_OPTION_FUNC(conffile_bool)
     return 0;
 }
 
-CONFFILE_OPTION_FUNC(conffile_intval)
+CONFFILE_OPTION_FUNC(conffile_int)
 {
     if (option_ptr == NULL) {
         conffile_seterrnum(cf, CONFFILE_ERR_PARAMETERS);
@@ -726,7 +726,7 @@ CONFFILE_OPTION_FUNC(conffile_intval)
     return 0;
 }
 
-CONFFILE_OPTION_FUNC(conffile_doubleval)
+CONFFILE_OPTION_FUNC(conffile_double)
 {
     if (option_ptr == NULL) {
         conffile_seterrnum(cf, CONFFILE_ERR_PARAMETERS);

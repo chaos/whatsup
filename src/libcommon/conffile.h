@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.h,v 1.5 2004-01-12 22:39:27 achu Exp $
+ *  $Id: conffile.h,v 1.6 2004-01-12 23:17:06 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -386,7 +386,7 @@ CONFFILE_OPTION_FUNC(conffile_empty);
  */
 CONFFILE_OPTION_FUNC(conffile_bool);
 
-/* conffile_intval
+/* conffile_int
  *
  * Generic callback function for ints.  Assumes option_ptr is a
  * pointer to an integer, stores the argument, and returns 0.  If
@@ -394,7 +394,7 @@ CONFFILE_OPTION_FUNC(conffile_bool);
  */
 CONFFILE_OPTION_FUNC(conffile_int);
 
-/* conffile_doubleval
+/* conffile_double
  *
  * Generic callback function for doubles.  Assumes option_ptr is a
  * pointer to a double, stores the argument, and returns 0.  If
