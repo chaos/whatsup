@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.60 2003-06-28 16:18:50 achu Exp $
+ * $Id: nodeupdown.c,v 1.61 2003-06-30 16:05:56 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -104,10 +104,10 @@ static int  _loaded_handle_error_check(nodeupdown_t);
 static void _initialize_handle(nodeupdown_t handle);
 static void _free_handle_data(nodeupdown_t handle);
 static int  _get_genders_data(nodeupdown_t, const char *);
-static int  _get_gmond_data(nodeupdown_t, const char *, int, int);
 static int  _low_timeout_connect(nodeupdown_, const char *, int);
 static void _xml_parse_start(void *, const char *, const char **);
 static void _xml_parse_end(void *, const char *);
+static int  _get_gmond_data(nodeupdown_t, const char *, int, int);
 static int  _compare_genders_to_gmond_nodes(nodeupdown_t);
 static int  _get_nodes_string(nodeupdown_t, char *, int, int);
 static int  _get_nodes_list(nodeupdown_t, char **, int, int);
@@ -366,53 +366,6 @@ void _xml_parse_end(void *data, const char *e1) {
   /* do nothing for the time being */
 }
 
-/* compare genders nodes to gmond nodes to identify additional
- * nodes that are down. 
- * Return -1 on error, 0 on success
- */
-int _compare_genders_to_gmond_nodes(nodeupdown_t handle) {
-  int i, ret, num;
-  char **nlist = NULL;
-  genders_t genders_handle = handle->genders_handle;
-
-  /* get all genders nodes */
-  if ((num = genders_nodelist_create(genders_handle, &nlist)) == -1) {
-    handle->errnum = NODEUPDOWN_ERR_GENDERS;
-    goto cleanup;
-  }
-  
-  if ((ret = genders_getnodes(genders_handle, nlist, num, NULL, NULL)) == -1) {
-    handle->errnum = NODEUPDOWN_ERR_GENDERS;
-    goto cleanup;
-  }
-  
-  for (i = 0; i < num; i++) {
-    /* check if gmond knows of this genders node */
-    if ((hostlist_find(handle->up_nodes, nlist[i]) == -1) &&
-        (hostlist_find(handle->down_nodes, nlist[i]) == -1)) {
-
-      /* gmond doesn't know this genders node, it must also be down */
-      if (hostlist_push_host(handle->down_nodes, nlist[i]) == 0) {
-        handle->errnum = NODEUPDOWN_ERR_HOSTLIST;
-        goto cleanup;
-      }
-    }
-  }
-
-  if (genders_nodelist_destroy(handle->genders_handle, nlist) == -1) {
-    handle->errnum = NODEUPDOWN_ERR_GENDERS;
-    goto cleanup;
-  }
-
-  hostlist_sort(handle->down_nodes);
-  return 0;
-
- cleanup: 
-  
-  (void)genders_nodelist_destroy(handle->genders_handle, nlist);
-  return -1;
-}
-
 int _get_gmond_data(nodeupdown_t handle, 
                    const char *gmond_ip, 
                    int gmond_port, 
@@ -430,13 +383,6 @@ int _get_gmond_data(nodeupdown_t handle,
   pv.handle = handle;
   pv.timeout_len = timeout_len;
 
-  if (gettimeofday(&tv, NULL) == -1) {
-    handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-    goto cleanup;
-  } 
-
-  pv.localtime = tv.tv_sec;
-
   /* create buffer here instead of in _xml_parse_start, so we don't
    * have to continually re-malloc buffer space
    */
@@ -450,6 +396,13 @@ int _get_gmond_data(nodeupdown_t handle,
     handle->errnum = NODEUPDOWN_ERR_OUTMEM;
     goto cleanup;
   }
+
+  /* Call gettimeofday at the latest point right before XML stuff. */
+  if (gettimeofday(&tv, NULL) == -1) {
+    handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+    goto cleanup;
+  } 
+  pv.localtime = tv.tv_sec;
 
   xml_parser = XML_ParserCreate(NULL);
 
@@ -494,6 +447,53 @@ int _get_gmond_data(nodeupdown_t handle,
 
   free(pv.buf);
 
+  return -1;
+}
+
+/* compare genders nodes to gmond nodes to identify additional
+ * nodes that are down. 
+ * Return -1 on error, 0 on success
+ */
+int _compare_genders_to_gmond_nodes(nodeupdown_t handle) {
+  int i, ret, num;
+  char **nlist = NULL;
+  genders_t genders_handle = handle->genders_handle;
+
+  /* get all genders nodes */
+  if ((num = genders_nodelist_create(genders_handle, &nlist)) == -1) {
+    handle->errnum = NODEUPDOWN_ERR_GENDERS;
+    goto cleanup;
+  }
+  
+  if ((ret = genders_getnodes(genders_handle, nlist, num, NULL, NULL)) == -1) {
+    handle->errnum = NODEUPDOWN_ERR_GENDERS;
+    goto cleanup;
+  }
+  
+  for (i = 0; i < num; i++) {
+    /* check if gmond knows of this genders node */
+    if ((hostlist_find(handle->up_nodes, nlist[i]) == -1) &&
+        (hostlist_find(handle->down_nodes, nlist[i]) == -1)) {
+
+      /* gmond doesn't know this genders node, it must also be down */
+      if (hostlist_push_host(handle->down_nodes, nlist[i]) == 0) {
+        handle->errnum = NODEUPDOWN_ERR_HOSTLIST;
+        goto cleanup;
+      }
+    }
+  }
+
+  if (genders_nodelist_destroy(handle->genders_handle, nlist) == -1) {
+    handle->errnum = NODEUPDOWN_ERR_GENDERS;
+    goto cleanup;
+  }
+
+  hostlist_sort(handle->down_nodes);
+  return 0;
+
+ cleanup: 
+  
+  (void)genders_nodelist_destroy(handle->genders_handle, nlist);
   return -1;
 }
 
