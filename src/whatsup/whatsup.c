@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.35 2003-05-16 17:04:36 achu Exp $
+ * $Id: whatsup.c,v 1.36 2003-05-16 17:15:41 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -41,10 +41,6 @@ extern int h_errno;
 
 #define RANGED_STRING        0
 #define DERANGED_STRING      1
-
-#ifndef GENDERS_ALTNAME_ATTRIBUTE
-#define GENDERS_ALTNAME_ATTRIBUTE        "altname"
-#endif
 
 #ifndef MAXHOSTNAMELEN
 #define MAXHOSTNAMELEN 64
