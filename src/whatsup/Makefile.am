@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.18 2005-04-02 08:17:02 achu Exp $
+## $Id: Makefile.am,v 1.19 2005-04-02 08:23:35 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -14,7 +14,7 @@ whatsup_SOURCES = whatsup.c
 
 whatsup_CFLAGS = -export-dynamic \
 		 -DWHATSUP_MODULE_BUILDDIR=\"$(whatsup_module_builddir)\" \
-		 -I ../libnodeupdown \
+		 -I $(srcdir)/../libnodeupdown \
 		 -I $(srcdir)/../libcommon
 
 whatsup_LDADD = ../libcommon/libcommon.la \
