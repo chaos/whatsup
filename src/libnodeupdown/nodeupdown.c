@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.7 2003-03-05 01:16:07 achu Exp $
+ * $Id: nodeupdown.c,v 1.8 2003-03-05 01:38:21 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -296,11 +296,6 @@ int nodeupdown_retrieve_gmond_data(nodeupdown_t handle) {
     handle->errnum = NODEUPDOWN_ERR_OUTMEM;
     return -1;
   }
-  handle->ganglia_cluster->source_list = NULL;
-  handle->ganglia_cluster->host_cache = NULL;
-  handle->ganglia_cluster->nodes = NULL;
-  handle->ganglia_cluster->dead_nodes = NULL;
-  handle->ganglia_cluster->llist = NULL;
   
   if (ganglia_cluster_init(handle->ganglia_cluster, 
 			   NODEUPDOWN_GANGLIA_NAME, 
