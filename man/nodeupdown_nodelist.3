@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_nodelist.3,v 1.1 2003-03-18 18:19:32 achu Exp $
+\."$Id: nodeupdown_nodelist.3,v 1.2 2003-04-24 15:46:31 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -55,7 +55,12 @@ Error codes are defined in nodeupdown.h.
 .br
 .SH ERRORS
 .TP
-.B NODEUPDOWN_ERR_LOAD
+.B NODEUPDOWN_ERR_NULLHANDLE
+The handle parameter is NULL.  The nodeupdown handle must be created
+with 
+.BR nodeupdown_create (3).
+.TP
+.B NODEUPDOWN_ERR_NOTLOADED
 .BR nodeupdown_load_data (3)
 has not been called and no data has been retrieved from genders and ganglia.
 .TP
@@ -80,4 +85,4 @@ handle or \fIhandle\fR has been destroyed by
 .SH FILES
 /usr/include/nodeupdown.h
 .SH SEE ALSO
-libnodeupdown(3), noeupdown_load_data(3), nodeupdown_get_up_nodes_list (3), nodeupdown_get_down_nodes_list (3), nodeupdown_get_up_nodes_list_altnames (3), nodeupdown_get_down_nodes_list_altnames (3), nodeupdown_convert_list_to_altnames (3), nodeupdown_errnum(3), nodeupdown_strerror(3)
+libnodeupdown(3), nodeupdown_create(3), nodeupdown_load_data(3), nodeupdown_get_up_nodes_list (3), nodeupdown_get_down_nodes_list (3), nodeupdown_get_up_nodes_list_altnames (3), nodeupdown_get_down_nodes_list_altnames (3), nodeupdown_convert_list_to_altnames (3), nodeupdown_errnum(3), nodeupdown_strerror(3)
