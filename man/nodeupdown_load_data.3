@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_load_data.3,v 1.12 2003-05-09 17:36:41 achu Exp $
+\."$Id: nodeupdown_load_data.3,v 1.13 2003-05-21 20:15:43 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -62,9 +62,11 @@ Error connecting to gmond server specified by \fIgmond_hostname\fR,
 .B NODEUPDOWN_ERR_TIMEOUT
 Connection to gmond server timed out.
 .TP
+.B NODEUPDOWN_ERR_HOSTNAME
+Incorrect hostname specified by \fIgmond_hostname\fR.
+.TP
 .B NODEUPDOWN_ERR_ADDRESS
-Incorrect network address specified by \fIgmond_hostname\fR or
-\fIgmond_ip\fR.
+Incorrect network address specified by \fIgmond_ip\fR.
 .TP
 .B NODEUPDOWN_ERR_NETWORK
 Internal network failure.
