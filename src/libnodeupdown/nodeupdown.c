@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.24 2003-03-18 01:39:04 achu Exp $
+ * $Id: nodeupdown.c,v 1.25 2003-03-18 18:21:12 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -99,6 +99,7 @@ static char * errmsg[] = {
   "connection to server timeout",
   "improper address error",
   "network error",
+  "data already loaded",
   "data not loaded",
   "array or string not large enough to store result",
   "incorrect parameters passed in",
@@ -249,6 +250,11 @@ int nodeupdown_load_data(nodeupdown_t handle,
 
   if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
     handle->errnum = NODEUPDOWN_ERR_MAGIC;
+    return -1;
+  }
+
+  if (handle->genders_handle != NULL || handle->gmond_nodes != NULL) {
+    handle->errnum = NODEUPDOWN_ERR_ISLOADED;
     return -1;
   }
 
@@ -833,7 +839,8 @@ int nodeupdown_compare_genders_to_gmond_down_nodes(nodeupdown_t handle) {
       if (genders_testattr(handle->genders_handle,
 			   genders_nodes[i],
 			   GENDERS_ALTNAME_ATTRIBUTE,
-			   altname) == 1) {
+			   altname,
+			   MAXHOSTNAMELEN + 1) == 1) {
 
 	/* check if gmond knows of this alternate name.  if
 	 * it doesn't, it must be a down node.
@@ -2172,7 +2179,8 @@ int nodeupdown_convert_to_altnames(nodeupdown_t handle,
     ret = genders_testattr(handle->genders_handle, 
 			   nodename,
 			   GENDERS_ALTNAME_ATTRIBUTE,
-			   altname);
+			   altname,
+			   MAXHOSTNAMELEN + 1);
     if (ret == 1) {
       if (hostlist_push_host(dest, altname) == 0) {
 	handle->errnum = NODEUPDOWN_ERR_HOSTLIST;
