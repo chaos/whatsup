@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_load_data.3,v 1.7 2003-04-30 00:11:01 achu Exp $
+\."$Id: nodeupdown_load_data.3,v 1.8 2003-04-30 18:37:40 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -17,8 +17,8 @@ that the remaining nodeupdown library functions can properly return
 information about up and down nodes.  \fIhandle\fR is a nodeupdown
 handle created by
 .BR nodeupdown_handle_create (3).  
-\fIfilename\fR should indicate the genders filename to be loaded.  If
-\fIfilename\fR is NULL, the default genders file DEFAULT_GENDERS_FILE
+\fIgenders_filename\fR should indicate the genders file to be loaded.  If
+\fIgenders_filename\fR is NULL, the default genders file DEFAULT_GENDERS_FILE
 will be used.  \fIgmond_hostname\fR and \fIgmond_ip\fR should
 respectively indicate the location of a non-deaf gmond daemon server.
 If \fIgmond_hostname\fR and \fIgmond_ip\fR are NULL, nodeupdown
@@ -53,7 +53,7 @@ with
 .BR nodeupdown_handle_create (3).
 .TP
 .B NODEUPDOWN_ERR_OPEN
-The genders file pointed to by \fIfilename\fR cannot be opened.
+The genders file pointed to by \fIgenders_filename\fR cannot be opened.
 .TP
 .B NODEUPDOWN_ERR_CONNECT	
 Error connecting to gmond server specified by \fIgmond_hostname\fR, \fIgmond_ip\fR, and \fIgmond_port\fR.
