@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.h,v 1.6 2004-01-12 23:17:06 achu Exp $
+ *  $Id: conffile.h,v 1.7 2004-01-12 23:36:09 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -56,13 +56,7 @@
  * optionname2   arg1 # my comment \
  *               arg2
  *
- * In the first example, the '#' character must be escaped.  Because
- * it is not escaped, the second quotation mark is ignored, and thus
- * the parser will error out because it only found one quotation mark.
- * In the second example, the comment character causes the parser to
- * ignore the continuation character.  Thus, the parser will error out
- * because "arg2" is not a valid optionname.  The correct usage would
- * be as follows:
+ * The proper way to use the # and \ character are as follows.
  *
  * optionname1   "\#"
  * optionname2   arg1 \ # my comment
@@ -75,11 +69,7 @@
  * optioname     arg1 arg2 \\
  *               arg3 arg4
  * 
- * The last '\' character is assumed to be a continuation character,
- * and the next line is read assuming it is a continuation of the
- * previous line.  When the arguments are parsed, it is assumed a
- * stray '\' exists in the arguments.  To fix this, there must be
- * three '\' characters listed like the following:
+ * It is necessary to use an additional escape character, as follows
  *
  * optionname    arg1 arg2 \\\
  *               arg3 arg4
@@ -91,7 +81,7 @@
  * optionname    arg1 arg2\
  * arg3
  *
- * This example only has 2 arguments, "arg1" and "arg2arg3".  
+ * This example has 2 arguments, "arg1" and "arg2arg3".  
  *
  * When a parse error with quotes occurs, a PARSE_QUOTE error code is
  * returned.  When a parse error occurs with a '\' character, a
@@ -279,7 +269,7 @@ typedef int (*conffile_option_func)(conffile_t cf,
             int option_type, \
             struct conffile_data *data, \
             void *option_ptr, \
-            int option_ptr_arg,\
+            int option_ptr_arg, \
             void *app_ptr, \
             int app_ptr_arg)
 
@@ -405,7 +395,7 @@ CONFFILE_OPTION_FUNC(conffile_double);
 /* conffile_string
  *
  * Generic callback function for strings.  Assumes option_ptr is a
- * pointer to a buffer and option_ptr_arg is the buffer's length,
+ * pointer to a char buffer and option_ptr_arg is the buffer's length,
  * stores the argument, and returns 0.  If option_ptr is NULL or
  * option_ptr_arg is <= 0, sets errnum to ERR_PARAMETERS, and returns
  * -1.
