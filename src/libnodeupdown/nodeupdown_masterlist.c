@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_masterlist.c,v 1.11 2004-01-15 01:09:36 achu Exp $
+ *  $Id: nodeupdown_masterlist.c,v 1.12 2004-01-15 01:27:59 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -104,7 +104,7 @@ _load_hostsfile_data(nodeupdown_t handle, const char *filename)
     return -1;
   }
 
-  /* XXX: This sucks, I need to find a good & generic file parsing lib */
+  /* XXX: This sucks, I need to find a generic file parsing lib */
   while ((len = _readline(handle, fd, buf, NODEUPDOWN_BUFFERLEN)) > 0) {
     if (buf[0] == '#')		/* skip comments */
       continue;
@@ -221,8 +221,8 @@ nodeupdown_masterlist_compare_gmond_to_masterlist(nodeupdown_t handle)
   }
 
   while (nodename = list_next(itr)) {
-    if ((hostlist_find(handle->up_nodes, nodename) == -1) &&
-        (hostlist_find(handle->down_nodes, nodename) == -1)) {
+    if ((hostlist_find(handle->up_nodes, nodename) == -1) 
+        && (hostlist_find(handle->down_nodes, nodename) == -1)) {
       /* This node must also be down */
       if (hostlist_push_host(handle->down_nodes, nodename) == 0) {
         handle->errnum = NODEUPDOWN_ERR_HOSTLIST;
@@ -256,8 +256,8 @@ nodeupdown_masterlist_compare_gmond_to_masterlist(nodeupdown_t handle)
   
   for (i = 0; i < num; i++) {
     /* check if gmond knows of this genders node */
-    if ((hostlist_find(handle->up_nodes, nlist[i]) == -1) &&
-        (hostlist_find(handle->down_nodes, nlist[i]) == -1)) {
+    if ((hostlist_find(handle->up_nodes, nlist[i]) == -1) 
+        && (hostlist_find(handle->down_nodes, nlist[i]) == -1)) {
 
       /* gmond doesn't know this genders node, it must also be down */
       if (hostlist_push_host(handle->down_nodes, nlist[i]) == 0) {
@@ -338,8 +338,8 @@ nodeupdown_masterlist_is_node_in_cluster(nodeupdown_t handle, const char *node)
   return _is_node_common(handle, node);
 #else
   /* Without a master list of some sort, this is the best we can do */
-  if (hostlist_find(handle->up_nodes, node) == -1 &&
-      hostlist_find(handle->down_nodes, node) == -1)
+  if (hostlist_find(handle->up_nodes, node) == -1 
+      && hostlist_find(handle->down_nodes, node) == -1)
     return 0;
   else
     return 1;

@@ -29,6 +29,10 @@
 	error output to fit GNU coding standards more closely.  Updated
 	with new error codes and more detailed error messages.
 
+	* src/Libnodeupdown/Libnodeupdown.pm.in,
+	src/Libnodeupdown/Libnodeupdown.xs: Update appropriately for
+	changes.
+
 2003-01-12  Albert Chu  <chu11@llnl.gov>
 
 	* src/libcommon/conffile.h, src/libcommon/conffile.c: Significant

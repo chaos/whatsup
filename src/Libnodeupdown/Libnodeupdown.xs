@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: Libnodeupdown.xs,v 1.7 2003-12-29 19:02:01 achu Exp $
+ *  $Id: Libnodeupdown.xs,v 1.8 2004-01-15 01:27:59 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -49,22 +49,6 @@ NODEUPDOWN_ERR_NULLHANDLE (sv=&PL_sv_undef)
     SV *sv    
     CODE:
         RETVAL = NODEUPDOWN_ERR_NULLHANDLE;
-    OUTPUT:
-        RETVAL    
-
-int
-NODEUPDOWN_ERR_OPEN (sv=&PL_sv_undef)
-    SV *sv    
-    CODE:
-        RETVAL = NODEUPDOWN_ERR_OPEN;
-    OUTPUT:
-        RETVAL    
-
-int
-NODEUPDOWN_ERR_READ (sv=&PL_sv_undef)
-    SV *sv    
-    CODE:
-        RETVAL = NODEUPDOWN_ERR_READ;
     OUTPUT:
         RETVAL    
 
@@ -173,10 +157,26 @@ NODEUPDOWN_ERR_MASTERLIST (sv=&PL_sv_undef)
         RETVAL    
 
 int
-NODEUPDOWN_ERR_EXPAT (sv=&PL_sv_undef)
+NODEUPDOWN_ERR_MASTERLIST_OPEN (sv=&PL_sv_undef)
     SV *sv    
     CODE:
-        RETVAL = NODEUPDOWN_ERR_EXPAT;
+        RETVAL = NODEUPDOWN_ERR_MASTERLIST_OPEN;
+    OUTPUT:
+        RETVAL    
+
+int
+NODEUPDOWN_ERR_MASTERLIST_READ (sv=&PL_sv_undef)
+    SV *sv    
+    CODE:
+        RETVAL = NODEUPDOWN_ERR_MASTERLIST_READ;
+    OUTPUT:
+        RETVAL    
+
+int
+NODEUPDOWN_ERR_MASTERLIST_PARSE (sv=&PL_sv_undef)
+    SV *sv    
+    CODE:
+        RETVAL = NODEUPDOWN_ERR_MASTERLIST_PARSE;
     OUTPUT:
         RETVAL    
 
@@ -185,6 +185,38 @@ NODEUPDOWN_ERR_CONF (sv=&PL_sv_undef)
     SV *sv    
     CODE:
         RETVAL = NODEUPDOWN_ERR_CONF;
+    OUTPUT:
+        RETVAL    
+
+int
+NODEUPDOWN_ERR_CONF_OPEN (sv=&PL_sv_undef)
+    SV *sv    
+    CODE:
+        RETVAL = NODEUPDOWN_ERR_CONF_OPEN;
+    OUTPUT:
+        RETVAL    
+
+int
+NODEUPDOWN_ERR_CONF_READ (sv=&PL_sv_undef)
+    SV *sv    
+    CODE:
+        RETVAL = NODEUPDOWN_ERR_CONF_READ;
+    OUTPUT:
+        RETVAL    
+
+int
+NODEUPDOWN_ERR_CONF_PARSE (sv=&PL_sv_undef)
+    SV *sv    
+    CODE:
+        RETVAL = NODEUPDOWN_ERR_CONF_PARSE;
+    OUTPUT:
+        RETVAL    
+
+int
+NODEUPDOWN_ERR_EXPAT (sv=&PL_sv_undef)
+    SV *sv    
+    CODE:
+        RETVAL = NODEUPDOWN_ERR_EXPAT;
     OUTPUT:
         RETVAL    
 

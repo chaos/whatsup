@@ -1,5 +1,5 @@
 #############################################################################
-#  $Id: Libnodeupdown.pm.in,v 1.6 2003-12-31 18:52:05 achu Exp $
+#  $Id: Libnodeupdown.pm.in,v 1.7 2004-01-15 01:27:59 achu Exp $
 #############################################################################
 #  Copyright (C) 2003 The Regents of the University of California.
 #  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -57,8 +57,6 @@ Libnodeupdown - Perl extension for libnodeupdown
 
  Libnodeupdown::NODEUPDOWN_ERR_SUCCESS
  Libnodeupdown::NODEUPDOWN_ERR_NULLHANDLE
- Libnodeupdown::NODEUPDOWN_ERR_OPEN
- Libnodeupdown::NODEUPDOWN_ERR_READ
  Libnodeupdown::NODEUPDOWN_ERR_CONNECT
  Libnodeupdown::NODEUPDOWN_ERR_TIMEOUT
  Libnodeupdown::NODEUPDOWN_ERR_HOSTNAME
@@ -72,8 +70,14 @@ Libnodeupdown - Perl extension for libnodeupdown
  Libnodeupdown::NODEUPDOWN_ERR_OUTMEM
  Libnodeupdown::NODEUPDOWN_ERR_NOTFOUND
  Libnodeupdown::NODEUPDOWN_ERR_MASTERLIST
- Libnodeupdown::NODEUPDOWN_ERR_EXPAT
+ Libnodeupdown::NODEUPDOWN_ERR_MASTERLIST_OPEN
+ Libnodeupdown::NODEUPDOWN_ERR_MASTERLIST_READ
+ Libnodeupdown::NODEUPDOWN_ERR_MASTERLIST_PARSE
  Libnodeupdown::NODEUPDOWN_ERR_CONF
+ Libnodeupdown::NODEUPDOWN_ERR_CONF_OPEN
+ Libnodeupdown::NODEUPDOWN_ERR_CONF_READ
+ Libnodeupdown::NODEUPDOWN_ERR_CONF_PARSE
+ Libnodeupdown::NODEUPDOWN_ERR_EXPAT
  Libnodeupdown::NODEUPDOWN_ERR_HOSTLIST
  Libnodeupdown::NODEUPDOWN_ERR_MAGIC
  Libnodeupdown::NODEUPDOWN_ERR_INTERNAL
@@ -206,8 +210,6 @@ can be accessed through the following functions:
 
  Libnodeupdown::NODEUPDOWN_ERR_SUCCESS
  Libnodeupdown::NODEUPDOWN_ERR_NULLHANDLE
- Libnodeupdown::NODEUPDOWN_ERR_OPEN
- Libnodeupdown::NODEUPDOWN_ERR_READ
  Libnodeupdown::NODEUPDOWN_ERR_CONNECT
  Libnodeupdown::NODEUPDOWN_ERR_TIMEOUT
  Libnodeupdown::NODEUPDOWN_ERR_HOSTNAME
@@ -221,8 +223,14 @@ can be accessed through the following functions:
  Libnodeupdown::NODEUPDOWN_ERR_OUTMEM
  Libnodeupdown::NODEUPDOWN_ERR_NOTFOUND
  Libnodeupdown::NODEUPDOWN_ERR_MASTERLIST
- Libnodeupdown::NODEUPDOWN_ERR_EXPAT
+ Libnodeupdown::NODEUPDOWN_ERR_MASTERLIST_OPEN
+ Libnodeupdown::NODEUPDOWN_ERR_MASTERLIST_READ
+ Libnodeupdown::NODEUPDOWN_ERR_MASTERLIST_PARSE
  Libnodeupdown::NODEUPDOWN_ERR_CONF
+ Libnodeupdown::NODEUPDOWN_ERR_CONF_OPEN
+ Libnodeupdown::NODEUPDOWN_ERR_CONF_READ
+ Libnodeupdown::NODEUPDOWN_ERR_CONF_PARSE
+ Libnodeupdown::NODEUPDOWN_ERR_EXPAT
  Libnodeupdown::NODEUPDOWN_ERR_HOSTLIST
  Libnodeupdown::NODEUPDOWN_ERR_MAGIC
  Libnodeupdown::NODEUPDOWN_ERR_INTERNAL
