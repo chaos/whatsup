@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.62 2003-09-24 23:16:50 achu Exp $
+ * $Id: whatsup.c,v 1.63 2003-09-24 23:18:09 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -606,9 +606,6 @@ int main(int argc, char **argv) {
   if (arginfo->output == DOWN_NODES || arginfo->output == UP_AND_DOWN) {
     if (get_nodes(arginfo, DOWN_NODES, handle, &down_nodes, &down_count) == -1)
       goto cleanup;
-  }
-
-  if (arginfo->output == UP_AND_DOWN) {
   }
 
   if (arginfo->count == WHATSUP_ON) {
