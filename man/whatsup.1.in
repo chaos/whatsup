@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: whatsup.1.in,v 1.11 2003-12-29 19:02:01 achu Exp $
+\."$Id: whatsup.1.in,v 1.12 2004-01-14 21:52:43 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -38,12 +38,12 @@ from ganglia.
 
 .B whatsup
 will check on the status of every node in the cluster unless specific
-nodes are listed at the command line.  The nodes can be listed in
-hostlist format, comma separated lists, or space separated lists.  See
-the section below on HOST RANGES for instructions on how to list hosts
-in hostlist format.  The hostnames listed must be the shortened names
-of hostnames.  What information is listed and how it is listed is
-dependent on the options listed below.
+nodes are listed at the command line.  If the first node listed is
+"-", nodes will be read in from standard input.  The nodes can be
+listed in hostlist format, comma separated lists, or space separated
+lists.  See the section below on HOST RANGES for instructions on how
+to list hosts in hostlist format.  The hostnames listed must be the
+shortened names of hostnames.
 
 .B whatsup 
 is configured to work on non-deaf ganglia nodes or nodes in which a
@@ -51,6 +51,18 @@ nodeupdown configuration file points to a non-deaf ganglia server.
 Generally speaking, non-deaf ganglia servers are only executed on
 management nodes, not login or compute nodes.  The user may also
 select a non-deaf ganglia node using the --hostname ('o') option.
+
+The exit value of 
+.B whatsup
+depends on the options performed on the command line.  If the default
+--updown option is used, the exit value will be 0 if the command
+succeeds without error.  If the --up option is used and no nodes are
+specified via the command line or standard input, the exit value will
+be 0 if all cluster nodes are up.  If nodes are specified via the
+command line or standard input, the exit value wil be 0 if all the
+specified nodes are up.  The behavior is similar for the --down
+option.
+
 .br
 .SH OPTIONS
 .TP
