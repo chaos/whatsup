@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.65 2003-07-18 20:58:28 achu Exp $
+ * $Id: nodeupdown.c,v 1.66 2003-07-24 18:20:26 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -42,6 +42,15 @@
 #ifndef CONNECT_TIMEOUT_LEN
 #define CONNECT_TIMEOUT_LEN              5 
 #endif
+
+#ifndef MAXHOSTNAMELEN
+#define MAXHOSTNAMELEN 64
+#endif
+
+/* Configuration file tags */
+#define NODEUPDOWN_CONF_HOSTNAME         "gmond_hostname"
+#define NODEUPDOWN_CONF_IP               "gmond_ip"
+#define NODEUPDOWN_CONF_PORT             "gmond_port"
 
 /* for gethostbyname */
 extern int h_errno;
@@ -101,12 +110,14 @@ static int  _loaded_handle_error_check(nodeupdown_t);
 static void _initialize_handle(nodeupdown_t handle);
 static void _free_handle_data(nodeupdown_t handle);
 static int  _get_genders_data(nodeupdown_t, const char *);
-static int  _low_timeout_connect(nodeupdown_t, const char *, int);
-static int  _connect_gmond(nodeupdown_t, const char *, int, int);
 static int  _readline(int, char *, int);
+static int  _read_conffile(char **, char **, int *);
+static int  _get_ipaddr(nodeupdown_t, const char *, const char *, char *, int);
+static int  _low_timeout_connect(nodeupdown_t, const char *, int);
+static int  _connect_to_gmond(nodeupdown_t, const char *, const char *, int);
 static void _xml_parse_start(void *, const char *, const char **);
 static void _xml_parse_end(void *, const char *);
-static int  _get_gmond_data(nodeupdown_t, const char *, int, int, int);
+static int  _get_gmond_data(nodeupdown_t, int, int);
 static int  _compare_genders_to_gmond_nodes(nodeupdown_t);
 static int  _get_nodes_string(nodeupdown_t, char *, int, int);
 static int  _get_nodes_list(nodeupdown_t, char **, int, int);
@@ -194,6 +205,10 @@ int nodeupdown_handle_destroy(nodeupdown_t handle) {
 
 int _get_genders_data(nodeupdown_t handle, const char *filename) {
   
+  /* determine filename */
+  if (filename == NULL)
+    filename = GENDERS_DEFAULT_FILE;
+
   if ((handle->genders_handle = genders_handle_create()) == NULL) {
     handle->errnum = NODEUPDOWN_ERR_OUTMEM;
     return -1;
@@ -202,6 +217,131 @@ int _get_genders_data(nodeupdown_t handle, const char *filename) {
   if (genders_load_data(handle->genders_handle, filename) == -1) {
     handle->errnum = NODEUPDOWN_ERR_OPEN;
     return -1;
+  }
+
+  return 0;
+}
+
+int _readline(int fd,  char *buf, int buflen) {
+  int ret, count = 0;
+  char chr;
+
+  memset(buf, '\0', buflen);
+
+  do {
+    if ((ret = read(fd, &chr, 1)) == -1)
+      return -1;
+
+    if (ret == 1)
+      buf[count++] = chr;
+
+  } while (ret == 1 && chr != '\n' && count < buflen);
+
+  /* overflow counts as a parse error */
+  if (count >= buflen)
+    return -1;
+
+  return count;
+}
+
+/* parse configuration file if it exists
+ * - caller responsible for freeing memory.  
+ */
+int _read_conffile(char **hostname_buf, char **ip_buf, int *port_buf) {
+  int fd, len, port_temp = -1;
+  char buf[NODEUPDOWN_BUFFERLEN];
+  char *hostname_temp = NULL, *ip_temp = NULL;
+  char *conf_name, *conf_val;
+
+  if ((fd = open(NODEUPDOWN_CONF_FILE, O_RDONLY)) < 0)
+    goto cleanup;
+
+  while ((len = _readline(fd, buf, NODEUPDOWN_BUFFERLEN)) > 0) {
+
+    if (buf[0] == '#')
+      continue;        /* comment */
+    
+    if ((conf_name = strtok(buf, " \t\n")) == NULL)
+      continue;        /* empty line */ 
+
+    if ((conf_val = strtok(NULL, " \t\n")) == NULL)
+      goto cleanup;    /* parse error, no value */
+
+    if (strcmp(conf_name, NODEUPDOWN_CONF_HOSTNAME) == 0) {
+      if ((hostname_temp = strdup(conf_val)) == NULL)
+        goto cleanup;
+    }
+    else if (strcmp(conf_name, NODEUPDOWN_CONF_IP) == 0) {
+      if ((ip_temp = strdup(conf_val)) == NULL)
+        goto cleanup;
+    }
+    else if (strcmp(conf_name, NODEUPDOWN_CONF_PORT) == 0)
+      port_temp = atoi(conf_val);
+    else  
+      goto cleanup;  /* parse error, invalid key */
+  }
+
+  if (len == -1)
+    goto cleanup;
+
+  /* did we find anything? */
+  if (hostname_temp == NULL && ip_temp == NULL && port_temp == -1)
+    goto cleanup;
+
+  if (hostname_temp != NULL)
+    *hostname_buf = hostname_temp;
+  if (ip_temp != NULL)
+    *ip_buf = ip_temp;
+  if (port_temp != -1)
+    *port_buf = port_temp;
+
+  return 0;
+
+ cleanup:
+  free(hostname_temp);
+  free(ip_temp);
+  close(fd);
+  return -1;
+}
+
+/* get proper IP address given gmond_hostname or ip 
+ * - caller responsible for large enough ip_buf
+ */ 
+int _get_ipaddr(nodeupdown_t handle,
+                const char *gmond_hostname,
+                const char *gmond_ip,
+                char *ip_buf,
+                int iplen) {
+
+  if (gmond_hostname == NULL && gmond_ip == NULL) {
+    /* default */
+    strcpy(ip_buf, "127.0.0.1");
+  }
+  else if (gmond_hostname != NULL && gmond_ip == NULL) {
+    /* if only hostname is given, determine ip address */
+    struct hostent *hptr;
+
+    /* valgrind will report a mem-leak in gethostbyname() */
+    if ((hptr = gethostbyname(gmond_hostname)) == NULL) {
+      if (h_errno == HOST_NOT_FOUND)
+        handle->errnum = NODEUPDOWN_ERR_HOSTNAME;
+      else
+        handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
+
+    if (inet_ntop(AF_INET, (void *)hptr->h_addr, ip_buf, iplen) == NULL) {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
+  }
+  else if (gmond_ip != NULL) {
+    /* we don't care about hostname, just use IP address */
+    if (strlen(gmond_ip)+1 > iplen) {
+      handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
+      return -1;
+    }
+    strcpy(ip_buf, gmond_ip);
   }
 
   return 0;
@@ -304,66 +444,59 @@ int _low_timeout_connect(nodeupdown_t handle, const char *ip, int port) {
   return -1;
 }
 
-int _readline(int fd,  char *buf, int buflen) {
-  int ret, count = 0;
-  char chr;
+int _connect_to_gmond(nodeupdown_t handle,
+                      const char *gmond_hostname,
+                      const char *gmond_ip,
+                      int gmond_port) {
+  int sockfd = -1;
+  char ip_buf[INET_ADDRSTRLEN+1];
+  int iplen = INET_ADDRSTRLEN+1;
 
-  do {
-    if ((ret = read(fd, &chr, 1)) == -1)
-      return -1;
+  /* read conf file, see if we should first try different defaults */
+  if ((gmond_hostname == NULL && gmond_ip == NULL) || gmond_port <= 0) {
+    char *temp_host = NULL, *temp_ip = NULL, *conf_host, *conf_ip; 
+    int conf_port = GANGLIA_DEFAULT_XML_PORT;
 
-    if (ret == 1)
-      buf[count++] = chr;
+    if (_read_conffile(&temp_host, &temp_ip, &conf_port) < 0) 
+      goto try_again;
 
-  } while (ret == 1 && chr != '\n' && count < buflen);
+    /* Agh! This is ugly.  But this seems to be the best way overall given
+     * that I only want to parse the config file once */
 
-  return count;
-}
+    if (gmond_hostname != NULL || gmond_ip != NULL) {
+      conf_host = (char *)gmond_hostname;
+      conf_ip = (char *)gmond_ip;
+    }
+    else {
+      conf_host = temp_host;
+      conf_ip = temp_ip;
+    }
 
-int _connect_gmond(nodeupdown_t handle,
-                   const char *gmond_ip,
-                   int gmond_port,
-                   int check_conf) {
-  int fd, port, sockfd = -1;
-  char buf[NODEUPDOWN_BUFFERLEN];
-  char *ip_ptr, *port_ptr;
+    if (gmond_port > 0)
+      conf_port = gmond_port;
+
+    if (_get_ipaddr(handle, conf_host, conf_ip, ip_buf, iplen) < 0)
+      goto cleanup;
+
+    sockfd = _low_timeout_connect(handle, ip_buf, conf_port);
   
-  if (check_conf) {
-      /* 
-       * Attempt to read gmond ip/port from conf file.  If anything
-       * fails, try again with normal defaults.
-       */
+  cleanup:
+    free(temp_host);
+    free(temp_ip);
 
-      if ((fd = open(NODEUPDOWN_CONF_FILE, O_RDONLY)) < 0)
-        goto try_default;
-
-      memset(buf, '\0', NODEUPDOWN_BUFFERLEN);
-      if (_readline(fd, buf, NODEUPDOWN_BUFFERLEN) <= 0)
-        goto try_default;
-
-      if (buf[0] == '#') {
-        memset(buf, '\0', NODEUPDOWN_BUFFERLEN);
-        if (_readline(fd, buf, NODEUPDOWN_BUFFERLEN) <= 0)
-          goto try_default;
-      }
-      
-      ip_ptr = buf;
-      if (strtok(buf, " \t") == NULL)
-        goto try_default;
-        
-      if ((port_ptr = strtok(NULL, " \t")) == NULL)
-        goto try_default;
-
-      port = atoi(port_ptr);
-
-      if ((sockfd = _low_timeout_connect(handle, ip_ptr, port)) < 0)
-        goto try_default;
-
+    if (sockfd > -1)
       goto done;
   }
 
- try_default:
-  sockfd = _low_timeout_connect(handle, gmond_ip, gmond_port);
+ try_again:
+
+  if (gmond_port <= 0) 
+    gmond_port = GANGLIA_DEFAULT_XML_PORT;
+
+  if (_get_ipaddr(handle, gmond_hostname, gmond_ip, ip_buf, iplen) < 0)
+    goto done;
+
+  sockfd = _low_timeout_connect(handle, ip_buf, gmond_port);
 
  done:
   return sockfd;
@@ -430,22 +563,20 @@ void _xml_parse_end(void *data, const char *e1) {
 }
 
 int _get_gmond_data(nodeupdown_t handle, 
-                    const char *gmond_ip, 
-                    int gmond_port, 
-                    int timeout_len,
-                    int check_conf) {
+                    int sockfd,
+                    int timeout_len) {
 
   XML_Parser xml_parser = NULL;
-  int sockfd = -1;
   struct parse_vars pv;
   struct timeval tv;
   pv.buf = NULL;
 
-  if ((sockfd = _connect_gmond(handle, gmond_ip, gmond_port, check_conf)) == -1)
-    goto cleanup;
-
   pv.handle = handle;
-  pv.timeout_len = timeout_len;
+
+  if (timeout_len <= 0)
+    pv.timeout_len = NODEUPDOWN_TIMEOUT_LEN;
+  else
+    pv.timeout_len = timeout_len;
 
   /* create buffer here instead of in _xml_parse_start, so we don't
    * have to continually re-malloc buffer space
@@ -496,15 +627,12 @@ int _get_gmond_data(nodeupdown_t handle,
       break;
   }
 
-  close(sockfd);
   free(pv.buf);
   XML_ParserFree(xml_parser);
 
   return 0;
 
  cleanup:
-
-  close(sockfd);
 
   if (xml_parser != NULL)
     XML_ParserFree(xml_parser);
@@ -568,66 +696,16 @@ int nodeupdown_load_data(nodeupdown_t handle,
                          int gmond_port,
                          int timeout_len) {
 
-  char ip_buf[INET_ADDRSTRLEN];
-  int check_conf;
- 
+  int sockfd = -1;
+
   if (_unloaded_handle_error_check(handle) == -1)
     return -1;
 
-  if (gmond_port < -1 || timeout_len < -1) {
-    handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
-    return -1;
-  }
-
-  /* were all defaults passed in? */
-  check_conf = (!gmond_hostname && !gmond_ip && 
-                (!gmond_port || gmond_port == -1));
-
-  /* determine filename */
-  if (genders_filename == NULL)
-    genders_filename = GENDERS_DEFAULT_FILE;
-
-  /* handle hostname and IP paramters */
-  memset(ip_buf, '\0', INET_ADDRSTRLEN);
-  if (gmond_hostname == NULL && gmond_ip == NULL) {
-    /* use default */
-    strcpy(ip_buf, "127.0.0.1");
-  }
-  else if (gmond_hostname != NULL && gmond_ip == NULL) {
-    /* if only hostname is given, determine ip address */
-    struct hostent *hptr;
-    int inetlen = INET_ADDRSTRLEN;
-
-    /* valgrind will report a mem-leak in gethostbyname() */
-    if ((hptr = gethostbyname(gmond_hostname)) == NULL) {
-      if (h_errno == HOST_NOT_FOUND)
-        handle->errnum = NODEUPDOWN_ERR_HOSTNAME;
-      else
-        handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      goto cleanup;
-    }
-
-    if (inet_ntop(AF_INET, (void *)hptr->h_addr, ip_buf, inetlen) == NULL) {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      goto cleanup;
-    }
-  }
-  else if (gmond_ip != NULL) {
-    /* we don't care about hostname, just store IP address */
-    if (strlen(gmond_ip)+1 > INET_ADDRSTRLEN) {
-      handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
-      goto cleanup;
-    }
-    strcpy(ip_buf, gmond_ip);
-  }
-
-  if (gmond_port == 0 || gmond_port == -1)
-    gmond_port = GANGLIA_DEFAULT_XML_PORT;
-
-  if (timeout_len == 0 || timeout_len == -1)
-    timeout_len = NODEUPDOWN_TIMEOUT_LEN;
-
   if (_get_genders_data(handle, genders_filename) == -1)
+    goto cleanup;
+
+  sockfd = _connect_to_gmond(handle, gmond_hostname, gmond_ip, gmond_port);
+  if (sockfd == -1)
     goto cleanup;
 
   if ((handle->up_nodes = hostlist_create(NULL)) == NULL) {
@@ -640,7 +718,7 @@ int nodeupdown_load_data(nodeupdown_t handle,
     goto cleanup;
   }
 
-  if (_get_gmond_data(handle, ip_buf, gmond_port, timeout_len, check_conf) == -1)
+  if (_get_gmond_data(handle, sockfd, timeout_len) == -1)
     goto cleanup;
 
   if (_compare_genders_to_gmond_nodes(handle))
@@ -657,11 +735,14 @@ int nodeupdown_load_data(nodeupdown_t handle,
   /* loading complete */
   handle->loaded_flag = NODEUPDOWN_DATA_LOADED;
 
+  close(sockfd);
+
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return 0;
 
  cleanup:
 
+  close(sockfd);
   _free_handle_data(handle);
   return -1;
 }
@@ -952,4 +1033,3 @@ int nodeupdown_nodelist_destroy(nodeupdown_t handle, char **list) {
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return 0;
 }
-

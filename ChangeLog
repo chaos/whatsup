@@ -1,3 +1,9 @@
+2003-07-24 Albert Chu <chu11@llnl.gov>
+	- Slightly modified nodeupdown_load_data() API.  Now, gmond_port
+    	  and timeout_len use default values if they <= 0.
+	- Modified nodeupdown configuration file options and semantics
+	- tagged whatsup-1-2-1
+	
 2003-07-15 Albert Chu <chu11@llnl.gov>
         - added support for nodeupdown configuration file
 	- updated rpm dependencies and rpm release numbers

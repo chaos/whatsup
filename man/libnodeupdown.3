@@ -1,9 +1,9 @@
 \."#################################################################
-\."$Id: libnodeupdown.3,v 1.12 2003-07-16 18:01:28 achu Exp $
+\."$Id: libnodeupdown.3,v 1.13 2003-07-24 18:20:26 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
-.TH LIBNODEUPDOWN 3 "Release 1.1" "LLNL" "LIBNODEUPDOWN"
+.TH LIBNODEUPDOWN 3 "Release 1.2" "LLNL" "LIBNODEUPDOWN"
 .SH NAME
 libnodeupdown \- a library of functions to determine if a node is up
 or down
@@ -48,7 +48,7 @@ with genders and ganglia to determine if a node is up or down.  For
 instructions, please see the individual manpages for each of the
 functions above, or read the comments written in
 /usr/include/nodeupdown.h.  Please see the 
-.BR nodeupdown_load_data (3)
+.BR nodeupdown.conf (5)
 manpage for information about the nodeupdown configuration file.
 .br
 .SH FILES
@@ -61,4 +61,4 @@ nodeupdown_get_up_nodes_string(3),
 nodeupdown_get_down_nodes_string(3), nodeupdown_get_up_nodes_list(3),
 nodeupdown_get_down_nodes_list(3), nodeupdown_is_node_up(3),
 nodeupdown_is_node_down(3), nodeupdown_nodelist_create(3),
-nodeupdown_nodelist_clear(3), nodeupdown_nodelist_destroy(3)
+nodeupdown_nodelist_clear(3), nodeupdown_nodelist_destroy(3), nodeupdown.conf(5)
