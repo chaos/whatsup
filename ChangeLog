@@ -2,6 +2,9 @@
 
 	* src/Nodeupdown/Makefile.am: Fixed typo.
 
+	* src/whatsup/whatsup.c: Added whatsup_list_t type, modifying
+	global constants appropriately.
+
 2003-11-08  Albert Chu  <chu11@llnl.gov>
 
 	* src/whatsup/whatsup.c:  Added whatsup_bool_t and whatsup_output_t

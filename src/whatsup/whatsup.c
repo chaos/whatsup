@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.71 2003-11-08 17:01:21 achu Exp $
+ * $Id: whatsup.c,v 1.72 2003-11-10 19:44:35 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -33,15 +33,13 @@ extern int optind, opterr, optopt;
  
 typedef enum {WHATSUP_TRUE, WHATSUP_FALSE} whatsup_bool_t;
 typedef enum {UP_NODES, DOWN_NODES, UP_AND_DOWN} whatsup_output_t;
+typedef enum {WHATSUP_HOSTLIST = '\0', /* anything not ',', '\n', or ' ' */
+              WHATSUP_COMMA = ',',
+              WHATSUP_NEWLINE = '\n',
+              WHATSUP_SPACE = ' '} whatsup_list_t;
 
 #define WHATSUP_BUFFERLEN    65536
-
 #define WHATSUP_FORMATLEN    64
-
-#define HOSTLIST             '\0' /* any char that is not ',', '\n', or ' ' */  
-#define COMMA                ','
-#define NEWLINE              '\n'
-#define SPACE                ' '
 
 /* struct winfo
  * - carries information for the entire program
@@ -52,7 +50,7 @@ struct winfo {
   char *ip;                   /* ip of gmond server */
   int port;                   /* port of gmond server */  
   whatsup_output_t output;    /* output type */ 
-  char list_type;             /* list type */
+  whatsup_list_t list;        /* list type */
   whatsup_bool_t count;       /* list count? */
   hostlist_t nodes;           /* nodes entered at command line */
 #if (HAVE_MASTERLIST || HAVE_GENDERS)
@@ -194,16 +192,16 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
       winfo->count = WHATSUP_TRUE;
       break;
     case 'l':
-      winfo->list_type = HOSTLIST;
+      winfo->list = WHATSUP_HOSTLIST;
       break;
     case 'c':
-      winfo->list_type = COMMA;
+      winfo->list = WHATSUP_COMMA;
       break;
     case 'n':
-      winfo->list_type = NEWLINE;
+      winfo->list = WHATSUP_NEWLINE;
       break;
     case 's':
-      winfo->list_type = SPACE;
+      winfo->list = WHATSUP_SPACE;
       break;
 #if (HAVE_MASTERLIST || HAVE_GENDERS)
     case 'f':
@@ -437,7 +435,7 @@ int output_nodes(struct winfo *winfo, char *buf) {
   hostlist_t hl = NULL;
   int retval = -1;
 
-  if (winfo->list_type == HOSTLIST)
+  if (winfo->list == WHATSUP_HOSTLIST)
     fprintf(stdout, "%s\n", buf);
   else {
     /* output nodes separated by some break type */
@@ -454,13 +452,13 @@ int output_nodes(struct winfo *winfo, char *buf) {
     }
 
     /* convert commas to appropriate break types */
-    if (winfo->list_type != COMMA) {
+    if (winfo->list != WHATSUP_COMMA) {
       while ((ptr = strchr(tbuf, ',')) != NULL)
-        *ptr = winfo->list_type;
+        *ptr = (char)winfo->list;
     }
 
     /* start on the next line */
-    if (winfo->output == UP_AND_DOWN && winfo->list_type == NEWLINE)
+    if (winfo->output == UP_AND_DOWN && winfo->list == WHATSUP_NEWLINE)
       fprintf(stdout, "\n");
 
     fprintf(stdout,"%s\n", tbuf);
@@ -496,7 +494,7 @@ int main(int argc, char **argv) {
   winfo.ip = NULL;
   winfo.port = 0;
   winfo.output = UP_AND_DOWN;
-  winfo.list_type = HOSTLIST;
+  winfo.list = WHATSUP_HOSTLIST;
   winfo.count = WHATSUP_FALSE;
   winfo.nodes = NULL;
 #if (HAVE_MASTERLIST || HAVE_GENDERS)
@@ -557,7 +555,7 @@ int main(int argc, char **argv) {
   else {    /* output up, down, or both up and down nodes */
     if (winfo.output == UP_AND_DOWN) {
       /* hacks to get the numbers to align */
-      if (winfo.list_type != NEWLINE) {
+      if (winfo.list != WHATSUP_NEWLINE) {
         max = (up_count > down_count) ? _log10(up_count) : _log10(down_count);
         snprintf(upfmt,   WHATSUP_FORMATLEN, "up:   %%%dd: ", ++max);
         snprintf(downfmt, WHATSUP_FORMATLEN, "down: %%%dd: ", max);
@@ -574,7 +572,7 @@ int main(int argc, char **argv) {
         goto cleanup;
 
       /* handle odd situation with output formatting */
-      if (winfo.list_type == NEWLINE)
+      if (winfo.list == WHATSUP_NEWLINE)
         fprintf(stdout, "\n");
 
       fprintf(stdout, downfmt, down_count);
