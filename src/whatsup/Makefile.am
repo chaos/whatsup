@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.1 2003-02-24 19:30:42 achu Exp $
+## $Id: Makefile.am,v 1.2 2003-02-25 01:50:07 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -10,8 +10,7 @@ CPPFLAGS = \
 LDADD = \
 	$(top_builddir)/src/libnodeupdown/libnodeupdown.la
 
-bin_PROGRAMS = \
-	whatsup 
+bin_PROGRAMS = whatsup
 
-whatsup_SOURCES = \
-	whatsup.c \
+whatsup_SOURCES = whatsup.c
+
