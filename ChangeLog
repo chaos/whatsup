@@ -10,6 +10,8 @@
 	* src/libcommon/Makefile.am: Updated for new files.
 	
 	* configure.ac: Re-work for use with dynamically loadable modules.
+
+	* bootstrap: Renamed to autogen.sh
 	
 2005-03-30  Albert Chu  <chu11@llnl.gov>
 

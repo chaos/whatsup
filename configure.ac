@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.37 2005-03-31 18:29:29 achu Exp $
+## $Id: configure.ac,v 1.38 2005-03-31 20:44:01 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -80,6 +80,15 @@ AM_CONDITIONAL(WITH_GENDERS, [test "$ac_with_genders" = "yes"])
 #
 AC_GENDERSLLNL
 AM_CONDITIONAL(WITH_GENDERSLLNL, [test "$ac_with_gendersllnl" = "yes"])
+
+if test "$ac_with_genders" = "yes" ||
+   test "$ac_with_gendersllnl" = "yes"; then
+   AC_CHECK_LIB(genders,
+                genders_index_attrvals,
+                AC_DEFINE(HAVE_GENDERS_INDEX_ATTRVALS, [1],
+                          [define genders_index_attrvals exists]),
+                [])
+fi
 
 ##
 # Checks for header files.

@@ -1,6 +1,6 @@
 #!/bin/sh
 ##
-# $Id: bootstrap,v 1.1 2003-02-24 19:30:42 achu Exp $
+# $Id: autogen.sh,v 1.1 2005-03-31 20:44:01 achu Exp $
 ##
 
 PATH=/bin:/usr/bin:/usr/local/bin
