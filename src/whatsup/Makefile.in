@@ -95,7 +95,7 @@ LDADD = $(top_builddir)/src/libnodeupdown/libnodeupdown.la
 
 bin_PROGRAMS = whatsup
 
-whatsup_SOURCES = whatsup.c hostlist.c 
+whatsup_SOURCES = hostlist.c whatsup.c
 subdir = src/whatsup
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
@@ -103,7 +103,7 @@ CONFIG_CLEAN_FILES =
 bin_PROGRAMS = whatsup$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
-am_whatsup_OBJECTS = whatsup.$(OBJEXT) hostlist.$(OBJEXT)
+am_whatsup_OBJECTS = hostlist.$(OBJEXT) whatsup.$(OBJEXT)
 whatsup_OBJECTS = $(am_whatsup_OBJECTS)
 whatsup_LDADD = $(LDADD)
 whatsup_DEPENDENCIES = \
