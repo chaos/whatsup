@@ -1,8 +1,12 @@
 /*
- * $Id: whatsup.c,v 1.44 2003-05-27 15:56:29 achu Exp $
+ * $Id: whatsup.c,v 1.45 2003-05-27 16:53:38 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
+
+#if HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <errno.h>
 #include <gendersllnl.h>
@@ -109,7 +113,7 @@ static void usage(void) {
  * - output version
  */
 static void version(void) {
-  fprintf(stderr, "whatsup 1.0-6\n");
+  fprintf(stderr, "%s %s-%s\n", PROJECT, VERSION, RELEASE);
 }
 
 /* err_msg

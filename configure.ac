@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.3 2003-05-16 21:50:54 achu Exp $
+## $Id: configure.ac,v 1.4 2003-05-27 16:53:51 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -7,14 +7,32 @@
 ##
 # Prologue.
 ##
-AC_INIT([whatsup], [1.0], [chu11@llnl.gov])
+AC_INIT
 AC_CONFIG_AUX_DIR([config])
 AC_CANONICAL_SYSTEM
 
 ##
+# Determine Project/Version/Release
+##
+PROJECT="`perl -ne 'print,exit if s/^\s*NAME:\s*(\S*).*/\1/i' $srcdir/META`"
+AC_DEFINE_UNQUOTED(PROJECT, "$PROJECT", [Define the project's name.])
+AC_SUBST(PROJECT)
+
+# Automake desires "PACKAGE" variable instead of PROJECT
+PACKAGE=$PROJECT
+
+VERSION="`perl -ne 'print,exit if s/^\s*VERSION:\s*(\S*).*/\1/i' $srcdir/META`"
+AC_DEFINE_UNQUOTED(VERSION, "$VERSION", [Define the project's version.])
+AC_SUBST(VERSION)
+
+RELEASE="`perl -ne 'print,exit if s/^\s*RELEASE:\s*(\S*).*/\1/i' $srcdir/META`"
+AC_DEFINE_UNQUOTED(RELEASE, "$RELEASE", [Define the project's release.])
+AC_SUBST(RELEASE)
+
+##
 # Automake support.
 ##
-AM_INIT_AUTOMAKE([check-news dist-bzip2 gnu])
+AM_INIT_AUTOMAKE($PROJECT, $VERSION)
 AM_CONFIG_HEADER([config/config.h])
 AM_MAINTAINER_MODE
 
@@ -31,14 +49,16 @@ AC_PROG_MAKE_SET
 AC_HEADER_STDC
 AC_CHECK_HEADERS( \
   errno.h \
+  fcntl.h \
+  gendersllnl.h \
+  ganglia.h \
+  socket.h \
+  time.h \
+  types.h \
   stdlib.h \
   stdio.h \
   string.h \
-  strings.h \
   unistd.h \
-  ganglia.h \
-  genders.h \
-  gendersllnl.h \
 )
 
 ##

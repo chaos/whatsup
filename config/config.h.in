@@ -6,14 +6,14 @@
 /* Define to 1 if you have the <errno.h> header file. */
 #undef HAVE_ERRNO_H
 
+/* Define to 1 if you have the <fcntl.h> header file. */
+#undef HAVE_FCNTL_H
+
 /* Define to 1 if you have the <ganglia.h> header file. */
 #undef HAVE_GANGLIA_H
 
 /* Define to 1 if you have the <gendersllnl.h> header file. */
 #undef HAVE_GENDERSLLNL_H
-
-/* Define to 1 if you have the <genders.h> header file. */
-#undef HAVE_GENDERS_H
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
@@ -32,6 +32,9 @@
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the <socket.h> header file. */
+#undef HAVE_SOCKET_H
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
@@ -72,6 +75,12 @@
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
 
+/* Define to 1 if you have the <time.h> header file. */
+#undef HAVE_TIME_H
+
+/* Define to 1 if you have the <types.h> header file. */
+#undef HAVE_TYPES_H
+
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
@@ -95,6 +104,12 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
+
+/* Define the project's name. */
+#undef PROJECT
+
+/* Define the project's release. */
+#undef RELEASE
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS

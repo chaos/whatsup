@@ -7,14 +7,14 @@
 /* Define to 1 if you have the <errno.h> header file. */
 #define HAVE_ERRNO_H 1
 
+/* Define to 1 if you have the <fcntl.h> header file. */
+#define HAVE_FCNTL_H 1
+
 /* Define to 1 if you have the <ganglia.h> header file. */
 #define HAVE_GANGLIA_H 1
 
 /* Define to 1 if you have the <gendersllnl.h> header file. */
-#define HAVE_GENDERSLLNL_H 1
-
-/* Define to 1 if you have the <genders.h> header file. */
-#define HAVE_GENDERS_H 1
+/* #undef HAVE_GENDERSLLNL_H */
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
@@ -26,13 +26,16 @@
 #define HAVE_LIBGENDERS 1
 
 /* Define to 1 if you have the `gendersllnl' library (-lgendersllnl). */
-#define HAVE_LIBGENDERSLLNL 1
+/* #undef HAVE_LIBGENDERSLLNL */
 
 /* Define to 1 if your system has a working `malloc' function. */
 #define HAVE_MALLOC 1
 
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
+
+/* Define to 1 if you have the <socket.h> header file. */
+/* #undef HAVE_SOCKET_H */
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #define HAVE_STDINT_H 1
@@ -73,6 +76,12 @@
 /* Define to 1 if you have the <sys/types.h> header file. */
 #define HAVE_SYS_TYPES_H 1
 
+/* Define to 1 if you have the <time.h> header file. */
+#define HAVE_TIME_H 1
+
+/* Define to 1 if you have the <types.h> header file. */
+/* #undef HAVE_TYPES_H */
+
 /* Define to 1 if you have the <unistd.h> header file. */
 #define HAVE_UNISTD_H 1
 
@@ -83,19 +92,25 @@
 #define PACKAGE "whatsup"
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "chu11@llnl.gov"
+#define PACKAGE_BUGREPORT ""
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME "whatsup"
+#define PACKAGE_NAME ""
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "whatsup 1.0"
+#define PACKAGE_STRING ""
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "whatsup"
+#define PACKAGE_TARNAME ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.0"
+#define PACKAGE_VERSION ""
+
+/* Define the project's name. */
+#define PROJECT "whatsup"
+
+/* Define the project's release. */
+#define RELEASE "6"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
