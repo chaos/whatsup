@@ -1,6 +1,7 @@
 2003-01-14  Albert Chu  <chu11@llnl.gov>
 
-	* src/whatsup/whatsup.c (read_stdin, push_nodestring): New functions.
+	* src/whatsup/whatsup.c (read_stdin, push_nodestring): New
+	functions.
 
 	* src/whatsup/whatsup.c (cmdline_parse): Add '-' functionality and
 	use read_stdin and push_nodestring functions.
@@ -9,6 +10,15 @@
 	depending on up vs. down success.
 
 	* man/whatsup.1: Updated for '-' option.
+
+	Significantly cleaned up whatsup code
+	
+	* src/whatsup/whatsup.c (_err_init, _err_exit): New functions.
+
+	* src/whatsup/whatsup.c: Use new _err_exit function globally.
+	Output more appropriate messages on errors.  Modify code style and
+	error output to fit GNU coding standards more closely.  Renamed
+	numerous functions.
 
 2003-01-12  Albert Chu  <chu11@llnl.gov>
 
