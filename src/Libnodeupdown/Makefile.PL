@@ -18,7 +18,6 @@ WriteMakefile(
     # HAVE_CONFIG_H for config.h
     # Undefine VERSION, it collides with VERSION from config.h
     'DEFINE'		=> '-DHAVE_CONFIG_H -UVERSION',
-    'INC'		=> '-I../../config -I../libcommon -I../libexpat -I../libnodeupdown',
      
     # If you do hostlist.o nodeupdown.o ... etc.  MakeMaker fails.  I
     # don't know why.  I've made it the responsibility of Makefile.am

@@ -1,3 +1,8 @@
+2004-06-21  Albert Chu  <chu11@llnl.gov>
+
+	* src/Libgnodeupdown/Makefile.am, src/Nodeupdown/Makefile.am,
+	src/Libnodeupdown/Makefile.PL: Distcheck fixes.
+	
 2004-06-08  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/Makefile.am, src/Libnodeupdown/Makefile.am,

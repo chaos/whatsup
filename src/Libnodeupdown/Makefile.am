@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.12 2004-06-08 16:18:13 achu Exp $
+## $Id: Makefile.am,v 1.13 2004-06-21 21:29:23 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -8,6 +8,8 @@
 # into the correct location
 
 PERL_INSTALL_PREFIX = @PERL_INSTALL_PREFIX@
+
+PERL_INC = "-I../../config -I$(srcdir)/../libcommon -I$(srcdir)/../libexpat -I$(srcdir)/../libnodeupdown"
 
 all: Makefile.xs
 	$(MAKE) -f Makefile.xs
@@ -18,7 +20,20 @@ Makefile.xs: Makefile.PL Libnodeupdown.xs Libnodeupdown.pm
 	cp -f $(srcdir)/../libexpat/xmlrole.c .
 	cp -f $(srcdir)/../libexpat/xmltok.c .
 	cp -f $(srcdir)/../libnodeupdown/*.c .
-	$(PERL) $(srcdir)/Makefile.PL PREFIX=$(PERL_INSTALL_PREFIX) MAKEFILE=Makefile.xs FIRST_MAKEFILE=Makefile.xs
+# Hacks to make distcheck work
+	if ! test -a Makefile.PL; then \
+		cp $(srcdir)/Makefile.PL .; \
+	fi
+	if ! test -a typemap; then \
+		cp $(srcdir)/typemap .; \
+	fi
+	if ! test -a Libnodeupdown.pm; then \
+		cp $(srcdir)/Libnodeupdown.pm .; \
+	fi
+	if ! test -a Libnodeupdown.xs; then \
+		cp $(srcdir)/Libnodeupdown.xs .; \
+	fi
+	$(PERL) Makefile.PL PREFIX=$(PERL_INSTALL_PREFIX) MAKEFILE=Makefile.xs FIRST_MAKEFILE=Makefile.xs INC=$(PERL_INC) 
 
 test: Makefile.xs 
 	$(MAKE) -f Makefile.xs test
@@ -33,7 +48,9 @@ install-data-local:
 	$(MAKE) -f Makefile.xs pure_install
 
 clean: 
-	if test -a Makefile.xs; then $(MAKE) -f Makefile.xs clean; fi
+	if test -a Makefile.xs; then \
+		$(MAKE) -f Makefile.xs clean; \
+	fi
 	rm -f *.c
 	rm -f *.h
 	rm -f *.o

@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.6 2004-06-08 16:18:13 achu Exp $
+## $Id: Makefile.am,v 1.7 2004-06-21 21:29:23 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -13,7 +13,14 @@ all: Makefile.pm
 	$(MAKE) -f Makefile.pm
 
 Makefile.pm: Makefile.PL
-	$(PERL) $(srcdir)/Makefile.PL PREFIX=$(PERL_INSTALL_PREFIX) MAKEFILE=Makefile.pm FIRST_MAKEFILE=Makefile.pm
+# Hacks to make distcheck work
+	if ! test -a Makefile.PL; then \
+		cp $(srcdir)/Makefile.PL .; \
+	fi
+	if ! test -a Nodeupdown.pm; then \
+		cp $(srcdir)/Nodeupdown.pm .; \
+	fi
+	$(PERL) Makefile.PL PREFIX=$(PERL_INSTALL_PREFIX) MAKEFILE=Makefile.pm FIRST_MAKEFILE=Makefile.pm
 
 install: Makefile.pm
 	$(MAKE) -f Makefile.pm pure_install
