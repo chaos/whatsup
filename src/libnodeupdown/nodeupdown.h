@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown.h,v 1.17 2003-04-24 18:35:25 achu Exp $
+ *  $Id: nodeupdown.h,v 1.18 2003-04-25 18:54:05 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h,v $
  *    
  */
@@ -104,64 +104,36 @@ int nodeupdown_dump(nodeupdown_t handle, FILE *stream);
  * - buffer space assumed to be preallocated with length buflen
  * - returns 0 on success, -1 on error
  */
-int nodeupdown_get_up_nodes_string(nodeupdown_t handle, char *buf, int buflen);
+int nodeupdown_get_up_nodes_string(nodeupdown_t handle, 
+                                   char *buf, 
+                                   int buflen);
 
 /* nodeupdown_get_down_nodes_string
  * - retrieve a ranged string of down nodes
  * - buffer space assumed to be preallocated with length buflen
  * - returns 0 on success, -1 on error
  */
-int nodeupdown_get_down_nodes_string(nodeupdown_t handle, char *buf, int buflen);
+int nodeupdown_get_down_nodes_string(nodeupdown_t handle, 
+                                     char *buf, 
+                                     int buflen);
 
 /* nodeupdown_get_up_nodes_list
  * - retrieve a list of up nodes
  * - list assumed to be preallocated with len elements
  * - returns number of nodes copied on success, -1 on error
  */
-int nodeupdown_get_up_nodes_list(nodeupdown_t handle, char **list, int len);
+int nodeupdown_get_up_nodes_list(nodeupdown_t handle, 
+                                 char **list, 
+                                 int len);
 
 /* nodeupdown_get_down_nodes_list
  * - retrieve a list of down nodes
  * - list assumed to be preallocated with len elements
  * - returns number of nodes copied on success, -1 on error
  */
-int nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len);
-
-/* nodeupdown_get_up_nodes_string_altnames
- * - retrieve ranged string of up nodes with alternate names
- * - buffer space assumed to be preallocated with length buflen
- * - returns 0 on success, -1 on error
- */
-int nodeupdown_get_up_nodes_string_altnames(nodeupdown_t handle, 
-                                            char *buf, 
-                                            int buflen);
-
-/* nodeupdown_get_down_nodes_string_altnames
- * - retrieve ranged string of down nodes with alternate names
- * - buffer space assumed to be preallocated with length buflen
- * - returns 0 on success, -1 on error
- */
-int nodeupdown_get_down_nodes_string_altnames(nodeupdown_t handle, 
-                                              char *buf, 
-                                              int buflen);
-
-/* nodeupdown_get_up_nodes_list_altnames
- * - retrieve list of up nodes with alternate names
- * - list assumed to be preallocated with len elements
- * - returns number of nodes copied on success, -1 on error
- */
-int nodeupdown_get_up_nodes_list_altnames(nodeupdown_t handle, 
-                                          char **list, 
-                                          int len);
-
-/* nodeupdown_get_down_nodes_list_altnames
- * - retrieve list of down nodes with alternate names
- * - list assumed to be preallocated with len elements
- * - returns number of nodes copied on success, -1 on error
- */
-int nodeupdown_get_down_nodes_list_altnames(nodeupdown_t handle, 
-                                            char **list, 
-                                            int len);
+int nodeupdown_get_down_nodes_list(nodeupdown_t handle, 
+                                   char **list, 
+                                   int len);
 
 /* nodeupdown_is_node_up
  * - check if a node is up
@@ -176,28 +148,6 @@ int nodeupdown_is_node_up(nodeupdown_t handle, char *node);
  * - returns 1 if down, 0 if up, -1 on error
  */
 int nodeupdown_is_node_down(nodeupdown_t handle, char *node);
-
-/* nodeupdown_convert_string_to_altnames
- * - converts the ranged string to a string of alternate names
- * - buffer space assumed to be both preallocated with length buflen
- * - returns 0 on success, -1 on error
- */
-int nodeupdown_convert_string_to_altnames(nodeupdown_t handle, 
-                                          char *src,
-                                          char *dest,
-                                          int buflen);
-
-/* nodeupdown_convert_list_to_altnames
- * - converts the list to alternate names
- * - num_src_nodes indicates the number of nodes stored in src
- * - lists assumed to be both preallocated lists of atleast 
- *   num_src_nodes elements
- * - returns 0 on success, -1 on error
- */
-int nodeupdown_convert_list_to_altnames(nodeupdown_t handle, 
-                                        char **src, 
-                                        char **dest,
-                                        int num_src_nodes);
 
 /* nodeupdown_nodelist_create
  * - allocate an array to store node names in
