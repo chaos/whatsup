@@ -1,6 +1,5 @@
-
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.6 2004-01-12 19:54:22 achu Exp $
+ *  $Id: conffile.c,v 1.7 2004-01-12 22:39:27 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -53,6 +52,7 @@ struct conffile {
     int line_count;
     int end_of_file;
     void *app_ptr;
+    int app_ptr_arg;
     int flags;
     char optionname[CONFFILE_MAX_OPTIONNAMELEN];
 };
@@ -184,6 +184,7 @@ _setup(conffile_t cf,
        struct conffile_option *options,
        int options_len,
        void *app_ptr,
+       int app_ptr_arg,
        int flags)
 {
     int i;
@@ -207,6 +208,7 @@ _setup(conffile_t cf,
     cf->line_count = 0;
     cf->end_of_file = 0;
     cf->app_ptr = app_ptr;
+    cf->app_ptr_arg = app_ptr_arg;
     cf->flags = flags;
     memset(cf->optionname, '\0', CONFFILE_MAX_OPTIONNAMELEN);
 
@@ -501,10 +503,10 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
         return -1;
     }
 
-    if (((option->option_type == CONFFILE_OPTION_INT
+    if (((option->option_type == CONFFILE_OPTION_BOOL
+          || option->option_type == CONFFILE_OPTION_INT
           || option->option_type == CONFFILE_OPTION_DOUBLE
           || option->option_type == CONFFILE_OPTION_STRING
-          || option->option_type == CONFFILE_OPTION_BOOL
           || option->option_type == CONFFILE_OPTION_LIST_INT
           || option->option_type == CONFFILE_OPTION_LIST_DOUBLE
           || option->option_type == CONFFILE_OPTION_LIST_STRING)
@@ -513,10 +515,10 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
         return -1;
     }
 
-    if (((option->option_type == CONFFILE_OPTION_INT
+    if (((option->option_type == CONFFILE_OPTION_BOOL
+          || option->option_type == CONFFILE_OPTION_INT
           || option->option_type == CONFFILE_OPTION_DOUBLE
-          || option->option_type == CONFFILE_OPTION_STRING
-          || option->option_type == CONFFILE_OPTION_BOOL)
+          || option->option_type == CONFFILE_OPTION_STRING)
          && numargs > 1)) {
         cf->errnum = CONFFILE_ERR_PARSE_ARG_TOOMANY;
         return -1;
@@ -554,16 +556,8 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
 
     /* Calculate Data */
 
-    if (option->option_type == CONFFILE_OPTION_INT)
-        data.intval = atoi(args[0]);
-    else if (option->option_type == CONFFILE_OPTION_DOUBLE)
-        data.doubleval = strtod(args[0], NULL);
-    else if (option->option_type == CONFFILE_OPTION_STRING) {
-        strncpy(data.string, args[0], CONFFILE_MAX_ARGLEN);
-        data.string[CONFFILE_MAX_ARGLEN - 1] = '\0';
-    }
-    else if (option->option_type == CONFFILE_OPTION_BOOL) {
-        if (!strcmp(args[0], "1") 
+    if (option->option_type == CONFFILE_OPTION_BOOL) {
+        if (!strcmp(args[0], "1")
             || !strcasecmp(args[0], "y")
             || !strcasecmp(args[0], "yes")
             || !strcasecmp(args[0], "on")
@@ -572,6 +566,14 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
             data.bool = 1;
         else
             data.bool = 0;
+    }
+    else if (option->option_type == CONFFILE_OPTION_INT)
+        data.intval = atoi(args[0]);
+    else if (option->option_type == CONFFILE_OPTION_DOUBLE)
+        data.doubleval = strtod(args[0], NULL);
+    else if (option->option_type == CONFFILE_OPTION_STRING) {
+        strncpy(data.string, args[0], CONFFILE_MAX_ARGLEN);
+        data.string[CONFFILE_MAX_ARGLEN - 1] = '\0';
     }
     else if (option->option_type == CONFFILE_OPTION_LIST_INT) {
         int i;
@@ -595,18 +597,22 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
     }
 
     cf->errnum = CONFFILE_ERR_SUCCESS;
-    rv = (option->callback_func)(option->optionname,
-                                 option->option_type,
-                                 &data,
-                                 option->option_ptr,
-                                 cf->app_ptr);
-    if (rv < 0) {
-        if (cf->errnum == CONFFILE_ERR_SUCCESS)
-            cf->errnum = CONFFILE_ERR_PARSE_CALLBACK;
-        return -1;
+    if (option->callback_func) {
+        rv = (option->callback_func)(cf,
+                                     option->optionname,
+                                     option->option_type,
+                                     &data,
+                                     option->option_ptr,
+                                     option->option_ptr_arg,
+                                     cf->app_ptr,
+                                     cf->app_ptr_arg);
+        if (rv < 0) {
+            if (cf->errnum == CONFFILE_ERR_SUCCESS)
+                cf->errnum = CONFFILE_ERR_PARSE_CALLBACK;
+            return -1;
+        }
     }
 
-    cf->errnum = CONFFILE_ERR_SUCCESS;
     return 0;
 }
 
@@ -616,8 +622,8 @@ conffile_parse(conffile_t cf,
                struct conffile_option *options,
                int options_len,
                void *app_ptr,
+               int app_ptr_arg,
                int flags)
-
 {
     int i, j, len, retval = -1;
     char linebuf[CONFFILE_MAX_LINELEN];
@@ -632,22 +638,23 @@ conffile_parse(conffile_t cf,
 
     /* Ensure option array is legitimate */ 
     for (i = 0; i < options_len; i++) {
-      if (options[i].optionname == NULL
-          || strlen(options[i].optionname) >= CONFFILE_MAX_OPTIONNAMELEN
-          || options[i].option_type < CONFFILE_OPTION_IGNORE
-          || options[i].option_type > CONFFILE_OPTION_LIST_STRING
-          || (options[i].option_type != CONFFILE_OPTION_IGNORE
-              && options[i].callback_func == NULL)
-          || ((options[i].option_type == CONFFILE_OPTION_LIST_INT
-               || options[i].option_type == CONFFILE_OPTION_LIST_DOUBLE
-               || options[i].option_type == CONFFILE_OPTION_LIST_STRING)
-              && ((int)options[i].option_type_arg) == 0)
-          || options[i].max_count < 0
-          || options[i].required_count < 0
-          || options[i].count_ptr == NULL) {
-          cf->errnum = CONFFILE_ERR_PARAMETERS;
-          return -1;
-      }
+        if (options[i].optionname == NULL
+            || strlen(options[i].optionname) >= CONFFILE_MAX_OPTIONNAMELEN
+            || options[i].option_type < CONFFILE_OPTION_IGNORE
+            || options[i].option_type > CONFFILE_OPTION_LIST_STRING
+            || ((options[i].option_type != CONFFILE_OPTION_IGNORE
+                 && options[i].option_type != CONFFILE_OPTION_FLAG)
+                && options[i].callback_func == NULL)
+            || ((options[i].option_type == CONFFILE_OPTION_LIST_INT
+                 || options[i].option_type == CONFFILE_OPTION_LIST_DOUBLE
+                 || options[i].option_type == CONFFILE_OPTION_LIST_STRING)
+                && ((int)options[i].option_type_arg) == 0)
+            || options[i].max_count < 0
+            || options[i].required_count < 0
+            || options[i].count_ptr == NULL) {
+            cf->errnum = CONFFILE_ERR_PARAMETERS;
+            return -1;
+        }
     }
 
     /* count_ptr cannot be identical to any other count_ptr */
@@ -660,7 +667,7 @@ conffile_parse(conffile_t cf,
         }
     }
 
-    if (_setup(cf, filename, options, options_len, app_ptr, flags) < 0)
+    if (_setup(cf, filename, options, options_len, app_ptr, app_ptr_arg, flags) < 0)
         goto cleanup;
 
     while (cf->end_of_file == 0 && 
@@ -690,3 +697,55 @@ conffile_parse(conffile_t cf,
     close(cf->fd);
     return retval;
 }
+
+     
+CONFFILE_OPTION_FUNC(conffile_empty)
+{
+    return 0;
+}
+
+CONFFILE_OPTION_FUNC(conffile_bool)
+{
+    if (option_ptr == NULL) {
+        conffile_seterrnum(cf, CONFFILE_ERR_PARAMETERS);
+        return -1;
+    }
+
+    *((int *)option_ptr) = data->bool;
+    return 0;
+}
+
+CONFFILE_OPTION_FUNC(conffile_intval)
+{
+    if (option_ptr == NULL) {
+        conffile_seterrnum(cf, CONFFILE_ERR_PARAMETERS);
+        return -1;
+    }
+
+    *((int *)option_ptr) = data->intval;
+    return 0;
+}
+
+CONFFILE_OPTION_FUNC(conffile_doubleval)
+{
+    if (option_ptr == NULL) {
+        conffile_seterrnum(cf, CONFFILE_ERR_PARAMETERS);
+        return -1;
+    }
+
+    *((double *)option_ptr) = data->doubleval;
+    return 0;
+}
+
+CONFFILE_OPTION_FUNC(conffile_string)
+{
+    if (option_ptr == NULL || option_ptr_arg <= 0) {
+        conffile_seterrnum(cf, CONFFILE_ERR_PARAMETERS);
+        return -1;
+    }
+
+    strncpy((char *)option_ptr, data->string, option_ptr_arg);
+    ((char *)option_ptr)[option_ptr_arg - 1] = '\0';
+    return 0;
+}
+

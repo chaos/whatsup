@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.h,v 1.4 2004-01-12 19:54:22 achu Exp $
+ *  $Id: conffile.h,v 1.5 2004-01-12 22:39:27 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -107,12 +107,12 @@
  * IGNORE - up to MAX_ARGS arguments, will not call a callback function
  *        - useful for deprecating old configuration options
  * FLAG - no arguments, returns no arguments
- * INT - 1 argument, returns an integer
- * DOUBLE - 1 argument, returns a double
- * STRING - 1 argument, returns a string
  * BOOL - 1 argument, returns 1 or 0 
  *      - the following indicate 1 - "1", "y", "yes", "on", "t", "true"  
  *      - the following indicate 0 - "0", "n", "no" "off", "f", "false"  
+ * INT - 1 argument, returns an integer
+ * DOUBLE - 1 argument, returns a double
+ * STRING - 1 argument, returns a string
  * LIST_INT - up to MAX_ARGS integer args
  * LIST_DOUBLE - up to MAX_ARGS double args
  * LIST_STRING - up to MAX_ARGS string args, each string up to 
@@ -123,6 +123,9 @@
  * desired, or < 0 for a variable length list.  For all other option
  * types option_type_arg will be ignored.
  *
+ * Callback functions are required for all of the above option types
+ * except for IGNORE and FLAG
+ *
  * If an argument is missing a PARSE_NO_ARG error is returned.  If the
  * incorrect number of arguments is listed, PARSE_NUM_ARGS is
  * returned.  If an invalid argument is listed, PARSE_INVALID_ARG is
@@ -131,10 +134,10 @@
  */
 #define CONFFILE_OPTION_IGNORE                 0x00
 #define CONFFILE_OPTION_FLAG                   0x01
-#define CONFFILE_OPTION_INT                    0x02
-#define CONFFILE_OPTION_DOUBLE                 0x03
-#define CONFFILE_OPTION_STRING                 0x04
-#define CONFFILE_OPTION_BOOL                   0x05
+#define CONFFILE_OPTION_BOOL                   0x02
+#define CONFFILE_OPTION_INT                    0x03
+#define CONFFILE_OPTION_DOUBLE                 0x04
+#define CONFFILE_OPTION_STRING                 0x05
 #define CONFFILE_OPTION_LIST_INT               0x06
 #define CONFFILE_OPTION_LIST_DOUBLE            0x07
 #define CONFFILE_OPTION_LIST_STRING            0x08
@@ -213,10 +216,10 @@ typedef struct conffile *conffile_t;
  * it wishes to save.
  */
 struct conffile_data {
+    int bool;
     int intval;
     double doubleval;
     char string[CONFFILE_MAX_ARGLEN];
-    int bool;
     int intlist[CONFFILE_MAX_ARGS];
     int intlist_len;
     double doublelist[CONFFILE_MAX_ARGS];
@@ -238,14 +241,19 @@ struct conffile_data {
  *     accessed depends on the option type.
  * 'option_ptr' is a pointer to data specified through a
  *     struct conffile_option type.  See below.
+ * 'option_ptr_arg' is an integer to data specified through a
+ *     struct conffile_option type.  See below.
  * 'app_ptr' is a pointer to data specified in conffile_setup().
+ * 'app_ptr_arg' is an integer specified in conffile_setup().
  *
- * Typically, the option_ptr will point to a buffer to store argument
- * data.  The callback function then stores data into the buffer from
- * the data pointed at by the 'data' pointer.  The app_ptr is a
- * pointer to data passed into the conffile_setup() function.  It can
- * be used for anything.  For example, it could be used to handle
- * separate contexts within a configuration file.
+ * Typically, the option_ptr and option_ptr_arg will point to a buffer
+ * and its length to store argument data.  The The callback function
+ * then copies data into the buffer from the data pointed at by the
+ * 'data' pointer.  However, they may be used for any purpose.
+ *
+ * The app_ptr and app_ptr_arg are passed via the conffile_setup()
+ * function.  Typically, they are used to handle contexts within 
+ * the configuration file, but they may be used for any purpose.
  *
  * The function should return 0 if the argument was read properly and
  * the parser should continue parsing.  Return -1 if an error has
@@ -255,11 +263,25 @@ struct conffile_data {
  * no error code is set, ERR_CALLBACK will be passed back from
  * conffile_parse().
  */
-typedef int (*conffile_option_func)(char *optionname,
+typedef int (*conffile_option_func)(conffile_t cf,
+                                    char *optionname,
                                     int option_type,
                                     struct conffile_data *data,
                                     void *option_ptr,
-                                    void *app_ptr);
+                                    int option_ptr_arg,
+                                    void *app_ptr,
+                                    int app_ptr_arg);
+
+#define CONFFILE_OPTION_FUNC(func_name) \
+  int \
+  func_name(conffile_t cf, \
+            char *optionname, \
+            int option_type, \
+            struct conffile_data *data, \
+            void *option_ptr, \
+            int option_ptr_arg,\
+            void *app_ptr, \
+            int app_ptr_arg)
 
 /* conffile_option
  *
@@ -283,6 +305,8 @@ typedef int (*conffile_option_func)(char *optionname,
  * 'option_ptr' is a pointer to data that will be passed to the callback
  *     function.  Typically, a buffer pointer is passed.  This parameter
  *     is optional and can be set to NULL.
+ * 'option_ptr_arg' is an integer that will be passed to the callback
+ *     function.  Typically this is a buffer length.
  *
  */
 struct conffile_option {
@@ -294,6 +318,7 @@ struct conffile_option {
     int required_count;
     int *count_ptr;
     void *option_ptr;
+    int option_ptr_arg;
 };
 
 /* API */
@@ -344,6 +369,47 @@ int conffile_seterrnum(conffile_t cf, int errnum);
  */
 int conffile_parse(conffile_t cf, char *filename,
                    struct conffile_option *options,
-                   int options_len, void *app_ptr, int flags);
+                   int options_len, void *app_ptr, int app_ptr_arg,
+                   int flags);
+
+/* conffile_empty
+ *
+ * An empty callback function that returns 0.
+ */
+CONFFILE_OPTION_FUNC(conffile_empty);
+
+/* conffile_bool
+ *
+ * Generic callback function for bools.  Assumes option_ptr is a
+ * pointer to an integer, stores the argument, and returns 0.  If
+ * option_ptr is NULL, sets errnum to ERR_PARAMETERS, and returns -1.
+ */
+CONFFILE_OPTION_FUNC(conffile_bool);
+
+/* conffile_intval
+ *
+ * Generic callback function for ints.  Assumes option_ptr is a
+ * pointer to an integer, stores the argument, and returns 0.  If
+ * option_ptr is NULL, sets errnum to ERR_PARAMETERS, and returns -1.
+ */
+CONFFILE_OPTION_FUNC(conffile_int);
+
+/* conffile_doubleval
+ *
+ * Generic callback function for doubles.  Assumes option_ptr is a
+ * pointer to a double, stores the argument, and returns 0.  If
+ * option_ptr is NULL, sets errnum to ERR_PARAMETERS, and returns -1.
+ */
+CONFFILE_OPTION_FUNC(conffile_double);
+
+/* conffile_string
+ *
+ * Generic callback function for strings.  Assumes option_ptr is a
+ * pointer to a buffer and option_ptr_arg is the buffer's length,
+ * stores the argument, and returns 0.  If option_ptr is NULL or
+ * option_ptr_arg is <= 0, sets errnum to ERR_PARAMETERS, and returns
+ * -1.
+ */
+CONFFILE_OPTION_FUNC(conffile_string);
 
 #endif /* _CONFFILE_H */
