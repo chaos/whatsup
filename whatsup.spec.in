@@ -13,8 +13,6 @@ Whatsup is a cluster node up/down detection utility.
 %{!?_with_genders: %{!?_without_genders: %define _with_genders --with-genders}}
 %{!?_with_gendersllnl: %{!?_without_gendersllnl: %define _with_gendersllnl --with-gendersllnl}}
 
-%if %{?_with_llnl:0}%{!?_with_llnl:1}
-
 %package gendersllnl
 Summary: whatsup gendersllnl modules package
 Group: System Environment/Base
@@ -37,8 +35,6 @@ Group: System Environment/Base
 Requires: whatsup
 %description hostsfile
 Hostsfile modules packages.
-
-%endif
 
 %prep
 %setup -q -n %{name}-%{version}-%{release}

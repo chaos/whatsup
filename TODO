@@ -9,6 +9,3 @@ for rework
 - static modules
 - doc updates
   - manpages and readmes
-- spec file work around
-  - llnl specific - 1 rpm
-  - outside llnl - multiple rpms
