@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.12 2003-11-06 00:53:29 achu Exp $
+## $Id: configure.ac,v 1.13 2003-11-06 01:10:18 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -179,12 +179,13 @@ AC_CONFIG_FILES( \
   Makefile \
   whatsup.spec \
   src/Makefile \
+  src/libcommon/Makefile \
   src/libnodeupdown/Makefile \
-  src/whatsup/Makefile \
-  man/Makefile \
   src/libnodeupdown/nodeupdown.h
+  src/whatsup/Makefile \
   src/Libnodeupdown/Makefile \
   src/Nodeupdown/Makefile \
+  man/Makefile \
   man/libnodeupdown.3 \
   man/nodeupdown_load_data.3 \
   man/whatsup.1 \

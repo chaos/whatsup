@@ -1,5 +1,5 @@
 /*****************************************************************************
- *  $Id: fd.c,v 1.1 2003-11-06 00:53:29 achu Exp $
+ *  $Id: fd.c,v 1.1 2003-11-06 01:10:18 achu Exp $
  *****************************************************************************
  *  This file is part of the Munge Uid 'N' Gid Emporium (MUNGE).
  *  For details, see <http://www.llnl.gov/linux/munge/>.

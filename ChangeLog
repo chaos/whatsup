@@ -1,3 +1,15 @@
+2003-11-06  Albert Chu  <chu11@llnl.gov>
+
+	* src/libcommon/: New libcommon for common files.
+
+	* src/libnodeupdown/hostlist.h, src/libnodeupdown/hostlist.c,
+	src/libnodeupdown/fd.h, src/libnodeupdown/fd.c,
+	src/whatsup/hostlist.h, src/whatsup/hostlist.c: Moved into
+	/src/libcommon.
+
+	* src/libnodeupdown/Makefile.am, src/whatsup/Makefile.am: Updated
+	for use of libcommon.
+
 2003-11-05  Albert Chu  <chu11@llnl.gov>
 
 	various code/configuration  cleaned up
