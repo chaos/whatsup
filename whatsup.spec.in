@@ -64,12 +64,10 @@ rm -rf "$RPM_BUILD_ROOT"
 %define _perldir %(perl -e 'use Config; $T=$Config{installsitearch}; $T=~/(.*)\\/site_perl.*/; print $1;')
 %{_bindir}/*
 %{_includedir}/*
-%if %{?_with_llnl:1}%{!?_with_llnl:0}
-%{_libdir}/*
-%else
-%{_libdir}/libnodeupdown.*
+%if %{?_with_llnl:0}%{!?_with_llnl:1}
 %{_libdir}/nodeupdown/*none.*
 %endif
+%{_libdir}/libnodeupdown.*
 %{_perldir}/*
 %{_mandir}/*
 
