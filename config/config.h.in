@@ -9,6 +9,9 @@
 /* Define to 1 if you have the <ganglia.h> header file. */
 #undef HAVE_GANGLIA_H
 
+/* Define to 1 if you have the <gendersllnl.h> header file. */
+#undef HAVE_GENDERSLLNL_H
+
 /* Define to 1 if you have the <genders.h> header file. */
 #undef HAVE_GENDERS_H
 
@@ -20,6 +23,9 @@
 
 /* Define to 1 if you have the `genders' library (-lgenders). */
 #undef HAVE_LIBGENDERS
+
+/* Define to 1 if you have the `gendersllnl' library (-lgendersllnl). */
+#undef HAVE_LIBGENDERSLLNL
 
 /* Define to 1 if your system has a working `malloc' function. */
 #undef HAVE_MALLOC

@@ -7563,6 +7563,7 @@ fi
 
 
 
+
 for ac_header in \
   errno.h \
   stdlib.h \
@@ -7572,6 +7573,7 @@ for ac_header in \
   unistd.h \
   ganglia.h \
   genders.h \
+  gendersllnl.h \
 
 do
 as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
@@ -8400,6 +8402,71 @@ done
 # Check for genders and ganglia libraries that we need
 ##
 
+echo "$as_me:$LINENO: checking for XML_ParserCreate in -lganglia" >&5
+echo $ECHO_N "checking for XML_ParserCreate in -lganglia... $ECHO_C" >&6
+if test "${ac_cv_lib_ganglia_XML_ParserCreate+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lganglia  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+#include "confdefs.h"
+
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char XML_ParserCreate ();
+#ifdef F77_DUMMY_MAIN
+#  ifdef __cplusplus
+     extern "C"
+#  endif
+   int F77_DUMMY_MAIN() { return 1; }
+#endif
+int
+main ()
+{
+XML_ParserCreate ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_ganglia_XML_ParserCreate=yes
+else
+  echo "$as_me: failed program was:" >&5
+cat conftest.$ac_ext >&5
+ac_cv_lib_ganglia_XML_ParserCreate=no
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_ganglia_XML_ParserCreate" >&5
+echo "${ECHO_T}$ac_cv_lib_ganglia_XML_ParserCreate" >&6
+if test $ac_cv_lib_ganglia_XML_ParserCreate = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBGANGLIA 1
+_ACEOF
+
+  LIBS="-lganglia $LIBS"
+
+fi
+
+
 echo "$as_me:$LINENO: checking for genders_handle_create in -lgenders" >&5
 echo $ECHO_N "checking for genders_handle_create in -lgenders... $ECHO_C" >&6
 if test "${ac_cv_lib_genders_genders_handle_create+set}" = set; then
@@ -8465,13 +8532,13 @@ _ACEOF
 fi
 
 
-echo "$as_me:$LINENO: checking for ganglia_cluster_init in -lganglia" >&5
-echo $ECHO_N "checking for ganglia_cluster_init in -lganglia... $ECHO_C" >&6
-if test "${ac_cv_lib_ganglia_ganglia_cluster_init+set}" = set; then
+echo "$as_me:$LINENO: checking for genders_string_to_altnames_preserve in -lgendersllnl" >&5
+echo $ECHO_N "checking for genders_string_to_altnames_preserve in -lgendersllnl... $ECHO_C" >&6
+if test "${ac_cv_lib_gendersllnl_genders_string_to_altnames_preserve+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lganglia  $LIBS"
+LIBS="-lgendersllnl  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
 #include "confdefs.h"
@@ -8482,7 +8549,7 @@ extern "C"
 #endif
 /* We use char because int might match the return type of a gcc2
    builtin and then its argument prototype would still apply.  */
-char ganglia_cluster_init ();
+char genders_string_to_altnames_preserve ();
 #ifdef F77_DUMMY_MAIN
 #  ifdef __cplusplus
      extern "C"
@@ -8492,7 +8559,7 @@ char ganglia_cluster_init ();
 int
 main ()
 {
-ganglia_cluster_init ();
+genders_string_to_altnames_preserve ();
   ;
   return 0;
 }
@@ -8509,23 +8576,23 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_lib_ganglia_ganglia_cluster_init=yes
+  ac_cv_lib_gendersllnl_genders_string_to_altnames_preserve=yes
 else
   echo "$as_me: failed program was:" >&5
 cat conftest.$ac_ext >&5
-ac_cv_lib_ganglia_ganglia_cluster_init=no
+ac_cv_lib_gendersllnl_genders_string_to_altnames_preserve=no
 fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_ganglia_ganglia_cluster_init" >&5
-echo "${ECHO_T}$ac_cv_lib_ganglia_ganglia_cluster_init" >&6
-if test $ac_cv_lib_ganglia_ganglia_cluster_init = yes; then
+echo "$as_me:$LINENO: result: $ac_cv_lib_gendersllnl_genders_string_to_altnames_preserve" >&5
+echo "${ECHO_T}$ac_cv_lib_gendersllnl_genders_string_to_altnames_preserve" >&6
+if test $ac_cv_lib_gendersllnl_genders_string_to_altnames_preserve = yes; then
   cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBGANGLIA 1
+#define HAVE_LIBGENDERSLLNL 1
 _ACEOF
 
-  LIBS="-lganglia $LIBS"
+  LIBS="-lgendersllnl $LIBS"
 
 fi
 

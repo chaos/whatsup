@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.1 2003-02-24 19:30:42 achu Exp $
+## $Id: configure.ac,v 1.2 2003-05-16 21:46:17 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -38,6 +38,7 @@ AC_CHECK_HEADERS( \
   unistd.h \
   ganglia.h \
   genders.h \
+  gendersllnl.h \
 )
 
 ##
@@ -63,8 +64,9 @@ AC_CHECK_FUNCS( \
 ##
 # Check for genders and ganglia libraries that we need
 ##
+AC_CHECK_LIB(ganglia, XML_ParserCreate)
 AC_CHECK_LIB(genders, genders_handle_create)
-AC_CHECK_LIB(ganglia, ganglia_cluster_init)
+AC_CHECK_LIB(gendersllnl, genders_string_to_altnames_preserve)
 
 ##
 # Epilogue.
