@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.78 2003-11-08 16:55:16 achu Exp $
+ * $Id: nodeupdown.c,v 1.79 2003-11-08 18:59:39 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -396,8 +396,6 @@ static void _xml_parse_start(void *data, const char *e1, const char **attr) {
      
   if (strcmp("HOST", e1) == 0) {
 
-    /* XXX In 2.4.1 and 2.5.5??? */
-
     /* attributes of XML HOST tag
      * attr[0] - "NAME"
      * attr[1] - hostname
@@ -405,8 +403,6 @@ static void _xml_parse_start(void *data, const char *e1, const char **attr) {
      * attr[3] - ip address of host
      * attr[4] - "REPORTED"
      * attr[5] - time gmond received a multicast message from the host
-     * attr[6] - "GMOND_STARTED"
-     * attr[7] - when the host's gmond daemon started 
      */
 
     /* shorten hostname if necessary */
