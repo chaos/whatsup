@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: libnodeupdown.3,v 1.2 2003-03-04 01:25:30 achu Exp $
+\."$Id: libnodeupdown.3,v 1.3 2003-03-11 22:28:15 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -19,25 +19,35 @@ libnodeupdown \- a library of functions to determine if a node is up or down
 .sp
 .BI "char *nodeupdown_strerror(int errnum);"
 .sp
+.BI "char *nodeupdown_errormsg(int errnum);"
+.sp
 .BI "void nodeupdown_perror(nodeupdown_t handle, char *msg);"
 .sp
 .BI "int nodeupdown_dump(nodeupdown_t handle, FILE *stream);"
 .sp
-.BI "int nodeupdown_get_up_nodes_hostlist(nodeupdown_t handle, hostlist_t hl);"
+.BI "int nodeupdown_get_up_nodes_string(nodeupdown_t handle, char *buf, int buflen);"
 .sp
-.BI "int nodeupdown_get_down_nodes_hostlist(nodeupdown_t handle, hostlist_t hl);"
+.BI "int nodeupdown_get_down_nodes_string(nodeupdown_t handle, char *buf, int buflen);"
 .sp
 .BI "int nodeupdown_get_up_nodes_list(nodeupdown_t handle, char **list, int len);"
 .sp
 .BI "int nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len);"
 .sp
+.BI "int nodeupdown_get_up_nodes_string_altnames(nodeupdown_t handle, char *buf, int buflen);"
+.sp
+.BI "int nodeupdown_get_down_nodes_string_altnames(nodeupdown_t handle, char *buf, int buflen);"
+.sp
+.BI "int nodeupdown_get_up_nodes_list_altnames(nodeupdown_t handle, char **list, int len);"
+.sp
+.BI "int nodeupdown_get_down_nodes_list_altnames(nodeupdown_t handle, char **list, int len);"
+.sp
 .BI "int nodeupdown_is_node_up(nodeupdown_t handle, char *node);"
 .sp
 .BI "int nodeupdown_is_node_down(nodeupdown_t handle, char *node);"
 .sp
-.BI "int nodeupdown_get_hostlist_alternate_names(nodeupdown_t handle, hostlist_t src, hostlist_t dest);"
+.BI "int nodeupdown_convert_string_to_altnames(nodeupdown_t handle, char *src, char *dest, int buflen);"
 .sp
-.BI "int nodeupdown_get_list_alternate_names(nodeupdown_t handle, char **src, char **dest);"
+.BI "int nodeupdown_convert_list_to_altnames(nodeupdown_t handle, char **src, char **dest, int len);"
 .sp
 .BI "int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list);"
 .sp
@@ -49,11 +59,9 @@ libnodeupdown \- a library of functions to determine if a node is up or down
 The nodeupdown library functions are a set of functions that interacts with
 genders and ganglia to determine if a node is up or down.
 For instructions on each of the functions, please see the comments written
-in /usr/include/nodeupdown.h and /usr/include/hostlist.h.
+in /usr/include/nodeupdown.h.
 .br
 .SH FILES
 /usr/include/nodeupdown.h
-.br
-/usr/include/hostlist.h
 .SH "SEE ALSO"
 libgenders(3)
