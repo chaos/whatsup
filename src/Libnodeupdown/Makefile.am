@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.10.2.2 2004-11-16 21:52:41 achu Exp $
+## $Id: Makefile.am,v 1.10.2.3 2004-11-16 21:58:07 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -8,6 +8,8 @@
 # into the correct location
 
 PERL_INSTALL_PREFIX = @PERL_INSTALL_PREFIX@
+
+PERL_INC = "-I../../config -I$(srcdir)/../libcommon -I$(srcdir)/../libexpat -I$(srcdir)/../libnodeupdown"
 
 all: Makefile.xs
 	$(MAKE) -f Makefile.xs
@@ -31,7 +33,7 @@ Makefile.xs: Makefile.PL Libnodeupdown.xs Libnodeupdown.pm
 	if ! test -a Libnodeupdown.xs; then \
 		cp $(srcdir)/Libnodeupdown.xs .; \
 	fi
-	$(PERL) Makefile.PL PREFIX=$(PERL_INSTALL_PREFIX) MAKEFILE=Makefile.xs FIRST_MAKEFILE=Makefile.xs
+	$(PERL) Makefile.PL PREFIX=$(PERL_INSTALL_PREFIX) MAKEFILE=Makefile.xs FIRST_MAKEFILE=Makefile.xs INC=$(PERL_INC)
 
 test: Makefile.xs 
 	$(MAKE) -f Makefile.xs test
