@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.27 2004-01-10 00:42:52 achu Exp $
+## $Id: configure.ac,v 1.28 2004-03-09 16:43:21 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -289,6 +289,10 @@ AC_CHECK_FUNCS( \
   strtok \ 
 )
 AC_CHECK_FUNCS([getopt_long])
+
+# Do this last, you could add compile options which can make
+# function checks fail
+AC_DEBUG
 
 ##
 # Epilogue.
