@@ -83,17 +83,20 @@ MAINT = @MAINT@
 NODEUPDOWN_CONF_FILE = @NODEUPDOWN_CONF_FILE@
 OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
+PERL = @PERL@
 PROJECT = @PROJECT@
 RANLIB = @RANLIB@
 RELEASE = @RELEASE@
 STRIP = @STRIP@
 VERSION = @VERSION@
+XS_PREFIX = @XS_PREFIX@
 am__include = @am__include@
 am__quote = @am__quote@
 install_sh = @install_sh@
 
 SUBDIRS = \
 	libnodeupdown \
+	Libnodeupdown \
 	whatsup 
 
 subdir = src

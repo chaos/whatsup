@@ -1,3 +1,10 @@
+2003-08-14  Albert Chu  <chu11@llnl.gov>
+
+	* src/libnodeupdown/nodeupdown.h.in, src/libnodeupdown/nodeupdown.c:
+	Added nodeupdown_set_errnum.
+
+	* Added src/Libnodeupdown Perl Extensions interface to nodeupdown.
+
 2003-08-13  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown.h.in: Remove nodeupdown_dump

@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.66 2003-07-24 18:20:26 achu Exp $
+ * $Id: nodeupdown.c,v 1.67 2003-08-14 17:57:30 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -1032,4 +1032,15 @@ int nodeupdown_nodelist_destroy(nodeupdown_t handle, char **list) {
 
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return 0;
+}
+
+void nodeupdown_set_errnum(nodeupdown_t handle, int errnum) {
+
+  if (_handle_error_check(handle) == -1)
+    return;
+
+  if (errnum >= NODEUPDOWN_ERR_MIN && errnum <= NODEUPDOWN_ERR_MAX) 
+    handle->errnum = errnum;
+  else
+    handle->errnum = NODEUPDOWN_ERR_INTERNAL;
 }

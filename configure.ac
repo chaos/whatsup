@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.6 2003-07-16 01:54:05 achu Exp $
+## $Id: configure.ac,v 1.7 2003-08-14 17:57:30 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -59,12 +59,36 @@ if test -z "$NODEUPDOWN_CONF_FILE"; then
 fi
 AC_SUBST(NODEUPDOWN_CONF_FILE)
 
+# Libnodeupdown install location
+AC_MSG_CHECKING(for --with-xs-prefix )
+AC_ARG_WITH(xs-prefix,
+    AC_HELP_STRING([--with-xs-prefix=path], [define perl xs prefix dir]),
+    [ case "$withval" in
+    yes)
+        withxsprefix=yes
+        ;;
+    no)
+        ;;
+    *)
+        withxsprefix=yes
+        XS_PREFIX="$withval"
+        ;;
+    esac ]
+)
+AC_MSG_RESULT(${withxsprefix=no})
+if test -z "$XS_PREFIX"; then
+   XS_PREFIX='${prefix}'
+fi
+AC_SUBST(XS_PREFIX)
+
+
 ##
 # Checks for programs.
 ##
 AC_PROG_CC
 AC_PROG_LIBTOOL
 AC_PROG_MAKE_SET
+AC_PATH_PROG(PERL, perl)
 
 ##
 # Checks for header files.
@@ -120,6 +144,7 @@ AC_CONFIG_FILES( \
   src/whatsup/Makefile \
   man/Makefile \
   src/libnodeupdown/nodeupdown.h
+  src/Libnodeupdown/Makefile \
 )
 AC_OUTPUT
 
