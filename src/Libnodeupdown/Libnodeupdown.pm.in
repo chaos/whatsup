@@ -1,5 +1,5 @@
 #############################################################################
-#  $Id: Libnodeupdown.pm.in,v 1.8 2005-01-11 00:14:21 achu Exp $
+#  $Id: Libnodeupdown.pm.in,v 1.9 2005-04-01 18:48:32 achu Exp $
 #############################################################################
 #  Copyright (C) 2003 The Regents of the University of California.
 #  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -69,10 +69,10 @@ Libnodeupdown - Perl extension for libnodeupdown
  Libnodeupdown::NODEUPDOWN_ERR_NULLPTR
  Libnodeupdown::NODEUPDOWN_ERR_OUTMEM
  Libnodeupdown::NODEUPDOWN_ERR_NOTFOUND
- Libnodeupdown::NODEUPDOWN_ERR_MASTERLIST
- Libnodeupdown::NODEUPDOWN_ERR_MASTERLIST_OPEN
- Libnodeupdown::NODEUPDOWN_ERR_MASTERLIST_READ
- Libnodeupdown::NODEUPDOWN_ERR_MASTERLIST_PARSE
+ Libnodeupdown::NODEUPDOWN_ERR_CLUSTERLIST
+ Libnodeupdown::NODEUPDOWN_ERR_CLUSTERLIST_OPEN
+ Libnodeupdown::NODEUPDOWN_ERR_CLUSTERLIST_READ
+ Libnodeupdown::NODEUPDOWN_ERR_CLUSTERLIST_PARSE
  Libnodeupdown::NODEUPDOWN_ERR_CONF
  Libnodeupdown::NODEUPDOWN_ERR_CONF_OPEN
  Libnodeupdown::NODEUPDOWN_ERR_CONF_READ
@@ -91,7 +91,7 @@ Libnodeupdown - Perl extension for libnodeupdown
  $handle->nodeupdown_load_data($gmond_hostname,
                                $gmond_port,
                                $timeout_len,
-                               @NODEUPDOWN_MASTERLIST_PERL_PARAMETER@);
+                               @NODEUPDOWN_CLUSTERLIST_PERL_PARAMETER@);
 
  $handle->nodeupdown_errnum()
  $handle->nodeupdown_strerror($errnum)
@@ -128,7 +128,7 @@ Returns a nodeupdown object on success, undef on error.
 
 =item B<$handle-E<gt>nodeupdown_load_data()>
 
-=item B<$handle-E<gt>nodeupdown_load_data($gmond_hostname, $gmond_port, $timeout_len, @NODEUPDOWN_MASTERLIST_PERL_PARAMETER@)>
+=item B<$handle-E<gt>nodeupdown_load_data($gmond_hostname, $gmond_port, $timeout_len, @NODEUPDOWN_CLUSTERLIST_PERL_PARAMETER@)>
 
 Loads data for the remainder of the nodeupdown library to use.  To use
 default values, pass in undef for any of the specified parameters.  To
@@ -222,10 +222,10 @@ can be accessed through the following functions:
  Libnodeupdown::NODEUPDOWN_ERR_NULLPTR
  Libnodeupdown::NODEUPDOWN_ERR_OUTMEM
  Libnodeupdown::NODEUPDOWN_ERR_NOTFOUND
- Libnodeupdown::NODEUPDOWN_ERR_MASTERLIST
- Libnodeupdown::NODEUPDOWN_ERR_MASTERLIST_OPEN
- Libnodeupdown::NODEUPDOWN_ERR_MASTERLIST_READ
- Libnodeupdown::NODEUPDOWN_ERR_MASTERLIST_PARSE
+ Libnodeupdown::NODEUPDOWN_ERR_CLUSTERLIST
+ Libnodeupdown::NODEUPDOWN_ERR_CLUSTERLIST_OPEN
+ Libnodeupdown::NODEUPDOWN_ERR_CLUSTERLIST_READ
+ Libnodeupdown::NODEUPDOWN_ERR_CLUSTERLIST_PARSE
  Libnodeupdown::NODEUPDOWN_ERR_CONF
  Libnodeupdown::NODEUPDOWN_ERR_CONF_OPEN
  Libnodeupdown::NODEUPDOWN_ERR_CONF_READ

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist.c,v 1.3 2005-04-01 17:59:01 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist.c,v 1.4 2005-04-01 18:48:32 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -221,8 +221,9 @@ nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlis
       if (rv)
         goto done;
 
+      printf("dir=%s\n", NODEUPDOWN_MODULE_BUILDDIR);
       if ((rv = _search_dir_for_module(handle,
-                                       "/home/achu/chaos/whatsup/src/libnodeupdown",
+                                       NODEUPDOWN_MODULE_BUILDDIR,
                                        clusterlist_modules,
                                        clusterlist_modules_len)) < 0)
         goto cleanup;

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: Libnodeupdown.xs,v 1.8 2004-01-15 01:27:59 achu Exp $
+ *  $Id: Libnodeupdown.xs,v 1.9 2005-04-01 18:48:32 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -149,34 +149,34 @@ NODEUPDOWN_ERR_NOTFOUND (sv=&PL_sv_undef)
         RETVAL    
 
 int
-NODEUPDOWN_ERR_MASTERLIST (sv=&PL_sv_undef)
+NODEUPDOWN_ERR_CLUSTERLIST (sv=&PL_sv_undef)
     SV *sv    
     CODE:
-        RETVAL = NODEUPDOWN_ERR_MASTERLIST;
+        RETVAL = NODEUPDOWN_ERR_CLUSTERLIST;
     OUTPUT:
         RETVAL    
 
 int
-NODEUPDOWN_ERR_MASTERLIST_OPEN (sv=&PL_sv_undef)
+NODEUPDOWN_ERR_CLUSTERLIST_OPEN (sv=&PL_sv_undef)
     SV *sv    
     CODE:
-        RETVAL = NODEUPDOWN_ERR_MASTERLIST_OPEN;
+        RETVAL = NODEUPDOWN_ERR_CLUSTERLIST_OPEN;
     OUTPUT:
         RETVAL    
 
 int
-NODEUPDOWN_ERR_MASTERLIST_READ (sv=&PL_sv_undef)
+NODEUPDOWN_ERR_CLUSTERLIST_READ (sv=&PL_sv_undef)
     SV *sv    
     CODE:
-        RETVAL = NODEUPDOWN_ERR_MASTERLIST_READ;
+        RETVAL = NODEUPDOWN_ERR_CLUSTERLIST_READ;
     OUTPUT:
         RETVAL    
 
 int
-NODEUPDOWN_ERR_MASTERLIST_PARSE (sv=&PL_sv_undef)
+NODEUPDOWN_ERR_CLUSTERLIST_PARSE (sv=&PL_sv_undef)
     SV *sv    
     CODE:
-        RETVAL = NODEUPDOWN_ERR_MASTERLIST_PARSE;
+        RETVAL = NODEUPDOWN_ERR_CLUSTERLIST_PARSE;
     OUTPUT:
         RETVAL    
 

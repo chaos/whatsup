@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.23 2005-04-01 17:59:01 achu Exp $
+## $Id: Makefile.am,v 1.24 2005-04-01 18:48:32 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -9,14 +9,17 @@ VERSION_SCRIPT = $(srcdir)/nodeupdown.map
 OTHER_FLAGS = -Wl,--version-script=$(VERSION_SCRIPT)
 endif
 
+nodeupdown_module_builddir=`cd $(top_builddir)/src/libnodeupdown && pwd`
+
 include_HEADERS = nodeupdown.h 
 noinst_HEADERS  = nodeupdown_common.h nodeupdown_ganglia_clusterlist.h nodeupdown_ganglia_clusterlist_util.h nodeupdown_ganglia_clusterlist_genders_util.h
 lib_LTLIBRARIES = libnodeupdown.la
 libnodeupdown_la_CFLAGS = -D_REENTRANT -I ../../config \
+			  -DNODEUPDOWN_MODULE_BUILDDIR=\"$(nodeupdown_module_builddir)\" \
 	                  -I $(srcdir)/../libcommon -I $(srcdir)/../libexpat
 libnodeupdown_la_SOURCES = nodeupdown.c nodeupdown_ganglia_clusterlist.c
 libnodeupdown_la_LIBADD = ../libcommon/libcommon.la ../libexpat/libexpat.la $(GENDERS_LIBS) $(GENDERSLLNL_LIBS)
-libnodeupdown_la_LDFLAGS = -version-info @LIBNODEUPDOWN_VERSION_INFO@ -export-dynamic $(OTHER_FLAGS)
+libnodeupdown_la_LDFLAGS = -version-info @LIBNODEUPDOWN_VERSION_INFO@ -export-dynamic $(OTHER_FLAGS) 
 EXTRA_DIST = nodeupdown.map
 
 #
