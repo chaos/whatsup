@@ -10,6 +10,9 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}
 %description
 Whatsup is a cluster node up/down detection utility.
 
+%{!?_with_genders: %{!?_without_genders: %define _with_genders --with-genders}}
+%{!?_with_gendersllnl: %{!?_without_gendersllnl: %define _with_gendersllnl --with-gendersllnl}}
+
 %package gendersllnl
 Summary: whatsup gendersllnl modules package
 Group: System Environment/Base
@@ -59,22 +62,35 @@ rm -rf "$RPM_BUILD_ROOT"
 # It doesn't matter if the user chooses a 32bit or 64bit target.  The
 # packaging must work off whatever Perl is installed.
 %define _perldir %(perl -e 'use Config; $T=$Config{installsitearch}; $T=~/(.*)\\/site_perl.*/; print $1;')
-%{_bindir}/whatsup
+%{_bindir}/*
 %{_includedir}/*
+%if %{!?_with_llnl:1}%{!?_with_llnl:0}
+%{_libdir}/*
+%else
 %{_libdir}/libnodeupdown.*
 %{_libdir}/nodeupdown/*none.*
+%endif
 %{_perldir}/*
 %{_mandir}/*
 
+
+%if %{!?_with_llnl:1}%{!?_with_llnl:0}
+
+%if %{?_with_gendersllnl:1}%{!?_with_gendersllnl:0}
 %files gendersllnl
 %defattr(-,root,root)
 %{_libdir}/nodeupdown/*gendersllnl.*
 %{_libdir}/whatsup/*gendersllnl.*
+%endif
 
+%if %{?_with_genders:1}%{!?_with_genders:0}
 %files genders
 %defattr(-,root,root)
 %{_libdir}/nodeupdown/*genders.*
+%endif
 
 %files hostsfile
 %defattr(-,root,root)
 %{_libdir}/nodeupdown/*hostsfile.*
+
+%endif
