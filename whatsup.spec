@@ -1,8 +1,8 @@
-# $Id: whatsup.spec,v 1.24 2003-05-23 22:34:34 achu Exp $
+# $Id: whatsup.spec,v 1.25 2003-06-30 23:40:43 achu Exp $
 
 Name:           whatsup
 Version:        1.0
-Release:        5
+Release:        6
 
 Summary:        whatsup
 Group:          Applications/Communications
