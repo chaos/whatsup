@@ -60,7 +60,7 @@ selecting one of the following options in configure.
 * Gendersllnl (--with-gendersllnl)
   - In addition to genders, uses the gendersllnl library to convert
     between node names and alternate node names.  For the most part,
-    this is used in house at Lawrence Livermore National Laboratories
+    this is used in house at Lawrence Livermore National Laboratory
     and sister labs that have clusters and genders setup in a
     particular way that we like.  I have high doubts anyone else will
     ever use this option.
@@ -77,4 +77,4 @@ you plan on building a rpm package.
 
 Albert Chu
 chu11@llnl.gov
-Lawrence Livermore National Laboratories
+Lawrence Livermore National Laboratory
