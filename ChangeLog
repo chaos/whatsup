@@ -1,7 +1,8 @@
 2004-06-08  Albert Chu  <chu11@llnl.gov>
 
-	* src/libnodeupdown/Makefile.am, src/whatsup/Makefile.am: Minor
-	fixes for distcheck.
+	* src/libnodeupdown/Makefile.am, src/Libnodeupdown/Makefile.am,
+	src/Nodeupdown/Makefile.am, src/whatsup/Makefile.am: Minor fixes
+	for distcheck.
 	
 2004-05-19  Albert Chu  <chu11@llnl.gov>
 
