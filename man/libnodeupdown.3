@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: libnodeupdown.3,v 1.3 2003-03-11 22:28:15 achu Exp $
+\."$Id: libnodeupdown.3,v 1.4 2003-03-18 18:19:32 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -47,7 +47,7 @@ libnodeupdown \- a library of functions to determine if a node is up or down
 .sp
 .BI "int nodeupdown_convert_string_to_altnames(nodeupdown_t handle, char *src, char *dest, int buflen);"
 .sp
-.BI "int nodeupdown_convert_list_to_altnames(nodeupdown_t handle, char **src, char **dest, int len);"
+.BI "int nodeupdown_convert_list_to_altnames(nodeupdown_t handle, char **src, char **dest, int num_src_nodes);"
 .sp
 .BI "int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list);"
 .sp
@@ -56,12 +56,13 @@ libnodeupdown \- a library of functions to determine if a node is up or down
 .BI "int nodeupdown_nodelist_destroy(nodeupdown_t handle, char **list);"
 .br
 .SH DESCRIPTION
-The nodeupdown library functions are a set of functions that interacts with
-genders and ganglia to determine if a node is up or down.
-For instructions on each of the functions, please see the comments written
-in /usr/include/nodeupdown.h.
+The nodeupdown library functions are a set of functions that interacts
+with genders and ganglia to determine if a node is up or down.  For
+instructions, please see the individual manpages for each of the
+functions above, or read the comments written in
+/usr/include/nodeupdown.h.
 .br
 .SH FILES
 /usr/include/nodeupdown.h
 .SH "SEE ALSO"
-libgenders(3)
+libgenders(3), nodeupdown_create(3), nodeupdown_load_data(3), nodeupdown_destroy(3), nodeupdown_errnum(3), nodeupdown_strerror(3), nodeupdown_errormsg(3), nodeupdown_perror(3), nodeupdown_dump(3), nodeupdown_get_up_nodes_string(3), nodeupdown_get_down_nodes_string(3), nodeupdown_get_up_nodes_list(3), nodeupdown_get_down_nodes_list(3), nodeupdown_get_up_nodes_string_altnames(3), nodeupdown_get_down_nodes_string_altnames(3), nodeupdown_get_up_nodes_list_altnames(3), nodeupdown_get_down_nodes_list_altnames(3), nodeupdown_is_node_up(3), nodeupdown_is_node_down(3), nodeupdown_convert_string_to_altnames(3), nodeupdown_convert_list_to_altnames(3), nodeupdown_nodelist_create(3), nodeupdown_nodelist_clear(3), nodeupdown_nodelist_destroy(3)

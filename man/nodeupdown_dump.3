@@ -1,1 +1,43 @@
-.so man3/libnodeupdown.3
+\."#################################################################
+\."$Id: nodeupdown_dump.3,v 1.2 2003-03-18 18:19:32 achu Exp $
+\."by Albert Chu <chu11@llnl.gov>
+\."#################################################################
+.\"
+.TH NODEUPDOWN_DUMP 3 "Release 1.1" "LLNL" "LIBNODEUPDOWN"
+.SH NAME
+nodeupdown_dump \- dump the contents of a nodeupdown handle
+.SH SYNOPSIS
+.B #include <nodeupdown.h>
+.sp
+.BI "int nodeupdown_dump(nodeupdown_t handle, FILE *stream);"
+.br
+.SH DESCRIPTION
+\fBnodeupdown_dump()\fR dumps the contents stored in \fIhandle\fR
+to the stream pointed to by \fIstream\fR.  If \fIstream\fR is NULL, 
+the contents are dumped to standard output.  This function is used
+almost exclusively for debugging purposes. 
+.br
+.SH RETURN VALUES
+On success, 0 is returned.  On error, -1 is returned, and an error code
+is returned in \fIhandle\fR.  The error code can be retrieved
+via
+.BR nodeupdown_errnum (3)
+, and a description of the error code can be retrieved via 
+.BR nodeupdown_strerror (3).  
+Error codes are defined in nodeupdown.h.
+.br
+.SH ERRORS
+.TP
+.B NODEUPDOWN_ERR_LOAD
+.BR nodeupdown_load_data (3)
+has not been called and no data has been retrieved from genders and ganglia.
+.TP
+.B NODEUPDOWN_ERR_MAGIC 
+\fIhandle\fR has an incorrect magic number.  \fIhandle\fR does not point to a nodeupdown
+handle or \fIhandle\fR has been destroyed by 
+.BR nodeupdown_destroy (3).
+.br
+.SH FILES
+/usr/include/nodeupdown.h
+.SH SEE ALSO
+libnodeupdown(3), nodeupdown_load_data(3), nodeupdown_errnum(3), nodeupdown_strerror(3)

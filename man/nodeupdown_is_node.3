@@ -1,0 +1,66 @@
+\."#################################################################
+\."$Id: nodeupdown_is_node.3,v 1.1 2003-03-18 18:19:32 achu Exp $
+\."by Albert Chu <chu11@llnl.gov>
+\."#################################################################
+.\"
+.TH NODEUPDOWN_IS_NODE_UP 3 "Release 1.1" "LLNL" "LIBNODEUPDOWN"
+.SH NAME
+nodeupdown_is_node_up, nodeupdown_is_node_down \- test if a node is up or down
+.SH SYNOPSIS
+.B #include <nodeupdown.h>
+.sp
+.BI "int nodeupdown_is_node_up(nodeupdown_t handle, char *node);"
+.sp
+.BI "int nodeupdown_is_node_down(nodeupdown_t handle, char *node);"
+.br
+.SH DESCRIPTION
+\fBnodeupdown_is_node_up()\fR tests if the node pointed to by \fInode\fR
+is up.  
+
+\fBnodeupdown_is_node_down()\fR tests if the node pointed to by \fInode\fR
+is down.  
+.br
+.SH RETURN VALUES
+For \fBnodeupdown_is_node_up()\fR, 1 is returned if the node is up, 0
+is returned if the node is down.  
+For \fBnodeupdown_is_node_down()\fR, 1 is returned if the node is down,
+0 is returned if the node is up.  
+On error, both return -1, and an error code
+is returned in \fIhandle\fR.  The error code can be retrieved
+via
+.BR nodeupdown_errnum (3)
+, and a description of the error code can be retrieved via 
+.BR nodeupdown_strerror (3).  
+Error codes are defined in nodeupdown.h.
+.br
+.SH ERRORS
+.TP
+.B NODEUPDOWN_ERR_LOAD
+.BR nodeupdown_load_data (3)
+has not been called and no data has been retrieved from genders and ganglia.
+.TP
+.B NODEUPDOWN_ERR_PARAMETERS
+An incorrect parameter has been passed in.  
+.TP
+.B NODEUPDOWN_ERR_OUTMEM
+.BR malloc (3)
+has failed internally, system is out of memory.
+.TP
+.B NODEUPDOWN_ERR_NOTFOUND
+The node pointed to by \fInode\fR is not found in the genders file.  
+.TP
+.B NODEUPDOWN_ERR_GENDERS
+genders C API has failed internally.
+.TP
+.B NODEUPDOWN_ERR_HOSTLIST
+hostlist API has failed internally.
+.TP
+.B NODEUPDOWN_ERR_MAGIC 
+\fIhandle\fR has an incorrect magic number.  \fIhandle\fR does not point to a nodeupdown
+handle or \fIhandle\fR has been destroyed by 
+.BR nodeupdown_destroy (3).
+.br
+.SH FILES
+/usr/include/nodeupdown.h
+.SH SEE ALSO
+libnodeupdown(3), nodeupdown_load_data(3), nodeupdown_errnum(3), nodeupdown_strerror(3)

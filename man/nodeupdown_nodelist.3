@@ -1,0 +1,83 @@
+\."#################################################################
+\."$Id: nodeupdown_nodelist.3,v 1.1 2003-03-18 18:19:32 achu Exp $
+\."by Albert Chu <chu11@llnl.gov>
+\."#################################################################
+.\"
+.TH NODEUPDOWN_NODELIST_CREATE 3 "Release 1.1" "LLNL" "LIBNODEUPDOWN"
+.SH NAME
+nodeupdown_nodelist_create, nodeupdown_nodelist_clear, nodeupdown_nodelist_destroy - create, clear, and destroy lists
+.SH SYNOPSIS
+.B #include <nodeupdown.h>
+.sp
+.BI "int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list);"
+.sp
+.BI "int nodeupdown_nodelist_clear(nodeupdown_t handle, char **list);"
+.sp
+.BI "int nodeupdown_nodelist_destroy(nodeupdown_t handle, char **list);"
+.br
+.SH DESCRIPTION
+\fBnodeupdown_nodelist_create()\fR, \fBnodeupdown_nodelist_clear()\fR, and \fBnodeupdown_nodelist_destroy()\fR are used to create, clear, and destroy lists (arrays of strings) for use with
+.BR nodeupdown_get_up_nodes_list (3),
+.BR nodeupdown_get_down_nodes_list (3),
+.BR nodeupdown_get_up_nodes_list_altnames (3),
+.BR nodeupdown_get_down_nodes_list_altnames (3),
+and
+.BR nodeupdown_convert_list_to_altnames (3).
+
+\fBnodeupdown_nodelist_create()\fR creates a list with minimum size to store nodes.  \fIlist\fR is set to point to the created list.  The created list is guaranteed to store all the nodes returned from 
+.BR nodeupdown_get_up_nodes_list (3),
+.BR nodeupdown_get_down_nodes_list (3),
+.BR nodeupdown_get_up_nodes_list_altnames (3),
+and
+.BR nodeupdown_get_down_nodes_list_altnames (3),
+
+\fBnodeupdown_nodelist_clear()\fR clears any information stored in the list pointed to by \fIlist\fR.  This does not have be called after \fBnodeupdown_nodelist_create()\fR.   It only has to be called after being used with
+.BR nodeupdown_get_up_nodes_list (3),
+.BR nodeupdown_get_down_nodes_list (3),
+.BR nodeupdown_get_up_nodes_list_altnames (3),
+or
+.BR nodeupdown_get_down_nodes_list_altnames (3),
+and the programmer wishes to re-use the list.  
+
+\fBnodeupdown_nodelist_destroy()\fR destroys the list pointed to by \fIlist\fR and frees all memory assocated with the list.  
+.br
+.SH RETURN VALUES
+On success, \fBnodeupdown_nodelist_create()\fR returns the number of 
+elements the created list can store.  On success,
+\fBnodeupdown_nodelist_clear()\fR, and \fBnodeupdown_nodelist_destroy()\fR
+return 0.  On error, -1 is returned, and an error code
+is returned in \fIhandle\fR.  The error code can be retrieved
+via
+.BR nodeupdown_errnum (3)
+, and a description of the error code can be retrieved via 
+.BR nodeupdown_strerror (3).  
+Error codes are defined in nodeupdown.h.
+.br
+.SH ERRORS
+.TP
+.B NODEUPDOWN_ERR_LOAD
+.BR nodeupdown_load_data (3)
+has not been called and no data has been retrieved from genders and ganglia.
+.TP
+.B NODEUPDOWN_ERR_PARAMETERS
+An incorrect parameter has been passed in.  
+.TP
+.B NODEUPDOWN_ERR_NULLPTR
+A null pointer has been found in the list passed in.
+.TP
+.B NODEUPDOWN_ERR_OUTMEM
+.BR malloc (3)
+has failed internally, system is out of memory.
+.TP
+.B NODEUPDOWN_ERR_ISFREE
+All lists associated with \fIhandle\fR have already been freed.
+.TP
+.B NODEUPDOWN_ERR_MAGIC 
+\fIhandle\fR has an incorrect magic number.  \fIhandle\fR does not point to a nodeupdown
+handle or \fIhandle\fR has been destroyed by 
+.BR nodeupdown_destroy (3).
+.br
+.SH FILES
+/usr/include/nodeupdown.h
+.SH SEE ALSO
+libnodeupdown(3), noeupdown_load_data(3), nodeupdown_get_up_nodes_list (3), nodeupdown_get_down_nodes_list (3), nodeupdown_get_up_nodes_list_altnames (3), nodeupdown_get_down_nodes_list_altnames (3), nodeupdown_convert_list_to_altnames (3), nodeupdown_errnum(3), nodeupdown_strerror(3)

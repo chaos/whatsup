@@ -1,0 +1,69 @@
+\."#################################################################
+\."$Id: nodeupdown_get_nodes_string.3,v 1.1 2003-03-18 18:19:32 achu Exp $
+\."by Albert Chu <chu11@llnl.gov>
+\."#################################################################
+.\"
+.TH NODEUPDOWN_GET_UP_NODES_STRING 3 "Release 1.1" "LLNL" "LIBNODEUPDOWN"
+.SH NAME
+nodeupdown_get_up_nodes_string, nodeupdown_get_down_nodes_string, nodeupdown_get_up_nodes_string_altnames, nodeupdown_get_down_nodes_string_altnames - get up or down nodes
+.SH SYNOPSIS
+.B #include <nodeupdown.h>
+.sp
+.BI "int nodeupdown_get_up_nodes_string(nodeupdown_t handle, char *buf, int buflen);"
+.sp
+.BI "int nodeupdown_get_down_nodes_string(nodeupdown_t handle, char *buf, int buflen);"
+.sp
+.BI "int nodeupdown_get_up_nodes_string_altnames(nodeupdown_t handle, char *buf, int buflen);"
+.sp
+.BI "int nodeupdown_get_down_nodes_string_altnames(nodeupdown_t handle, char *buf, int buflen);"
+.br
+.SH DESCRIPTION
+\fBnodeupdown_get_up_nodes_string()\fR retrieves a ranged string of
+nodes that are up and places it in the buffer pointed to by \fIbuf\fR.
+\fIbuflen\fR should indicate the length of the buffer.
+\fBnodeupdown_get_down_nodes_string()\fR is identical to
+\fBnodeupdown_get_up_nodes_string()\fR, except that it retrieves a
+ranged string of down nodes.
+
+\fBnodeupdown_get_up_nodes_string_altnames()\fR and \fBnodeupdown_get_down_nodes_string_altnames()\fR are identical to \fBnodeupdown_get_up_nodes_string()\fR and \fBnodeupdown_get_down_nodes_string()\fR, except the ranged string lists alternate node names.
+.br
+.SH RETURN VALUES
+On success, 0 is returned.  On error, -1 is returned, and an error code
+is returned in \fIhandle\fR.  The error code can be retrieved
+via
+.BR nodeupdown_errnum (3)
+, and a description of the error code can be retrieved via 
+.BR nodeupdown_strerror (3).  
+Error codes are defined in nodeupdown.h.
+.br
+.SH ERRORS
+.TP
+.B NODEUPDOWN_ERR_LOAD
+.BR nodeupdown_load_data (3)
+has not been called and no data has been retrieved from genders and ganglia.
+.TP
+.B NODEUPDOWN_ERR_PARAMETERS
+An incorrect parameter has been passed in.  
+.TP
+.B NODEUPDOWN_ERR_OVERFLOW
+The buffer pointed to by \fIbuf\fR is not large enough to store the ranged string of nodes.
+.TP
+.B NODEUPDOWN_ERR_OUTMEM
+.BR malloc (3)
+has failed internally, system is out of memory.
+.TP
+.B NODEUPDOWN_ERR_GENDERS
+genders C API has failed internally.
+.TP
+.B NODEUPDOWN_ERR_HOSTLIST
+hostlist API has failed internally.
+.TP
+.B NODEUPDOWN_ERR_MAGIC 
+\fIhandle\fR has an incorrect magic number.  \fIhandle\fR does not point to a nodeupdown
+handle or \fIhandle\fR has been destroyed by 
+.BR nodeupdown_destroy (3).
+.br
+.SH FILES
+/usr/include/nodeupdown.h
+.SH SEE ALSO
+libnodeupdown(3), nodeupdown_load_data(3), nodeupdown_get_up_nodes_list (3), nodeupdown_get_down_nodes_list (3), nodeupdown_get_up_nodes_list_altnames (3), nodeupdown_get_down_nodes_list_altnames (3), nodeupdown_convert_string_to_altnames (3), nodeupdown_errnum(3), nodeupdown_strerror(3)

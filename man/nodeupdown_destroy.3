@@ -1,1 +1,36 @@
-.so man3/libnodeupdown.3
+\."#################################################################
+\."$Id: nodeupdown_destroy.3,v 1.2 2003-03-18 18:19:32 achu Exp $
+\."by Albert Chu <chu11@llnl.gov>
+\."#################################################################
+.\"
+.TH NODEUPDOWN_DESTROY 3 "Release 1.1" "LLNL" "LIBNODEUPDOWN"
+.SH NAME
+nodeupdown_destroy \- destroys a nodeupdown handle
+.SH SYNOPSIS
+.B #include <nodeupdown.h>
+.sp
+.BI "int nodeupdown_destroy(nodeupdown_t handle);"
+.br
+.SH DESCRIPTION
+\fBnodeupdown_destroy()\fR destroys the nodeupdown handle pointed to by
+\fIhandle\fR and frees all allocated memory associated with it.
+.br
+.SH RETURN VALUES
+On success, 0 is returned.  On error, -1 is returned, and an error code
+is returned in \fIhandle\fR.  The error code can be retrieved
+via
+.BR nodeupdown_errnum (3)
+, and a description of the error code can be retrieved via 
+.BR nodeupdown_strerror (3).  
+Error codes are defined in nodeupdown.h.
+.br
+.SH ERRORS
+.TP
+.B NODEUPDOWN_ERR_MAGIC 
+\fIhandle\fR has an incorrect magic number.  \fIhandle\fR does not point to a nodeupdown
+handle or \fIhandle\fR has already been destroyed.
+.br
+.SH FILES
+/usr/include/nodeupdown.h
+.SH SEE ALSO
+libnodeupdown(3), nodeupdown_create(3), nodeupdown_load_data(3), nodeupdown_errnum(3), nodeupdown_strerror(3)

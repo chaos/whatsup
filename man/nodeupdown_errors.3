@@ -1,0 +1,54 @@
+\."#################################################################
+\."$Id: nodeupdown_errors.3,v 1.1 2003-03-18 18:19:32 achu Exp $
+\."by Albert Chu <chu11@llnl.gov>
+\."#################################################################
+.\"
+.TH NODEUPDOWN_ERRNUM 3 "Release 1.1" "LLNL" "LIBNODEUPDOWN"
+.SH NAME
+nodeupdown_errnum, nodeupdown_strerror, nodeupdown_errormsg, nodeupdown_perror \- get information
+about recent nodeupdown errors
+.SH SYNOPSIS
+.B #include <nodeupdown.h>
+.sp
+.BI "int nodeupdown_errnum(nodeupdown_t handle);"
+.sp
+.BI "char *nodeupdown_strerror(int errnum);"
+.sp
+.BI "char *nodeupdown_errormsg(nodeupdown_t handle);"
+.sp
+.BI "void nodeupdown_perror(nodeupdown_t handle, char *msg);"
+.br
+.SH DESCRIPTION
+\fBnodeupdown_errnum()\fR returns the error code stored in \fIhandle\fR.  
+
+\fBnodeupdown_strerror()\fR returns a string describing the error code
+\fIerrnum\fR.
+
+\fBnodeupdown_errormsg()\fR returns a string describing the error code stored
+in \fIhandle\fR.  It equivalent to: 
+
+char *nodeupdown_strerror(nodeupdown_errnum(nodeupdown_t handle));
+
+\fBnodeupdown_perror()\fR is similar to 
+.BR perror (3).
+It produces a message on standard error output, describing the error
+stored in \fIhandle\fR.  If \fImsg\fR is not NULL, the string pointed
+to by \fImsg\fR, a colon, and a blank are printed before the error message.  
+
+In general, \fBnodeupdown_errnum()\fR, \fBnodeupdown_strerror()\fR, 
+\fBnodeupdown_errormsg()\fR, and \fBnodeupdown_perror()\fR should be used
+immediately after a nodeupdown library function returns an error.  Thus,
+these functions can return information about the most recent error that
+has occurred.
+.br
+.SH RETURN VALUES
+On success, \fBnodeupdown_errnum()\fR returns the error code stored in \fIhandle\fR.  
+On error, -1 is returned.
+
+On success, \fBnodeupdown_strerror()\fR and \fBnodeupdown_errormsg()\fR, return a pointer
+to a string describing the error code stored in \fIhandle\fR.  On error, NULL is returned.
+.br
+.SH FILES
+/usr/include/nodeupdown.h
+.SH SEE ALSO
+libnodeupdown(3)
