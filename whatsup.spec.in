@@ -27,7 +27,7 @@ Release: @RELEASE@
 Summary: whatsup node up/down detection utility
 Group: Applications/Communications
 License: GPL
-Source: %{name}-%{version}-%{release}.tgz
+Source: %{name}-%{version}-@RELEASE@.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}
 
 %if %{?_with_genders:1}%{!?_with_genders:0}
