@@ -7,6 +7,9 @@ Changes in whatsup-1.3-1
 - Added nodeupdown_up_count and nodeupdown_down_count API functions.
 - Added Nodeupdown and Libnodeupdown perl libraries.
 - Added --count option to whatsup
+- Added '-' stdin option.
+- Output exit value based on whatsup results, allowsing whatsup to
+  be used for scripts.
 - Removed --ip option from whatsup
 - Default whatsup output also includes output of node counts. 
 - Whatsup and nodeupdown now compile and execute independently of 
@@ -25,4 +28,4 @@ Changes in whatsup-1.2-1
 ===========================
  -- started NEWS file.
 
-$Id: NEWS,v 1.7 2004-01-13 21:30:42 achu Exp $
+$Id: NEWS,v 1.8 2004-01-14 18:06:28 achu Exp $

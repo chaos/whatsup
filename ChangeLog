@@ -1,3 +1,15 @@
+2003-01-14  Albert Chu  <chu11@llnl.gov>
+
+	* src/whatsup/whatsup.c (read_stdin, push_nodestring): New functions.
+
+	* src/whatsup/whatsup.c (cmdline_parse): Add '-' functionality and
+	use read_stdin and push_nodestring functions.
+
+	* src/whatsup/whatsup.c (main): Add support of exit value
+	depending on up vs. down success.
+
+	* man/whatsup.1: Updated for '-' option.
+
 2003-01-12  Albert Chu  <chu11@llnl.gov>
 
 	* src/libcommon/conffile.h, src/libcommon/conffile.c: Significant

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.80 2004-01-13 22:50:45 achu Exp $
+ *  $Id: whatsup.c,v 1.81 2004-01-14 18:06:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <sys/types.h>
 
 #if HAVE_GENDERS
@@ -44,6 +45,7 @@
 
 #include "hostlist.h"
 #include "nodeupdown.h"
+#include "fd.h"
 
 /* External Variables */
 extern char *optarg;
@@ -131,6 +133,53 @@ static void usage(void) {
  */
 static void version(void) {
   fprintf(stderr, "%s %s-%s\n", PROJECT, VERSION, RELEASE);
+}
+
+static int push_nodestring(struct winfo *winfo, char *string) {
+  /* search for periods.  If there are periods, these are non-short hostname
+   * machine names. Output error 
+   */
+  if (strchr(string, '.') != NULL) {
+    fprintf(stderr, "Usage: nodes must be listed in short hostname format\n");
+    return -1;
+  }
+        
+  if (hostlist_push(winfo->nodes, string) == 0) {
+    fprintf(stderr, "Usage: nodes listed incorrectly\n");
+    return -1;
+  }
+
+  return 0;
+}
+
+/* read_stdin
+ * - read nodes from stdin
+ */
+static int read_stdin(struct winfo *winfo) {
+  int n;
+  char buf[WHATSUP_BUFFERLEN];
+  
+  if ((n = fd_read_n(STDIN_FILENO, buf, WHATSUP_BUFFERLEN)) < 0) {
+    fprintf(stderr, "Error reading from stdin\n");
+    return -1;
+  }
+  
+  if (n == WHATSUP_BUFFERLEN) {
+    fprintf(stderr, "Overflow stdin input buffer\n");
+    return -1;
+  }
+
+  if (n > 0) {
+      char *ptr;
+      ptr = strtok(buf, " \t\n\0"); 
+      while (ptr != NULL) {
+        if (push_nodestring(winfo, ptr) < 0)
+            return -1;
+        ptr = strtok(NULL, " \t\n\0");
+      }
+  }
+
+  return 0;
 }
 
 /* cmdline_parse
@@ -243,27 +292,25 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
     return -1;
   }
 
-  /* store any nodes listed on the command line */
   index = optind;
-  while (index < argc) {
-    /* search for periods.  If there are periods, these are non-short hostname
-     * machine names. Output error 
-     */
-    if (strchr(argv[index], '.') != NULL) {
-      fprintf(stderr, "Usage: nodes must be listed in short hostname format\n");
-      return -1;
+  
+  if (index < argc) {
+    if (strcmp(argv[index], "-") == 0) {
+      if (read_stdin(winfo) < 0)
+        return -1;
     }
+    else {
+      while (index < argc) {
+        if (push_nodestring(winfo, argv[index]) < 0)
+          return -1;
+        index++;
+      }
+    } 
 
-    if (hostlist_push(winfo->nodes, argv[index]) == 0) {
-      fprintf(stderr, "Usage: nodes listed incorrectly\n");
-      return -1;
-    }
-
-    index++;
+    /* remove any duplicate nodes listed */
+    hostlist_uniq(winfo->nodes);
   }
 
-  /* remove any duplicate nodes listed */
-  hostlist_uniq(winfo->nodes);
   return 0;
 }
 
@@ -533,17 +580,14 @@ int main(int argc, char **argv) {
     goto cleanup;
   }
 
-  /* get up nodes */
-  if (winfo.output == UP_NODES || winfo.output == UP_AND_DOWN) {
-    if (get_nodes(&winfo, UP_NODES, up_nodes, buflen, &up_count) == -1)
-      goto cleanup;
-  }
-  
-  /* get down nodes */
-  if (winfo.output == DOWN_NODES || winfo.output == UP_AND_DOWN) {
-    if (get_nodes(&winfo, DOWN_NODES, down_nodes, buflen, &down_count) == -1)
-      goto cleanup;
-  }
+  /* get all up or down data, regardless of options, need all info for
+   * exit value
+   */
+  if (get_nodes(&winfo, UP_NODES, up_nodes, buflen, &up_count) == -1)
+    goto cleanup;
+
+  if (get_nodes(&winfo, DOWN_NODES, down_nodes, buflen, &down_count) == -1)
+    goto cleanup;
 
   /* only output count */
   if (winfo.count == WHATSUP_TRUE) {
@@ -599,7 +643,12 @@ int main(int argc, char **argv) {
     }
   }
 
-  retval = 0;
+  if (winfo.output == UP_AND_DOWN)
+    retval = 0;
+  else if (winfo.output == UP_NODES)
+    retval = (down_count == 0) ? 0 : 1;
+  else
+    retval = (up_count == 0) ? 0 : 1;
 
  cleanup:
   hostlist_destroy(winfo.nodes);
