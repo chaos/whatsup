@@ -101,7 +101,6 @@ man3_MANS = \
 	nodeupdown_errnum.3 \
 	nodeupdown_strerror.3 \
 	nodeupdown_perror.3 \
-	nodeupdown_dump.3 \
 	nodeupdown_get_nodes_string.3 \
 	nodeupdown_get_nodes_list.3 \
 	nodeupdown_get_up_nodes_list.3 \

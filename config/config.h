@@ -14,7 +14,7 @@
 #define HAVE_GANGLIA_H 1
 
 /* Define to 1 if you have the <gendersllnl.h> header file. */
-#define HAVE_GENDERSLLNL_H 1
+/* #undef HAVE_GENDERSLLNL_H */
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
@@ -23,7 +23,7 @@
 #define HAVE_LIBGANGLIA 1
 
 /* Define to 1 if you have the `gendersllnl' library (-lgendersllnl). */
-#define HAVE_LIBGENDERSLLNL 1
+/* #undef HAVE_LIBGENDERSLLNL */
 
 /* Define to 1 if your system has a working `malloc' function. */
 #define HAVE_MALLOC 1

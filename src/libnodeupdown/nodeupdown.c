@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.55 2003-05-28 16:12:06 achu Exp $
+ * $Id: nodeupdown.c,v 1.56 2003-05-30 17:49:16 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -109,11 +109,6 @@ static char * errmsg[] = {
  * Function Definitions           *
  **********************************/
 
-/* get hostlist ranged string from specified hostlist 
- * Returns -1 on error, 0 on success
- */
-static char * get_hostlist_ranged_string(nodeupdown_t handle, hostlist_t hl);
-
 /* common error checks for genders handle 
  * Returns -1 on error, 0 on success
  */
@@ -197,24 +192,6 @@ static int get_nodes_list(nodeupdown_t handle,
  * Returns 1 if true, 0 if false, -1 on error
  */
 static int is_node(nodeupdown_t handle, const char *node, int up_or_down);
-
-char * get_hostlist_ranged_string(nodeupdown_t handle, hostlist_t hl) {
-  char *str = NULL;
-  int str_len = 0;
-
-  do {
-    free(str);
-    str_len += NODEUPDOWN_BUFFERLEN;
-    if ((str = (char *)malloc(str_len)) == NULL) {
-      handle->errnum = NODEUPDOWN_ERR_OUTMEM;
-      return NULL;
-    }
-    memset(str, '\0', str_len);
-  } while (hostlist_ranged_string(hl, str_len, str) == -1);
-  
-  handle->errnum = NODEUPDOWN_ERR_SUCCESS;
-  return str;
-}
 
 int handle_err_check(nodeupdown_t handle) {
   if (handle == NULL || handle->magic != NODEUPDOWN_MAGIC_NUM)
@@ -719,33 +696,6 @@ void nodeupdown_perror(nodeupdown_t handle, const char *msg) {
     fprintf(stderr, "%s: %s\n", msg, errormsg);
 }
 
-int nodeupdown_dump(nodeupdown_t handle, FILE *stream) {
-  char *str;
-
-  if (loaded_handle_err_check(handle) == -1)
-    return -1;
-
-  if (stream == NULL)
-    stream = stdout;
-
-  if ((str = get_hostlist_ranged_string(handle, handle->up_nodes)) == NULL)
-    return -1;
-
-  fprintf(stream, "up nodes: %s\n", str);
-  free(str);
-
-  if ((str = get_hostlist_ranged_string(handle, handle->down_nodes)) == NULL)
-    return -1;
-
-  fprintf(stream, "down nodes: %s\n", str);
-  free(str);
-
-  fprintf(stream, "\n");
-
-  handle->errnum = NODEUPDOWN_ERR_SUCCESS;
-  return 0;
-}
-
 int nodeupdown_get_up_nodes_string(nodeupdown_t handle, 
                                    char *buf, 
                                    int buflen) {
@@ -766,7 +716,6 @@ int get_nodes_string(nodeupdown_t handle,
                      char *buf, 
                      int buflen,
                      int up_or_down) {
-  char *str = NULL;
   hostlist_t hl;
  
   if (loaded_handle_err_check(handle) == -1)
@@ -782,17 +731,10 @@ int get_nodes_string(nodeupdown_t handle,
   else
     hl = handle->down_nodes;
 
-  if ((str = get_hostlist_ranged_string(handle, hl)) == NULL)
-    return -1;
-
-  if (strlen(str) >= buflen) {
-    free(str);
+  if (hostlist_ranged_string(hl, buf, buflen) == -1) {
     handle->errnum = NODEUPDOWN_ERR_OVERFLOW;
     return -1;
   }
-
-  strcpy(buf, str);
-  free(str);
 
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return 0;

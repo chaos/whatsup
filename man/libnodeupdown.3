@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: libnodeupdown.3,v 1.9 2003-05-09 17:36:41 achu Exp $
+\."$Id: libnodeupdown.3,v 1.10 2003-05-30 17:49:16 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -23,8 +23,6 @@ or down
 .BI "char *nodeupdown_errormsg(int errnum);"
 .sp
 .BI "void nodeupdown_perror(nodeupdown_t handle, const char *msg);"
-.sp
-.BI "int nodeupdown_dump(nodeupdown_t handle, FILE *stream);"
 .sp
 .BI "int nodeupdown_get_up_nodes_string(nodeupdown_t handle, char *buf, int buflen);"
 .sp
@@ -57,7 +55,7 @@ functions above, or read the comments written in
 libgenders(3), nodeupdown_handle_create(3), nodeupdown_load_data(3),
 nodeupdown_handle_destroy(3), nodeupdown_errnum(3),
 nodeupdown_strerror(3), nodeupdown_errormsg(3), nodeupdown_perror(3),
-nodeupdown_dump(3), nodeupdown_get_up_nodes_string(3),
+nodeupdown_get_up_nodes_string(3),
 nodeupdown_get_down_nodes_string(3), nodeupdown_get_up_nodes_list(3),
 nodeupdown_get_down_nodes_list(3), nodeupdown_is_node_up(3),
 nodeupdown_is_node_down(3), nodeupdown_nodelist_create(3),

@@ -443,7 +443,7 @@ s,@DEFS@,-DHAVE_CONFIG_H,;t t
 s,@ECHO_C@,,;t t
 s,@ECHO_N@,-n,;t t
 s,@ECHO_T@,,;t t
-s,@LIBS@,-lgendersllnl -lganglia ,;t t
+s,@LIBS@,-lganglia ,;t t
 s,@build@,i686-pc-linux-gnu,;t t
 s,@build_cpu@,i686,;t t
 s,@build_vendor@,pc,;t t
@@ -791,7 +791,6 @@ ${ac_dA}HAVE_DLFCN_H${ac_dB}HAVE_DLFCN_H${ac_dC}1${ac_dD}
 ${ac_dA}STDC_HEADERS${ac_dB}STDC_HEADERS${ac_dC}1${ac_dD}
 ${ac_dA}HAVE_ERRNO_H${ac_dB}HAVE_ERRNO_H${ac_dC}1${ac_dD}
 ${ac_dA}HAVE_FCNTL_H${ac_dB}HAVE_FCNTL_H${ac_dC}1${ac_dD}
-${ac_dA}HAVE_GENDERSLLNL_H${ac_dB}HAVE_GENDERSLLNL_H${ac_dC}1${ac_dD}
 ${ac_dA}HAVE_GANGLIA_H${ac_dB}HAVE_GANGLIA_H${ac_dC}1${ac_dD}
 ${ac_dA}HAVE_TIME_H${ac_dB}HAVE_TIME_H${ac_dC}1${ac_dD}
 ${ac_dA}HAVE_STDLIB_H${ac_dB}HAVE_STDLIB_H${ac_dC}1${ac_dD}
@@ -805,6 +804,7 @@ ${ac_dA}HAVE_STRDUP${ac_dB}HAVE_STRDUP${ac_dC}1${ac_dD}
 ${ac_dA}HAVE_STRCHR${ac_dB}HAVE_STRCHR${ac_dC}1${ac_dD}
 ${ac_dA}HAVE_STRLEN${ac_dB}HAVE_STRLEN${ac_dC}1${ac_dD}
 ${ac_dA}HAVE_STRCAT${ac_dB}HAVE_STRCAT${ac_dC}1${ac_dD}
+${ac_dA}HAVE_STRTOK${ac_dB}HAVE_STRTOK${ac_dC}1${ac_dD}
 CEOF
   sed -f $tmp/defines.sed $tmp/in >$tmp/out
   rm -f $tmp/in
@@ -814,9 +814,7 @@ CEOF
 /^[ 	]*#[ 	]*define/!b
 t clr
 : clr
-${ac_dA}HAVE_STRTOK${ac_dB}HAVE_STRTOK${ac_dC}1${ac_dD}
 ${ac_dA}HAVE_LIBGANGLIA${ac_dB}HAVE_LIBGANGLIA${ac_dC}1${ac_dD}
-${ac_dA}HAVE_LIBGENDERSLLNL${ac_dB}HAVE_LIBGENDERSLLNL${ac_dC}1${ac_dD}
 CEOF
   sed -f $tmp/defines.sed $tmp/in >$tmp/out
   rm -f $tmp/in
@@ -853,7 +851,6 @@ ${ac_uA}HAVE_DLFCN_H${ac_uB}HAVE_DLFCN_H${ac_uC}1${ac_uD}
 ${ac_uA}STDC_HEADERS${ac_uB}STDC_HEADERS${ac_uC}1${ac_uD}
 ${ac_uA}HAVE_ERRNO_H${ac_uB}HAVE_ERRNO_H${ac_uC}1${ac_uD}
 ${ac_uA}HAVE_FCNTL_H${ac_uB}HAVE_FCNTL_H${ac_uC}1${ac_uD}
-${ac_uA}HAVE_GENDERSLLNL_H${ac_uB}HAVE_GENDERSLLNL_H${ac_uC}1${ac_uD}
 ${ac_uA}HAVE_GANGLIA_H${ac_uB}HAVE_GANGLIA_H${ac_uC}1${ac_uD}
 ${ac_uA}HAVE_TIME_H${ac_uB}HAVE_TIME_H${ac_uC}1${ac_uD}
 ${ac_uA}HAVE_STDLIB_H${ac_uB}HAVE_STDLIB_H${ac_uC}1${ac_uD}
@@ -867,6 +864,7 @@ ${ac_uA}HAVE_STRDUP${ac_uB}HAVE_STRDUP${ac_uC}1${ac_uD}
 ${ac_uA}HAVE_STRCHR${ac_uB}HAVE_STRCHR${ac_uC}1${ac_uD}
 ${ac_uA}HAVE_STRLEN${ac_uB}HAVE_STRLEN${ac_uC}1${ac_uD}
 ${ac_uA}HAVE_STRCAT${ac_uB}HAVE_STRCAT${ac_uC}1${ac_uD}
+${ac_uA}HAVE_STRTOK${ac_uB}HAVE_STRTOK${ac_uC}1${ac_uD}
 CEOF
   sed -f $tmp/undefs.sed $tmp/in >$tmp/out
   rm -f $tmp/in
@@ -876,9 +874,7 @@ CEOF
 /^[ 	]*#[ 	]*undef/!b
 t clr
 : clr
-${ac_uA}HAVE_STRTOK${ac_uB}HAVE_STRTOK${ac_uC}1${ac_uD}
 ${ac_uA}HAVE_LIBGANGLIA${ac_uB}HAVE_LIBGANGLIA${ac_uC}1${ac_uD}
-${ac_uA}HAVE_LIBGENDERSLLNL${ac_uB}HAVE_LIBGENDERSLLNL${ac_uC}1${ac_uD}
 s,^[ 	]*#[ 	]*undef[ 	][ 	]*[a-zA-Z_][a-zA-Z_0-9]*,/* & */,
 CEOF
   sed -f $tmp/undefs.sed $tmp/in >$tmp/out
