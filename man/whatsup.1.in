@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: whatsup.1.in,v 1.5 2003-11-07 03:20:06 achu Exp $
+\."$Id: whatsup.1.in,v 1.6 2003-11-07 18:24:10 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -84,7 +84,7 @@ Location of master list file (default=@NODEUPDOWN_MASTERLIST_DEFAULT@)
 .if @WITH_GENDERS@ \{
 .TP
 .B \-f \fISTRING\fR, \fB\-\-filename\fR=\fISTRING\fR
-Location of genders file (default=/etc/genders)
+Location of genders file (default=@NODEUPDOWN_MASTERLIST_DEFAULT@)
 .TP
 .B \-a, \-\-altnames
 List nodes by alternate names (default=off)
