@@ -1,11 +1,12 @@
 \."#################################################################
-\."$Id: nodeupdown_get_nodes_list.3,v 1.6 2003-04-29 23:57:09 achu Exp $
+\."$Id: nodeupdown_get_nodes_list.3,v 1.7 2003-05-09 17:36:41 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
 .TH NODEUPDOWN_GET_UP_NODES_LIST 3 "Release 1.0" "LLNL" "LIBNODEUPDOWN"
 .SH NAME
-nodeupdown_get_up_nodes_list, nodeupdown_get_down_nodes_list, - get up or down nodes
+nodeupdown_get_up_nodes_list, nodeupdown_get_down_nodes_list, - get up
+or down nodes
 .SH SYNOPSIS
 .B #include <nodeupdown.h>
 .sp
@@ -24,15 +25,15 @@ list of down nodes.
 To avoid passing in a list that is not large enough to store all of
 the up or down nodes,
 .BR nodeupdown_nodelist_create (3)
-should be used to create a list
-that is guaranteed to be large enough to store all of the nodes.
+should be used to create a list that is guaranteed to be large enough
+to store all of the nodes.
 .br
 .SH RETURN VALUES
 On success, the number of nodes copied into \fIlist\fR is returned.
 On error, -1 is returned, and an error code is returned in
 \fIhandle\fR.  The error code can be retrieved via
 .BR nodeupdown_errnum (3)
-, and a description of the error code can be retrieved via 
+, and a description of the error code can be retrieved via
 .BR nodeupdown_strerror (3).  
 Error codes are defined in nodeupdown.h.
 .br
@@ -40,12 +41,13 @@ Error codes are defined in nodeupdown.h.
 .TP
 .B NODEUPDOWN_ERR_NULLHANDLE
 The handle parameter is NULL.  The nodeupdown handle must be created
-with 
+with
 .BR nodeupdown_handle_create (3).
 .TP
 .B NODEUPDOWN_ERR_NOTLOADED
 .BR nodeupdown_load_data (3)
-has not been called and no data has been retrieved from genders and ganglia.
+has not been called and no data has been retrieved from genders and
+ganglia.
 .TP
 .B NODEUPDOWN_ERR_PARAMETERS
 An incorrect parameter has been passed in.  
@@ -54,7 +56,8 @@ An incorrect parameter has been passed in.
 A null pointer has been found in the list passed in.
 .TP
 .B NODEUPDOWN_ERR_OVERFLOW
-The list pointed to by \fIlist\fR is not large enough to store all the nodes.
+The list pointed to by \fIlist\fR is not large enough to store all the
+nodes.
 .TP
 .B NODEUPDOWN_ERR_OUTMEM
 .BR malloc (3)
@@ -70,11 +73,14 @@ genders C API has failed internally.
 hostlist API has failed internally.
 .TP
 .B NODEUPDOWN_ERR_MAGIC 
-\fIhandle\fR has an incorrect magic number.  \fIhandle\fR does not point to a nodeupdown
-handle or \fIhandle\fR has been destroyed by 
+\fIhandle\fR has an incorrect magic number.  \fIhandle\fR does not
+point to a nodeupdown handle or \fIhandle\fR has been destroyed by
 .BR nodeupdown_handle_destroy (3).
 .br
 .SH FILES
 /usr/include/nodeupdown.h
 .SH SEE ALSO
-libnodeupdown(3), nodeupdown_handle_create(3), nodeupdown_load_data(3), nodeupdown_get_up_nodes_string (3), nodeupdown_get_down_nodes_string (3), nodeupdown_errnum(3), nodeupdown_strerror(3)
+libnodeupdown(3), nodeupdown_handle_create(3),
+nodeupdown_load_data(3), nodeupdown_get_up_nodes_string (3),
+nodeupdown_get_down_nodes_string (3), nodeupdown_errnum(3),
+nodeupdown_strerror(3)

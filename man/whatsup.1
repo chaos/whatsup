@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: whatsup.1,v 1.11 2003-04-25 17:52:16 achu Exp $
+\."$Id: whatsup.1,v 1.12 2003-05-09 17:36:41 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -12,9 +12,9 @@ whatsup \- list up and/or down nodes in a cluster
 .br
 .SH DESCRIPTION
 .B whatsup
-lists which nodes are currently up or down in a
-cluster.  It determines which nodes are up or down based on
-information gathered from genders and ganglia.  
+lists which nodes are currently up or down in a cluster.  It
+determines which nodes are up or down based on information gathered
+from genders and ganglia.
 
 .B whatsup
 will check on the status of every node in the cluster unless specific
@@ -27,8 +27,8 @@ dependent on the options listed below.
 
 .B whatsup 
 is configured to work on nodes in which ganglia is not setup to be
-deaf.  Generally speaking, non-deaf ganglia nodes are only executed
-on management nodes, not login or compute nodes.  In order to execute
+deaf.  Generally speaking, non-deaf ganglia nodes are only executed on
+management nodes, not login or compute nodes.  In order to execute
 .B whatsup
 on a deaf ganglia node, use the --hostname ('o') option to force
 .B whatsup
@@ -81,17 +81,17 @@ List nodes by alternate names (default=off)
 .SH "HOST RANGES"
 As noted in sections above,
 .B whatsup
-accepts ranges of hostnames in
-the general form: prefix[n-m,l-k,...], where n < m and l < k, etc.,
-as an alternative to explicit lists of hosts.  This form should not
-be confused with regular expression character classes (also denoted
-by ``[]''). For example, foo[19] does not represent foo1 or foo9, but
-rather represents a degenerate range: foo19.
+accepts ranges of hostnames in the general form: prefix[n-m,l-k,...],
+where n < m and l < k, etc., as an alternative to explicit lists of
+hosts.  This form should not be confused with regular expression
+character classes (also denoted by ``[]''). For example, foo[19] does
+not represent foo1 or foo9, but rather represents a degenerate range:
+foo19.
 
-This range syntax is meant
-only as a convenience on clusters with a prefixNN naming convention and
-specification of ranges should not be considered necessary -- the list
-foo1,foo9 could be specified as such, or by the range foo[1,9].
+This range syntax is meant only as a convenience on clusters with a
+prefixNN naming convention and specification of ranges should not be
+considered necessary -- the list foo1,foo9 could be specified as such,
+or by the range foo[1,9].
 
 Some examples of range usage follow:
 
@@ -101,9 +101,9 @@ List all nodes among foo01,foo02,...,foo05 that are up and down
 List all nodes among foo7,foo9,foo10 that are up and down
     whatsup foo[7,9-10]
 
-As a reminder to the reader, some shells will interpret brackets
-('[' and ']') for pattern matching.  Depending on your shell, it may 
-be necessary to enclose hostlist formatted lists within quotes.  For 
+As a reminder to the reader, some shells will interpret brackets ('['
+and ']') for pattern matching.  Depending on your shell, it may be
+necessary to enclose hostlist formatted lists within quotes.  For
 example, in tcsh, the above two examples should be executed as:
 
     whatsup "foo[01-05]"
@@ -136,6 +136,6 @@ List all nodes that are up among the nodes foo2, foo4, and foo8
 .SH "SEE ALSO"
 libnodeupdown(3)
 .SH "ORIGIN"
-Developed by Albert Chu <chu11@llnl.gov> on LLNL's Linux 
-clusters.  This software is open source and distributed under
-the terms of the Gnu GPL.  
+Developed by Albert Chu <chu11@llnl.gov> on LLNL's Linux clusters.
+This software is open source and distributed under the terms of the
+Gnu GPL.

@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_load_data.3,v 1.11 2003-04-30 21:32:59 achu Exp $
+\."$Id: nodeupdown_load_data.3,v 1.12 2003-05-09 17:36:41 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -17,18 +17,18 @@ that the remaining nodeupdown library functions can properly return
 information about up and down nodes.  \fIhandle\fR is a nodeupdown
 handle created by
 .BR nodeupdown_handle_create (3).  
-\fIgenders_filename\fR should indicate the genders file to be loaded.  If
-\fIgenders_filename\fR is NULL, the default genders file DEFAULT_GENDERS_FILE
-will be used.  \fIgmond_hostname\fR and \fIgmond_ip\fR should
-respectively indicate the location of a non-deaf gmond daemon server.
-If \fIgmond_hostname\fR and \fIgmond_ip\fR are NULL, nodeupdown
-assumes the server is on the current node.  \fIgmond_port\fR should
-indicate the port number of the server.  If \fIgmond_port\fR is 0 or
--1, nodeupdown assumes the server is running on the default port.  
-\fItimeout_len\fR should indicate the timeout length in seconds that
-determines if a node is up or down.  If \fItimeout_len\fR is 0 or -1,
-nodeupdown assumes the default timeout length defined by
-NODEUPDOWN_TIMEOUT_LEN.
+\fIgenders_filename\fR should indicate the genders file to be loaded.
+If \fIgenders_filename\fR is NULL, the default genders file
+DEFAULT_GENDERS_FILE will be used.  \fIgmond_hostname\fR and
+\fIgmond_ip\fR should respectively indicate the location of a non-deaf
+gmond daemon server.  If \fIgmond_hostname\fR and \fIgmond_ip\fR are
+NULL, nodeupdown assumes the server is on the current node.
+\fIgmond_port\fR should indicate the port number of the server.  If
+\fIgmond_port\fR is 0 or -1, nodeupdown assumes the server is running
+on the default port.  \fItimeout_len\fR should indicate the timeout
+length in seconds that determines if a node is up or down.  If
+\fItimeout_len\fR is 0 or -1, nodeupdown assumes the default timeout
+length defined by NODEUPDOWN_TIMEOUT_LEN.
  
 If the server is not on the current node, the programmer does not have
 to pass in both the hostname and IP address of the server's location.
@@ -37,11 +37,10 @@ set to NULL.  If both \fIgmond_hostname\fR and \fIgmond_ip\fR are
 non-NULL, the \fIgmond_hostname\fR parameter will be ignored.
 .br
 .SH RETURN VALUES
-On success, 0 is returned.  On error, -1 is returned, and an error code
-is returned in \fIhandle\fR.  The error code can be retrieved
-via
+On success, 0 is returned.  On error, -1 is returned, and an error
+code is returned in \fIhandle\fR.  The error code can be retrieved via
 .BR nodeupdown_errnum (3)
-, and a description of the error code can be retrieved via 
+, and a description of the error code can be retrieved via
 .BR nodeupdown_strerror (3).  
 Error codes are defined in nodeupdown.h.
 .br
@@ -49,20 +48,23 @@ Error codes are defined in nodeupdown.h.
 .TP
 .B NODEUPDOWN_ERR_NULLHANDLE
 The handle parameter is NULL.  The nodeupdown handle must be created
-with 
+with
 .BR nodeupdown_handle_create (3).
 .TP
 .B NODEUPDOWN_ERR_OPEN
-The genders file pointed to by \fIgenders_filename\fR cannot be opened.
+The genders file pointed to by \fIgenders_filename\fR cannot be
+opened.
 .TP
 .B NODEUPDOWN_ERR_CONNECT	
-Error connecting to gmond server specified by \fIgmond_hostname\fR, \fIgmond_ip\fR, and \fIgmond_port\fR.
+Error connecting to gmond server specified by \fIgmond_hostname\fR,
+\fIgmond_ip\fR, and \fIgmond_port\fR.
 .TP
 .B NODEUPDOWN_ERR_TIMEOUT
 Connection to gmond server timed out.
 .TP
 .B NODEUPDOWN_ERR_ADDRESS
-Incorrect network address specified by \fIgmond_hostname\fR or \fIgmond_ip\fR.
+Incorrect network address specified by \fIgmond_hostname\fR or
+\fIgmond_ip\fR.
 .TP
 .B NODEUPDOWN_ERR_NETWORK
 Internal network failure.
@@ -88,8 +90,8 @@ ganglia library has failed internally.
 hostlist API has failed internally.
 .TP
 .B NODEUPDOWN_ERR_MAGIC 
-\fIhandle\fR has an incorrect magic number.  \fIhandle\fR does not point to a nodeupdown
-handle or \fIhandle\fR has been destroyed by 
+\fIhandle\fR has an incorrect magic number.  \fIhandle\fR does not
+point to a nodeupdown handle or \fIhandle\fR has been destroyed by
 .BR nodeupdown_handle_destroy (3).
 .TP
 .B NODEUPDOWN_ERR_INTERNAL
@@ -98,4 +100,6 @@ An internal system error has occurred.
 .SH FILES
 /usr/include/nodeupdown.h
 .SH SEE ALSO
-libnodeupdown(3), nodeupdown_handle_create(3), nodeupdown_handle_destroy(3), nodeupdown_errnum(3), nodeupdown_strerror(3)
+libnodeupdown(3), nodeupdown_handle_create(3),
+nodeupdown_handle_destroy(3), nodeupdown_errnum(3),
+nodeupdown_strerror(3)

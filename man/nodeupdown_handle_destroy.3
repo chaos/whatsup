@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_handle_destroy.3,v 1.2 2003-04-29 23:57:09 achu Exp $
+\."$Id: nodeupdown_handle_destroy.3,v 1.3 2003-05-09 17:36:41 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -12,13 +12,13 @@ nodeupdown_handle_destroy \- destroys a nodeupdown handle
 .BI "int nodeupdown_handle_destroy(nodeupdown_t handle);"
 .br
 .SH DESCRIPTION
-\fBnodeupdown_handle_destroy()\fR destroys the nodeupdown handle pointed to by
-\fIhandle\fR and frees all allocated memory associated with it.
+\fBnodeupdown_handle_destroy()\fR destroys the nodeupdown handle
+pointed to by \fIhandle\fR and frees all allocated memory associated
+with it.
 .br
 .SH RETURN VALUES
-On success, 0 is returned.  On error, -1 is returned, and an error code
-is returned in \fIhandle\fR.  The error code can be retrieved
-via
+On success, 0 is returned.  On error, -1 is returned, and an error
+code is returned in \fIhandle\fR.  The error code can be retrieved via
 .BR nodeupdown_errnum (3)
 , and a description of the error code can be retrieved via 
 .BR nodeupdown_strerror (3).  
@@ -28,14 +28,16 @@ Error codes are defined in nodeupdown.h.
 .TP
 .B NODEUPDOWN_ERR_NULLHANDLE
 The handle parameter is NULL.  The nodeupdown handle must be created
-with 
+with
 .BR nodeupdown_handle_create (3).
 .TP
 .B NODEUPDOWN_ERR_MAGIC 
-\fIhandle\fR has an incorrect magic number.  \fIhandle\fR does not point to a nodeupdown
-handle or \fIhandle\fR has already been destroyed.
+\fIhandle\fR has an incorrect magic number.  \fIhandle\fR does not
+point to a nodeupdown handle or \fIhandle\fR has already been
+destroyed.
 .br
 .SH FILES
 /usr/include/nodeupdown.h
 .SH SEE ALSO
-libnodeupdown(3), nodeupdown_handle_create(3), nodeupdown_load_data(3), nodeupdown_errnum(3), nodeupdown_strerror(3)
+libnodeupdown(3), nodeupdown_handle_create(3),
+nodeupdown_load_data(3), nodeupdown_errnum(3), nodeupdown_strerror(3)
