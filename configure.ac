@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.18 2003-11-08 16:55:16 achu Exp $
+## $Id: configure.ac,v 1.19 2003-11-08 17:16:02 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -133,7 +133,7 @@ fi
 if test "$withmasterlist" = "yes"; then
   AC_DEFINE(HAVE_MASTERLIST, [1], [Define use of master list])
   NODEUPDOWN_MASTERLIST_PTR="const char *filename"
-  NODEUPDOWN_MASTERLIST_DEFAULT="\"/etc/nodeupdown_masterlist\""
+  NODEUPDOWN_MASTERLIST_DEFAULT="\"/etc/nodeupdown_masterlist.conf\""
   WITH_MASTERLIST=1
 else
   WITH_MASTERLIST=0

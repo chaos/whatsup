@@ -32,6 +32,9 @@
 	nodeupdown_masterlist_finish.
 
 	* whatsup.spec.in: Fixed typo.
+
+	* configure.ac: Changed default masterlist file to
+	/etc/nodeupdown_masterlist.conf.
 	
 2003-11-07  Albert Chu  <chu11@llnl.gov>
 
