@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.33 2003-05-16 16:00:42 achu Exp $
+ * $Id: whatsup.c,v 1.34 2003-05-16 16:48:09 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -643,7 +643,6 @@ int get_all_up_or_down_nodes(struct arginfo *arginfo,
 
 int convert_to_altnames(struct arginfo *arginfo, char **nodes) {
   genders_t handle = NULL;
-  char *nodename = NULL;
   char *buffer = NULL;
   int ret, buflen = 0;
   hostlist_t altnodes = NULL;
