@@ -1,3 +1,8 @@
+2004-12-18  Albert Chu  <chu11@llnl.gov>
+
+	* whatsup.spec.in, configure.ac, src/Libnodeupdown/Makefile.am,
+	src/Nodeupdown/Makefile.am: Fix make install corner case.
+	
 2004-12-14  Albert Chu  <chu11@llnl.gov>
 
 	* whatsup.spec.in, src/Nodeupdown/Makefile.am,

@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.33 2004-11-17 01:22:48 achu Exp $
+## $Id: configure.ac,v 1.34 2004-12-20 16:39:06 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -44,27 +44,30 @@ fi
 AC_DEFINE_UNQUOTED(NODEUPDOWN_CONF_FILE, "$NODEUPDOWN_CONF_FILE", [Define nodeupdown conf file])
 AC_SUBST(NODEUPDOWN_CONF_FILE)
 
-# Perl Install Prefix
+# Perl Install Destdir
 # - Used almost exclusively so perl install works with rpm builds
-AC_MSG_CHECKING(for --with-perl-install-prefix )
-AC_ARG_WITH(perl-install-prefix,
-    AC_HELP_STRING([--with-perl-install-prefix=path], [define perl modules install prefix]),
+AC_MSG_CHECKING(for --with-perl-install-destdir )
+AC_ARG_WITH(perl-install-destdir,
+    AC_HELP_STRING([--with-perl-install-destdir=path], [define perl modules ins\tall prefix]),
     [ case "$withval" in
     yes)
-        withperllinstallprefix=yes
+        withperllinstalldestdir=yes
         ;;
     no)
         ;;
     *)
-        withperllinstallprefix=yes
-        PERL_INSTALL_PREFIX="$withval"
+        withperllinstalldestdir=yes
+        PERL_INSTALL_DESTDIR="$withval"
         ;;
     esac ]
 )
-AC_MSG_RESULT(${withperllinstallprefix=no})
-if test -z "$PERL_INSTALL_PREFIX"; then
+AC_MSG_RESULT(${withperllinstalldestdir=no})
+if test -z "$PERL_INSTALL_DESTDIR"; then
    PERL_INSTALL_PREFIX='${prefix}'
+else
+   PERL_INSTALL_PREFIX='${PERL_INSTALL_DESTDIR}${prefix}'
 fi
+AC_SUBST(PERL_INSTALL_DESTDIR)
 AC_SUBST(PERL_INSTALL_PREFIX)
 
 # Build with no master list mechanism
