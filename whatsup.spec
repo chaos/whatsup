@@ -1,4 +1,4 @@
-# $Id: whatsup.spec,v 1.4 2003-02-25 02:16:29 achu Exp $
+# $Id: whatsup.spec,v 1.5 2003-02-25 16:19:25 achu Exp $
 
 Name:		whatsup
 Version:	1.0
@@ -79,3 +79,7 @@ fi
 %{_bindir}/*
 %{_includedir}/*
 %{_libdir}/*
+echo "*******"
+ls "$RPM_BUILD_ROOT"
+echo "*******"
+blah
