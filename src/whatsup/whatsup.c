@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.55 2003-09-24 16:16:19 achu Exp $
+ * $Id: whatsup.c,v 1.56 2003-09-24 16:18:44 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -532,7 +532,7 @@ int main(int argc, char **argv) {
     if (strcasecmp(argv[1],"doc") == 0)
       fprintf(stderr,"Shhhhhh.  Be very very quiet.  I'm hunting wabbits.\n");
     if (strcasecmp(argv[1],"dude") == 0)
-      fprintf(stderr,"Cowabunga! Surfs up!\n");
+      fprintf(stderr,"Surfs up man! Cowabunga!\n");
     if (strcasecmp(argv[1],"man") == 0)
       fprintf(stderr, "Nothin much, just chillin ...\n");
   }
