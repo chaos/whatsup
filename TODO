@@ -2,3 +2,4 @@
 - Use libtool to allow pluggable loadable modules for masterlist mechanisms??
 - Make Perl MakeMaker actually be good
 - Screw ganglia, write a updownd daemon.
+- Make distcheck work.
