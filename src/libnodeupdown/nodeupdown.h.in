@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown.h.in,v 1.1 2003-07-16 01:54:07 achu Exp $
+ *  $Id: nodeupdown.h.in,v 1.2 2003-08-13 23:37:05 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h.in,v $
  *    
  */
@@ -94,12 +94,6 @@ char *nodeupdown_errormsg(nodeupdown_t handle);
  * - output a message to standard error 
  */
 void nodeupdown_perror(nodeupdown_t handle, const char *msg);
-
-/* nodeupdown_dump
- * - output contents stored in the handle
- * - returns 0 on success, -1 on error
- */
-int nodeupdown_dump(nodeupdown_t handle, FILE *stream);
 
 /* nodeupdown_get_up_nodes_string
  * - retrieve a ranged string of up nodes
