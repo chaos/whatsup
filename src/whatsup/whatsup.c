@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.34 2003-05-16 16:48:09 achu Exp $
+ * $Id: whatsup.c,v 1.35 2003-05-16 17:04:36 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -778,12 +778,16 @@ int output_nodes(struct arginfo *arginfo, char *nodes) {
     }
 
     fprintf(stdout,"%s\n", str);
+
+    free(str);
+    hostlist_destroy(hl);
   }
 
   return 0;
 
  cleanup:
 
+  free(str);
   hostlist_destroy(hl);
   return -1;
 }
