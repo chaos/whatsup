@@ -1,5 +1,5 @@
 /*
- * $Id: libnodeupdown_testcases.h,v 1.7 2003-03-12 17:03:11 achu Exp $
+ * $Id: libnodeupdown_testcases.h,v 1.8 2003-03-13 18:49:23 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/testsuite/libnodeupdown_testcases.h,v $
  *    
  */
@@ -9,29 +9,34 @@
  *****************************************************************/
 
 /* 
- * Function definitions
+ * Function definition, use bits so groups of functions
+ * can be identified more easily.                     
  */
 
-#define GET_UP_NODES_STRING                 0 
-#define GET_DOWN_NODES_STRING               1 
-#define GET_UP_NODES_LIST                   2
-#define GET_DOWN_NODES_LIST                 3
-#define GET_UP_NODES_HOSTLIST               4
-#define GET_DOWN_NODES_HOSTLIST             5
-#define GET_UP_NODES_STRING_ALTNAMES        6 
-#define GET_DOWN_NODES_STRING_ALTNAMES      7 
-#define GET_UP_NODES_LIST_ALTNAMES          8 
-#define GET_DOWN_NODES_LIST_ALTNAMES        9
-#define GET_UP_NODES_HOSTLIST_ALTNAMES     10 
-#define GET_DOWN_NODES_HOSTLIST_ALTNAMES   11 
-#define IS_NODE_UP                         12 
-#define IS_NODE_DOWN                       13 
-#define CONVERT_STRING_TO_ALTNAMES         14 
-#define CONVERT_LIST_TO_ALTNAMES           15 
-#define CONVERT_HOSTLIST_TO_ALTNAMES       16
-#define NODELIST_CREATE                    17
-#define NODELIST_CLEAR                     18
-#define NODELIST_DESTROY                   19
+#define GET_UP_NODES_STRING                  0x0100
+#define GET_DOWN_NODES_STRING                0x0101
+#define GET_UP_NODES_LIST                    0x0202
+#define GET_DOWN_NODES_LIST                  0x0203
+#define GET_UP_NODES_HOSTLIST                0x0404
+#define GET_DOWN_NODES_HOSTLIST              0x0405
+#define GET_UP_NODES_STRING_ALTNAMES         0x0106
+#define GET_DOWN_NODES_STRING_ALTNAMES       0x0107
+#define GET_UP_NODES_LIST_ALTNAMES           0x0208
+#define GET_DOWN_NODES_LIST_ALTNAMES         0x0209
+#define GET_UP_NODES_HOSTLIST_ALTNAMES       0x040a
+#define GET_DOWN_NODES_HOSTLIST_ALTNAMES     0x040b
+#define IS_NODE_UP                           0x000c
+#define IS_NODE_DOWN                         0x000d
+#define CONVERT_STRING_TO_ALTNAMES           0x000e
+#define CONVERT_LIST_TO_ALTNAMES             0x000f
+#define CONVERT_HOSTLIST_TO_ALTNAMES         0x0010
+#define NODELIST_CREATE                      0x0011
+#define NODELIST_CLEAR                       0x0012
+#define NODELIST_DESTROY                     0x0013
+
+#define GET_STRING_FUNCTIONS                 0x0100
+#define GET_LIST_FUNCTIONS                   0x0200
+#define GET_HOSTLIST_FUNCTIONS               0x0400
 
 /*
  * Flags for test cases
@@ -71,7 +76,8 @@
 #define NULL_NODE                                 NULL
 
 /*
- * Node Sets - using bit wise operators 
+ * Node Sets - set this way so we can take advantage of sets
+ *             with bitwise operations
  */
 #define NODE_NONE             0x00
 #define NODE_A                0x04
