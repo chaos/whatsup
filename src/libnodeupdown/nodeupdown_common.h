@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_common.h,v 1.9 2003-12-29 19:02:02 achu Exp $
+ *  $Id: nodeupdown_common.h,v 1.10 2004-01-10 01:25:10 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -70,8 +70,6 @@
 #define NODEUPDOWN_CONF_TIMEOUT_LEN          "timeout_len"
 #define NODEUPDOWN_CONF_HOSTSFILE            "hostsfile"
 #define NODEUPDOWN_CONF_GENDERSFILE          "gendersfile"
-#define NODEUPDOWN_CONF_HOSTSFILE_BUFLEN     MAXPATHLEN
-#define NODEUPDOWN_CONF_GENDERSFILE_BUFLEN   MAXPATHLEN
 
 struct nodeupdown {
   int magic;                  /* magic number */

@@ -10,6 +10,18 @@
 	src/Libnodeupdown/Makefile.PL, src/libnodeupdown/Makefile.am,
 	AUTHORS: Updated for dotconf removal.
 
+	* src/libnodeupdown/libnodeupdown.c (_read_conffile): Parse via
+	conffile library instead of dotconf library.
+
+	* src/libnodeupdown/libnodeupdown.c (_cb_intval, _cb_string): New
+	functions.
+
+	* src/libnodeupdown/libnodeupdown.c (_cb_gmond_port,
+	_cb_timeout_len, _cb_gendersfile, _cb_hostsfile): Removed.
+
+	* src/libnodeupdown/libnodeupdown.c (_cb_gmond_hostnames): Updated
+	for new API.
+	
 2003-12-31  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/Makefile.am,

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.95 2003-12-29 20:35:48 achu Exp $
+ *  $Id: nodeupdown.c,v 1.96 2004-01-10 01:25:10 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -44,7 +44,7 @@
 #include "list.h"
 #include "hostlist.h"
 #include "xmlparse.h"
-#include "dotconf.h"
+#include "conffile.h"
 #include "nodeupdown.h"
 #include "nodeupdown_masterlist.h"
 #include "nodeupdown_common.h"
@@ -62,10 +62,10 @@ struct nodeupdown_confdata {
   int timeout_len;
   int timeout_len_found;
 #if HAVE_HOSTSFILE
-  char hostsfile[NODEUPDOWN_CONF_HOSTSFILE_BUFLEN+1];
+  char hostsfile[MAXPATHLEN+1];
   int hostsfile_found; 
 #elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
-  char gendersfile[NODEUPDOWN_CONF_GENDERSFILE_BUFLEN+1];
+  char gendersfile[MAXPATHLEN+1];
   int gendersfile_found; 
 #endif
 };
@@ -175,115 +175,83 @@ int nodeupdown_handle_destroy(nodeupdown_t handle) {
   return 0;
 }  
 
-/* Called when bad config name specified in config file or config name
- * missing value
- */
-static int _cb_error(configfile_t *configfile, int type, 
-                     long dc_errno, const char *msg) {
-  configfile->errors++;
-  return -1;            /* the error handler uses != 0 for an error */
-}
-
-
-/* dotconf gmond_hostname(s) callback function */
-static const char *_cb_gmond_hostnames(command_t *cmd, context_t *ctx) {
-  struct nodeupdown_confdata *cd = (struct nodeupdown_confdata *)cmd->option->info;
+static int _cb_gmond_hostnames(char *optionname, int option_type, 
+			       struct conffile_data *data, 
+			       void *option_ptr, void *app_ptr) {
+  List l = (List)option_ptr;
   char *str;
   int i;
   
-  if (cmd->arg_count > NODEUPDOWN_CONF_GMOND_HOSTNAME_MAX)
-    return (char *)"";		/* non-null string is error */
+  if (data->list_len > NODEUPDOWN_CONF_GMOND_HOSTNAME_MAX)
+    return -1;
 
-  for (i = 0; i < cmd->arg_count; i++) {
-    if (strlen(cmd->data.list[i]) > MAXHOSTNAMELEN) /* bad config value */
-      continue;
-    if ((str = strdup(cmd->data.list[i])) == NULL)
-      return (char *)"";		/* non-null string is error */
-    if (list_append(cd->gmond_hostnames, str) == NULL)
-      return (char *)"";		/* non-null string is error */
+  for (i = 0; i < data->list_len; i++) {
+    if (strlen(data->list[i]) > MAXHOSTNAMELEN)
+      return -1;
+    if ((str = strdup(data->list[i])) == NULL)
+      return -1;
+    if (list_append(l, str) == NULL)
+      return -1;
   }
-
-  cd->gmond_hostnames_found++;
-  return NULL;
+  return 0;
 }
 
-/* dotconf gmond_port callback function */
-static const char *_cb_gmond_port(command_t *cmd, context_t *ctx) {
-  struct nodeupdown_confdata *cd = (struct nodeupdown_confdata *)cmd->option->info;
-  cd->gmond_port = cmd->data.value;
-  cd->gmond_port_found++; 
-  return NULL;
+static int _cb_intval(char *optionname, int option_type,
+		      struct conffile_data *data,
+		      void *option_ptr, void *app_ptr) {
+  int *temp = (int *)option_ptr;
+  *temp = data->intval;
+  return 0;
 }
 
-/* dotconf timeout_len callback function */
-static const char *_cb_timeout_len(command_t *cmd, context_t *ctx) {
-  struct nodeupdown_confdata *cd = (struct nodeupdown_confdata *)cmd->option->info;
-  cd->timeout_len = cmd->data.value;
-  cd->timeout_len_found++;
-  return NULL;
+#if (HAVE_HOSTSFILE || HAVE_GENDERS || HAVE_GENDERSLLNL)
+static int _cb_string(char *optionname, int option_type,
+		      struct conffile_data *data,
+		      void *option_ptr, void *app_ptr) {
+  char *temp = (char *)option_ptr;
+  strncpy(temp, data->string, MAXPATHLEN);
+  temp[MAXPATHLEN-1] = '\0';
+  return 0;
 }
-
-#if HAVE_HOSTSFILE
-/* dotconf hostsfile callback function */
-static const char *_cb_hostsfile(command_t *cmd, context_t *ctx) {
-  struct nodeupdown_confdata *cd = (struct nodeupdown_confdata *)cmd->option->info;
-  strncpy(cd->hostsfile, cmd->data.str, NODEUPDOWN_CONF_HOSTSFILE_BUFLEN);
-  cd->hostsfile[NODEUPDOWN_CONF_HOSTSFILE_BUFLEN-1] = '\0';
-  cd->hostsfile_found++;
-  return NULL;
-}
-#elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
-/* dotconf gendersfile callback function */
-static const char *_cb_gendersfile(command_t *cmd, context_t *ctx) {
-  struct nodeupdown_confdata *cd = (struct nodeupdown_confdata *)cmd->option->info;
-  strncpy(cd->gendersfile, cmd->data.str, NODEUPDOWN_CONF_GENDERSFILE_BUFLEN);
-  cd->gendersfile[NODEUPDOWN_CONF_GENDERSFILE_BUFLEN-1] = '\0';
-  cd->gendersfile_found++;
-  return NULL;
-}
-#endif
 
 /* parse configuration file and store data into confdata */
 static int _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd) {
-  configfile_t *cf = NULL;
-  configoption_t options[] = {
-    {NODEUPDOWN_CONF_GMOND_HOSTNAME, ARG_LIST, _cb_gmond_hostnames, cd, 0},
-    {NODEUPDOWN_CONF_GMOND_PORT, ARG_INT, _cb_gmond_port, cd, 0},
-    {NODEUPDOWN_CONF_TIMEOUT_LEN, ARG_INT, _cb_timeout_len, cd, 0},
+  struct conffile_option options[] = {
+    {NODEUPDOWN_CONF_GMOND_HOSTNAME, CONFFILE_OPTION_LIST, _cb_gmond_hostnames, 
+     1, 0, &(cd->gmond_hostnames_found), cd->gmond_hostnames},
+    {NODEUPDOWN_CONF_GMOND_PORT, CONFFILE_OPTION_INT, _cb_intval,
+     1, 0, &(cd->gmond_port_found), &(cd->gmond_port)},
+    {NODEUPDOWN_CONF_TIMEOUT_LEN, CONFFILE_OPTION_INT, _cb_intval,
+     1, 0, &(cd->timeout_len_found), &(cd->timeout_len)},
 #if HAVE_HOSTSFILE
-    {NODEUPDOWN_CONF_HOSTSFILE, ARG_STR, _cb_hostsfile, cd, 0},
+    {NODEUPDOWN_CONF_HOSTSFILE, CONFFILE_OPTION_STRING, _cb_hostsfile, 
+     1, 0, &(cd->hostsfile_found), cd->hostsfile},
 #elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
-    {NODEUPDOWN_CONF_GENDERSFILE, ARG_STR, _cb_gendersfile, cd, 0},
+    {NODEUPDOWN_CONF_GENDERSFILE, CONFFILE_OPTION_STRING, _cb_gendersfile, 
+     1, 0, &(cd->gendersfile_found), cd->gendersfile}
 #endif
-    LAST_OPTION
   };
-  int rv, ret = -1;
+  conffile_t cf = NULL;
+  int num, ret = -1;
 
-  /* NODEUPDOWN_CONF_FILE defined in config.h */
-
-  /* Not an error if the conffile doesn't exist */
-  if (access(NODEUPDOWN_CONF_FILE, F_OK) < 0)
-    return 0;
-
-  if (!(cf = dotconf_create(NODEUPDOWN_CONF_FILE, options, 0, CASE_INSENSITIVE))) {
-    handle->errnum = NODEUPDOWN_ERR_CONF;
-    goto cleanup;
+  if ((cf = conffile_handle_create()) == NULL) {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      goto cleanup;
   }
 
-  /* Setup error handler */
-  cf->errorhandler = (dotconf_errorhandler_t)_cb_error;
-  cf->errors = 0;
-
-  rv = dotconf_command_loop(cf);
-  if (rv == 0 || cf->errors > 0) {
-    handle->errnum = NODEUPDOWN_ERR_CONF;
-    goto cleanup;
+  /* NODEUPDOWN_CONF_FILE defined in config.h */
+  num = sizeof(options)/sizeof(struct conffile_option);
+  if (conffile_parse(cf, NODEUPDOWN_CONF_FILE, options, num, NULL, 0) < 0) {
+      /* Not an error if the file does not exist */
+      if (conffile_errnum(cf) != CONFFILE_ERR_EXIST) {
+          handle->errnum = NODEUPDOWN_ERR_CONF;
+	  goto cleanup;
+      }
   }
 
   ret = 0;
  cleanup:
-  if (cf != NULL)
-    dotconf_cleanup(cf);
+  (void)conffile_handle_destroy(cf);
   return ret;
 }
 
