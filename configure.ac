@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.30 2004-09-10 20:56:41 achu Exp $
+## $Id: configure.ac,v 1.31 2004-10-07 18:31:04 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -241,11 +241,6 @@ AC_SUBST(HAVE_GENDERSLLNL)
 
 if (test "$withgenders" = "yes") ||
    (test "$withgendersllnl" = "yes"); then
-   AC_CHECK_LIB(genders,
-                genders_index_nodes, 
-                AC_DEFINE(HAVE_GENDERS_INDEX_NODES, [1], 
-                          [define genders_index_nodes exists]),
-                [])
    AC_CHECK_LIB(genders,
                 genders_index_attrvals, 
                 AC_DEFINE(HAVE_GENDERS_INDEX_ATTRVALS, [1], 

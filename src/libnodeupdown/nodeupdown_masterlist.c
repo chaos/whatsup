@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_masterlist.c,v 1.15 2004-09-10 20:56:41 achu Exp $
+ *  $Id: nodeupdown_masterlist.c,v 1.16 2004-10-07 18:31:04 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -156,8 +156,6 @@ _load_hostsfile_data(nodeupdown_t handle, const char *filename)
 #endif /* HAVE_HOSTSFILE */
 
 #if (HAVE_GENDERS || HAVE_GENDERSLLNL)
-
-#define TINY_CLUSTER  64
 static int 
 _load_genders_data(nodeupdown_t handle, const char *filename) 
 {
@@ -177,29 +175,14 @@ _load_genders_data(nodeupdown_t handle, const char *filename)
     return -1;
   }
 
-#if HAVE_GENDERS_INDEX_NODES
-  /* These are for performance improvements if the indexing API
-   * functions are available.  Don't fail and return -1 at any point
-   * in the rest of this function.  The rest of libnodeupdown is not
-   * dependent on this section of code.
-   */
-
-  if ((numnodes = genders_getnumnodes(handle->genders_handle)) < 0)
-    return 0;
-
-  /* Don't bother indexing if the cluster is tiny */
-  if (numnodes < TINY_CLUSTER)
-    return 0;
-  
-  if (genders_index_nodes(handle->genders_handle) < 0)
-    return 0;
-
 #if HAVE_GENDERSLLNL && HAVE_GENDERS_INDEX_ATTRVALS
-  if (genders_index_attrvals(handle->genders_handle, 
-                             GENDERS_ALTNAME_ATTRIBUTE) < 0)
-    return 0;
+  /* This is for performance improvements if the indexing API
+   * functions are available.  Don't fail and return -1, since the
+   * rest of libnodeupdown is not dependent on this section of code.
+   */
+  genders_index_attrvals(handle->genders_handle, 
+                         GENDERS_ALTNAME_ATTRIBUTE);
 #endif /* HAVE_GENDERSLLNL && HAVE_GENDERS_INDEX_ATTRVALS */
-#endif /* HAVE_GENDERS_INDEX_NODES */
 
   return 0;
 }
