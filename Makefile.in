@@ -90,7 +90,7 @@ am__quote = @am__quote@
 install_sh = @install_sh@
 
 ACLOCAL_AMFLAGS = -I config
-EXTRA_DIST = AUTHORS COPYING DISCLAIMER INSTALL NEWS README ChangeLog whatsup.spec
+EXTRA_DIST = AUTHORS COPYING DISCLAIMER INSTALL NEWS README ChangeLog whatsup.spec mans
 SUBDIRS = src
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
