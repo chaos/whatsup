@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.28 2003-03-31 16:46:36 achu Exp $
+ * $Id: nodeupdown.c,v 1.29 2003-04-09 00:18:07 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -851,7 +851,8 @@ int nodeupdown_compare_genders_to_gmond_down_nodes(nodeupdown_t handle) {
 	 */
 	if (hostlist_find(handle->gmond_nodes, altname) == -1) {
 
-	  if (hostlist_push_host(handle->nodeupdown_down_nodes, genders_nodes[i]) == 0) {
+	  if (hostlist_push_host(handle->nodeupdown_down_nodes, 
+				 genders_nodes[i]) == 0) {
 	    handle->errnum = NODEUPDOWN_ERR_HOSTLIST;
 	    goto cleanup;
 	  }
@@ -859,7 +860,8 @@ int nodeupdown_compare_genders_to_gmond_down_nodes(nodeupdown_t handle) {
 	}
       }
       else {
-	if (hostlist_push_host(handle->nodeupdown_down_nodes, genders_nodes[i]) == 0) {
+	if (hostlist_push_host(handle->nodeupdown_down_nodes, 
+			       genders_nodes[i]) == 0) {
 	  handle->errnum = NODEUPDOWN_ERR_HOSTLIST;
 	  goto cleanup;
 	}

@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.15 2003-03-31 16:48:06 achu Exp $
+ * $Id: whatsup.c,v 1.16 2003-04-09 00:18:32 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -69,7 +69,6 @@ char *debug_buffer_ptr;
 /* struct arginfo
  * - carries information about args passed in from the command line
  * genders_filename - filename of genders file
- * gmond_hostname - hostname of gmond server
  * gmond_ip - ip address of gmond server
  * gmond_port - port of gmond server
  * output_type - what output should be dumped to screen (up/down)
@@ -80,7 +79,6 @@ char *debug_buffer_ptr;
  */
 struct arginfo {
   char *genders_filename; 
-  char *gmond_hostname;   
   char *gmond_ip;         
   int gmond_port;         
   enum whatsup_output_type output_type;
@@ -110,17 +108,17 @@ static int get_all_up_or_down_nodes(struct arginfo *,
 				    nodeupdown_t, 
 				    hostlist_t);
 static int output_nodes(struct arginfo *, hostlist_t);
-int handle_up_or_down_nodes(struct arginfo *, 
-			    enum whatsup_output_type, 
-			    nodeupdown_t, 
-			    hostlist_t *);
+int get_up_or_down_nodes(struct arginfo *, 
+			 enum whatsup_output_type, 
+			 nodeupdown_t, 
+			 hostlist_t *);
 
 
 /* usage
  * - output usage and exit
  */
 static void usage(void) {
-  fprintf(stderr, "Usage: whatsup [OPTIONS]... [NODES]...\n");
+  fprintf(stderr,"Usage: whatsup [OPTIONS]... [NODES]...\n");
   fprintf(stderr,"  -h         --help              Print help and exit\n");
   fprintf(stderr,"  -V         --version           Print version and exit\n");
   fprintf(stderr,"  -f STRING  --filename=STRING   Location of genders file (default=%s)\n", DEFAULT_GENDERS_FILE);
@@ -141,7 +139,7 @@ static void usage(void) {
 }
 
 static void version(void) {
-  fprintf(stderr, "whatsup 1.0.3\n");
+  fprintf(stderr, "whatsup 1.0.4\n");
   exit(1);
 }
 
@@ -174,7 +172,6 @@ static void output_error(char *msg, char *errno_msg) {
  */
 static int initialize_struct_arginfo(struct arginfo *arginfo) {
   arginfo->genders_filename = NULL;
-  arginfo->gmond_hostname = NULL;
   arginfo->gmond_ip = NULL;
   arginfo->gmond_port = GANGLIA_DEFAULT_XML_PORT;
   arginfo->output_type = WHATSUP_UP_AND_DOWN;
@@ -191,9 +188,6 @@ static int initialize_struct_arginfo(struct arginfo *arginfo) {
 static void cleanup_struct_arginfo(struct arginfo *arginfo) {
   if (arginfo->genders_filename != NULL) {
     free(arginfo->genders_filename);
-  }
-  if (arginfo->gmond_hostname != NULL) {
-    free(arginfo->gmond_hostname);
   }
   if (arginfo->gmond_ip != NULL) {
     free(arginfo->gmond_ip);
@@ -329,75 +323,39 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
     err_usage("you can only specify one of the --gmond_hostname ('o') or --gmond_ip ('i') options");
   }
   else if (oopt == 1) {
-    /* gmond hostname was provided, must also determine IP address */
+    /* gmond hostname was provided, must determine IP address */
 
     struct hostent *hptr;
 
-    if ((arginfo->gmond_hostname = strdup(hostname)) == NULL) {
-      output_error("out of memory", NULL);
-      return -1;
-    }
-    
     if ((hptr = gethostbyname(hostname)) == NULL) {
       output_error("gethostbyname() error", (char *)hstrerror(h_errno));
       return -1;
     }
 
-    if ((arginfo->gmond_ip = (char *)malloc(INET_ADDRSTRLEN)) == NULL) {
+    if ((arginfo->gmond_ip = (char *)malloc(INET_ADDRSTRLEN+1)) == NULL) {
       output_error("out of memory", NULL);
       return -1;
     }
-    memset(arginfo->gmond_ip, '\0', INET_ADDRSTRLEN);
+    memset(arginfo->gmond_ip, '\0', INET_ADDRSTRLEN+1);
 
     if (inet_ntop(AF_INET, 
 		  (void *)hptr->h_addr, 
 		  arginfo->gmond_ip, 
-		  INET_ADDRSTRLEN) == NULL) {
+		  INET_ADDRSTRLEN+1) == NULL) {
       output_error("inet_ntop() error", strerror(errno));
       return -1;
     }
   }
   else if (iopt == 1) {
-    /* gmond ip address was provided, must also determine hostname */
-
-    struct hostent *hptr;
-    struct in_addr temp_in_addr;
-    int ret;
+    /* gmond ip address was provided, no need to bother with hostname */
 
     if ((arginfo->gmond_ip = strdup(ip)) == NULL) {
       output_error("out of memory", NULL);
       return -1;
     }
-
-    ret = inet_pton(AF_INET, arginfo->gmond_ip, &temp_in_addr);
-    if (ret == 0) {
-      output_error("inet_pton() error", "invalid address");
-      return -1;
-    }
-    else if (ret < 0) {
-      output_error("inet_pton() error", strerror(errno));
-      return -1;
-    }
-
-    if ((hptr = gethostbyaddr(&temp_in_addr,
-			      sizeof(struct in_addr), 
-			      AF_INET)) == NULL) {
-      output_error("gethostbyaddr() error", (char *)hstrerror(h_errno));
-      return -1;
-    }
-
-    if ((arginfo->gmond_hostname = strdup(hptr->h_name)) == NULL) {
-      output_error("out of memory", NULL);
-      return -1;
-    }
   }
   else {
-    /* use default hostname and ip address */
-
-    if ((arginfo->gmond_hostname = strdup(hostname)) == NULL) {
-      output_error("out of memory", NULL);
-      return -1;
-    }
+    /* use default ip address */
 
     if ((arginfo->gmond_ip = strdup(ip)) == NULL) {
       output_error("out of memory", NULL);
@@ -426,7 +384,8 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
   }
 
   if ((lopt + copt + nopt + sopt) > 1) {
-    err_usage("you can only specify one of the --hostlist ('-l'), --comma ('-c'), --newline ('-n'), or --space ('-s') options once");
+    err_usage("you can only specify one of the --hostlist ('-l'), --comma ('-c'), "
+	      "--newline ('-n'), or --space ('-s') options once");
   }
   else if (lopt == 1) {
     arginfo->list_type = WHATSUP_HOSTLIST;
@@ -583,7 +542,6 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
   fprintf(stderr,"arginfo\n");
   fprintf(stderr,"-------\n");
   fprintf(stderr,"genders_filename: %s\n", arginfo->genders_filename);
-  fprintf(stderr,"gmond_hostname: %s\n", arginfo->gmond_hostname);
   fprintf(stderr,"gmond_ip: %s\n", arginfo->gmond_ip);
   fprintf(stderr,"gmond_port: %d\n", arginfo->gmond_port);
   fprintf(stderr,"output_type: %d\n", arginfo->output_type);
@@ -818,13 +776,13 @@ int output_nodes(struct arginfo *arginfo, hostlist_t nodes) {
   return 0;
 }
 
-/* handle_up_or_down_nodes
+/* get_up_or_down_nodes
  * - a wrapper function used to avoid duplicate code.
  */
-int handle_up_or_down_nodes(struct arginfo *arginfo, 
-			    enum whatsup_output_type output_type, 
-			    nodeupdown_t handle, 
-			    hostlist_t *nodes) {
+int get_up_or_down_nodes(struct arginfo *arginfo, 
+			 enum whatsup_output_type output_type, 
+			 nodeupdown_t handle, 
+			 hostlist_t *nodes) {
 
   genders_t genders_handle = NULL;
   hostlist_t alternate_nodes = NULL; 
@@ -844,7 +802,7 @@ int handle_up_or_down_nodes(struct arginfo *arginfo,
     }
   }
   else {
-    /* get all nodes */
+    /* get all up or down nodes */
     if (get_all_up_or_down_nodes(arginfo, 
 				 output_type, 
 				 handle, 
@@ -853,7 +811,7 @@ int handle_up_or_down_nodes(struct arginfo *arginfo,
     }
   }
   
-  /* output nodes based on a genders attribute?? */
+  /* remove nodes that don't have a genders attribute */
   if (arginfo->genders_attribute != NULL) {
     if ((genders_handle = genders_handle_create()) == NULL) {
       output_error("genders_handle_create() error", NULL);
@@ -1001,7 +959,7 @@ int main(int argc, char **argv) {
 
   if (nodeupdown_load_data(handle, 
 			   arginfo->genders_filename, 
-			   arginfo->gmond_hostname, 
+			   NULL, 
 			   arginfo->gmond_ip, 
 			   arginfo->gmond_port) == -1) {
     output_error("nodeupdown_create() error", 
@@ -1009,40 +967,44 @@ int main(int argc, char **argv) {
     goto cleanup;
   }
 
+  /* get up nodes */
   if (arginfo->output_type == WHATSUP_UP ||
       arginfo->output_type == WHATSUP_UP_AND_DOWN) {
     if ((up_nodes = hostlist_create(NULL)) == NULL) {
       goto cleanup;
     }
     
-    if (handle_up_or_down_nodes(arginfo, 
-				WHATSUP_UP, 
-				handle, 
-				&up_nodes) == -1) {
+    if (get_up_or_down_nodes(arginfo, 
+			     WHATSUP_UP, 
+			     handle, 
+			     &up_nodes) == -1) {
       goto cleanup;
     }
   }
 
+  /* get down nodes */
   if (arginfo->output_type == WHATSUP_DOWN ||
       arginfo->output_type == WHATSUP_UP_AND_DOWN) {
     if ((down_nodes = hostlist_create(NULL)) == NULL) {
       goto cleanup;
     }
     
-    if (handle_up_or_down_nodes(arginfo, 
-				WHATSUP_DOWN, 
-				handle, 
-				&down_nodes) == -1) {
+    if (get_up_or_down_nodes(arginfo, 
+			     WHATSUP_DOWN, 
+			     handle, 
+			     &down_nodes) == -1) {
       goto cleanup;
     }
   }
 
+  /* output up, down, or both up and down nodes */
   if (arginfo->output_type == WHATSUP_UP_AND_DOWN) {
     fprintf(stdout, "up:\t");
     if (output_nodes(arginfo, up_nodes) != 0) {
       goto cleanup;
     }
-    /* odd situation with output formatting */
+
+    /* handle odd situation with output formatting */
     if (arginfo->list_type == WHATSUP_NEWLINE) {
       fprintf(stdout, "\n");
     }
