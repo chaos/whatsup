@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.38 2003-05-16 17:26:47 achu Exp $
+ * $Id: whatsup.c,v 1.39 2003-05-16 21:45:56 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -568,6 +568,8 @@ int check_if_nodes_are_up_or_down(struct arginfo *arginfo,
   }
   str = NULL;
 
+  hostlist_sort(hl);
+
   if ((str = get_hostlist_string(hl, RANGED_STRING)) == NULL)
     goto cleanup;
 
@@ -630,7 +632,6 @@ int get_all_up_or_down_nodes(struct arginfo *arginfo,
   } while (nodeupdown_errnum(handle) == NODEUPDOWN_ERR_OVERFLOW); 
   
   *nodes = str;
-  free(str);
   return 0;
 }
 
@@ -718,7 +719,7 @@ int get_up_or_down_nodes(struct arginfo *arginfo,
   }
 
   if (arginfo->list_altnames == WHATSUP_ON) {
-    if (convert_to_altnames(arginfo, nodes) == -1)
+    if (convert_to_altnames(arginfo, &str) == -1)
       goto cleanup;
   }
 
