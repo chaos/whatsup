@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia.c,v 1.1 2005-04-01 21:29:02 achu Exp $
+ *  $Id: nodeupdown_ganglia.c,v 1.2 2005-04-01 21:45:25 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -32,15 +32,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
 #include <errno.h>
-#include <fcntl.h>
-#include <sys/socket.h>
 #include <sys/time.h> 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/param.h>
 
 #include "hostlist.h"
 #include "xmlparse.h"

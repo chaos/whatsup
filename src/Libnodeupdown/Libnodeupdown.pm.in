@@ -1,5 +1,5 @@
 #############################################################################
-#  $Id: Libnodeupdown.pm.in,v 1.9 2005-04-01 18:48:32 achu Exp $
+#  $Id: Libnodeupdown.pm.in,v 1.10 2005-04-01 21:45:25 achu Exp $
 #############################################################################
 #  Copyright (C) 2003 The Regents of the University of California.
 #  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -91,7 +91,7 @@ Libnodeupdown - Perl extension for libnodeupdown
  $handle->nodeupdown_load_data($gmond_hostname,
                                $gmond_port,
                                $timeout_len,
-                               @NODEUPDOWN_CLUSTERLIST_PERL_PARAMETER@);
+                               $reserved);
 
  $handle->nodeupdown_errnum()
  $handle->nodeupdown_strerror($errnum)
@@ -128,7 +128,7 @@ Returns a nodeupdown object on success, undef on error.
 
 =item B<$handle-E<gt>nodeupdown_load_data()>
 
-=item B<$handle-E<gt>nodeupdown_load_data($gmond_hostname, $gmond_port, $timeout_len, @NODEUPDOWN_CLUSTERLIST_PERL_PARAMETER@)>
+=item B<$handle-E<gt>nodeupdown_load_data($gmond_hostname, $gmond_port, $timeout_len, $reserved)>
 
 Loads data for the remainder of the nodeupdown library to use.  To use
 default values, pass in undef for any of the specified parameters.  To

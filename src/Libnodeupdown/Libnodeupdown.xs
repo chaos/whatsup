@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: Libnodeupdown.xs,v 1.9 2005-04-01 18:48:32 achu Exp $
+ *  $Id: Libnodeupdown.xs,v 1.10 2005-04-01 21:45:25 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -30,7 +30,7 @@
 
 #include "nodeupdown.h"
 
-#define BUFLEN 4096
+#define LIBNODEUPDOWN_BUFLEN 4096
  
 MODULE = Libnodeupdown             PACKAGE = Libnodeupdown
 
@@ -275,9 +275,9 @@ nodeupdown_handle_create(CLASS)
         RETVAL
 
 int
-nodeupdown_load_data(handle, gmond_hostname=NULL, gmond_port=0, timeout_len=0, masterlist=NULL)
+nodeupdown_load_data(handle, gmond_hostname=NULL, gmond_port=0, timeout_len=0, reserved=NULL)
     nodeupdown_t handle
-    void *masterlist
+    char *reserved
     char *gmond_hostname
     int gmond_port
     int timeout_len
@@ -286,7 +286,7 @@ nodeupdown_load_data(handle, gmond_hostname=NULL, gmond_port=0, timeout_len=0, m
                                       gmond_hostname, 
                                       gmond_port, 
                                       timeout_len,
-                                      masterlist);
+                                      reserved);
     OUTPUT:
         RETVAL
 
@@ -332,7 +332,7 @@ nodeupdown_get_up_nodes_string(handle)
 
         len = 0;
         while (1) {
-            len += BUFLEN;
+            len += LIBNODEUPDOWN_BUFLEN;
             if ((buf = (char *)malloc(len+1)) == NULL) 
                 goto handle_error;
 
@@ -372,7 +372,7 @@ nodeupdown_get_down_nodes_string(handle)
 
         len = 0;
         while (1) {
-            len += BUFLEN;
+            len += LIBNODEUPDOWN_BUFLEN;
             if ((buf = (char *)malloc(len+1)) == NULL) 
                 goto handle_error;
 
