@@ -107,4 +107,5 @@ Print out more info than the test index number.  Currently, its hard
 to determine exactly which tests failed and why it failed.
 
 There are some test situations that have not been tested yet by the
-testsuite.  Time permitting, make the test suite more thorough.
+testsuite.  Time permitting, make the test suite even more thorough
+than it is right now..
