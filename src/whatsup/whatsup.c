@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.14 2003-03-25 00:47:16 achu Exp $
+ * $Id: whatsup.c,v 1.15 2003-03-31 16:48:06 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -470,7 +470,7 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
     char *bracket2 = NULL;
 
     /* search for periods.  If there are periods, these are non-short hostname
-     * machine nams. Output error 
+     * machine names. Output error 
      */
     if (strchr(argv[index], '.') != NULL) {
       output_error("nodes must be listed in short hostname format", NULL);
