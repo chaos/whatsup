@@ -9,6 +9,7 @@
 	  API changes in this release.
 	- cleaned up and reworked internals of nodeupdown library code 
 	  significantly
+	- cleaned up whatsup code 
 	- tagged whatsup-1-0-5
 	
 2003-04-14 Albert Chu <chu11@llnl.gov>
