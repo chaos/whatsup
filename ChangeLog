@@ -32,7 +32,7 @@
 	   - added -V (version) option to whatsup
 	   - added -g (genders attribute) option to whatsup
 	   - added error checks for non short hostnames in whatsup
-	   - updated manpages appropriately
+	   - updated and added all manpages as needed by the API changes 
 	   - tagged whatsup-1-0-3 
 
 2003-03-07 Albert Chu <chu11@llnl.gov>
