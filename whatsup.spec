@@ -1,4 +1,4 @@
-# $Id: whatsup.spec,v 1.19 2003-04-24 18:38:48 achu Exp $
+# $Id: whatsup.spec,v 1.20 2003-04-24 19:25:25 achu Exp $
 
 Name:		whatsup
 Version:	1.0
@@ -24,7 +24,7 @@ programmatically determine if a node is up or down.
 %setup
 
 %build
-%configure --program-prefix=%{?_program_prefix:%{_program_prefix}}
+./configure --prefix=/usr
 make
 
 %install
