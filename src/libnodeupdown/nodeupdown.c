@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.74 2003-11-07 03:20:07 achu Exp $
+ * $Id: nodeupdown.c,v 1.75 2003-11-07 03:28:54 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -358,9 +358,8 @@ static int _connect_to_gmond(nodeupdown_t handle, const char *gmond_hostname,
                              const char *gmond_ip, int gmond_port) {
   int sockfd = -1;
   char ip_buf[INET_ADDRSTRLEN+1];
-  char conf_ip_buf[INET_ADDRSTRLEN+1];
   int iplen = INET_ADDRSTRLEN+1;
-  int port, conf_port;
+  int port;
 
   if (_get_ip_and_port(handle, gmond_hostname, gmond_ip, gmond_port, 
                        ip_buf, iplen, &port) < 0)
@@ -368,6 +367,8 @@ static int _connect_to_gmond(nodeupdown_t handle, const char *gmond_hostname,
 
   /* read conf file, see if we should first try different defaults */
   if ((gmond_hostname == NULL && gmond_ip == NULL) || gmond_port <= 0) {
+    char conf_ip_buf[INET_ADDRSTRLEN+1];
+    int conf_port;
 
     if (_read_conffile(handle, conf_ip_buf, iplen, &conf_port) < 0) 
       goto try_again;
