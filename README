@@ -64,6 +64,9 @@ see what I can do.
 
 Comments, patches, fixes, suggestions are always welcome.
 
+By the way, if you plan on building an rpm, you may want to edit the
+whatsup.spec.in configuration with your "master list" mechanism of choice.
+
 Albert Chu
 chu11@llnl.gov
 Lawrence Livermore National Laboratories

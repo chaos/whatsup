@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown_masterlist.c,v 1.1 2003-11-07 18:28:58 achu Exp $
+ *  $Id: nodeupdown_masterlist.c,v 1.2 2003-11-08 16:55:16 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown_masterlist.c,v $
  *    
  */
@@ -59,7 +59,7 @@ static int _load_masterlist_data(nodeupdown_t handle, const char *filename) {
   }
 
   while ((len = _readline(handle, fd, buf, NODEUPDOWN_BUFFERLEN)) > 0) {
-    if (buf[0] == '#')
+    if (buf[0] == '#')		/* skip comments */
       continue;
     else if (strlen(buf) > MAXHOSTNAMELEN) {
       handle->errnum = NODEUPDOWN_ERR_READ;
@@ -101,7 +101,6 @@ static int _load_masterlist_data(nodeupdown_t handle, const char *filename) {
   if (len == -1)
     goto cleanup;
 
-  handle->max_nodes = list_count(handle->masterlist);
   retval = 0;
  cleanup:
   close(fd);
@@ -134,6 +133,23 @@ int nodeupdown_masterlist_init(nodeupdown_t handle, void *ptr) {
   return _load_masterlist_data(handle, (const char *)ptr);
 #elif HAVE_GENDERS
   return _load_genders_data(handle, (const char *)ptr);
+#else
+  return 0;
+#endif
+}
+
+int nodeupdown_masterlist_finish(nodeupdown_t handle, void *ptr) {
+#if HAVE_MASTERLIST
+  /* set max_nodes */
+  handle->max_nodes = list_count(handle->masterlist);
+  return 0;
+#elif HAVE_GENDERS
+  /* set max_nodes */
+  if ((handle->max_nodes = genders_getnumnodes(handle->genders_handle)) == -1) {
+    handle->errnum = NODEUPODWN_ERR_MASTERLIST;
+    return -1;
+  }
+  return 0;
 #else
   return 0;
 #endif
@@ -178,12 +194,12 @@ int nodeupdown_masterlist_compare_gmond_to_masterlist(nodeupdown_t handle) {
     goto cleanup;
   }
   
-  if ((handle->max_nodes = genders_getnodes(gh, nlist, num, NULL, NULL)) == -1) {
+  if (genders_getnodes(gh, nlist, num, NULL, NULL) == -1) {
     handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
     goto cleanup;
   }
   
-  for (i = 0; i < handle->max_nodes; i++) {
+  for (i = 0; i < num; i++) {
     /* check if gmond knows of this genders node */
     if ((hostlist_find(handle->up_nodes, nlist[i]) == -1) &&
         (hostlist_find(handle->down_nodes, nlist[i]) == -1)) {
@@ -283,8 +299,8 @@ int nodeupdown_masterlist_increase_max_nodes(nodeupdown_t handle) {
   handle->max_nodes++;
   return 0;
 #else
-  /* If using masterlist, use list_count for max nodes */
-  /* If using genders, use genders_numnodes for max nodes */
+  /* If using masterlist, use list_count in finish */
+  /* If using genders, use genders_numnodes in finish */
   return 0;
 #endif
 }

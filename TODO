@@ -1,4 +1,1 @@
 Allow multiple servers/IP addresses in conf file
-
-Re-work library to use separate files/modules/something, I dunno ..
-  - The #if/#endifs are getting ugly

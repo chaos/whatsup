@@ -1,3 +1,38 @@
+2003-11-08  Albert Chu  <chu11@llnl.gov>
+
+	* src/whatsup/whatsup.c:  Added whatsup_bool_t and whatsup_output_t
+	enums.  Used within struct winfo.
+	
+	* src/whatsup/whatsup.c (initialize_struct_winfo, err_msg):
+	Removed these pointless functions, move their functionality into
+	the calling functions.
+
+	* src/whatsup/whatsup.c (main, get_nodes, cmdline_parse): Modify
+	for use of new types and new constant names WHATSUP_FALSE and
+	WHATSUP_TRUE.
+
+	* src/whatsup/whatsup.c (cmdline_parse, check_arg_nodes,
+	convert_to_altnames, get_all_nodes, get_nodes, output_nodes,
+	main): Re-work with own error output.
+
+	* src/whatsup/whatsup.c (main): Made winfo a local var rather
+	than mallocing space.
+
+	* src/whatsup/whatsup.c (main, output_nodes): Moved some common
+	code from main to output_nodes.
+
+	* src/libnodeupdown/nodeupdown_masterlist.h,
+	src/libnodeupdown/nodeupdown_masterlist.c
+	(nodeupdown_masterlist_finish): New function.
+
+	* src/libnodeupdown/nodeupdown_masterlist.h,
+	src/libnodeupdown/nodeupdown_masterlist.c
+	(nodeupdown_masterlist_compare_gmond_to_masterlist,
+	_load_masterlist_data): Move some code into
+	nodeupdown_masterlist_finish.
+
+	* whatsup.spec.in: Fixed typo.
+	
 2003-11-07  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/masterlist.h.in,

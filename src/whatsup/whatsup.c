@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.69 2003-11-06 20:31:12 achu Exp $
+ * $Id: whatsup.c,v 1.70 2003-11-08 16:55:16 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -9,6 +9,7 @@
 #endif
 
 #include <errno.h>
+#define _GNU_SOURCE
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,31 +24,19 @@
 #include "hostlist.h"
 #include "nodeupdown.h"
 
-/********************************
- * External Variables           *
- ********************************/
+/* External Variables */
 
-/* getopt */
 extern char *optarg;
 extern int optind, opterr, optopt;
 
-/********************************
- * Definitions                  *
- ********************************/
-
-#define WHATSUP_OFF          0
-#define WHATSUP_ON           1
+/* Definitions */
+ 
+typedef enum {WHATSUP_TRUE, WHATSUP_FALSE} whatsup_bool_t;
+typedef enum {UP_NODES, DOWN_NODES, UP_AND_DOWN} whatsup_output_t;
 
 #define WHATSUP_BUFFERLEN    65536
 
 #define WHATSUP_FORMATLEN    64
-
-#define RANGED_STRING        0
-#define DERANGED_STRING      1
-
-#define UP_AND_DOWN          0
-#define UP_NODES             1
-#define DOWN_NODES           2
 
 #define HOSTLIST             '\0' /* any char that is not ',', '\n', or ' ' */  
 #define COMMA                ','
@@ -62,17 +51,31 @@ struct winfo {
   char *hostname;             /* hostname of gmond server */
   char *ip;                   /* ip of gmond server */
   int port;                   /* port of gmond server */  
-  int output;                 /* output type */ 
+  whatsup_output_t output;    /* output type */ 
   char list_type;             /* list type */
-  int count;                  /* list count? */
+  whatsup_bool_t count;       /* list count? */
   hostlist_t nodes;           /* nodes entered at command line */
 #if (HAVE_MASTERLIST || HAVE_GENDERS)
   char *filename;             /* filename */
 #endif
 #if HAVE_GENDERS
-  int list_altnames;          /* list altnames? */
+  whatsup_bool_t altnames;    /* list altnames? */
 #endif
 };
+
+/* _log10
+ * - a simple log 10 function for ints
+ */
+static int _log10(int num) {
+  int count = 0;
+
+  if (num > 0) {
+    while ((num /= 10) > 0)
+      count++;
+  }
+
+  return count;
+} 
 
 /* usage
  * - output usage
@@ -111,64 +114,21 @@ static void version(void) {
   fprintf(stderr, "%s %s-%s\n", PROJECT, VERSION, RELEASE);
 }
 
-/* err_msg
- * - output error statement
- */
-static void err_msg(char *msg, char *errno_msg) {
-  if (errno_msg == NULL)
-    fprintf(stderr, "whatsup error: %s\n", msg);
-  else
-    fprintf(stderr, "whatsup error: %s, %s\n", msg, errno_msg);
-}
-
-/* _log10
- * - a simple log 10 function for ints
- */
-static int _log10(int num) {
-  int count = 0;
-
-  if (num > 0) {
-    while ((num /= 10) > 0)
-      count++;
-  }
-
-  return count;
-} 
-
-/* initialize_struct_winfo
- * - initialize struct winfo structure
- */
-static int initialize_struct_winfo(struct winfo *winfo) {
-  winfo->hostname = NULL;
-  winfo->ip = NULL;
-  winfo->port = 0;
-  winfo->output = UP_AND_DOWN;
-  winfo->list_type = HOSTLIST;
-  winfo->count = WHATSUP_OFF;
-  winfo->nodes = NULL;
-#if (HAVE_MASTERLIST || HAVE_GENDERS)
-  winfo->filename = NULL;
-#endif
-#if HAVE_GENDERS
-  winfo->list_altnames = WHATSUP_OFF;
-#endif
-  return 0;
-}
-
 /* cmdline_parse
- * - parse commandline arguments
+ * - parse command line arguments
  * - store info in a struct winfo strcuture
  */
 static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
   int c, index, oopt = 0, iopt = 0;
+  char options[100];
 
+  strcpy(options, "hVo:i:p:budtlcns");
 #if HAVE_MASTERLIST
-  char *options = "hVo:i:p:budtlcnsf:";
+  strcat(options, "f:");
 #elif HAVE_GENDERS
-  char *options = "hVo:i:p:budtlcnsf:a";
-#else
-  char *options = "hVo:i:p:budtlcns";
+  strcat(options, "f:a");
 #endif
+#if HAVE_GETOPT_LONG
   struct option long_options[] = {
     {"help",      0, NULL, 'h'},
     {"version",   0, NULL, 'V'},
@@ -191,11 +151,16 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
 #endif 
     {0, 0, 0, 0}
   };
+#endif /* HAVE_GETOPT_LONG */
 
   /* turn off output messages printed by getopt_long */
   opterr = 0;
 
+#if HAVE_GETOPT_LONG
   while ((c = getopt_long(argc, argv, options, long_options, NULL)) != -1) {
+#else
+  while ((c = getopt(argc, argv, options)) != -1) { 
+#endif
     switch(c) {
     case 'h':
       usage();
@@ -226,7 +191,7 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
       winfo->output = DOWN_NODES;
       break;
     case 't':
-      winfo->count = WHATSUP_ON;
+      winfo->count = WHATSUP_TRUE;
       break;
     case 'l':
       winfo->list_type = HOSTLIST;
@@ -247,27 +212,27 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
 #endif
 #if HAVE_GENDERS
     case 'a':
-      winfo->list_altnames = WHATSUP_ON;
+      winfo->altnames = WHATSUP_TRUE;
       break;
 #endif 
     case '?':
-      err_msg("invalid command line option entered", NULL);
+      fprintf(stderr, "Usage: invalid command line option entered\n");
       return -1;
       break;
     default:
-      err_msg("getopt() error", NULL);
+      fprintf(stderr, "Error: getopt() error\n");
       return -1;
       break;
     }
   }
 
   if (oopt && iopt) {
-    err_msg("you cannot specify --hostname and --ip", NULL);
+    fprintf(stderr, "Usage: you cannot specify --hostname and --ip\n");
     return -1;
   }
 
   if ((winfo->nodes = hostlist_create(NULL)) == NULL) {
-    err_msg("hostlist_create() error", NULL);
+    fprintf(stderr, "cmdline_parse: hostlist_create()\n");
     return -1;
   }
 
@@ -278,12 +243,12 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
      * machine names. Output error 
      */
     if (strchr(argv[index], '.') != NULL) {
-      err_msg("nodes must be listed in short hostname format", NULL);
+      fprintf(stderr, "Usage: nodes must be listed in short hostname format\n");
       return -1;
     }
 
     if (hostlist_push(winfo->nodes, argv[index]) == 0) {
-      err_msg("hostlist_push_host() error", "nodes listed incorrectly");
+      fprintf(stderr, "Usage: nodes listed incorrectly\n");
       return -1;
     }
 
@@ -292,7 +257,6 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
 
   /* remove any duplicate nodes listed */
   hostlist_uniq(winfo->nodes);
-
   return 0;
 }
 
@@ -306,32 +270,34 @@ static int check_arg_nodes(struct winfo *winfo, int which, char *buf, int buflen
   int ret, exit_value = -1;
 
   if ((hl = hostlist_create(NULL)) == NULL) {
-    err_msg("hostlist_create() error", NULL);
+    fprintf(stderr, "check_arg_nodes: hostlist_create()\n");
     return -1;
   }
 
   if ((iter = hostlist_iterator_create(winfo->nodes)) == NULL) {
-    err_msg("hostlist_iterator_create() error", NULL);
+    fprintf(stderr, "check_arg_nodes: hostlist_iterator_create()\n");
     return -1;
   }
 
   while ((str = hostlist_next(iter)) != NULL) {
     if (which == UP_NODES) {
       if ((ret = nodeupdown_is_node_up(winfo->handle, str)) < 0) {
-        err_msg("nodeupdown_is_node_up()", nodeupdown_errormsg(winfo->handle)); 
+        fprintf(stderr, "check_arg_nodes: nodeupdown_is_node_up(): %s\n", 
+		nodeupdown_errormsg(winfo->handle)); 
         goto cleanup;
       }
     }
     else {
       if ((ret = nodeupdown_is_node_down(winfo->handle, str)) < 0) {
-        err_msg("nodeupdown_is_node_down()", nodeupdown_errormsg(winfo->handle)); 
+        fprintf(stderr, "check_arg_nodes: nodeupdown_is_node_down(): %s\n", 
+		nodeupdown_errormsg(winfo->handle)); 
         goto cleanup;
       }
     }
 
     if (ret == 1) {
       if (hostlist_push_host(hl, str) == 0) {
-        err_msg("hostlist_push_host() error", NULL);
+        fprintf(stderr, "check_arg_nodes: hostlist_push_host()\n");
         goto cleanup;
       }
     }
@@ -342,14 +308,13 @@ static int check_arg_nodes(struct winfo *winfo, int which, char *buf, int buflen
   hostlist_sort(hl);
 
   if (hostlist_ranged_string(hl, buflen, buf) < 0) {
-    err_msg("hostlist_ranged_string() error", NULL);
+    fprintf(stderr, "check_arg_nodes: hostlist_ranged_string()\n");
     goto cleanup;
   }
 
   exit_value = 0;
 
  cleanup:
-
   free(str);
   hostlist_iterator_destroy(iter);
   hostlist_destroy(hl);
@@ -364,13 +329,15 @@ static int get_all_nodes(struct winfo *winfo, int which, char *buf, int buflen) 
 
   if (which == UP_NODES) {
     if (nodeupdown_get_up_nodes_string(winfo->handle, buf, buflen) < 0) {
-      err_msg("nodeupdown_get_up_nodes_string()", nodeupdown_errormsg(winfo->handle));
+      fprintf(stderr, "get_all_nodes: nodeupdown_get_up_nodes_string(): %s\n", 
+	      nodeupdown_errormsg(winfo->handle));
       return -1;
     }
   }
   else {
     if (nodeupdown_get_down_nodes_string(winfo->handle, buf, buflen) < 0) {
-      err_msg("nodeupdown_get_down_nodes_string()", nodeupdown_errormsg(winfo->handle));
+      fprintf(stderr, "get_all_nodes: nodeupdown_get_down_nodes_string(): %s\n",
+	      nodeupdown_errormsg(winfo->handle));
       return -1;
     }
   }
@@ -385,39 +352,41 @@ static int get_all_nodes(struct winfo *winfo, int which, char *buf, int buflen) 
 static int convert_to_altnames(struct winfo *winfo, char *buf, int buflen) {
   genders_t handle = NULL;
   char tbuf[WHATSUP_BUFFERLEN];
-  int exit_value = -1;
+  int retval = -1;
   int tbuflen = WHATSUP_BUFFERLEN;
 
   memset(tbuf, '\0', WHATSUP_BUFFERLEN);
 
   if ((handle = genders_handle_create()) == NULL) {
-    err_msg("genders_handle_create() error", NULL);
+    fprintf(stderr, "convert_to_altnames: genders_handle_create()\n");
     goto cleanup;
   }
 
   if (genders_load_data(handle, winfo->filename) == -1) {
-    err_msg("genders_load_data()", genders_errormsg(handle));
+    fprintf(stderr, "convert_to_altnames: genders_load_data(): %s\n", 
+	    genders_errormsg(handle));
     goto cleanup;
   }
 
   if (genders_string_to_altnames_preserve(handle, buf, tbuf, tbuflen) < 0) {
-    err_msg("genders_string_to_altnames_preserve()", genders_errormsg(handle));
+    fprintf(stderr, 
+	    "convert_to_altnames: genders_string_to_altnames_preserve(): %s\n", 
+	    genders_errormsg(handle));
     goto cleanup;
   }
 
   if (strlen(tbuf) < buflen)
     strcpy(buf, tbuf);
   else {
-    err_msg("Internal buffer overflow", NULL);
+    fprintf(stderr, "convert_to_altnames: Internal buffer overflow\n");
     goto cleanup;
   }
     
-  exit_value = 0;
+  retval = 0;
 
  cleanup:
-
   (void)genders_handle_destroy(handle);
-  return exit_value;
+  return retval;
 }
 #endif /* HAVE_GENDERS */
 
@@ -425,7 +394,7 @@ static int convert_to_altnames(struct winfo *winfo, char *buf, int buflen) {
  * - a wrapper function used to avoid duplicate code.
  */
 int get_nodes(struct winfo *winfo, int which, char *buf, int buflen, int *count) {
-  int ret, exit_value = -1;
+  int ret, retval = -1;
   hostlist_t hl = NULL;
   
   if (hostlist_count(winfo->nodes) > 0)
@@ -437,7 +406,7 @@ int get_nodes(struct winfo *winfo, int which, char *buf, int buflen, int *count)
     goto cleanup;
 
 #if HAVE_GENDERS
-  if (winfo->list_altnames == WHATSUP_ON) {
+  if (winfo->altnames == WHATSUP_TRUE) {
     if (convert_to_altnames(winfo, buf, buflen) == -1)
       goto cleanup;
   }
@@ -447,17 +416,16 @@ int get_nodes(struct winfo *winfo, int which, char *buf, int buflen, int *count)
    * nodes specified by the user 
    */
   if ((hl = hostlist_create(buf)) == NULL) {
-    err_msg("hostlist_create() error", NULL);
+    fprintf(stderr, "get_nodes: hostlist_create()\n");
     goto cleanup;
   }
 
   *count = hostlist_count(hl);
-  exit_value = 0;
+  retval = 0;
 
  cleanup:
-
   hostlist_destroy(hl);
-  return exit_value;
+  return retval;
 }
 
 /* output_nodes
@@ -467,7 +435,7 @@ int output_nodes(struct winfo *winfo, char *buf) {
   char *ptr;
   char tbuf[WHATSUP_BUFFERLEN];
   hostlist_t hl = NULL;
-  int exit_value = -1;
+  int retval = -1;
 
   if (winfo->list_type == HOSTLIST)
     fprintf(stdout, "%s\n", buf);
@@ -476,12 +444,12 @@ int output_nodes(struct winfo *winfo, char *buf) {
     memset(tbuf, '\0', WHATSUP_BUFFERLEN);
     
     if ((hl = hostlist_create(buf)) == NULL) {
-      err_msg("hostlist_create() error", NULL);
+      fprintf(stderr, "output_nodes: hostlist_create() error\n");
       goto cleanup;
     }
 
     if (hostlist_deranged_string(hl, WHATSUP_BUFFERLEN, tbuf) < 0) {
-      err_msg("hostlist_deranged_string() error", NULL);
+      fprintf(stderr, "output_nodes: hostlist_deranged_string() error\n");
       goto cleanup;
     }
 
@@ -491,25 +459,28 @@ int output_nodes(struct winfo *winfo, char *buf) {
         *ptr = winfo->list_type;
     }
 
+    /* start on the next line */
+    if (winfo.output == UP_AND_DOWN && winfo.list_type == NEWLINE)
+      fprintf(stdout, "\n");
+
     fprintf(stdout,"%s\n", tbuf);
   }
 
-  exit_value = 0;
+  retval = 0;
 
  cleanup:
-
   hostlist_destroy(hl);
-  return exit_value;
+  return retval;
 }
 
 int main(int argc, char **argv) {
-  struct winfo *winfo = NULL;
+  struct winfo winfo;
   char up_nodes[WHATSUP_BUFFERLEN];
   char down_nodes[WHATSUP_BUFFERLEN];
-  int up_count, down_count, max, exit_value = 1;
+  char upfmt[WHATSUP_FORMATLEN];
+  char downfmt[WHATSUP_FORMATLEN];
+  int up_count, down_count, max, retval = 1;
   int buflen = WHATSUP_BUFFERLEN;
-  char ufmt[WHATSUP_FORMATLEN];
-  char dfmt[WHATSUP_FORMATLEN];
 
   if (argc == 2) {
     if (strcasecmp(argv[1],"doc") == 0)
@@ -520,104 +491,98 @@ int main(int argc, char **argv) {
       fprintf(stderr, "Nothin much, just chillin ...\n");
   }
 
-  memset(up_nodes, '\0', buflen);
-  memset(down_nodes, '\0', buflen);
-
-  if ((winfo = (struct winfo *)malloc(sizeof(struct winfo))) == NULL) {
-    err_msg("out of memory", NULL);
-    goto cleanup;
-  }
-
-  if (initialize_struct_winfo(winfo) != 0) {
-    err_msg("initialize_struct_winfo() error", NULL);
-    goto cleanup;
-  }
-  
-  if (cmdline_parse(winfo, argc, argv) != 0)
-    goto cleanup;
-  
-  if ((winfo->handle = nodeupdown_handle_create()) == NULL) {
-    err_msg("nodeupdown_handle_create() error", NULL);
-    goto cleanup;
-  }
-
-  if (nodeupdown_load_data(winfo->handle, 
+  /* Initialize winfo structure with defaults */
+  winfo.hostname = NULL;
+  winfo.ip = NULL;
+  winfo.port = 0;
+  winfo.output = UP_AND_DOWN;
+  winfo.list_type = HOSTLIST;
+  winfo.count = WHATSUP_FALSE;
+  winfo.nodes = NULL;
 #if (HAVE_MASTERLIST || HAVE_GENDERS)
-                           winfo->filename, 
+  winfo.filename = NULL;
+#endif
+#if HAVE_GENDERS
+  winfo.altnames = WHATSUP_FALSE;
+#endif
+  
+  if (cmdline_parse(&winfo, argc, argv) != 0)
+    goto cleanup;
+  
+  if ((winfo.handle = nodeupdown_handle_create()) == NULL) {
+    fprintf(stderr, "main: nodeupdown_handle_create() error\n");
+    goto cleanup;
+  }
+
+  if (nodeupdown_load_data(winfo.handle, 
+#if (HAVE_MASTERLIST || HAVE_GENDERS)
+                           winfo.filename, 
 #else
                            NULL,
 #endif
-                           winfo->hostname, winfo->ip, winfo->port, 0) == -1) {
-    err_msg("nodeupdown_load_data()", nodeupdown_errormsg(winfo->handle)); 
+                           winfo.hostname, winfo.ip, winfo.port, 0) == -1) {
+    fprintf(stderr, "main: nodeupdown_load_data(): %s\n", 
+	    nodeupdown_errormsg(winfo->handle)); 
     goto cleanup;
   }
 
   /* get up nodes */
-  if (winfo->output == UP_NODES || winfo->output == UP_AND_DOWN) {
+  if (winfo.output == UP_NODES || winfo.output == UP_AND_DOWN) {
     if (get_nodes(winfo, UP_NODES, up_nodes, buflen, &up_count) == -1)
       goto cleanup;
   }
   
   /* get down nodes */
-  if (winfo->output == DOWN_NODES || winfo->output == UP_AND_DOWN) {
+  if (winfo.output == DOWN_NODES || winfo.output == UP_AND_DOWN) {
     if (get_nodes(winfo, DOWN_NODES, down_nodes, buflen, &down_count) == -1)
       goto cleanup;
   }
 
-  if (winfo->count == WHATSUP_ON) {
-    if (winfo->output == UP_AND_DOWN) {
+  /* only output count */
+  if (winfo.count == WHATSUP_TRUE) {
+    if (winfo.output == UP_AND_DOWN) {
       /* hacks to get the numbers to align */
       max = (up_count > down_count) ? _log10(up_count) : _log10(down_count);
-      snprintf(ufmt, WHATSUP_FORMATLEN, "up:   %%%dd\n", ++max);
-      snprintf(dfmt, WHATSUP_FORMATLEN, "down: %%%dd\n", max);
+      snprintf(upfmt,   WHATSUP_FORMATLEN, "up:   %%%dd\n", ++max);
+      snprintf(downfmt, WHATSUP_FORMATLEN, "down: %%%dd\n", max);
 
-      fprintf(stdout, ufmt, up_count);
-      fprintf(stdout, dfmt, down_count);
+      fprintf(stdout, upfmt, up_count);
+      fprintf(stdout, downfmt, down_count);
     }
-    else if (winfo->output == UP_NODES)
+    else if (winfo.output == UP_NODES)
       fprintf(stdout, "%d\n", up_count);
     else
       fprintf(stdout, "%d\n", down_count);
   }
-  else {
-    /* output up, down, or both up and down nodes */
-    if (winfo->output == UP_AND_DOWN) {
-
+  else {    /* output up, down, or both up and down nodes */
+    if (winfo.output == UP_AND_DOWN) {
       /* hacks to get the numbers to align */
-      if (winfo->list_type != NEWLINE) {
+      if (winfo.list_type != NEWLINE) {
         max = (up_count > down_count) ? _log10(up_count) : _log10(down_count);
-        snprintf(ufmt, WHATSUP_FORMATLEN, "up:   %%%dd: ", ++max);
-        snprintf(dfmt, WHATSUP_FORMATLEN, "down: %%%dd: ", max);
+        snprintf(upfmt,   WHATSUP_FORMATLEN, "up:   %%%dd: ", ++max);
+        snprintf(downfmt, WHATSUP_FORMATLEN, "down: %%%dd: ", max);
       }
       else {
         /* newline format would have output numbers in a funny way */
-        snprintf(ufmt, WHATSUP_FORMATLEN, "up %d:");
-        snprintf(dfmt, WHATSUP_FORMATLEN, "down %d:");
+        snprintf(upfmt,   WHATSUP_FORMATLEN, "up %d:");
+        snprintf(downfmt, WHATSUP_FORMATLEN, "down %d:");
       }
 
-      fprintf(stdout, ufmt, up_count);
+      fprintf(stdout, upfmt, up_count);
       
-      /* handle odd situation with output formatting */
-      if (winfo->list_type == NEWLINE)
-        fprintf(stdout, "\n");
-
       if (output_nodes(winfo, up_nodes) != 0)
         goto cleanup;
 
       /* handle odd situation with output formatting */
-      if (winfo->list_type == NEWLINE)
+      if (winfo.list_type == NEWLINE)
         fprintf(stdout, "\n");
 
-      fprintf(stdout, dfmt, down_count);
-
-      /* handle odd situation with output formatting */
-      if (winfo->list_type == NEWLINE)
-        fprintf(stdout, "\n");
+      fprintf(stdout, downfmt, down_count);
 
       if (output_nodes(winfo, down_nodes) != 0)
         goto cleanup;
     }
-    else if (winfo->output == UP_NODES) {
+    else if (winfo.output == UP_NODES) {
       if (output_nodes(winfo, up_nodes) != 0)
         goto cleanup;
     }
@@ -627,13 +592,10 @@ int main(int argc, char **argv) {
     }
   }
 
-  exit_value = 0;
+  retval = 0;
 
  cleanup:
-
-  hostlist_destroy(winfo->nodes);
-  if (winfo)
-    (void)nodeupdown_handle_destroy(winfo->handle);
-  free(winfo);
-  exit(exit_value);
+  hostlist_destroy(winfo.nodes);
+  (void)nodeupdown_handle_destroy(winfo.handle);
+  exit(retval);
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.77 2003-11-07 23:47:43 achu Exp $
+ * $Id: nodeupdown.c,v 1.78 2003-11-08 16:55:16 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -329,6 +329,7 @@ static int _read_conffile(nodeupdown_t handle, char *ip_buf, int iplen,
   if (hostname_flag == 0 && ip_flag == 0 && port_flag == 0)
     goto cleanup;
 
+  /* get ip and port based on the conffile info */
   if (_get_ip_and_port(handle, 
                        (hostname_flag > 0) ? hostbuf : NULL,
                        (ip_flag > 0) ? ipbuf : NULL, 
@@ -353,11 +354,12 @@ static int _connect_to_gmond(nodeupdown_t handle, const char *gmond_hostname,
                        ip_buf, iplen, &port) < 0)
     return -1;
 
-  /* read conf file, see if we should first try different defaults */
+  /* read conf file, see if we should first try some different defaults */
   if ((gmond_hostname == NULL && gmond_ip == NULL) || gmond_port <= 0) {
     char conf_ip_buf[INET_ADDRSTRLEN+1];
     int conf_port;
 
+    /* if anything fails, just try again */
     if (_read_conffile(handle, conf_ip_buf, iplen, &conf_port) < 0) 
       goto try_again;
 
@@ -372,7 +374,6 @@ static int _connect_to_gmond(nodeupdown_t handle, const char *gmond_hostname,
   }
 
  try_again:
-
   return _low_timeout_connect(handle, ip_buf, port);
 }
 
@@ -395,6 +396,8 @@ static void _xml_parse_start(void *data, const char *e1, const char **attr) {
      
   if (strcmp("HOST", e1) == 0) {
 
+    /* XXX In 2.4.1 and 2.5.5??? */
+
     /* attributes of XML HOST tag
      * attr[0] - "NAME"
      * attr[1] - hostname
@@ -405,12 +408,6 @@ static void _xml_parse_start(void *data, const char *e1, const char **attr) {
      * attr[6] - "GMOND_STARTED"
      * attr[7] - when the host's gmond daemon started 
      */
-
-    /* sanity check */
-    if (strcmp(attr[0], "NAME") != 0 || strcmp(attr[4], "REPORTED") != 0) {
-      handle->errnum = NODEUPDOWN_ERR_GANGLIA;
-      return;
-    }
 
     /* shorten hostname if necessary */
     memset(shorthostname, '\0', MAXHOSTNAMELEN+1);
@@ -445,7 +442,7 @@ static void _xml_parse_start(void *data, const char *e1, const char **attr) {
  * - handle parsing of end tags
  */
 static void _xml_parse_end(void *data, const char *e1) {
-  /* do nothing for the time being */
+  /* nothing to do */
 }
 
 static int _get_gmond_data(nodeupdown_t handle, int sockfd, int timeout_len) {
@@ -518,7 +515,7 @@ int nodeupdown_load_data(nodeupdown_t handle,
     return -1;
 
   /* Must call before _connect_to_gmond */
-  /* XXX ACK, I know this is ugly! */
+  /* XXX ACK, I know this is ugly! What's a cleaner way?? */
   if (nodeupdown_masterlist_init(handle,
 #if (HAVE_MASTERLIST || HAVE_GENDERS)
                                  (void *)filename
@@ -551,11 +548,13 @@ int nodeupdown_load_data(nodeupdown_t handle,
   hostlist_sort(handle->up_nodes);
   hostlist_sort(handle->down_nodes);
 
+  if (nodeupdown_masterlist_finish(handle) == -1)
+    goto cleanup;
+
   /* loading complete */
   handle->is_loaded++;
 
   close(sockfd);
-
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return 0;
 
