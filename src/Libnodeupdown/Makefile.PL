@@ -18,7 +18,7 @@ WriteMakefile(
     # HAVE_CONFIG_H for config.h
     # Undefine VERSION, it collides with VERSION from config.h
     'DEFINE'		=> '-DHAVE_CONFIG_H -UVERSION',
-    'INC'		=> '-I../../config -I../libcommon -I../libdotconf -I../libexpat -I../libnodeupdown',
+    'INC'		=> '-I../../config -I../libcommon -I../libexpat -I../libnodeupdown',
      
     # If you do hostlist.o nodeupdown.o ... etc.  MakeMaker fails.  I don't
     # know why.  Its the responsibility of the Makefile.am file to copy only

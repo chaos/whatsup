@@ -6,8 +6,9 @@
 	src/libdotconf/dotconf.c, src/libdotconf/readdir.h,
 	src/libdotconf/readdir.c: Removed files.
 
-	* configure.ac, src/Makefile.am, AUTHORS: Updated for dotconf
-	removal.
+	* configure.ac, src/Makefile.am, src/Libnodeupdown/Makefile.am,
+	src/Libnodeupdown/Makefile.PL, src/libnodeupdown/Makefile.am,
+	AUTHORS: Updated for dotconf removal.
 
 2003-12-31  Albert Chu  <chu11@llnl.gov>
 
