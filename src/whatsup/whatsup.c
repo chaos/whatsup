@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.54 2003-09-24 16:12:35 achu Exp $
+ * $Id: whatsup.c,v 1.55 2003-09-24 16:16:19 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -528,8 +528,14 @@ int main(int argc, char **argv) {
   char *down_nodes = NULL;
   int up_count, down_count;
 
-  if (argc == 2 && strcasecmp(argv[1],"doc") == 0)
-    fprintf(stderr,"Shhhhhh.  Be very very quiet.  I'm hunting wabbits.\n");
+  if (argc == 2) {
+    if (strcasecmp(argv[1],"doc") == 0)
+      fprintf(stderr,"Shhhhhh.  Be very very quiet.  I'm hunting wabbits.\n");
+    if (strcasecmp(argv[1],"dude") == 0)
+      fprintf(stderr,"Cowabunga! Surfs up!\n");
+    if (strcasecmp(argv[1],"man") == 0)
+      fprintf(stderr, "Nothin much, just chillin ...\n");
+  }
 
   if ((arginfo = (struct arginfo *)malloc(sizeof(struct arginfo))) == NULL) {
     err_msg("out of memory", NULL);
