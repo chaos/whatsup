@@ -10,6 +10,14 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}
 %description
 Whatsup is a cluster node up/down detection utility.
 
+%package gendersllnl
+Summary: whatsup gendersllnl modules package
+Group: System Environment/Base
+Requires: whatsup
+Requires: gendersllnl
+%description gendersllnl
+Gendersllnl modules packages.
+
 %package genders
 Summary: whatsup genders modules package
 Group: System Environment/Base
@@ -18,13 +26,12 @@ Requires: genders >= 1.2
 %description genders
 Genders modules packages.
 
-%package gendersllnl
-Summary: whatsup gendersllnl modules package
+%package hostsfile
+Summary: whatsup hostsfile modules package
 Group: System Environment/Base
 Requires: whatsup
-Requires: gendersllnl
-%description gendersllnl
-Gendersllnl modules packages.
+%description hostsfile
+Hostsfile modules packages.
 
 %prep
 %setup -q -n %{name}-%{version}-%{release}
@@ -55,15 +62,19 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_bindir}/whatsup
 %{_includedir}/*
 %{_libdir}/libnodeupdown.*
+%{_libdir}/nodeupdown/*none.*
 %{_perldir}/*
 %{_mandir}/*
-
-%files genders
-%defattr(-,root,root)
-%{_libdir}/nodeupdown/*genders.*
 
 %files gendersllnl
 %defattr(-,root,root)
 %{_libdir}/nodeupdown/*gendersllnl.*
 %{_libdir}/whatsup/*gendersllnl.*
 
+%files genders
+%defattr(-,root,root)
+%{_libdir}/nodeupdown/*genders.*
+
+%files hostsfile
+%defattr(-,root,root)
+%{_libdir}/nodeupdown/*hostsfile.*
