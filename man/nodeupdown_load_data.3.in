@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_load_data.3.in,v 1.7 2003-11-08 17:41:29 achu Exp $
+\."$Id: nodeupdown_load_data.3.in,v 1.8 2003-11-14 00:02:04 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -12,7 +12,7 @@ nodeupdown_load_data \- load data from ganglia
 .if @WITH_MASTERLIST@ \{
 .BI "int nodeupdown_load_data(nodeupdown_t handle, const char *filename, const char *gmond_hostname, const char *gmond_ip, int gmond_port, int timeout_len);"
 \}
-.if @WITH_GENDERS@ \{
+.if (@WITH_GENDERS@ : @WITH_GENDERSLLNL@) \{
 .BI "int nodeupdown_load_data(nodeupdown_t handle, const char *genders_filename, const char *gmond_hostname, const char *gmond_ip, int gmond_port, int timeout_len);"
 \}
 .if @WITH_NOMASTERLIST@ \{
@@ -34,7 +34,7 @@ cluster.  The file should list shortened hostnames, one per line.  Lines
 beginning with a pound sign ('#') will be ignored.  If set to NULL, the
 default @NODEUPDOWN_MASTERLIST_DEFAULT@ will be used.
 \}
-.if @WITH_GENDERS@ \{
+.if (@WITH_GENDERS@ : @WITH_GENDERSLLNL@) \{
 \fIgenders_filename\fR should indicate the genders file to be loaded.
 If \fIgenders_filename\fR is NULL, the default genders file
 @NODEUPDOWN_MASTERLIST_DEFAULT@ will be used.

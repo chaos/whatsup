@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.20 2003-11-08 17:41:29 achu Exp $
+## $Id: configure.ac,v 1.21 2003-11-14 00:02:04 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -104,6 +104,25 @@ AC_ARG_WITH(genders,
 )
 AC_MSG_RESULT(${withgenders=no})
 
+# Build with gendersllnl master list mechanism
+AC_MSG_CHECKING(for --with-gendersllnl )
+AC_ARG_WITH(gendersllnl,
+    AC_HELP_STRING([--with-gendersllnl=path], 
+                   [build with gendersllnl support, optionally 
+                    supplying genders database default path]),
+    [ case "$withval" in
+    yes)
+        withgendersllnl=yes
+        ;;
+    no)
+        ;;
+    *)
+        withgendersllnl=yes
+        ;;
+    esac ]
+)
+AC_MSG_RESULT(${withgendersllnl=no})
+
 ##
 # Check for libraries
 ##
@@ -118,14 +137,16 @@ AC_CHECK_LIB(genders, genders_handle_create, [havegenders=yes], [])
 AC_CHECK_LIB(gendersllnl, genders_get_cluster, [havegendersllnl=yes], [])
 
 # Error Checks
-if test "$withmasterlist" = "yes" &&
-   test "$withgenders" = "yes"; then
+if (test "$withmasterlist" = "yes" && test "$withgenders" = "yes") ||
+   (test "$withmasterlist" = "yes" && test "$withgendersllnl" = "yes") ||
+   (test "$withgenders" = "yes" && test "$withgendersllnl" = "yes") ; then
    AC_MSG_ERROR([You can only specify one master list mechanism])
 fi
 
 # Use no master list mechanism
-if test "$withmasterlist" != "yes" &&
-   test "$withgenders" != "yes"; then
+if test "$withmasterlist" != "yes" && 
+   test "$withgenders" != "yes" &&
+   test "$withgendersllnl" != "yes" ; then
    withnomasterlist=yes
 fi   
 
@@ -142,12 +163,11 @@ AC_SUBST(WITH_MASTERLIST)
 AC_SUBST(HAVE_MASTERLIST)
 
 # Build with genders support
-# - For the most part only used at LLNL
 if test "$withgenders" = "yes"; then
-   if test "$havegenders" != "yes" || test "$havegendersllnl" != "yes"; then
-     AC_MSG_ERROR([genders library files not found!!])
+   if test "$havegenders" != "yes" ; then
+     AC_MSG_ERROR([genders library not found!!])
    else
-     GENDERS_LIBS="-lgenders -lgendersllnl"
+     GENDERS_LIBS="-lgenders"
      AC_DEFINE(HAVE_GENDERS, [1], [Define use of genders])
      NODEUPDOWN_MASTERLIST_PTR="const char *genders_filename"
      NODEUPDOWN_MASTERLIST_DEFAULT=GENDERS_DEFAULT_FILE
@@ -159,6 +179,25 @@ fi
 AC_SUBST(GENDERS_LIBS)
 AC_SUBST(WITH_GENDERS)
 AC_SUBST(HAVE_GENDERS)
+
+# Build with gendersllnl support
+# - For the most part only used at LLNL
+if test "$withgendersllnl" = "yes"; then
+   if test "$havegenders" != "yes" || test "$havegendersllnl" != "yes"; then
+     AC_MSG_ERROR([genders and gendersllnl library files not found!!])
+   else
+     GENDERSLLNL_LIBS="-lgenders -lgendersllnl"
+     AC_DEFINE(HAVE_GENDERSLLNL, [1], [Define use of genders])
+     NODEUPDOWN_MASTERLIST_PTR="const char *genders_filename"
+     NODEUPDOWN_MASTERLIST_DEFAULT=GENDERS_DEFAULT_FILE
+     WITH_GENDERSLLNL=1
+   fi
+else
+   WITH_GENDERSLLNL=0
+fi
+AC_SUBST(GENDERSLLNL_LIBS)
+AC_SUBST(WITH_GENDERSLLNL)
+AC_SUBST(HAVE_GENDERSLLNL)
 
 if test "$withnomasterlist" = "yes"; then
    AC_DEFINE(HAVE_NOMASTERLIST, [1], [Define no master list])

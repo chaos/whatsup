@@ -1,3 +1,24 @@
+2003-11-13  Albert Chu  <chu11@llnl.gov>
+
+	Added genders mechanism to differentiate between genders and
+	gendersllnl libraries.  The old genders mechanism is now
+	gendersllnl.
+
+	* src/libnodeupdown/nodeupdown.c,
+	src/libnodeupdown/nodeupdown_common.h,
+	sc/libnodeupdown/nodeupdown_masterlist.c: Updated globally to
+	support new genders vs. gendersllnl mechanisms.
+
+	* src/whatsup.c: Updated globally to support genders
+	vs. gendersllnl mechanisms.
+
+	* man/libnodeupdown.3, man/whatsup.1, man/nodeupdown_load_data.3:
+	Modified appropriately for new genders vs. gendersllnl mechanisms.
+
+	* configure.ac: Added genders vs. gendersllnl option support.
+
+	* README: Updated with more info. 
+	
 2003-11-10  Albert Chu  <chu11@llnl.gov>
 
 	* src/Nodeupdown/Makefile.am: Fixed typo.

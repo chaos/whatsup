@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: libnodeupdown.3.in,v 1.5 2003-11-08 17:41:29 achu Exp $
+\."$Id: libnodeupdown.3.in,v 1.6 2003-11-14 00:02:04 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -17,7 +17,7 @@ or down
 .if @WITH_MASTERLIST@ \{
 .BI "int nodeupdown_load_data(nodeupdown_t handle, const char *filename, const char *gmond_hostname, const char *gmond_ip, int gmond_port, int timeout_len);"
 \}
-.if @WITH_GENDERS@ \{
+.if (@WITH_GENDERS@ : @WITH_GENDERSLLNL@) \{
 .BI "int nodeupdown_load_data(nodeupdown_t handle, const char *genders_filename, const char *gmond_hostname, const char *gmond_ip, int gmond_port, int timeout_len);"
 \}
 .if @WITH_NOMASTERLIST@ \{

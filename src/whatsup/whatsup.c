@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.72 2003-11-10 19:44:35 achu Exp $
+ * $Id: whatsup.c,v 1.73 2003-11-14 00:02:05 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -18,8 +18,9 @@
 
 #if HAVE_GENDERS
 #include <genders.h>
+#elif HAVE_GENDERSLLNL
 #include <gendersllnl.h>
-#endif /* HAVE_GENDERS */
+#endif
 
 #include "hostlist.h"
 #include "nodeupdown.h"
@@ -53,10 +54,10 @@ struct winfo {
   whatsup_list_t list;        /* list type */
   whatsup_bool_t count;       /* list count? */
   hostlist_t nodes;           /* nodes entered at command line */
-#if (HAVE_MASTERLIST || HAVE_GENDERS)
+#if (HAVE_MASTERLIST || HAVE_GENDERS || HAVE_GENDERSLLNL)
   char *filename;             /* filename */
 #endif
-#if HAVE_GENDERS
+#if HAVE_GENDERSLLNL
   whatsup_bool_t altnames;    /* list altnames? */
 #endif
 };
@@ -97,9 +98,13 @@ static void usage(void) {
 #if HAVE_MASTERLIST
   fprintf(stderr,
     "  -f STRING  --filename=STRING   Location of master list file\n");
-#elif HAVE_GENDERS
+#endif
+#if (HAVE_GENDERS || HAVE_GENDERSLLNL)
   fprintf(stderr,
-    "  -f STRING  --filename=STRING   Location of genders file\n"
+    "  -f STRING  --filename=STRING   Location of genders file\n");
+#endif
+#if HAVE_GENDERSLLNL
+  fprintf(stderr,
     "  -a         --altnames          List nodes by alternate name\n");
 #endif
     fprintf(stderr, "\n");
@@ -121,9 +126,9 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
   char options[100];
 
   strcpy(options, "hVo:i:p:budtlcns");
-#if HAVE_MASTERLIST
+#if (HAVE_MASTERLIST || HAVE_GENDERS)
   strcat(options, "f:");
-#elif HAVE_GENDERS
+#elif HAVE_GENDERSLLNL
   strcat(options, "f:a");
 #endif
 #if HAVE_GETOPT_LONG
@@ -141,10 +146,10 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
     {"comma",     0, NULL, 'c'},
     {"newline",   0, NULL, 'n'},
     {"space",     0, NULL, 's'},
-#if (HAVE_MASTERLIST || HAVE_GENDERS)
+#if (HAVE_MASTERLIST || HAVE_GENDERS || HAVE_GENDERSLLNL)
     {"filename",  1, NULL, 'f'},
 #endif
-#if HAVE_GENDERS
+#if HAVE_GENDERSLLNL
     {"altnames",  0, NULL, 'a'},
 #endif 
     {0, 0, 0, 0}
@@ -203,12 +208,12 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
     case 's':
       winfo->list = WHATSUP_SPACE;
       break;
-#if (HAVE_MASTERLIST || HAVE_GENDERS)
+#if (HAVE_MASTERLIST || HAVE_GENDERS || HAVE_GENDERSLLNL)
     case 'f':
       winfo->filename = optarg;
       break;
 #endif
-#if HAVE_GENDERS
+#if HAVE_GENDERSLLNL
     case 'a':
       winfo->altnames = WHATSUP_TRUE;
       break;
@@ -343,7 +348,7 @@ static int get_all_nodes(struct winfo *winfo, int which, char *buf, int buflen) 
   return 0;
 }
 
-#if HAVE_GENDERS
+#if HAVE_GENDERSLLNL
 /* convert_to_altnames
  * - convert nodes in buf to alternate node names
  */
@@ -386,7 +391,7 @@ static int convert_to_altnames(struct winfo *winfo, char *buf, int buflen) {
   (void)genders_handle_destroy(handle);
   return retval;
 }
-#endif /* HAVE_GENDERS */
+#endif /* HAVE_GENDERSLLNL */
 
 /* get_nodes
  * - a wrapper function used to avoid duplicate code.
@@ -403,12 +408,12 @@ int get_nodes(struct winfo *winfo, int which, char *buf, int buflen, int *count)
   if (ret != 0)
     goto cleanup;
 
-#if HAVE_GENDERS
+#if HAVE_GENDERSLLNL
   if (winfo->altnames == WHATSUP_TRUE) {
     if (convert_to_altnames(winfo, buf, buflen) == -1)
       goto cleanup;
   }
-#endif /* HAVE_GENDERS */
+#endif /* HAVE_GENDERSLLNL */
 
   /* can't use nodeupdown_up/down_count, b/c we may be counting the
    * nodes specified by the user 
@@ -497,10 +502,10 @@ int main(int argc, char **argv) {
   winfo.list = WHATSUP_HOSTLIST;
   winfo.count = WHATSUP_FALSE;
   winfo.nodes = NULL;
-#if (HAVE_MASTERLIST || HAVE_GENDERS)
+#if (HAVE_MASTERLIST || HAVE_GENDERS || HAVE_GENDERSLLNL)
   winfo.filename = NULL;
 #endif
-#if HAVE_GENDERS
+#if HAVE_GENDERSLLNL
   winfo.altnames = WHATSUP_FALSE;
 #endif
   
@@ -513,7 +518,7 @@ int main(int argc, char **argv) {
   }
 
   if (nodeupdown_load_data(winfo.handle, 
-#if (HAVE_MASTERLIST || HAVE_GENDERS)
+#if (HAVE_MASTERLIST || HAVE_GENDERS || HAVE_GENDERSLLNL)
                            winfo.filename, 
 #else
                            NULL,

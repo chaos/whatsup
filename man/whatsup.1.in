@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: whatsup.1.in,v 1.6 2003-11-07 18:24:10 achu Exp $
+\."$Id: whatsup.1.in,v 1.7 2003-11-14 00:02:04 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -81,10 +81,12 @@ List nodes in space separated list
 .B \-f \fISTRING\fR, \fB\-\-filename\fR=\fISTRING\fR
 Location of master list file (default=@NODEUPDOWN_MASTERLIST_DEFAULT@)
 \}
-.if @WITH_GENDERS@ \{
+.if (@WITH_GENDERS@ : @WITH_GENDERSLLNL@) \{
 .TP
 .B \-f \fISTRING\fR, \fB\-\-filename\fR=\fISTRING\fR
 Location of genders file (default=@NODEUPDOWN_MASTERLIST_DEFAULT@)
+\}
+.if @WITH_GENDERSLLNL@ \{
 .TP
 .B \-a, \-\-altnames
 List nodes by alternate names (default=off)

@@ -48,11 +48,14 @@ selecting the option in configure.
 
 * Genders
   - Uses a genders database and the genders library to determine all 
-    of the nodes in the cluster.  In addition, it uses the gendersllnl
-    library to convert between node names and alternate node names.  For
-    the most part, this is used in house at Lawrence Livermore National
-    Laboratories and sister labs that have clusters and genders setup in
-    a particular way that we like :-)
+    of the nodes in the cluster.  
+
+* Gendersllnl
+  - In addition to genders, uses the gendersllnl library to convert
+    between node names and alternate node names.  For the most part,
+    this is used in house at Lawrence Livermore National Laboratories
+    and sister labs that have clusters and genders setup in a
+    particular way that we like :-)
 
 * None
   - Whatsup and nodeupdown will only use ganglia data to determine the
@@ -64,8 +67,9 @@ see what I can do.
 
 Comments, patches, fixes, suggestions are always welcome.
 
-By the way, if you plan on building an rpm, you may want to edit the
-whatsup.spec.in configuration with your "master list" mechanism of choice.
+By the way, whatsup.spec.in defaults to no materlist mechanism.
+You'll want to specify one at the command line if you plan on building
+an rpm with masterlist functionality.
 
 Albert Chu
 chu11@llnl.gov

@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown_common.h,v 1.2 2003-11-07 23:47:43 achu Exp $
+ *  $Id: nodeupdown_common.h,v 1.3 2003-11-14 00:02:04 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown_common.h,v $
  *    
  */
@@ -19,6 +19,7 @@
 #include "list.h"
 #elif HAVE_GENDERS
 #include <genders.h>
+#elif HAVE_GENDERSLLNL
 #include <gendersllnl.h>
 #endif 
 
@@ -52,7 +53,7 @@ struct nodeupdown {
   int max_nodes;              /* max nodes in genders file */
 #if HAVE_MASTERLIST
   List masterlist;            /* list of all nodes */
-#elif HAVE_GENDERS
+#elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
   genders_t genders_handle;   /* genders handle */
 #endif 
 };

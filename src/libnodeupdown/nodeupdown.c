@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.79 2003-11-08 18:59:39 achu Exp $
+ * $Id: nodeupdown.c,v 1.80 2003-11-14 00:02:04 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -497,7 +497,7 @@ static int _get_gmond_data(nodeupdown_t handle, int sockfd, int timeout_len) {
 }
 
 int nodeupdown_load_data(nodeupdown_t handle, 
-#if (HAVE_MASTERLIST || HAVE_GENDERS)
+#if (HAVE_MASTERLIST || HAVE_GENDERS || HAVE_GENDERSLLNL)
 			 const char *filename,
 #else
                          void *ptr,
@@ -513,7 +513,7 @@ int nodeupdown_load_data(nodeupdown_t handle,
   /* Must call before _connect_to_gmond */
   /* XXX ACK, I know this is ugly! What's a cleaner way?? */
   if (nodeupdown_masterlist_init(handle,
-#if (HAVE_MASTERLIST || HAVE_GENDERS)
+#if (HAVE_MASTERLIST || HAVE_GENDERS || HAVE_GENDERSLLNL)
                                  (void *)filename
 #else
                                  (void *)ptr

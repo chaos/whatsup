@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown_masterlist.c,v 1.4 2003-11-08 17:04:48 achu Exp $
+ *  $Id: nodeupdown_masterlist.c,v 1.5 2003-11-14 00:02:04 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown_masterlist.c,v $
  *    
  */
@@ -26,7 +26,7 @@
 void nodeupdown_masterlist_initialize_handle(nodeupdown_t handle) {
 #if HAVE_MASTERLIST
   handle->masterlist = NULL;
-#elif HAVE_GENDERS
+#elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
   handle->genders_handle = NULL;
 #endif 
 }
@@ -35,7 +35,7 @@ void nodeupdown_masterlist_free_handle_data(nodeupdown_t handle) {
 #if HAVE_MASTERLIST
   if (handle->masterlist)
     (void)list_destroy(handle->masterlist);
-#elif HAVE_GENDERS
+#elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
   (void)genders_handle_destroy(handle->genders_handle);
 #endif
 }
@@ -108,7 +108,7 @@ static int _load_masterlist_data(nodeupdown_t handle, const char *filename) {
 }
 #endif /* HAVE_MASTERLIST */
 
-#if HAVE_GENDERS
+#if (HAVE_GENDERS || HAVE_GENDERSLLNL)
 static int _load_genders_data(nodeupdown_t handle, const char *filename) {
   /* determine filename */
   if (filename == NULL)
@@ -126,12 +126,12 @@ static int _load_genders_data(nodeupdown_t handle, const char *filename) {
 
   return 0;
 }
-#endif /* HAVE_GENDERS */
+#endif /* HAVE_GENDERS || HAVE_GENDERSLLNL */
 
 int nodeupdown_masterlist_init(nodeupdown_t handle, void *ptr) {
 #if HAVE_MASTERLIST
   return _load_masterlist_data(handle, (const char *)ptr);
-#elif HAVE_GENDERS
+#elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
   return _load_genders_data(handle, (const char *)ptr);
 #else
   return 0;
@@ -143,7 +143,7 @@ int nodeupdown_masterlist_finish(nodeupdown_t handle) {
   /* set max_nodes */
   handle->max_nodes = list_count(handle->masterlist);
   return 0;
-#elif HAVE_GENDERS
+#elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
   /* set max_nodes */
   if ((handle->max_nodes = genders_getnumnodes(handle->genders_handle)) == -1) {
     handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
@@ -183,7 +183,7 @@ int nodeupdown_masterlist_compare_gmond_to_masterlist(nodeupdown_t handle) {
  cleanup: 
   list_iterator_destroy(itr);
   return -1;
-#elif HAVE_GENDERS
+#elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
   int i, ret, num;
   char **nlist = NULL;
   genders_t gh = handle->genders_handle;
@@ -246,6 +246,13 @@ static int _is_node_common(nodeupdown_t handle, const char *node) {
     return 0;
 #elif HAVE_GENDERS
   int ret;
+  if ((ret = genders_isnode(handle->genders_handle, node)) == -1) {
+    handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
+    return -1;
+  }
+  return ret;
+#elif HAVE_GENDERSLLNL
+  int ret;
   if ((ret = genders_isnode_or_altnode(handle->genders_handle, node)) == -1) {
     handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
     return -1;
@@ -255,7 +262,7 @@ static int _is_node_common(nodeupdown_t handle, const char *node) {
 }
 
 int nodeupdown_masterlist_is_node_legit(nodeupdown_t handle, const char *node) {
-#if (HAVE_MASTERLIST || HAVE_GENDERS)
+#if (HAVE_MASTERLIST || HAVE_GENDERS || HAVE_GENDERSLLNL)
   return _is_node_common(handle, node);
 #else
   /* Have to assume it is */
@@ -264,7 +271,7 @@ int nodeupdown_masterlist_is_node_legit(nodeupdown_t handle, const char *node) {
 }
 
 int nodeupdown_masterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) {
-#if (HAVE_MASTERLIST || HAVE_GENDERS)
+#if (HAVE_MASTERLIST || HAVE_GENDERS || HAVE_GENDERSLLNL)
   return _is_node_common(handle, node);
 #else
   /* Without a master list of some sort, this is the best we can do */
@@ -278,7 +285,7 @@ int nodeupdown_masterlist_is_node_in_cluster(nodeupdown_t handle, const char *no
 
 int nodeupdown_masterlist_get_nodename(nodeupdown_t handle, const char *node, 
                                       char *buffer, int buflen) {
-#if HAVE_GENDERS
+#if HAVE_GENDERSLLNL
   if (genders_to_gendname(handle->genders_handle, node, buffer, buflen) == -1) {
     handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
     return -1;
@@ -300,7 +307,7 @@ int nodeupdown_masterlist_increase_max_nodes(nodeupdown_t handle) {
   return 0;
 #else
   /* If using masterlist, use list_count in finish */
-  /* If using genders, use genders_numnodes in finish */
+  /* If using genders or gendersllnl, use genders_numnodes in finish */
   return 0;
 #endif
 }
