@@ -3,6 +3,7 @@
 	     to nodeupdown.c
 	   - updated library to use new genders_testnode() function
 	     from genders-1-1-3
+	   - added magic numbers to nodeupdown.c  
 	   - added corner case check for NODEUPDOWN_ERR_NULLPTR 
 	     possibility, and added appropriate error handling for it.
 	   - renamed nodeupdown_get_hostlist_alternate_names() and
@@ -36,6 +37,7 @@
 	   - added -g (genders attribute) option to whatsup
 	   - added error checks for non short hostnames in whatsup
 	   - updated and added all manpages as needed by the API changes 
+	   - updated all manpages to be highly detailed and thorough
 	   - tagged whatsup-1-0-3 
 
 2003-03-07 Albert Chu <chu11@llnl.gov>
