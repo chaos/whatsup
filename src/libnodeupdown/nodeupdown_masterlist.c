@@ -1,6 +1,6 @@
 /*
- *  $Id: masterlist.c,v 1.1 2003-11-07 03:20:07 achu Exp $
- *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/masterlist.c,v $
+ *  $Id: nodeupdown_masterlist.c,v 1.1 2003-11-07 18:28:58 achu Exp $
+ *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown_masterlist.c,v $
  *    
  */
 
@@ -20,10 +20,10 @@
 
 #include "hostlist.h"
 #include "nodeupdown.h"
-#include "masterlist.h"
+#include "nodeupdown_masterlist.h"
 #include "nodeupdown_common.h"
 
-void masterlist_initialize_handle(nodeupdown_t handle) {
+void nodeupdown_masterlist_initialize_handle(nodeupdown_t handle) {
 #if HAVE_MASTERLIST
   handle->masterlist = NULL;
 #elif HAVE_GENDERS
@@ -31,7 +31,7 @@ void masterlist_initialize_handle(nodeupdown_t handle) {
 #endif 
 }
 
-void masterlist_free_handle_data(nodeupdown_t handle) {
+void nodeupdown_masterlist_free_handle_data(nodeupdown_t handle) {
 #if HAVE_MASTERLIST
   if (handle->masterlist)
     (void)list_destroy(handle->masterlist);
@@ -46,7 +46,7 @@ static int _load_masterlist_data(nodeupdown_t handle, const char *filename) {
   char buf[NODEUPDOWN_BUFFERLEN];
 
   if (filename == NULL)
-    filename = MASTERLIST_DEFAULT;
+    filename = NODEUPDOWN_MASTERLIST_DEFAULT;
 
   if ((handle->masterlist = list_create(free)) == NULL) {
     handle->errnum = NODEUPDOWN_ERR_OUTMEM;
@@ -113,7 +113,7 @@ static int _load_masterlist_data(nodeupdown_t handle, const char *filename) {
 static int _load_genders_data(nodeupdown_t handle, const char *filename) {
   /* determine filename */
   if (filename == NULL)
-    filename = MASTERLIST_DEFAULT;
+    filename = NODEUPDOWN_MASTERLIST_DEFAULT;
 
   if ((handle->genders_handle = genders_handle_create()) == NULL) {
     handle->errnum = NODEUPDOWN_ERR_OUTMEM;
@@ -129,7 +129,7 @@ static int _load_genders_data(nodeupdown_t handle, const char *filename) {
 }
 #endif /* HAVE_GENDERS */
 
-int masterlist_init(nodeupdown_t handle, void *ptr) {
+int nodeupdown_masterlist_init(nodeupdown_t handle, void *ptr) {
 #if HAVE_MASTERLIST
   return _load_masterlist_data(handle, (const char *)ptr);
 #elif HAVE_GENDERS
@@ -139,7 +139,7 @@ int masterlist_init(nodeupdown_t handle, void *ptr) {
 #endif
 }
 
-int masterlist_compare_gmond_to_masterlist(nodeupdown_t handle) {
+int nodeupdown_masterlist_compare_gmond_to_masterlist(nodeupdown_t handle) {
 #if HAVE_MASTERLIST
   ListIterator itr = NULL;
   char *nodename;
@@ -220,7 +220,7 @@ static int _find_str(void *x, void *key) {
 }
 #endif
 
-int masterlist_is_nodename_legit(nodeupdown_t handle, const char *node) {
+static int _is_node_common(nodeupdown_t handle, const char *node) {
 #if HAVE_MASTERLIST
   void *ptr;
   ptr = list_find_first(handle->masterlist, _find_str, (void *)node);
@@ -235,27 +235,21 @@ int masterlist_is_nodename_legit(nodeupdown_t handle, const char *node) {
     return -1;
   }
   return ret;
+#endif
+}
+
+int nodeupdown_masterlist_is_node_legit(nodeupdown_t handle, const char *node) {
+#if (HAVE_MASTERLIST || HAVE_GENDERS)
+  return _is_node_common(handle, node);
 #else
   /* Have to assume it is */
   return 1;
 #endif  
 }
 
-int masterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) {
-#if HAVE_MASTERLIST
-  void *ptr;
-  ptr = list_find_first(handle->masterlist, _find_str, (void *)node);
-  if (ptr != NULL)
-    return 1;
-  else
-    return 0;
-#elif HAVE_GENDERS
-  int ret;
-  if ((ret = genders_isnode_or_altnode(handle->genders_handle, node)) == -1) {
-    handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
-    return -1;
-  }
-  return ret;
+int nodeupdown_masterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) {
+#if (HAVE_MASTERLIST || HAVE_GENDERS)
+  return _is_node_common(handle, node);
 #else
   /* Without a master list of some sort, this is the best we can do */
   if (hostlist_find(handle->up_nodes, node) == -1 &&
@@ -266,8 +260,8 @@ int masterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) {
 #endif  
 }
 
-int masterlist_get_nodename(nodeupdown_t handle, const char *node, 
-                            char *buffer, int buflen) {
+int nodeupdown_masterlist_get_nodename(nodeupdown_t handle, const char *node, 
+                                      char *buffer, int buflen) {
 #if HAVE_GENDERS
   if (genders_to_gendname(handle->genders_handle, node, buffer, buflen) == -1) {
     handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
@@ -284,7 +278,7 @@ int masterlist_get_nodename(nodeupdown_t handle, const char *node,
 #endif
 }
     
-int masterlist_increase_max_nodes(nodeupdown_t handle) {
+int nodeupdown_masterlist_increase_max_nodes(nodeupdown_t handle) {
 #if HAVE_NOMASTERLIST
   handle->max_nodes++;
   return 0;

@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.16 2003-11-07 03:20:06 achu Exp $
+## $Id: configure.ac,v 1.17 2003-11-07 18:28:58 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -133,7 +133,7 @@ fi
 if test "$withmasterlist" = "yes"; then
   AC_DEFINE(HAVE_MASTERLIST, [1], [Define use of master list])
   NODEUPDOWN_MASTERLIST_PTR="const char *filename"
-  MASTERLIST_DEFAULT="\"/etc/nodeupdown_masterlist\""
+  NODEUPDOWN_MASTERLIST_DEFAULT="\"/etc/nodeupdown_masterlist\""
   WITH_MASTERLIST=1
 else
   WITH_MASTERLIST=0
@@ -150,7 +150,7 @@ if test "$withgenders" = "yes"; then
      GENDERS_LIBS="-lgenders -lgendersllnl"
      AC_DEFINE(HAVE_GENDERS, [1], [Define use of genders])
      NODEUPDOWN_MASTERLIST_PTR="const char *genders_filename"
-     MASTERLIST_DEFAULT=GENDERS_DEFAULT_FILE
+     NODEUPDOWN_MASTERLIST_DEFAULT=GENDERS_DEFAULT_FILE
      WITH_GENDERS=1
    fi
 else
@@ -163,7 +163,7 @@ AC_SUBST(HAVE_GENDERS)
 if test "$withnomasterlist" = "yes"; then
    AC_DEFINE(HAVE_NOMASTERLIST, [1], [Define no master list])
    NODEUPDOWN_MASTERLIST_PTR="void *ptr"
-   MASTERLIST_DEFAULT="\"*** NOT USED ***\""
+   NODEUPDOWN_MASTERLIST_DEFAULT="\"*** NOT USED ***\""
    WITH_NOMASTERLIST=1
 else
    WITH_NOMASTERLIST=0
@@ -172,7 +172,7 @@ AC_SUBST(WITH_NOMASTERLIST)
 AC_SUBST(HAVE_NOMASTERLIST)
 
 AC_SUBST(NODEUPDOWN_MASTERLIST_PTR)
-AC_SUBST(MASTERLIST_DEFAULT)
+AC_SUBST(NODEUPDOWN_MASTERLIST_DEFAULT)
 
 ##
 # Checks for programs.
@@ -229,7 +229,7 @@ AC_CONFIG_FILES( \
   src/libcommon/Makefile \
   src/libnodeupdown/Makefile \
   src/libnodeupdown/nodeupdown.h \
-  src/libnodeupdown/masterlist.h \
+  src/libnodeupdown/nodeupdown_masterlist.h \
   src/whatsup/Makefile \
   src/Libnodeupdown/Makefile \
   src/Libnodeupdown/Libnodeupdown.pm \

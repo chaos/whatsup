@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_load_data.3.in,v 1.5 2003-11-07 03:20:06 achu Exp $
+\."$Id: nodeupdown_load_data.3.in,v 1.6 2003-11-07 18:28:58 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -32,12 +32,12 @@ handle created by
 \fIfilename\fR should indicate a filename that lists every node in the
 cluster.  The file should list shortened hostnames, one per line.  Lines
 beginning with a pound sign ('#') will be ignored.  If set to NULL, the
-default @MASTERLIST_DEFAULT@ will be used.
+default @NODEUPDOWN_MASTERLIST_DEFAULT@ will be used.
 \}
 .if @WITH_GENDERS@ \{
 \fIgenders_filename\fR should indicate the genders file to be loaded.
 If \fIgenders_filename\fR is NULL, the default genders file
-@MASTERLIST_DEFAULT@ will be used.
+@NODEUPDOWN_MASTERLIST_DEFAULT@ will be used.
 \}
 .if @WITH_NOMASTERLIST@ \{
 \fIptr\fR can be set to anything, it will be ignored in this

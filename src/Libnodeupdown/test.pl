@@ -22,7 +22,7 @@ if (!defined($handle)) {
     exit(1);
 }
 
-$ret = $handle->nodeupdown_load_data("../libnodeupdown/machines");
+$ret = $handle->nodeupdown_load_data();
 if ($ret == -1) {
     print "Error, nodeupdown_load_data()\n";
     print $handle->nodeupdown_errormsg();

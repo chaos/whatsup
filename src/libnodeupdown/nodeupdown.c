@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.75 2003-11-07 03:28:54 achu Exp $
+ * $Id: nodeupdown.c,v 1.76 2003-11-07 18:28:58 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -25,7 +25,7 @@
 
 #include "hostlist.h"
 #include "nodeupdown.h"
-#include "masterlist.h"
+#include "nodeupdown_masterlist.h"
 #include "nodeupdown_common.h"
 
 #define NODEUPDOWN_UP_NODES              1
@@ -113,7 +113,7 @@ static void _initialize_handle(nodeupdown_t handle) {
   handle->up_nodes = NULL;
   handle->down_nodes = NULL;
   handle->max_nodes = 0;
-  masterlist_initialize_handle(handle);
+  nodeupdown_masterlist_initialize_handle(handle);
 }
 
 nodeupdown_t nodeupdown_handle_create() {
@@ -131,7 +131,7 @@ nodeupdown_t nodeupdown_handle_create() {
 static void _free_handle_data(nodeupdown_t handle) {
   hostlist_destroy(handle->up_nodes);
   hostlist_destroy(handle->down_nodes);
-  masterlist_free_handle_data(handle);
+  nodeupdown_masterlist_free_handle_data(handle);
   _initialize_handle(handle);
 }
 
@@ -431,11 +431,11 @@ static void _xml_parse_start(void *data, const char *e1, const char **attr) {
     if ((ptr = strchr(shorthostname, '.')) != NULL)
       *ptr = '\0';
 
-    if (masterlist_get_nodename(handle, shorthostname, 
-                                buffer, MAXHOSTNAMELEN+1) == -1)
+    if (nodeupdown_masterlist_get_nodename(handle, shorthostname, 
+                                           buffer, MAXHOSTNAMELEN+1) == -1)
       return;
       
-    if (masterlist_is_nodename_legit(handle, buffer) <= 0)
+    if (nodeupdown_masterlist_is_node_legit(handle, buffer) <= 0)
       return;
 
     /* store up or down */
@@ -448,7 +448,7 @@ static void _xml_parse_start(void *data, const char *e1, const char **attr) {
     if (ret == 0)
       return;
 
-    if (masterlist_increase_max_nodes(handle) == -1)
+    if (nodeupdown_masterlist_increase_max_nodes(handle) == -1)
       return;
   }
 }
@@ -531,13 +531,13 @@ int nodeupdown_load_data(nodeupdown_t handle,
 
   /* Must call before _connect_to_gmond */
   /* XXX ACK, I know this is ugly! */
-  if (masterlist_init(handle,
+  if (nodeupdown_masterlist_init(handle,
 #if (HAVE_MASTERLIST || HAVE_GENDERS)
-                      (void *)filename
+                                 (void *)filename
 #else
-                      (void *)ptr
+                                 (void *)ptr
 #endif
-                      ) == -1)
+                                 ) == -1)
     goto cleanup;
 
   sockfd = _connect_to_gmond(handle, gmond_hostname, gmond_ip, gmond_port);
@@ -557,7 +557,7 @@ int nodeupdown_load_data(nodeupdown_t handle,
   if (_get_gmond_data(handle, sockfd, timeout_len) == -1)
     goto cleanup;
 
-  if (masterlist_compare_gmond_to_masterlist(handle) == -1)
+  if (nodeupdown_masterlist_compare_gmond_to_masterlist(handle) == -1)
     goto cleanup;
 
   hostlist_sort(handle->up_nodes);
@@ -713,10 +713,11 @@ static int _is_node(nodeupdown_t handle, const char *node, int up_or_down) {
     return -1;
   }
 
-  if (masterlist_get_nodename(handle, node, buffer, MAXHOSTNAMELEN+1) == -1)
+  if (nodeupdown_masterlist_get_nodename(handle, node, 
+                                         buffer, MAXHOSTNAMELEN+1) == -1)
     return -1;
 
-  if ((ret = masterlist_is_node_in_cluster(handle, buffer)) == -1)
+  if ((ret = nodeupdown_masterlist_is_node_in_cluster(handle, buffer)) == -1)
     return -1;
 
   if (ret == 0) {

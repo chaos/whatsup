@@ -1,5 +1,18 @@
 2003-11-07  Albert Chu  <chu11@llnl.gov>
 
+	* src/libnodeupdown/masterlist.h.in,
+	src/libnodeupdown/masterlist.c: Renamed to
+	nodeupdown_masterlist.h.in and nodeupdown_masterlist.c.  All
+	functions renamed appropriately.
+
+	* src/libnodeupdown/nodeupdown.c: Updated for function name changes.
+
+	* src/libnodeupdown/Makefile.am: Updated for filename changes.
+
+	* configure.ac; Updated for name changes.
+
+2003-11-07  Albert Chu  <chu11@llnl.gov>
+
 	Created new masterlist.c and masterlist.h.in, to encapsulate
 	most of the master list mechanisms from nodeupdown.c.
 	
