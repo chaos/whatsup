@@ -21,7 +21,7 @@ Release: @RELEASE@.genders
 %if %{?_with_gendersllnl:1}%{!?_with_gendersllnl:0}
 Release: @RELEASE@.gendersllnl
 %endif
-%if %{!?_with_nomasterlist: %{!?_with_hostsfile: %{!?_with_genders: %{!?_with_gendersllnl: 1}}}}%{?_with_nomasterlist: 0}%{?_hostsfile: 0}%{?_with_genders: 0}%{?_with_gendersllnl: 0}
+%if %{!?_with_nomasterlist: %{!?_with_hostsfile: %{!?_with_genders: %{!?_with_gendersllnl: 1}}}}%{?_with_nomasterlist: 0}%{?_with_hostsfile: 0}%{?_with_genders: 0}%{?_with_gendersllnl: 0}
 Release: @RELEASE@
 %endif
 Summary: whatsup node up/down detection utility
