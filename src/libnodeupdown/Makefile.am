@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.13 2004-02-11 22:04:05 achu Exp $
+## $Id: Makefile.am,v 1.14 2004-04-27 18:05:16 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -22,15 +22,17 @@ age     = 0
 
 AM_CPPFLAGS = -D_REENTRANT -I ../../config -I ../libcommon -I ../libexpat
 
+if WITH_GNU_LD
+VERSION_SCRIPT = nodeupdown.map
+OTHER_FLAGS = -Wl,--version-script=$(VERSION_SCRIPT)
+endif
+
 include_HEADERS = nodeupdown.h 
-
 lib_LTLIBRARIES = libnodeupdown.la
-
 libnodeupdown_la_SOURCES = nodeupdown.c nodeupdown_masterlist.c
-
 libnodeupdown_la_LIBADD = ../libcommon/libcommon.la ../libexpat/libexpat.la $(GENDERS_LIBS) $(GENDERSLLNL_LIBS)
 
-libnodeupdown_la_LDFLAGS = -version-info $(current):$(rev):$(age)
+libnodeupdown_la_LDFLAGS = -version-info $(current):$(rev):$(age) $(OTHER_FLAGS)
 
 ../libcommon/libcommon.la: force-dependency-check
 	@cd `dirname $@` && make `basename $@`

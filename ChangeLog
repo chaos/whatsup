@@ -2,6 +2,8 @@
 
 	* whatsup.spec.in: Use %configure macro.
 
+	* Localize non-libnodeupdown library functions.
+
 2004-03-17  Albert Chu  <chu11@llnl.gov>
 
 	* src/libcommon/conffile.h, src/libcommon/conffile.c: Changed
