@@ -2,6 +2,9 @@
 
 	* src/libnodeupdown/nodeupdown_masterlist.c (_readline): fix
 	corner case.
+
+	* src/libnodeupdown/nodeupdown.c: list_create errors are no longer
+	INTERNAL errors, they are OUTMEM errors.
 	
 2003-01-14  Albert Chu  <chu11@llnl.gov>
 
