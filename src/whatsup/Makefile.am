@@ -1,10 +1,12 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.17 2005-04-02 05:51:16 achu Exp $
+## $Id: Makefile.am,v 1.18 2005-04-02 08:17:02 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
 
 whatsup_module_builddir=`cd $(top_builddir)/src/libnodeupdown && pwd`
+
+noinst_HEADERS = whatsup_options.h
 
 bin_PROGRAMS = whatsup
 
