@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.86 2004-01-15 01:09:36 achu Exp $
+ *  $Id: whatsup.c,v 1.87 2004-01-15 01:43:50 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -110,8 +110,8 @@ _usage(void)
     "Usage: whatsup [OPTIONS]... [NODES]...\n"
     "  -h         --help              Print help and exit\n"
     "  -V         --version           Print version and exit\n"
-    "  -o STRING  --hostname=STRING   gmond server hostname\n"
-    "  -p INT     --port=INT          gmond server port\n"
+    "  -o STRING  --hostname=STRING   Gmond server hostname\n"
+    "  -p INT     --port=INT          Gmond server port\n"
     "  -b         --updown            List both up and down nodes\n"
     "  -u         --up                List only up nodes\n"
     "  -d         --down              List only down nodes\n"
