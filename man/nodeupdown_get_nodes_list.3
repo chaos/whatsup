@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_get_nodes_list.3,v 1.1 2003-03-18 18:38:17 achu Exp $
+\."$Id: nodeupdown_get_nodes_list.3,v 1.2 2003-03-19 20:48:26 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -64,6 +64,9 @@ The list pointed to by \fIlist\fR is not large enough to store all the nodes.
 .B NODEUPDOWN_ERR_OUTMEM
 .BR malloc (3)
 has failed internally, system is out of memory.
+.TP
+.B NODEUPDOWN_ERR_NODE_CONFLICT
+gmond lists a node that genders has no knowledge of
 .TP
 .B NODEUPDOWN_ERR_GENDERS
 genders C API has failed internally.
