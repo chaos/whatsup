@@ -33,10 +33,14 @@ Therefore, to determine all of the down nodes in a cluster, a "master
 list" of nodes is required by whatsup and the nodeupdown libraries.
 There are a number of mechanisms that could be used for a "master
 list" of nodes.  Currently the following "master list" mechanisms are
-programmed.  The one you choose for your system can be selected by
-selecting the option in configure.
+programmed.  The one you choose for your system must be selected by
+selecting one of the following options in configure.
 
-* Master List Hosts file
+* None (--with-nomasterlist)
+  - Whatsup and nodeupdown will only use ganglia data to determine the
+    difference between up nodes, down nodes, and nodes in the cluster.
+
+* Master List Hosts file (--with-masterlist)
   - This mechanism simply uses a file that lists the shortened
     hostname of every node in the cluster, one per line.  Comments can
     be placed in the file using a pound sign ('#') at the beginning of
@@ -46,20 +50,16 @@ selecting the option in configure.
     a default file is not put in the default location, nodeupdown and
     whatsup will always require the file location be specified.
 
-* Genders
+* Genders (--with-genders)
   - Uses a genders database and the genders library to determine all 
     of the nodes in the cluster.  
 
-* Gendersllnl
+* Gendersllnl (--with-gendersllnl)
   - In addition to genders, uses the gendersllnl library to convert
     between node names and alternate node names.  For the most part,
     this is used in house at Lawrence Livermore National Laboratories
     and sister labs that have clusters and genders setup in a
     particular way that we like :-)
-
-* None
-  - Whatsup and nodeupdown will only use ganglia data to determine the
-    difference between up nodes, down nodes, and nodes in the cluster.
 
 Other mechanisms may be implemented in the future.  If you are interested
 in seeing some new mechanism implemented, feel free to e-mail me and I'll
@@ -67,7 +67,7 @@ see what I can do.
 
 Comments, patches, fixes, suggestions are always welcome.
 
-By the way, whatsup.spec.in defaults to the gendersllnl mechanisms.
+By the way, whatsup.spec.in defaults to the gendersllnl mechanism.
 You'll probably want to specify a different one at the command line if
 you plan on building a rpm package.
 
