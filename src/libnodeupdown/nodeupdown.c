@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.32 2003-04-24 18:35:25 achu Exp $
+ * $Id: nodeupdown.c,v 1.33 2003-04-24 20:57:43 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -714,8 +714,6 @@ void xml_parse_start(void *data, const char *e1, const char **attr) {
   char *buffer = ((struct parse_vars *)data)->buffer;
   unsigned long localtime = ((struct parse_vars *)data)->localtime;
   char *ptr;
-  int i, bitstring;
-  struct timeval tv;
   unsigned long reported;
 
   /* ignore "CLUSTER" and "METRIC" tags.  Assume ganglia executed on
@@ -1333,7 +1331,7 @@ int nodeupdown_check_if_node_in_hostlist(nodeupdown_t handle,
                                          hostlist_t nodes,
                                          char *node) {
   char *nodename = NULL;
-  int ret, retval, return_value;
+  int return_value;
 
   if (hostlist_find(nodes, node) != -1) {
     handle->errnum = NODEUPDOWN_ERR_SUCCESS;
