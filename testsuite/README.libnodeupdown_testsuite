@@ -76,32 +76,3 @@ time to re-establish themselves.  However, there is always the
 possibility the timeouts may be long enough.  If a
 nodeupdown_load_data() connection error occurs during the test suite,
 simply try again.
- 
-In addition, there is a known bug in libganglia.  If you constantly
-call libganglia to connect to a gmond server, libganglia can return
-status information that no nodes are up and no nodes are down, even
-though they are obviously up or down.  This is only an issue when the
-library is called multiple times within the same process (such as this
-test suite) and not when it is called once (such as in the 'whatsup'
-command).  If this bug pops up, and you suddenly get test cases
-failing because of empty lists of nodes, try commenting out test cases
-and eliminating the number of times libganglia must be called within
-the test suite.  A set of test cases has already been commented out in
-the libnodeupdown_testcases.h file.
-
-V.  SPECIAL NOTES
-
-Currently, the longest pause in the test suite will be 90 seconds.  So
-don't give up if the test suite looks like it is hung.  
-
-The test suite is not an extremely thorough test suite.  Many test
-situations have not been hit.  But it hits a lot of the situations.
-
-VI.  Future Development
-
-Print out more info than the test index number.  Currently, its hard
-to determine exactly which tests failed and why it failed.
-
-There are some test situations that have not been tested yet by the
-testsuite.  Time permitting, make the test suite even more thorough
-than it is right now..

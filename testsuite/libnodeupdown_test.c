@@ -1,5 +1,5 @@
 /*
- * $Id: libnodeupdown_test.c,v 1.15 2003-05-21 20:40:55 achu Exp $
+ * $Id: libnodeupdown_test.c,v 1.16 2003-05-21 21:17:31 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/testsuite/libnodeupdown_test.c,v $
  *    
  */
@@ -81,12 +81,13 @@ int compare_nodes_to_hostlist(struct test_env *, hostlist_t, int);
 int map_nodes_to_char_ptr(struct test_env *, int, char **);
 int start_gmonds(struct test_env *, int);
 int close_gmonds(struct test_env *, int);
-void func_test(struct test_env *, int, int, int, int, int, int);
 int initialize_test_env_parameter_tests(struct test_env *);
 int cleanup_test_env_parameter_tests(struct test_env *);
+int run_a_test(struct test_env *, int, int, int, int, int, int, int, int, int, int);  
+int run_param_tests(struct test_env *);
+void func_test(struct test_env *, int, int, int, int, int, int);
 int initialize_test_env_func_tests(struct test_env *, int, int, int);
 int cleanup_test_env_func_tests(struct test_env *, int, int);
-int run_param_tests(struct test_env *);
 int run_func_tests(struct test_env *);
 
 /*****************************************************************
@@ -610,6 +611,9 @@ int cleanup_test_env_parameter_tests(struct test_env *test_env) {
   return retval;
 }
 
+/* run_a_test
+ * - run a single parameter test
+ */
 void run_a_test(struct test_env *test_env, 
                 int index, 
                 int function, 
@@ -775,12 +779,12 @@ int run_param_tests(struct test_env *test_env) {
  * - the main tester for functionality tests
  */
 void func_test(struct test_env *test_env,
-			      int function,
-			      int index,
-			      int nodes_to_check,
-			      int host_to_query,
-			      int return_value,
-			      int return_errnum) {
+               int function,
+               int index,
+               int nodes_to_check,
+               int host_to_query,
+               int return_value,
+               int return_errnum) {
   int result, i;
   char **list;
   char *node;
@@ -851,9 +855,9 @@ void func_test(struct test_env *test_env,
     printf("Test %d: ***FAIL*** return value = %d, return errnum = %d\n", 
 	   index, result, nodeupdown_errnum(test_env->handle_loaded));
 
-  if (function == GET_UP_NODES_STRING || function == GET_DOWN_NODES_STRING)
+  if (function & IS_STRING_FUNCTION)
     free(node);
-  else if (function == GET_UP_NODES_LIST || function == GET_DOWN_NODES_LIST)
+  else if (function & IS_LIST_FUNCTION)
     (void)nodeupdown_nodelist_destroy(test_env->handle_loaded, list);
 }
 
@@ -877,11 +881,6 @@ int initialize_test_env_func_tests(struct test_env *test_env,
 
     /* sleep a bit, wait for gmonds to get going */
     sleep(LIBNODEUPDOWN_TEST_SLEEPTIME);
-  }
-
-  if ((test_env->handle_loaded = nodeupdown_handle_create()) == NULL) {
-    printf("nodeupdown_handle_create() error\n");
-    return -1;
   }
 
   if ((test_env->handle_loaded = nodeupdown_handle_create()) == NULL) {
@@ -935,9 +934,6 @@ int cleanup_test_env_func_tests(struct test_env *test_env,
  */
 int run_func_tests(struct test_env *test_env) {
   int i, restart_gmonds_flag, old_nodes_up, old_host_to_query;
-
-  printf("functionality tests                                           \n");
-  printf("--------------------------------------------------------------\n");
 
   /* kill existing gmonds first */
   if (close_gmonds(test_env, NODE_ALL) == -1) {
