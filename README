@@ -67,6 +67,10 @@ following options in configure.
     difference between up nodes, down nodes, and nodes in the cluster.
     This is not recommended.
 
+If none of the above is specified during configure time, configure
+will select a master list mechanism based on the libraries found on
+the build machine.  
+
 Other mechanisms may be implemented in the future.  If you are interested
 in seeing some new mechanism implemented, feel free to e-mail me and I'll
 see what I can do.
