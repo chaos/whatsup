@@ -89,17 +89,12 @@ am__include = @am__include@
 am__quote = @am__quote@
 install_sh = @install_sh@
 
-CPPFLAGS = \
-	-I$(top_srcdir)/src/libnodeupdown
-
-
-LDADD = \
-	$(top_builddir)/src/libnodeupdown/libnodeupdown.la
-
+AM_CFLAGS = -I../libnodeupdown
 
 bin_PROGRAMS = whatsup
 
 whatsup_SOURCES = whatsup.c
+whatsup_LDADD = ../lib/.libs/libnodeupdown.a
 subdir = src/whatsup
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
@@ -109,13 +104,12 @@ PROGRAMS = $(bin_PROGRAMS)
 
 am_whatsup_OBJECTS = whatsup.$(OBJEXT)
 whatsup_OBJECTS = $(am_whatsup_OBJECTS)
-whatsup_LDADD = $(LDADD)
-whatsup_DEPENDENCIES = \
-	$(top_builddir)/src/libnodeupdown/libnodeupdown.la
+whatsup_DEPENDENCIES = ../lib/.libs/libnodeupdown.a
 whatsup_LDFLAGS =
 
 DEFS = @DEFS@
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/config
+CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
