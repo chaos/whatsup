@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_load_data.3.in,v 1.1 2003-11-06 00:53:29 achu Exp $
+\."$Id: nodeupdown_load_data.3.in,v 1.2 2003-11-06 18:09:55 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -11,6 +11,9 @@ nodeupdown_load_data \- load data from ganglia
 .sp
 .if @WITH_GENDERS@ \{
 .BI "int nodeupdown_load_data(nodeupdown_t handle, const char *genders_filename, const char *gmond_hostname, const char *gmond_ip, int gmond_port, int timeout_len);"
+\}
+.if @WITH_MASTERLIST@ \{
+.BI "int nodeupdown_load_data(nodeupdown_t handle, const char *filename, const char *gmond_hostname, const char *gmond_ip, int gmond_port, int timeout_len);"
 \}
 .if @WITH_NOMASTERLIST@ \{
 .BI "int nodeupdown_load_data(nodeupdown_t handle, void *ptr, const char *gmond_hostname, const char *gmond_ip, int gmond_port, int timeout_len);"
@@ -29,6 +32,12 @@ handle created by
 \fIgenders_filename\fR should indicate the genders file to be loaded.
 If \fIgenders_filename\fR is NULL, the default genders file
 GENDERS_DEFAULT_FILE will be used.
+\}
+.if @WITH_MASTERLIST@ \{
+\fIfilename\fR should indicate a filename that lists every node in the
+cluster.  The file should list shortened hostnames, one per line.  Lines
+beginning with a pound sign ('#') will be ignored.  If set to NULL, the
+default @NODEUPDOWN_MASTERLIST_DEFAULT@ will be used.
 \}
 .if @WITH_NOMASTERLIST@ \{
 \fIptr\fR can be set to anything, it will be ignored in this

@@ -1,3 +1,36 @@
+2003-11-07  Albert Chu  <chu11@llnl.gov>
+
+	Added master file list support
+	
+	* src/libnodeupdown/nodeupdown.h.in: Added
+	NODEUPDOWN_MASTERLIST_DEFAULT configurable constant.
+
+	* src/libnodeupdown/nodeupdown.c (_load_masterlist_data): New function..
+
+	* src/libnodeupdown/nodeupdown.c (_initialize_handle,
+	_free_handle_data, nodeupdown_load_data, _xml_parse-start,
+	_compare_gmond_nodes_to_master_list, _is_node): Added masterlist
+	functionality.
+
+	* src/whatsup/whatsup.c (_cmdline_parse, main): Added masterlist
+	functionality.
+	
+	* src/libcommon/list.h, src/libcommon/list.c: New files.
+	
+	* man/libnodeupdown.3.in,
+	man/libnodeupdown/nodeupdown_load_data.3.in, man/whatsup.1.in:
+	Added masterlist info.
+	
+	* configure.ac: Added support for --with-masterlist option.
+
+	Autoconf Libnodeupdown.pm
+
+	* src/Libnodeupdown/Libnodeupdown.pm: 
+	Renamed to Libnodeupdown.pm.in.
+	Autoconfed $VERSION.
+
+	* configure.ac: Output Libnodeupdown.pm.in.
+	
 2003-11-06  Albert Chu  <chu11@llnl.gov>
 
 	* src/libcommon/: New libcommon for common files.

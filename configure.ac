@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.13 2003-11-06 01:10:18 achu Exp $
+## $Id: configure.ac,v 1.14 2003-11-06 18:09:55 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -56,41 +56,6 @@ if test -z "$NODEUPDOWN_CONF_FILE"; then
 fi
 AC_SUBST(NODEUPDOWN_CONF_FILE)
 
-# Build with genders support
-# - For the most part only used at LLNL
-AC_MSG_CHECKING(for --with-genders )
-AC_ARG_WITH(genders,
-    AC_HELP_STRING([--with-genders=path], 
-                   [build with genders support, optionally 
-                    supplying genders database path]),
-    [ case "$withval" in
-    yes)
-        withgenders=yes
-        ;;
-    no)
-        ;;
-    *)
-        withgenders=yes
-        ;;
-    esac ]
-)
-AC_MSG_RESULT(${withgenders=no})
-if test "$withgenders" = "yes"; then
-   if test "$havegenders" != "yes" || test "$havegendersllnl" != "yes"; then
-     AC_MSG_ERROR([genders library files not found])
-   else
-     GENDERS_LIBS="-lgenders -lgendersllnl"
-     AC_DEFINE(HAVE_GENDERS, [1], [Define use of genders])
-     NODEUPDOWN_MASTER_LIST_PTR="const char *genders_filename"
-     WITH_GENDERS=1
-   fi
-else
-   WITH_GENDERS=0
-fi
-AC_SUBST(WITH_GENDERS)
-AC_SUBST(HAVE_GENDERS)
-AC_SUBST(GENDERS_LIBS)
-
 # Perl Install Prefix
 # - Used almost exclusively so perl install works with rpm builds
 AC_MSG_CHECKING(for --with-perl-install-prefix )
@@ -113,6 +78,97 @@ if test -z "$PERL_INSTALL_PREFIX"; then
    PERL_INSTALL_PREFIX='${prefix}'
 fi
 AC_SUBST(PERL_INSTALL_PREFIX)
+
+AC_MSG_CHECKING(for --with-genders )
+AC_ARG_WITH(genders,
+    AC_HELP_STRING([--with-genders=path], 
+                   [build with genders support, optionally 
+                    supplying genders database path]),
+    [ case "$withval" in
+    yes)
+        withgenders=yes
+        ;;
+    no)
+        ;;
+    *)
+        withgenders=yes
+        ;;
+    esac ]
+)
+AC_MSG_RESULT(${withgenders=no})
+
+AC_MSG_CHECKING(for --with-masterlist )
+AC_ARG_WITH(masterlist,
+    AC_HELP_STRING([--with-masterlist=path], 
+                   [build with masterlist support, optionally 
+                    supplying masterlist path]),
+    [ case "$withval" in
+    yes)
+        withmasterlist=yes
+        ;;
+    no)
+        ;;
+    *)
+        withmasterlist=yes
+        ;;
+    esac ]
+)
+AC_MSG_RESULT(${withmasterlist=no})
+
+if test "$withgenders" = "yes" &&
+   test "$withmasterlist" = "yes"; then
+   AC_MSG_ERROR([You can only specify one master list mechanism])
+fi
+
+if test "$withgenders" != "yes" &&
+   test "$withmasterlist" != "yes"; then
+   withnomasterlist=yes
+fi   
+
+# Build with genders support
+# - For the most part only used at LLNL
+if test "$withgenders" = "yes"; then
+   if test "$havegenders" != "yes" || test "$havegendersllnl" != "yes"; then
+     AC_MSG_ERROR([genders library files not found])
+   else
+     GENDERS_LIBS="-lgenders -lgendersllnl"
+     AC_DEFINE(HAVE_GENDERS, [1], [Define use of genders])
+     NODEUPDOWN_MASTERLIST_PTR="const char *genders_filename"
+     NODEUPDOWN_MASTERLIST_DEFAULT=GENDERS_DEFAULT_FILE
+     WITH_GENDERS=1
+   fi
+else
+   WITH_GENDERS=0
+fi
+AC_SUBST(GENDERS_LIBS)
+AC_SUBST(WITH_GENDERS)
+AC_SUBST(HAVE_GENDERS)
+
+# Very generic method to implement a "master list"
+if test "$withmasterlist" = "yes"; then
+  AC_DEFINE(HAVE_GENDERS, [1], [Define use of genders])
+  NODEUPDOWN_MASTERLIST_PTR="const char *filename"
+  NODEUPDOWN_MASTERLIST_DEFAULT="\"/etc/nodeupdown_masterlist\""
+  WITH_MASTERLIST=1
+else
+  WITH_MASTERLIST=0
+fi
+AC_SUBST(WITH_MASTERLIST)
+AC_SUBST(HAVE_MASTERLIST)
+
+if test "$withnomasterlist" = "yes"; then
+   AC_DEFINE(HAVE_NOMASTERLIST, [1], [Define no master list])
+   NODEUPDOWN_MASTERLIST_PTR="void *ptr"
+   NODEUPDOWN_MASTERLIST_DEFAULT="\"*** NOT USED ***\""
+   WITH_NOMASTERLIST=1
+else
+   WITH_NOMASTERLIST=0
+fi
+AC_SUBST(WITH_NOMASTERLIST)
+AC_SUBST(HAVE_NOMASTERLIST)
+
+AC_SUBST(NODEUPDOWN_MASTERLIST_PTR)
+AC_SUBST(NODEUPDOWN_MASTERLIST_DEFAULT)
 
 ##
 # Checks for programs.
@@ -160,19 +216,6 @@ AC_CHECK_FUNCS( \
 )
 
 ##
-
-if test -z "$NODEUPDOWN_MASTER_LIST_PTR"; then
-   NODEUPDOWN_MASTER_LIST_PTR="void *ptr"
-   AC_DEFINE(HAVE_NOMASTERLIST, [1], [Define no master list])
-   WITH_NOMASTERLIST=1
-else
-   WITH_NOMASTERLIST=0
-fi
-AC_SUBST(WITH_NOMASTERLIST)
-AC_SUBST(NODEUPDOWN_MASTER_LIST_PTR)
-AC_SUBST(NODEUPDOWN_NOMASTERLIST)
-
-##
 # Epilogue.
 ##
 AC_CONFIG_FILES( \
@@ -184,6 +227,7 @@ AC_CONFIG_FILES( \
   src/libnodeupdown/nodeupdown.h
   src/whatsup/Makefile \
   src/Libnodeupdown/Makefile \
+  src/Libnodeupdown/Libnodeupdown.pm \
   src/Nodeupdown/Makefile \
   man/Makefile \
   man/libnodeupdown.3 \

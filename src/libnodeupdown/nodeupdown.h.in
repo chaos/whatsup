@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown.h.in,v 1.5 2003-11-06 00:53:29 achu Exp $
+ *  $Id: nodeupdown.h.in,v 1.6 2003-11-06 18:09:55 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h.in,v $
  *    
  */
@@ -40,6 +40,8 @@
 
 #define NODEUPDOWN_CONF_FILE             @NODEUPDOWN_CONF_FILE@
 
+#define NODEUPDOWN_MASTERLIST_DEFAULT    @NODEUPDOWN_MASTERLIST_DEFAULT@
+
 typedef struct nodeupdown *nodeupdown_t;
 
 /* nodeupdown_handle_create
@@ -64,7 +66,7 @@ int nodeupdown_handle_destroy(nodeupdown_t handle);
  * - returns 0 on success, -1 on error
  */
 int nodeupdown_load_data(nodeupdown_t handle, 
-                         @NODEUPDOWN_MASTER_LIST_PTR@, 
+                         @NODEUPDOWN_MASTERLIST_PTR@, 
                          const char *gmond_hostname, 
                          const char *gmond_ip, 
                          int gmond_port,

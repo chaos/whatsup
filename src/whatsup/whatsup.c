@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.66 2003-11-06 00:53:30 achu Exp $
+ * $Id: whatsup.c,v 1.67 2003-11-06 18:09:55 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -66,10 +66,12 @@ struct winfo {
   char list_type;             /* list type */
   int count;                  /* list count? */
   hostlist_t nodes;           /* nodes entered at command line */
+#if (HAVE_GENDERS || HAVE_MASTERLIST)
+  char *filename;             /* filename */
+#endif
 #if HAVE_GENDERS
-  char *filename;             /* genders filename */
   int list_altnames;          /* list altnames? */
-#endif /* HAVE_GENDERS */
+#endif
 };
 
 /* usage
@@ -95,7 +97,10 @@ static void usage(void) {
   fprintf(stderr,
     "  -f STRING  --filename=STRING   Location of genders file\n"
     "  -a         --altnames          List nodes by alternate name\n");
-#endif /* HAVE_GENDERS */
+#elif HAVE_MASTERLIST
+  fprintf(stderr,
+    "  -f STRING  --filename=STRING   Location of master list file\n");
+#endif
     fprintf(stderr, "\n");
 }
 
@@ -141,10 +146,12 @@ static int initialize_struct_winfo(struct winfo *winfo) {
   winfo->list_type = HOSTLIST;
   winfo->count = WHATSUP_OFF;
   winfo->nodes = NULL;
-#if HAVE_GENDERS
+#if (HAVE_GENDERS || HAVE_MASTERLIST)
   winfo->filename = NULL;
+#endif
+#if HAVE_GENDERS
   winfo->list_altnames = WHATSUP_OFF;
-#endif /* HAVE_GENDERS */
+#endif
   return 0;
 }
 
@@ -157,9 +164,11 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
 
 #if HAVE_GENDERS
   char *options = "hVo:i:p:budtlcnsf:a";
+#elif HAVE_MASTERLIST
+  char *options = "hVo:i:p:budtlcnsf:";
 #else
   char *options = "hVo:i:p:budtlcns";
-#endif /* HAVE_GENDERS */
+#endif
   struct option long_options[] = {
     {"help",      0, NULL, 'h'},
     {"version",   0, NULL, 'V'},
@@ -174,10 +183,12 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
     {"comma",     0, NULL, 'c'},
     {"newline",   0, NULL, 'n'},
     {"space",     0, NULL, 's'},
-#if HAVE_GENDERS
+#if (HAVE_GENDERS || HAVE_MASTERLIST)
     {"filename",  1, NULL, 'f'},
+#endif
+#if HAVE_GENDERS
     {"altnames",  0, NULL, 'a'},
-#endif /* HAVE_GENDERS */
+#endif 
     {0, 0, 0, 0}
   };
 
@@ -236,7 +247,11 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
     case 'a':
       winfo->list_altnames = WHATSUP_ON;
       break;
-#endif /* HAVE_GENDERS */
+#elif
+    case 'f':
+      winfo->filename = optarg;
+      break;
+#endif 
     case '?':
       err_msg("invalid command line option entered", NULL);
       return -1;
@@ -529,11 +544,11 @@ int main(int argc, char **argv) {
   }
 
   if (nodeupdown_load_data(winfo->handle, 
-#if HAVE_GENDERS
+#if (HAVE_GENDERS || HAVE_MASTERLIST)
                            winfo->filename, 
 #else
                            NULL,
-#endif /* HAVE_GENDERS */
+#endif
                            winfo->hostname, winfo->ip, winfo->port, 0) == -1) {
     err_msg("nodeupdown_load_data()", nodeupdown_errormsg(winfo->handle)); 
     goto cleanup;

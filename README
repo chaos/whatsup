@@ -9,13 +9,23 @@
    In order to determine all of the down nodes in a cluster,
    whatsup and the nodeupdown library require a "master list" of
    nodes in the cluster.  "master list" mechanisms can be compiled
-   into whatsup by specifying a master list options with ./configure.
+   into whatsup by specifying a master list option with ./configure.
 
    Currently, the following "master list" mechanisms are implemented
    in whatsup.
-   - genders
+
+   * genders - uses a genders database and the genders library as a 
+               master list of all nodes in the cluster. In addition,
+	       using the gendersllnl library, node names and alternate
+	       node names are resolved and turned into the same.	
+   
+   * master list file - a file that lists the shortened hostname of
+	                every node in teh cluster, one per line.
+                        Comments can be placed in the file using a
+                        pound sign ('#') at the beginning of a line.
+
+   * none - whatsup and nodeupdown will only use ganglia data to
+            determine the difference between up nodes, down nodes, and
+            nodes that are not part of the cluster.
 
    Other mechanisms may be implemented in the future.
-
-   If no "master list" mechanism is specified, whatsup will use only
-   ganglia data to determine the difference between up and down nodes.
