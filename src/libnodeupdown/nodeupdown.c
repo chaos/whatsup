@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.67 2003-08-14 17:57:30 achu Exp $
+ * $Id: nodeupdown.c,v 1.68 2003-09-23 23:09:06 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -763,7 +763,6 @@ char *nodeupdown_strerror(int errnum) {
   return errmsg[errnum];
 }
 
-
 char *nodeupdown_errormsg(nodeupdown_t handle) {
   return nodeupdown_strerror(nodeupdown_errnum(handle));
 }
@@ -943,6 +942,30 @@ int nodeupdown_is_node_up(nodeupdown_t handle, const char *node) {
 int nodeupdown_is_node_down(nodeupdown_t handle, const char *node) {
   return _is_node(handle, node, NODEUPDOWN_DOWN_NODES);
 }
+
+int _node_count(nodeupdown_t handle, int up_or_down) {
+  int ret;
+
+  if (_loaded_handle_error_check(handle) == -1)
+    return -1;
+
+  if (up_or_down == NODEUPDOWN_UP_NODES)
+    ret = hostlist_count(handle->up_nodes);
+  else
+    ret = hostlist_count(handle->down_nodes);
+
+  handle->errnum = NODEUPDOWN_ERR_SUCCESS;
+  return ret;
+}
+
+int nodeupdown_up_count(nodeupdown_t handle) {
+  return _node_count(handle, NODEUPDOWN_UP_NODES);
+}
+
+int nodeupdown_down_count(nodeupdown_t handle) {
+  return _node_count(handle, NODEUPDOWN_DOWN_NODES);
+}
+
 
 int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list) {
   int i, j, maxnodelen;

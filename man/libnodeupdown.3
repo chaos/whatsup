@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: libnodeupdown.3,v 1.14 2003-08-18 23:06:10 achu Exp $
+\."$Id: libnodeupdown.3,v 1.15 2003-09-23 23:09:06 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -36,6 +36,10 @@ or down
 .sp
 .BI "int nodeupdown_is_node_down(nodeupdown_t handle, const char *node);"
 .sp
+.BI "int nodeupdown_up_count(nodeupdown_t handle);"
+.sp
+.BI "int nodeupdown_down_count(nodeupdown_t handle);"
+.sp
 .BI "int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list);"
 .sp
 .BI "int nodeupdown_nodelist_clear(nodeupdown_t handle, char **list);"
@@ -60,5 +64,7 @@ nodeupdown_strerror(3), nodeupdown_errormsg(3), nodeupdown_perror(3),
 nodeupdown_get_up_nodes_string(3),
 nodeupdown_get_down_nodes_string(3), nodeupdown_get_up_nodes_list(3),
 nodeupdown_get_down_nodes_list(3), nodeupdown_is_node_up(3),
-nodeupdown_is_node_down(3), nodeupdown_nodelist_create(3),
-nodeupdown_nodelist_clear(3), nodeupdown_nodelist_destroy(3), nodeupdown.conf(5)
+nodeupdown_is_node_down(3), nodeupdown_up_count(3),
+nodeupdown_down_count(3), nodeupdown_nodelist_create(3),
+nodeupdown_nodelist_clear(3), nodeupdown_nodelist_destroy(3),
+nodeupdown.conf(5)

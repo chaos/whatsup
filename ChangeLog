@@ -1,3 +1,29 @@
+2003-09-23  Albert Chu  <chu11@llnl.gov>
+
+	* src/libnodeupdown/nodeupdown.c (nodeupdown_up_count,
+	nodeupdown_down_count): New functions.
+
+	* src/libnodeupdown/nodeupdown.h.in: Added function prototypes for
+	nodeupdown_up_count and nodeupdown_down_count.
+
+	* src/Libnodeupdown/Libnodeupdown.xs (nodeupdown_up_count,
+	nodeupdown_down_count): New functions.
+
+	* src/Libnodeupdown/Libnodeupdown.pm: Added nodeupdown_up_count
+	and nodeupdown_down_count perldoc information.
+
+	* src/Libnodeupdown/Nodeupdown.pm (up_count, down_count): New
+	functions.
+
+	* src/Libnodeupdown/Nodeupdown.pm: Added up_count and down_count
+	perldoc information.
+
+	* man/nodeupdown_node_count.3, man/nodeupdown_up_count.3,
+	man/nodeupdown_down_count.3:  New manpages.
+
+	* src/Libnodeupdown/Nodeupdown.pm: Made description in BUGS
+	clearer.
+
 2003-09-10  Albert Chu  <chu11@llnl.gov>
 
 	Modified build files

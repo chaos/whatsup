@@ -436,6 +436,22 @@ nodeupdown_is_node_down(handle, node)
     OUTPUT:
         RETVAL
 
+int
+nodeupdown_up_count(handle)
+    nodeupdown_t handle
+    CODE:
+        RETVAL = nodeupdown_up_count(handle);
+    OUTPUT:
+        RETVAL
+
+int
+nodeupdown_down_count(handle)
+    nodeupdown_t handle
+    CODE:
+        RETVAL = nodeupdown_down_count(handle);
+    OUTPUT:
+        RETVAL
+
 void
 nodeupdown_set_errnum(handle, errnum)
     nodeupdown_t handle

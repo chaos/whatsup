@@ -1,5 +1,5 @@
 #############################################################################
-# $Id: Nodeupdown.pm,v 1.3 2003-08-18 20:24:39 achu Exp $
+# $Id: Nodeupdown.pm,v 1.4 2003-09-23 23:09:06 achu Exp $
 # $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/Nodeupdown/Nodeupdown.pm,v $
 #############################################################################
 
@@ -172,6 +172,9 @@ sub down_nodes {
 
 sub _common_check {
     my $up_or_down = shift;
+}
+
+sub are_up {
     my $self = shift;
     my @list = @_;
     my $found;
@@ -186,20 +189,10 @@ sub _common_check {
 
         foreach $testnode (@list) {
             $found = 0;
-            if ($up_or_down == 1) {
-                $found = $self->{$handlekey}->nodeupdown_is_node_up($testnode);
-            }
-            else {
-                $found = $self->{$handlekey}->nodeupdown_is_node_down($testnode);
-            }
+            $found = $self->{$handlekey}->nodeupdown_is_node_up($testnode);
             
             if ($found == -1) {
-                if ($up_or_down == 1) {
-                    _errormsg($self,"nodeupdown_is_node_up");
-                }
-                else {
-                    _errormsg($self,"nodeupdown_is_node_down");
-                }
+                _errormsg($self,"nodeupdown_is_node_up");
                 return 0;
             }
             if ($found == 0) {
@@ -214,16 +207,73 @@ sub _common_check {
     }
 }
 
-sub are_up {
-    my @args;
-    @args = (1, @_);
-    return _common_check(@args);
+sub are_down {
+    my $self = shift;
+    my @list = @_;
+    my $found;
+    my $testnode;
+    my $retval = 1;
+
+    if (defined($self)) {
+
+        if (@list == 0) {
+            return 0;
+        }
+
+        foreach $testnode (@list) {
+            $found = 0;
+            $found = $self->{$handlekey}->nodeupdown_is_node_down($testnode);
+            
+            if ($found == -1) {
+                _errormsg($self,"nodeupdown_is_node_down");
+                return 0;
+            }
+            if ($found == 0) {
+                $retval = 0;
+                last;
+            }
+        }
+        return $retval;
+    }
+    else {
+        return 0;
+    }
 }
 
-sub are_down {
-    my @args;
-    @args = (0, @_);
-    return _common_check(@args);
+sub up_count {
+    my $self = shift;
+    my $retval;
+
+    if (defined($self)) {
+
+        $retval = $self->{$handlekey}->nodeupdown_up_count();
+        if ($retval == -1) {
+            _errormsg($self,"nodeupdown_up_count");
+            return 0;
+        }
+        return $retval;
+    }
+    else {
+        return 0;
+    }
+}
+
+sub down_count {
+    my $self = shift;
+    my $retval;
+
+    if (defined($self)) {
+
+        $retval = $self->{$handlekey}->nodeupdown_down_count();
+        if ($retval == -1) {
+            _errormsg($self,"nodeupdown_down_count");
+            return 0;
+        }
+        return $retval;
+    }
+    else {
+        return 0;
+    }
 }
 
 1;
@@ -249,6 +299,9 @@ Nodeupdown - Perl API for determining up and down nodes
 
  $bool = $obj->are_up(@nodes)
  $bool = $obj->are_down(@nodes)
+
+ $num = $obj->up_count()
+ $num = $obj->down_count()
 
 =head1 DESCRIPTION
 
@@ -287,14 +340,23 @@ if any node passed is not up.
 Returns 1 is all the nodes passed in are determined as down.  Returns 0
 if any node passed is not down.
 
+=item B<$obj-E<gt>up_count()>
+
+Returns the number of up nodes.
+
+=item B<$obj-E<gt>down_count()>
+
+Returns the number of down nodes.
+
 =back 
 
 =head1 BUGS
 
 Please be careful with the semantics of B<are_up()> and B<are_down()>.
 Just because a node is not up, does not mean it is down.  For example,
-if an improper node name is used (i.e. $obj->are_up("foobar")), both
-B<are_up()> and B<are_down()> will fail.
+if an improper node name is used (i.e. $obj->are_up("foobar"),
+$obj->are_down("foobar")), both B<are_up()> and B<are_down()> will
+fail.
 
 =head1 AUTHOR
 

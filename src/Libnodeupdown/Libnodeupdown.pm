@@ -78,6 +78,9 @@ Libnodeupdown - Perl extension for libnodeupdown
  $handle->nodeupdown_is_node_up($node);
  $handle->nodeupdown_is_node_down($node);
 
+ $handle->nodeupdown_up_count();
+ $handle->nodeupdown_down_count();
+
 =head1 DESCRIPTION
 
 This package provides an OO perl interface to the nodeupdown C API
@@ -161,6 +164,14 @@ Returns 1 if the specified node is up, 0 if not, -1 on error.
 =item B<$handle-E<gt>nodeupdown_is_node_down($node)>
 
 Returns 1 if the specified node is down, 0 if not, -1 on error.
+
+=item B<$handle-E<gt>nodeupdown_up_count()>
+
+Returns the number of up nodes, -1 on error.
+
+=item B<$handle-E<gt>nodeupdown_down_count()>
+
+Returns the number of down nodes, -1 on error.
 
 =back
 
