@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: whatsup.1,v 1.17 2003-08-18 23:06:11 achu Exp $
+\."$Id: whatsup.1,v 1.18 2003-09-25 00:20:17 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -64,6 +64,9 @@ List only up nodes
 .TP
 .B \-d, \-\-down
 List only down nodes
+.TP
+.B \-t, \-\-count
+List only node counts
 .TP
 .B \-l, \-\-hostlist
 List nodes in hostlist format (default)
@@ -132,6 +135,15 @@ List all nodes that are up in comma separated lists.
 .LP
 List all nodes that are up among the nodes foo2, foo4, and foo8
      whatsup -u foo2,foo4,foo8
+.LP
+Only output the number of nodes that are up and down
+     whatsup -t
+.LP
+Only output the number of up nodes
+     whatsup -u -t
+.LP
+Only output the number of up nodes among foo[5-25]
+     whatsup -u -t foo[5-25]
 .SH "FILES"
 /usr/bin/whatsup
 .SH "SEE ALSO"

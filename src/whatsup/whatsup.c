@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.63 2003-09-24 23:18:09 achu Exp $
+ * $Id: whatsup.c,v 1.64 2003-09-25 00:20:17 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -95,7 +95,7 @@ static void usage(void) {
     "  -b         --updown            List both up and down nodes\n"
     "  -u         --up                List only up nodes\n"
     "  -d         --down              List only down nodes\n"
-    "  -t         --count             List only node count\n"
+    "  -t         --count             List only node counts\n"
     "  -l         --hostlist          List nodes in hostlist format\n"
     "  -c         --comma             List nodes in comma separated list\n"
     "  -n         --newline           List nodes in newline separated list\n"

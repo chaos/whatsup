@@ -11,6 +11,8 @@
 
 	* src/whatsup.whatsup.c (main): Cleaned up exit and cleanup code.
 
+	* man/whatsup.1: Added info about new whatsup --count option.
+
 2003-09-23  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown.c (nodeupdown_up_count,
