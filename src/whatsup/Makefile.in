@@ -97,9 +97,9 @@ LDADD = \
 	$(top_builddir)/src/libnodeupdown/libnodeupdown.la
 
 
-bin_PROGRAMS = \
-	whatsup 
+bin_PROGRAMS = whatsup
 
+whatsup_SOURCES = whatsup.c
 subdir = src/whatsup
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
@@ -107,8 +107,8 @@ CONFIG_CLEAN_FILES =
 bin_PROGRAMS = whatsup$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
-whatsup_SOURCES = whatsup.c
-whatsup_OBJECTS = whatsup.$(OBJEXT)
+am_whatsup_OBJECTS = whatsup.$(OBJEXT)
+whatsup_OBJECTS = $(am_whatsup_OBJECTS)
 whatsup_LDADD = $(LDADD)
 whatsup_DEPENDENCIES = \
 	$(top_builddir)/src/libnodeupdown/libnodeupdown.la
@@ -129,9 +129,9 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 CFLAGS = @CFLAGS@
-DIST_SOURCES = whatsup.c
+DIST_SOURCES = $(whatsup_SOURCES)
 DIST_COMMON = Makefile.am Makefile.in
-SOURCES = whatsup.c
+SOURCES = $(whatsup_SOURCES)
 
 all: all-am
 
