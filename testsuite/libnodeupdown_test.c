@@ -1,5 +1,5 @@
 /*
- * $Id: libnodeupdown_test.c,v 1.16 2003-05-21 21:17:31 achu Exp $
+ * $Id: libnodeupdown_test.c,v 1.17 2003-05-23 23:24:44 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/testsuite/libnodeupdown_test.c,v $
  *    
  */
@@ -83,7 +83,7 @@ int start_gmonds(struct test_env *, int);
 int close_gmonds(struct test_env *, int);
 int initialize_test_env_parameter_tests(struct test_env *);
 int cleanup_test_env_parameter_tests(struct test_env *);
-int run_a_test(struct test_env *, int, int, int, int, int, int, int, int, int, int);  
+void run_a_test(struct test_env *, int, int, int, int, int, int, int, int, int, int);  
 int run_param_tests(struct test_env *);
 void func_test(struct test_env *, int, int, int, int, int, int);
 int initialize_test_env_func_tests(struct test_env *, int, int, int);
