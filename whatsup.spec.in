@@ -74,4 +74,3 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_includedir}/*
 %{_libdir}/*
 %{_mandir}/*
-%{_datadir}/*
