@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: hostlist.h,v 1.1 2003-11-06 01:10:18 achu Exp $
+ *  $Id: hostlist.h,v 1.2 2005-01-04 01:37:24 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2002 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
