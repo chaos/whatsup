@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.40 2003-05-08 16:03:39 achu Exp $
+ * $Id: nodeupdown.c,v 1.41 2003-05-14 19:30:13 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -711,6 +711,8 @@ void xml_parse_start(void *data, const char *e1, const char **attr) {
         return;
       }
     }
+
+    free(buffer);
   }
 }
 
