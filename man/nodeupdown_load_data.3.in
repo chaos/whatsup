@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_load_data.3.in,v 1.10 2003-11-24 16:13:19 achu Exp $
+\."$Id: nodeupdown_load_data.3.in,v 1.11 2003-12-03 23:00:51 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -9,7 +9,15 @@ nodeupdown_load_data \- load data from ganglia
 .SH SYNOPSIS
 .B #include <nodeupdown.h>
 .sp
+.if @WITH_NOMASTERLIST@ \{
 .BI "int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname, int gmond_port, int timeout_len, void *masterlist);"
+\}
+.if @WITH_HOSTSFILE@ \{
+.BI "int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname, int gmond_port, int timeout_len, char *hostsfile);"
+\}
+.if (@WITH_GENDERS@ : @WITH_GENDERSLLNL@) \{
+.BI "int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname, int gmond_port, int timeout_len, char *gendersfile);"
+\}
 .br
 .SH DESCRIPTION
 \fBnodeupdown_load_data()\fR loads data from ganglia so
@@ -34,14 +42,14 @@ or equal to 0, nodeupdown assumes the default timeout length defined
 by NODEUPDOWN_TIMEOUT_LEN.
  
 .if @WITH_HOSTSFILE@ \{
-\fImasterlist\fR should indicate a filename that lists every node in
+\fIhostsfile\fR should indicate a filename that lists every node in
 the cluster.  The file should list shortened hostnames, one per line.
-Lines beginning with a pound sign ('#') will be ignored.  If set to
+Lines beginning with a pound sign ("#") will be ignored.  If set to
 NULL, the default @NODEUPDOWN_MASTERLIST_DEFAULT@ will be used.
 \}
 .if (@WITH_GENDERS@ : @WITH_GENDERSLLNL@) \{
-\fImasterlist\fR should indicate the genders file to be loaded.  If
-\fImasterlist\fR is NULL, the default genders file
+\fIgendersfile\fR should indicate the genders file to be loaded.  If
+\fIgendersfile\fR is NULL, the default genders file
 @NODEUPDOWN_MASTERLIST_DEFAULT@ will be used.
 \}
 .if @WITH_NOMASTERLIST@ \{
@@ -49,9 +57,8 @@ NULL, the default @NODEUPDOWN_MASTERLIST_DEFAULT@ will be used.
 configuration of nodeupdown.
 \}
 
-The default values of \fIgmond_hostname\fR, \fIgmond_port\fR, \fItimeout_len\fR, 
-and \fImasterlist\fR can overwritten using a nodeupdown configuration
-file.  See 
+The default values used in \fBnodeupdown_load_data()\fR can
+overwritten using a nodeupdown configuration file.  See
 .BR nodeupdown.conf (5).
 .br
 .SH RETURN VALUES

@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown.conf.5.in,v 1.1 2003-11-24 16:13:19 achu Exp $
+\."$Id: nodeupdown.conf.5.in,v 1.2 2003-12-03 23:00:51 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -9,9 +9,7 @@ nodeupdown.conf \- specify alternate default values to nodeupdown_load_data(3)
 .SH DESCRIPTION
 
 Through a configuration file, system administrators may override the
-statically configured default values for \fIgmond_hostname\fR, \fIgmond_port\fR,
-\fItimeout_len\fR, and \fImasterlist\fR
-in the 
+statically configured default values in the 
 .BR nodeupdown_load_data(3)
 API function. 
 
@@ -19,6 +17,10 @@ The configuration file is stored at @NODEUPDOWN_CONF_FILE@.
 
 An example configuration file is shown below.
 
+\."This stinks, but things don't seem to align properly if you
+\."do it the smart way. I'll learn to use groff for real someday.
+
+.if @WITH_HOSTSFILE@ \{
 # Nodeupdown configuration
 .br
 # gmond_hostname      localhost host2 host3
@@ -27,7 +29,7 @@ An example configuration file is shown below.
 .br
 # timeout_len         60
 .br
-# masterlist          /etc/filename
+# hostsfile           /etc/my_hostsfile
 .br
 gmond_hostname      mymachine1
 .br
@@ -35,7 +37,27 @@ gmond_port          8689
 .br
 timeout_len         30
 .br
-masterlist          /etc/genders2
+hostsfile           /etc/hostsfile2
+\}
+.if (@WITH_GENDERS@ : @WITH_GENDERSLLNL@) \{
+# Nodeupdown configuration
+.br
+# gmond_hostname      localhost host2 host3
+.br
+# gmond_port          8649 
+.br
+# timeout_len         60
+.br
+# gendersfile         /etc/my_gendersfile
+.br
+gmond_hostname      mymachine1
+.br
+gmond_port          8689
+.br
+timeout_len         30
+.br
+gendersfile         /etc/genders2
+\}
 
 The configuration values may be separated by any amount of whitespace
 after the configuration keyword.  Multiple hosts can be specified

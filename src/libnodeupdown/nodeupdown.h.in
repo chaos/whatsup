@@ -1,6 +1,6 @@
 /*
- *  $Id: nodeupdown.h,v 1.24 2003-11-24 16:13:19 achu Exp $
- *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h,v $
+ *  $Id: nodeupdown.h.in,v 1.9 2003-12-03 23:00:52 achu Exp $
+ *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h.in,v $
  *    
  */
 
@@ -57,13 +57,14 @@ int nodeupdown_handle_destroy(nodeupdown_t handle);
  * - if hostname is NULL, localhost is assumed.
  * - if port is <= 0, default port is used
  * - if timeout_len is <= 0, default timeout is used
+ * - @NODEUPDOWN_MASTERLIST_COMMENT@
  * - returns 0 on success, -1 on error
  */
 int nodeupdown_load_data(nodeupdown_t handle, 
                          const char *gmond_hostname, 
                          int gmond_port,
                          int timeout_len,
-                         void *masterlist); 
+                         @NODEUPDOWN_MASTERLIST_PARAMETER@); 
 
 /* nodeupdown_errnum
  * - return the most recent error number

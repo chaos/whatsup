@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: libnodeupdown.3,v 1.17 2003-11-24 16:13:19 achu Exp $
+\."$Id: libnodeupdown.3.in,v 1.9 2003-12-03 23:00:51 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -14,7 +14,15 @@ or down
 .sp
 .BI "int nodeupdown_handle_destroy(nodeupdown_t handle);"
 .sp
+.if @WITH_NOMASTERLIST@ \{
 .BI "int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname, int gmond_port, int timeout_len, void *masterlist);"
+\}
+.if @WITH_HOSTSFILE@ \{
+.BI "int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname, int gmond_port, int timeout_len, char *hostsfile);"
+\}
+.if (@WITH_GENDERS@ : @WITH_GENDERSLLNL@) \{
+.BI "int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname, int gmond_port, int timeout_len, char *gendersfile);"
+\}
 .sp
 .BI "int nodeupdown_errnum(nodeupdown_t handle);"
 .sp
@@ -75,5 +83,5 @@ nodeupdown_down_count(3), nodeupdown_nodelist_create(3),
 nodeupdown_nodelist_clear(3), nodeupdown_nodelist_destroy(3),
 nodeupdown.conf(5)
 .if @WITH_HOSTSFILE@ \{
-nodeupdown_masterlist.conf(5)
+nodeupdown_hostsfile.conf(5)
 \}

@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown_common.h,v 1.5 2003-11-24 16:13:19 achu Exp $
+ *  $Id: nodeupdown_common.h,v 1.6 2003-12-03 23:00:52 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown_common.h,v $
  *    
  */
@@ -23,11 +23,15 @@
 #include <gendersllnl.h>
 #endif 
 
+#include <sys/param.h>
 #include "hostlist.h"
 #include "nodeupdown.h"
 
 #ifndef MAXHOSTNAMELEN
 #define MAXHOSTNAMELEN 64
+#endif
+#ifndef MAXPATHLEN
+#define MAXPATHLEN 255
 #endif
 
 #define NODEUPDOWN_UP_NODES              1
@@ -40,12 +44,14 @@
 #define NODEUPDOWN_CONNECT_LEN           5 
 
 /* Configuration file keys */
-#define NODEUPDOWN_CONF_GMOND_HOSTNAME     "gmond_hostname"
-#define NODEUPDOWN_CONF_GMOND_PORT         "gmond_port"
-#define NODEUPDOWN_CONF_TIMEOUT_LEN        "timeout_len"
-#define NODEUPDOWN_CONF_MASTERLIST         "masterlist"
-#define NODEUPDOWN_CONF_GMOND_HOSTNAME_MAX 8
-#define NODEUPDOWN_CONF_MASTERLIST_BUFLEN  64
+#define NODEUPDOWN_CONF_GMOND_HOSTNAME       "gmond_hostname"
+#define NODEUPDOWN_CONF_GMOND_HOSTNAME_MAX   8
+#define NODEUPDOWN_CONF_GMOND_PORT           "gmond_port"
+#define NODEUPDOWN_CONF_TIMEOUT_LEN          "timeout_len"
+#define NODEUPDOWN_CONF_HOSTSFILE            "hostsfile"
+#define NODEUPDOWN_CONF_GENDERSFILE          "gendersfile"
+#define NODEUPDOWN_CONF_HOSTSFILE_BUFLEN     MAXPATHLEN
+#define NODEUPDOWN_CONF_GENDERSFILE_BUFLEN   MAXPATHLEN
 
 struct nodeupdown {
   int magic;                  /* magic number */

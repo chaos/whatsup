@@ -60,7 +60,7 @@ Libnodeupdown - Perl extension for libnodeupdown
  $handle->nodeupdown_load_data($gmond_hostname,
                                $gmond_port,
                                $timeout_len,
-                               $master_list);
+                               @NODEUPDOWN_MASTERLIST_PERL_PARAMETER@);
 
  $handle->nodeupdown_errnum()
  $handle->nodeupdown_strerror($errnum)
@@ -97,14 +97,12 @@ Returns a nodeupdown object on success, undef on error.
 
 =item B<$handle-E<gt>nodeupdown_load_data()>
 
-=item B<$handle-E<gt>nodeupdown_load_data($gmond_hostname, $gmond_port, $timeout_len, $master_list)>
+=item B<$handle-E<gt>nodeupdown_load_data($gmond_hostname, $gmond_port, $timeout_len, @NODEUPDOWN_MASTERLIST_PERL_PARAMETER@)>
 
-Loads data for the remainder of the nodeupdown library to use.  Please
-read the nodeupdown_load_data manpage to determine the type of
-parameter that should be passed $master_list.  To use default values,
-pass in undef for any of the specified parameters.  To use all
-defaults, simply call nodeupdown_load_data without any parameters.
-Returns 0 on success, -1 on error.
+Loads data for the remainder of the nodeupdown library to use.  To use
+default values, pass in undef for any of the specified parameters.  To
+use all defaults, simply call nodeupdown_load_data without any
+parameters.  Returns 0 on success, -1 on error.
 
 =back
 

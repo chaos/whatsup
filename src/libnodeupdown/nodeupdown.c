@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.83 2003-11-24 16:34:53 achu Exp $
+ * $Id: nodeupdown.c,v 1.84 2003-12-03 23:00:52 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -34,15 +34,20 @@
 #endif
 
 /* to store config file data */
-struct confdata {
+struct nodeupdown_confdata {
   List gmond_hostnames;
-  int gmond_port;
-  int timeout_len;
-  char masterlist[NODEUPDOWN_CONF_MASTERLIST_BUFLEN+1];
   int gmond_hostnames_found;
+  int gmond_port;
   int gmond_port_found;
+  int timeout_len;
   int timeout_len_found;
-  int masterlist_found; 
+#if HAVE_HOSTSFILE
+  char hostsfile[NODEUPDOWN_CONF_HOSTSFILE_BUFLEN+1];
+  int hostsfile_found; 
+#elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
+  char gendersfile[NODEUPDOWN_CONF_GENDERSFILE_BUFLEN+1];
+  int gendersfile_found; 
+#endif
 };
 
 /* to pass multiple variables as one during XML parsing */
@@ -151,7 +156,7 @@ int nodeupdown_handle_destroy(nodeupdown_t handle) {
 
 /* dotconf gmond_hostname(s) callback function */
 static const char *_cb_gmond_hostname(command_t *cmd, context_t *ctx) {
-  struct confdata *cd = (struct confdata *)cmd->option->info;
+  struct nodeupdown_confdata *cd = (struct nodeupdown_confdata *)cmd->option->info;
   char *str;
   int i;
   
@@ -173,7 +178,7 @@ static const char *_cb_gmond_hostname(command_t *cmd, context_t *ctx) {
 
 /* dotconf gmond_port callback function */
 static const char *_cb_gmond_port(command_t *cmd, context_t *ctx) {
-  struct confdata *cd = (struct confdata *)cmd->option->info;
+  struct nodeupdown_confdata *cd = (struct nodeupdown_confdata *)cmd->option->info;
   cd->gmond_port = cmd->data.value;
   cd->gmond_port_found++; 
   return NULL;
@@ -181,29 +186,44 @@ static const char *_cb_gmond_port(command_t *cmd, context_t *ctx) {
 
 /* dotconf timeout_len callback function */
 static const char *_cb_timeout_len(command_t *cmd, context_t *ctx) {
-  struct confdata *cd = (struct confdata *)cmd->option->info;
+  struct nodeupdown_confdata *cd = (struct nodeupdown_confdata *)cmd->option->info;
   cd->timeout_len = cmd->data.value;
   cd->timeout_len_found++;
   return NULL;
 }
 
-/* dotconf masterlist callback function */
-static const char *_cb_masterlist(command_t *cmd, context_t *ctx) {
-  struct confdata *cd = (struct confdata *)cmd->option->info;
-  strncpy(cd->masterlist, cmd->data.str, NODEUPDOWN_CONF_MASTERLIST_BUFLEN);
-  cd->masterlist[NODEUPDOWN_CONF_MASTERLIST_BUFLEN-1] = '\0';
-  cd->masterlist_found++;
+#if HAVE_HOSTSFILE
+/* dotconf hostsfile callback function */
+static const char *_cb_hostsfile(command_t *cmd, context_t *ctx) {
+  struct nodeupdown_confdata *cd = (struct nodeupdown_confdata *)cmd->option->info;
+  strncpy(cd->hostsfile, cmd->data.str, NODEUPDOWN_CONF_HOSTSFILE_BUFLEN);
+  cd->hostsfile[NODEUPDOWN_CONF_HOSTSFILE_BUFLEN-1] = '\0';
+  cd->hostsfile_found++;
   return NULL;
 }
+#elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
+/* dotconf gendersfile callback function */
+static const char *_cb_gendersfile(command_t *cmd, context_t *ctx) {
+  struct nodeupdown_confdata *cd = (struct nodeupdown_confdata *)cmd->option->info;
+  strncpy(cd->gendersfile, cmd->data.str, NODEUPDOWN_CONF_GENDERSFILE_BUFLEN);
+  cd->gendersfile[NODEUPDOWN_CONF_GENDERSFILE_BUFLEN-1] = '\0';
+  cd->gendersfile_found++;
+  return NULL;
+}
+#endif
 
 /* parse configuration file and store data into confdata */
-static void _read_conffile(nodeupdown_t handle, struct confdata *cd) {
+static void _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd) {
   configfile_t *cf = NULL;
   configoption_t options[] = {
     {NODEUPDOWN_CONF_GMOND_HOSTNAME, ARG_LIST, _cb_gmond_hostname, cd, 0},
     {NODEUPDOWN_CONF_GMOND_PORT, ARG_INT, _cb_gmond_port, cd, 0},
     {NODEUPDOWN_CONF_TIMEOUT_LEN, ARG_INT, _cb_timeout_len, cd, 0},
-    {NODEUPDOWN_CONF_MASTERLIST, ARG_STR, _cb_masterlist, cd, 0},
+#if HAVE_HOSTSFILE
+    {NODEUPDOWN_CONF_HOSTSFILE, ARG_STR, _cb_hostsfile, cd, 0},
+#elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
+    {NODEUPDOWN_CONF_HOSTSFILE, ARG_STR, _cb_gendersfile, cd, 0},
+#endif
     LAST_OPTION
   };
   int reset = 1;
@@ -224,7 +244,11 @@ static void _read_conffile(nodeupdown_t handle, struct confdata *cd) {
     cd->gmond_hostnames_found = 0;
     cd->gmond_port_found = 0;
     cd->timeout_len_found = 0;
-    cd->masterlist_found = 0;
+#if HAVE_HOSTSFILE
+    cd->hostsfile_found = 0;
+#elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
+    cd->gendersfile_found = 0;
+#endif
   }
 }
 
@@ -469,25 +493,43 @@ static int _get_gmond_data(nodeupdown_t handle, int fd, int timeout_len) {
 }
 
 int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname, 
-                         int gmond_port, int timeout_len, void *masterlist) {
-  struct confdata cd;
+                         int gmond_port, int timeout_len, 
+#if HAVE_NOMASTERLIST
+                         void *ptr
+#elif HAVE_HOSTSFILE
+                         char *hostsfile
+#elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
+                         char *gendersfile
+#endif
+                         ) {
+  struct nodeupdown_confdata cd;
   int port, fd = -1;
 
   if (_unloaded_handle_error_check(handle) == -1)
     return -1;
 
   /* Read conffile */
-  memset(&cd, '\0', sizeof(struct confdata));
+  memset(&cd, '\0', sizeof(struct nodeupdown_confdata));
   if ((cd.gmond_hostnames = list_create((ListDelF)free)) == NULL)
     goto cleanup;
 
   _read_conffile(handle, &cd); 
 
   /* Must call masterlist_init before _connect_to_gmond */
-  masterlist = (masterlist == NULL 
-                && cd.masterlist_found > 0) ? &(cd.masterlist[0]) : masterlist;
+#if HAVE_NOMASTERLIST
   if (nodeupdown_masterlist_init(handle, masterlist) == -1)
     goto cleanup;
+#elif HAVE_HOSTSFILE
+  hostsfile = (hostsfile == NULL && cd.hostsfile_found > 0) ? 
+    &(cd.hostsfile[0]) : hostsfile;
+  if (nodeupdown_masterlist_init(handle, hostsfile) == -1)
+    goto cleanup;
+#elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
+  gendersfile = (gendersfile == NULL && cd.gendersfile_found > 0) ? 
+    &(cd.gendersfile[0]) : gendersfile;
+  if (nodeupdown_masterlist_init(handle, gendersfile) == -1)
+    goto cleanup;
+#endif
 
   if (gmond_hostname == NULL && cd.gmond_hostnames_found > 0) {
     ListIterator itr = NULL;

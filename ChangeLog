@@ -1,3 +1,7 @@
+2003-12-03  Albert Chu  <chu11@llnl.gov>
+
+	* Re-worked so types are more explicit
+
 2003-12-01  Albert Chu  <chu11@llnl.gov>
 
 	* src/Nodeupdown/Nodeupdown.pm (new): Fixed typo.

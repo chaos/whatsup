@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.25 2003-11-24 16:13:19 achu Exp $
+## $Id: configure.ac,v 1.26 2003-12-03 23:00:51 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -173,10 +173,13 @@ fi
 
 # Build with no materlist mechanism
 if test "$withnomasterlist" = "yes"; then
-   AC_DEFINE(HAVE_NOMASTERLIST, [1], [Define no master list])
-   WITH_NOMASTERLIST=1
+  AC_DEFINE(HAVE_NOMASTERLIST, [1], [Define no master list])
+  NODEUPDOWN_MASTERLIST_PARAMETER="void *masterlist" 
+  NODEUPDOWN_MASTERLIST_PERL_PARAMETER='$masterlist' 
+  NODEUPDOWN_MASTERLIST_COMMENT="masterlist is reserved for future use"
+  WITH_NOMASTERLIST=1
 else
-   WITH_NOMASTERLIST=0
+  WITH_NOMASTERLIST=0
 fi
 AC_SUBST(WITH_NOMASTERLIST)
 AC_SUBST(HAVE_NOMASTERLIST)
@@ -185,6 +188,9 @@ AC_SUBST(HAVE_NOMASTERLIST)
 if test "$withhostsfile" = "yes"; then
   AC_DEFINE(HAVE_HOSTSFILE, [1], [Define use of master list])
   NODEUPDOWN_MASTERLIST_DEFAULT="\"/etc/nodeupdown_hostsfile.conf\""
+  NODEUPDOWN_MASTERLIST_PARAMETER="char *hostsfile" 
+  NODEUPDOWN_MASTERLIST_PERL_PARAMETER='$hostsfile'
+  NODEUPDOWN_MASTERLIST_COMMENT="if hostsfile is NULL, default hosts is used"
   WITH_HOSTSFILE=1
 else
   WITH_HOSTSFILE=0
@@ -200,6 +206,9 @@ if test "$withgenders" = "yes"; then
      GENDERS_LIBS="-lgenders"
      AC_DEFINE(HAVE_GENDERS, [1], [Define use of genders])
      NODEUPDOWN_MASTERLIST_DEFAULT=GENDERS_DEFAULT_FILE
+     NODEUPDOWN_MASTERLIST_PARAMETER="char *gendersfile" 
+     NODEUPDOWN_MASTERLIST_PERL_PARAMETER='$gendersfile' 
+     NODEUPDOWN_MASTERLIST_COMMENT="if gendersfile is NULL, default genders file is used"
      WITH_GENDERS=1
    fi
 else
@@ -218,6 +227,9 @@ if test "$withgendersllnl" = "yes"; then
      GENDERSLLNL_LIBS="-lgenders -lgendersllnl"
      AC_DEFINE(HAVE_GENDERSLLNL, [1], [Define use of genders])
      NODEUPDOWN_MASTERLIST_DEFAULT=GENDERS_DEFAULT_FILE
+     NODEUPDOWN_MASTERLIST_PARAMETER="char *gendersfile" 
+     NODEUPDOWN_MASTERLIST_PERL_PARAMETER='$gendersfile' 
+     NODEUPDOWN_MASTERLIST_COMMENT="if gendersfile is NULL, default genders file is used"
      WITH_GENDERSLLNL=1
    fi
 else
@@ -229,6 +241,9 @@ AC_SUBST(HAVE_GENDERSLLNL)
 
 AC_DEFINE_UNQUOTED(NODEUPDOWN_MASTERLIST_DEFAULT, $NODEUPDOWN_MASTERLIST_DEFAULT, [Define default masterlist])
 AC_SUBST(NODEUPDOWN_MASTERLIST_DEFAULT)
+AC_SUBST(NODEUPDOWN_MASTERLIST_PARAMETER)
+AC_SUBST(NODEUPDOWN_MASTERLIST_PERL_PARAMETER)
+AC_SUBST(NODEUPDOWN_MASTERLIST_COMMENT)
 
 ##
 # Checks for programs.
@@ -286,11 +301,13 @@ AC_CONFIG_FILES( \
   src/libdotconf/Makefile \
   src/libexpat/Makefile \
   src/libnodeupdown/Makefile \
+  src/libnodeupdown/nodeupdown.h \
   src/whatsup/Makefile \
   src/Libnodeupdown/Makefile \
   src/Libnodeupdown/Libnodeupdown.pm \
   src/Nodeupdown/Makefile \
   man/Makefile \
+  man/libnodeupdown.3 \
   man/nodeupdown_load_data.3 \
   man/nodeupdown.conf.5 \
   man/nodeupdown_hostsfile.conf.5 \
