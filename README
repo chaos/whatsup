@@ -63,7 +63,7 @@ selecting one of the following options in configure.
     this is used in house at Lawrence Livermore National Laboratories
     and sister labs that have clusters and genders setup in a
     particular way that we like.  I have high doubts anyone else will
-    ever this this option.
+    ever use this option.
 
 Other mechanisms may be implemented in the future.  If you are interested
 in seeing some new mechanism implemented, feel free to e-mail me and I'll
