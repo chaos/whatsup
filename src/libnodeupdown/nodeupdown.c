@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.61 2003-06-30 16:05:56 achu Exp $
+ * $Id: nodeupdown.c,v 1.62 2003-06-30 23:42:22 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -104,7 +104,7 @@ static int  _loaded_handle_error_check(nodeupdown_t);
 static void _initialize_handle(nodeupdown_t handle);
 static void _free_handle_data(nodeupdown_t handle);
 static int  _get_genders_data(nodeupdown_t, const char *);
-static int  _low_timeout_connect(nodeupdown_, const char *, int);
+static int  _low_timeout_connect(nodeupdown_t, const char *, int);
 static void _xml_parse_start(void *, const char *, const char **);
 static void _xml_parse_end(void *, const char *);
 static int  _get_gmond_data(nodeupdown_t, const char *, int, int);
