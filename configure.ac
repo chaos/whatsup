@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.31 2004-10-07 18:31:04 achu Exp $
+## $Id: configure.ac,v 1.32 2004-10-28 22:08:32 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -150,18 +150,9 @@ AC_CHECK_LIB(gendersllnl, genders_get_cluster, [havegendersllnl=yes], [])
 
 ##
 # Error Checks
-# - I know this is ugly, I'll fix it later 
 ##
 
-if test "$withnomasterlist" != "yes" &&
-   test "$withhostsfile" != "yes" && 
-   test "$withgenders" != "yes" &&
-   test "$withgendersllnl" != "yes"; then
-   AC_MSG_ERROR([You must specify a master list mechanism, either 
-                 --with-nomasterlist, --with-hostsfile, --with-genders, 
-                 or --with-gendersllnl.  See README])
-fi   
-
+# I know this is ugly, I'll fix it later
 if (test "$withnomasterlist" = "yes" && test "$withhostsfile" = "yes") ||
    (test "$withnomasterlist" = "yes" && test "$withgenders" = "yes") ||
    (test "$withnomasterlist" = "yes" && test "$withgendersllnl" = "yes") || 
@@ -170,6 +161,22 @@ if (test "$withnomasterlist" = "yes" && test "$withhostsfile" = "yes") ||
    (test "$withgenders" = "yes" && test "$withgendersllnl" = "yes"); then
    AC_MSG_ERROR([You can only specify one master list mechanism])
 fi
+
+if test "$withnomasterlist" != "yes" &&
+   test "$withhostsfile" != "yes" && 
+   test "$withgenders" != "yes" &&
+   test "$withgendersllnl" != "yes"; then
+   if test "$havegendersllnl" = "yes"; then
+      withgendersllnl=yes
+      AC_MSG_NOTICE([gendersllnl chosen as masterlist mechanism])
+   elif test "$havegenders" = "yes"; then
+      withgenders=yes
+      AC_MSG_NOTICE([genders chosen as masterlist mechanism])
+   else
+      withnomasterlist=yes
+      AC_MSG_NOTICE([no masterlist mechanism chosen by default])
+   fi
+fi   
 
 # Build with no materlist mechanism
 if test "$withnomasterlist" = "yes"; then

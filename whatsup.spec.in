@@ -7,10 +7,6 @@ Group: Applications/Communications
 Source: %{name}-%{version}-%{release}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}
 
-# By default, we'll compile with gendersllnl if nothing else is specified
-# Most of you don't have this library, pick something at the command line :-)
-%{!?_with_nomasterlist: %{!?_with_hostsfile: %{!?_with_genders: %{!?_with_gendersllnl: %define _with_gendersllnl --with-gendersllnl}}}}
-
 %if %{?_with_genders:1}%{!?_with_genders:0}
 Requires:       genders >= 1.2
 %endif
