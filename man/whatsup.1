@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: whatsup.1,v 1.12 2003-05-09 17:36:41 achu Exp $
+\."$Id: whatsup.1,v 1.13 2003-06-12 23:37:26 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -103,8 +103,8 @@ List all nodes among foo7,foo9,foo10 that are up and down
 
 As a reminder to the reader, some shells will interpret brackets ('['
 and ']') for pattern matching.  Depending on your shell, it may be
-necessary to enclose hostlist formatted lists within quotes.  For
-example, in tcsh, the above two examples should be executed as:
+necessary to enclose ranged lists within quotes.  For example, in
+tcsh, the above two examples should be executed as:
 
     whatsup "foo[01-05]"
     whatsup "foo[7,9-10]"
