@@ -1,3 +1,15 @@
+2003-03-19 Albert Chu <chu11@llnl.gov>
+	- Added NODEUPDOWN_ERR_NODE_CONFLICT error description
+	  to manpages
+	- Added corner case to nodeupdown_load_data() 
+	- fixed memory leak in whatsup
+	- Added comments to nodeupdown.h and changes to manpages for
+	  additional instructions on is_node_up() and is_node_down() 
+	- fixed error with magic numbers 
+	- Added note about shortened hostnames in man page for whatsup(1)  
+	- Added note about newline separated lists in man page for whatsup(1)
+	- Fixed typo in whatsup(1) manpage
+	
 2003-03-12 Albert Chu <chu11@llnl.gov>
            - moved unnecessary #defines and #includes from nodeupdown.h
 	     to nodeupdown.c
