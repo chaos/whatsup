@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.83 2004-01-14 20:07:10 achu Exp $
+ *  $Id: whatsup.c,v 1.84 2004-01-14 20:21:03 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -239,10 +239,8 @@ _cmdline_parse(struct winfo *winfo, int argc, char **argv)
     switch(c) {
     case 'h':
       _usage();
-      break;
     case 'V':
       _version();
-      break;
     case 'o':
       winfo->hostname = optarg;
       break;
@@ -286,7 +284,6 @@ _cmdline_parse(struct winfo *winfo, int argc, char **argv)
     default:
       fprintf(stderr, "command line option error\n");
       _usage();
-      break;
     }
   }
 
