@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown_common.h,v 1.7 2003-12-05 18:17:11 achu Exp $
+ *  $Id: nodeupdown_common.h,v 1.8 2003-12-09 01:37:57 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown_common.h,v $
  *    
  */
@@ -44,7 +44,7 @@
 #define NODEUPDOWN_CONNECT_LEN           5 
 
 /* Configuration file keys */
-#define NODEUPDOWN_CONF_GMOND_HOSTNAME       "gmond_hostname"
+#define NODEUPDOWN_CONF_GMOND_HOSTNAME       "gmond_hostnames"
 #define NODEUPDOWN_CONF_GMOND_HOSTNAME_MAX   8
 #define NODEUPDOWN_CONF_GMOND_PORT           "gmond_port"
 #define NODEUPDOWN_CONF_TIMEOUT_LEN          "timeout_len"

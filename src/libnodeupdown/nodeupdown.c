@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.88 2003-12-05 23:38:50 achu Exp $
+ * $Id: nodeupdown.c,v 1.89 2003-12-09 01:37:57 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -156,7 +156,7 @@ int nodeupdown_handle_destroy(nodeupdown_t handle) {
 }  
 
 /* dotconf gmond_hostname(s) callback function */
-static const char *_cb_gmond_hostname(command_t *cmd, context_t *ctx) {
+static const char *_cb_gmond_hostnames(command_t *cmd, context_t *ctx) {
   struct nodeupdown_confdata *cd = (struct nodeupdown_confdata *)cmd->option->info;
   char *str;
   int i;
@@ -217,7 +217,7 @@ static const char *_cb_gendersfile(command_t *cmd, context_t *ctx) {
 static int _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd) {
   configfile_t *cf = NULL;
   configoption_t options[] = {
-    {NODEUPDOWN_CONF_GMOND_HOSTNAME, ARG_LIST, _cb_gmond_hostname, cd, 0},
+    {NODEUPDOWN_CONF_GMOND_HOSTNAME, ARG_LIST, _cb_gmond_hostnames, cd, 0},
     {NODEUPDOWN_CONF_GMOND_PORT, ARG_INT, _cb_gmond_port, cd, 0},
     {NODEUPDOWN_CONF_TIMEOUT_LEN, ARG_INT, _cb_timeout_len, cd, 0},
 #if HAVE_HOSTSFILE

@@ -1,3 +1,9 @@
+2003-12-08  Albert Chu  <chu11@llnl.gov>
+
+	* src/libnodeupdown/nodeupdown.c,
+	src/libnodeupdown/nodeupdown_common.h, man/nodeupdown.conf.5.in:
+	Renamed gmond_hostname to gmond_hostnames.
+	
 2003-12-05  Albert Chu  <chu11@llnl.gov>
 
 	Added configuration file error

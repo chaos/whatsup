@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown.conf.5.in,v 1.2 2003-12-03 23:00:51 achu Exp $
+\."$Id: nodeupdown.conf.5.in,v 1.3 2003-12-09 01:37:57 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -23,7 +23,7 @@ An example configuration file is shown below.
 .if @WITH_HOSTSFILE@ \{
 # Nodeupdown configuration
 .br
-# gmond_hostname      localhost host2 host3
+# gmond_hostnames     localhost host2 host3
 .br
 # gmond_port          8649 
 .br
