@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.70 2003-11-08 16:55:16 achu Exp $
+ * $Id: whatsup.c,v 1.71 2003-11-08 17:01:21 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -460,7 +460,7 @@ int output_nodes(struct winfo *winfo, char *buf) {
     }
 
     /* start on the next line */
-    if (winfo.output == UP_AND_DOWN && winfo.list_type == NEWLINE)
+    if (winfo->output == UP_AND_DOWN && winfo->list_type == NEWLINE)
       fprintf(stdout, "\n");
 
     fprintf(stdout,"%s\n", tbuf);
@@ -522,19 +522,19 @@ int main(int argc, char **argv) {
 #endif
                            winfo.hostname, winfo.ip, winfo.port, 0) == -1) {
     fprintf(stderr, "main: nodeupdown_load_data(): %s\n", 
-	    nodeupdown_errormsg(winfo->handle)); 
+	    nodeupdown_errormsg(winfo.handle)); 
     goto cleanup;
   }
 
   /* get up nodes */
   if (winfo.output == UP_NODES || winfo.output == UP_AND_DOWN) {
-    if (get_nodes(winfo, UP_NODES, up_nodes, buflen, &up_count) == -1)
+    if (get_nodes(&winfo, UP_NODES, up_nodes, buflen, &up_count) == -1)
       goto cleanup;
   }
   
   /* get down nodes */
   if (winfo.output == DOWN_NODES || winfo.output == UP_AND_DOWN) {
-    if (get_nodes(winfo, DOWN_NODES, down_nodes, buflen, &down_count) == -1)
+    if (get_nodes(&winfo, DOWN_NODES, down_nodes, buflen, &down_count) == -1)
       goto cleanup;
   }
 
@@ -570,7 +570,7 @@ int main(int argc, char **argv) {
 
       fprintf(stdout, upfmt, up_count);
       
-      if (output_nodes(winfo, up_nodes) != 0)
+      if (output_nodes(&winfo, up_nodes) != 0)
         goto cleanup;
 
       /* handle odd situation with output formatting */
@@ -579,15 +579,15 @@ int main(int argc, char **argv) {
 
       fprintf(stdout, downfmt, down_count);
 
-      if (output_nodes(winfo, down_nodes) != 0)
+      if (output_nodes(&winfo, down_nodes) != 0)
         goto cleanup;
     }
     else if (winfo.output == UP_NODES) {
-      if (output_nodes(winfo, up_nodes) != 0)
+      if (output_nodes(&winfo, up_nodes) != 0)
         goto cleanup;
     }
     else {
-      if (output_nodes(winfo, down_nodes) != 0)
+      if (output_nodes(&winfo, down_nodes) != 0)
         goto cleanup;
     }
   }
