@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.19 2003-04-24 18:41:35 achu Exp $
+ * $Id: whatsup.c,v 1.20 2003-04-24 20:48:05 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -103,35 +103,40 @@ static int get_all_up_or_down_nodes(struct arginfo *,
                                     nodeupdown_t, 
                                     hostlist_t);
 
-static int output_nodes(struct arginfo *, hostlist_t);
+static int remove_nodes(struct arginfo *, hostlist_t);
+
+static int get_altnames(struct arginfo *, nodeupdown_t, hostlist_t *);
 
 static int get_up_or_down_nodes(struct arginfo *, 
                                 enum whatsup_output_type, 
                                 nodeupdown_t, 
                                 hostlist_t *);
 
+static int output_nodes(struct arginfo *, hostlist_t);
 
 /* usage
  * - output usage and exit
  */
 static void usage(void) {
-  fprintf(stderr,"Usage: whatsup [OPTIONS]... [NODES]...\n");
-  fprintf(stderr,"  -h         --help              Print help and exit\n");
-  fprintf(stderr,"  -V         --version           Print version and exit\n");
-  fprintf(stderr,"  -f STRING  --filename=STRING   Location of genders file (default=%s)\n", DEFAULT_GENDERS_FILE);
-  fprintf(stderr,"  -o STRING  --hostname=STRING   gmond server hostname (default=localhost)\n");
-  fprintf(stderr,"  -i STRING  --ip=STRING         gmond server IP address (default=127.0.0.1)\n");
-  fprintf(stderr,"  -p INT     --port=INT          gmond server port (default=%d)\n",GANGLIA_DEFAULT_XML_PORT);
-  fprintf(stderr,"  -b         --updown            List both up and down nodes (default)\n");
-  fprintf(stderr,"  -u         --up                List only up nodes\n");
-  fprintf(stderr,"  -d         --down              List only down nodes\n");
-  fprintf(stderr,"  -l         --hostlist          List nodes in hostlist format (default)\n");
-  fprintf(stderr,"  -c         --comma             List nodes in comma separated list\n");
-  fprintf(stderr,"  -n         --newline           List nodes in newline separated list\n");
-  fprintf(stderr,"  -s         --space             List nodes in space separated list\n");
-  fprintf(stderr,"  -a         --altnames          List nodes by alternate names (default=off)\n");
-  fprintf(stderr,"  -g STRING  --attribute=STRING  List only nodes with the specified genders attribute\n"); 
-  fprintf(stderr,"\n");
+  fprintf(stderr,
+          "Usage: whatsup [OPTIONS]... [NODES]...\n"
+          "  -h         --help              Print help and exit\n"
+          "  -V         --version           Print version and exit\n"
+          "  -f STRING  --filename=STRING   Location of genders file (default=%s)\n"
+          "  -o STRING  --hostname=STRING   gmond server hostname (default=localhost)\n"
+          "  -i STRING  --ip=STRING         gmond server IP address (default=127.0.0.1)\n"
+          "  -p INT     --port=INT          gmond server port (default=%d)\n"
+          "  -b         --updown            List both up and down nodes (default)\n"
+          "  -u         --up                List only up nodes\n"
+          "  -d         --down              List only down nodes\n"
+          "  -l         --hostlist          List nodes in hostlist format (default)\n"
+          "  -c         --comma             List nodes in comma separated list\n"
+          "  -n         --newline           List nodes in newline separated list\n"
+          "  -s         --space             List nodes in space separated list\n"
+          "  -a         --altnames          List nodes by alternate name (default=off)\n"
+          "  -g STRING  --attribute=STRING  List only nodes with a genders attribute\n" 
+          "\n",
+          DEFAULT_GENDERS_FILE, GANGLIA_DEFAULT_XML_PORT);
   exit(1);
 }
 
@@ -510,18 +515,14 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
       char *temp_char;
 
       if (strchr(argv[index],',') != NULL) {
-        while ((temp_char = strchr(argv[index],',')) != NULL) {
-          *temp_char = ' ';
-        }
-
-        temp_char = strtok(argv[index]," ");
+        temp_char = strtok(argv[index],",");
         while (temp_char != NULL) {
           if (hostlist_push_host(arginfo->nodes, temp_char) == 0) {
             output_error("hostlist_push_host() error", 
                          "hosts may have been input incorrectly");
             return -1;
           }
-          temp_char = strtok(NULL," ");
+          temp_char = strtok(NULL,",");
         }
       }
       else {
@@ -577,8 +578,8 @@ int check_if_nodes_are_up_or_down(struct arginfo *arginfo,
                                   enum whatsup_output_type output_type,
                                   nodeupdown_t handle, 
                                   hostlist_t nodes) {
-  hostlist_iterator_t iter;
-  char *str;
+  hostlist_iterator_t iter = NULL;
+  char *str = NULL;
   int ret;
 
   if ((iter = hostlist_iterator_create(arginfo->nodes)) == NULL) {
@@ -588,32 +589,43 @@ int check_if_nodes_are_up_or_down(struct arginfo *arginfo,
 
   while ((str = hostlist_next(iter)) != NULL) {
     if (output_type == WHATSUP_UP) {
-      ret = nodeupdown_is_node_up(handle, str);
+      if ((ret = nodeupdown_is_node_up(handle, str)) == -1) {
+        output_error("nodeupdown_is_node_up() error",
+                     nodeupdown_strerror(nodeupdown_errnum(handle))); 
+        goto cleanup;
+      }
     }
     else {
-      ret = nodeupdown_is_node_down(handle, str);
+      if ((ret = nodeupdown_is_node_down(handle, str)) == -1) {
+        output_error("nodeupdown_is_node_down() error",
+                     nodeupdown_strerror(nodeupdown_errnum(handle))); 
+        goto cleanup;
+      }
     }
 
     if (ret == 1) {
       if (hostlist_push_host(nodes, str) == 0) {
-        free(str);
-        hostlist_iterator_destroy(iter);
         output_error("hostlist_push_host() error", NULL);
-        return -1;
+        goto cleanup;
       }
     }
-    else if (ret == -1) {
-      hostlist_iterator_destroy(iter);
-      output_error("nodeupdown_is_node_up/down() error",
-                   nodeupdown_strerror(nodeupdown_errnum(handle))); 
-      return -1;
-    }
-                        
     free(str);
   }
   hostlist_iterator_destroy(iter);
 
   return 0;
+
+ cleanup:
+
+  if (str != NULL) {
+    free(str);
+  }
+
+  if (iter != NULL) {
+    hostlist_iterator_destroy(iter);
+  }
+
+  return -1;
 }
 
 /* get_all_up_or_down_nodes
@@ -657,10 +669,190 @@ int get_all_up_or_down_nodes(struct arginfo *arginfo,
     }
   } while (nodeupdown_errnum(handle) == NODEUPDOWN_ERR_OVERFLOW); 
   
-  
   (void)hostlist_push(nodes, str); 
   free(str);
   return 0;
+}
+
+int remove_nodes(struct arginfo *arginfo, 
+                 hostlist_t nodes) {
+
+  genders_t genders_handle = NULL;
+  hostlist_iterator_t iter = NULL;
+  char *nodename = NULL;
+  int retval; 
+
+  if ((genders_handle = genders_handle_create()) == NULL) {
+    output_error("genders_handle_create() error", NULL);
+    goto cleanup;
+  }
+
+  if (genders_load_data(genders_handle, arginfo->genders_filename) == -1) {
+    output_error("genders_load_data() error", 
+                 genders_strerror(genders_errnum(genders_handle)));
+    goto cleanup;
+  }
+
+  if ((iter = hostlist_iterator_create(nodes)) == NULL) {
+    output_error("hostlist_iterator_create() error", NULL);
+    goto cleanup;
+  }
+
+  while ((nodename = hostlist_next(iter)) != NULL) {
+    if ((retval = genders_testattr(genders_handle, nodename, 
+                                   arginfo->genders_attribute, NULL, 0)) == -1) {
+      output_error("genders_testattr() error", 
+                   genders_strerror(genders_errnum(genders_handle)));
+      goto cleanup;
+    }
+    
+    if (retval == 0) {
+      if (hostlist_remove(iter) == 0) {
+        output_error("hostlist_remove() error", NULL);
+        goto cleanup;
+      }
+    }
+
+    free(nodename);
+  }
+  nodename = NULL;
+  
+  if (genders_handle_destroy(genders_handle) == -1) {
+    output_error("genders_handle_destroy() error", 
+                 genders_strerror(genders_errnum(genders_handle)));
+    goto cleanup;
+  }
+  genders_handle = NULL;
+
+  hostlist_iterator_destroy(iter);
+
+  return 0;
+
+ cleanup:
+
+  if (iter != NULL) {
+    hostlist_iterator_destroy(iter);
+  }
+  if (genders_handle != NULL) {
+    (void)genders_handle_destroy(genders_handle);
+  }
+  if (nodename != NULL) {
+    free(nodename);
+  }
+
+  return -1;
+}
+
+
+int get_altnames(struct arginfo *arginfo, 
+                 nodeupdown_t handle, 
+                 hostlist_t *nodes) {
+
+  hostlist_t alternate_nodes = NULL; 
+  char *src = NULL;
+  char *dest = NULL;
+  int dest_len = 0;
+
+  if ((src = get_hostlist_ranged_string(*nodes)) == NULL) {
+    output_error("get_hostlist_ranged_string()", NULL);
+    goto cleanup;
+  }
+
+  do {
+    free(dest);
+    dest_len += WHATSUP_BUFFERLEN;
+    if ((dest = (char *)malloc(dest_len)) == NULL) {
+      output_error("out of memory", NULL);
+      goto cleanup;
+    }
+    memset(dest, '\0', WHATSUP_BUFFERLEN);
+    
+    if (nodeupdown_convert_string_to_altnames(handle, src, dest, dest_len) == -1) {
+      output_error("nodeupdown_convert_string_to_altnames() error", NULL);
+      goto cleanup;
+    }
+  } while (nodeupdown_errnum(handle) == NODEUPDOWN_ERR_OVERFLOW); 
+    
+  if ((alternate_nodes = hostlist_create(dest)) == NULL) {
+    output_error("hostlist_create() error", NULL);
+    goto cleanup;
+  }
+
+  hostlist_destroy(*nodes);
+  *nodes = alternate_nodes;
+
+  free(src);
+  free(dest);
+  return 0;
+
+ cleanup:
+
+  if (src != NULL) {
+    free(src);
+  }
+  if (dest != NULL) {
+    free(dest);
+  }
+  if (alternate_nodes != NULL) {
+    hostlist_destroy(alternate_nodes);
+  }
+
+  return -1;
+}
+
+/* get_up_or_down_nodes
+ * - a wrapper function used to avoid duplicate code.
+ */
+int get_up_or_down_nodes(struct arginfo *arginfo, 
+                         enum whatsup_output_type output_type, 
+                         nodeupdown_t handle, 
+                         hostlist_t *nodes) {
+  
+  *nodes = NULL;
+
+  if ((*nodes = hostlist_create(NULL)) == NULL) {
+    goto cleanup;
+  }
+
+  if (hostlist_count(arginfo->nodes) > 0) {
+    if (check_if_nodes_are_up_or_down(arginfo, 
+                                      output_type, 
+                                      handle, 
+                                      *nodes) != 0) {
+      goto cleanup;
+    }
+  }
+  else {
+    /* get all up or down nodes */
+    if (get_all_up_or_down_nodes(arginfo, 
+                                 output_type, 
+                                 handle, 
+                                 *nodes) != 0) {
+      goto cleanup;
+    }
+  }
+
+  if (arginfo->genders_attribute != NULL) {
+    if (remove_nodes(arginfo, *nodes) == -1) {
+      goto cleanup;
+    }
+  }
+
+  if (arginfo->list_altnames == WHATSUP_ON) {
+    if (get_altnames(arginfo, handle, nodes) == -1) {
+      goto cleanup;
+    }
+  }
+
+  return 0;
+
+ cleanup:
+
+  if (*nodes != NULL) {
+    hostlist_destroy(*nodes);
+  }
+
+  return -1;
 }
 
 /* output_nodes
@@ -734,156 +926,9 @@ int output_nodes(struct arginfo *arginfo, hostlist_t nodes) {
       hostlist_iterator_destroy(iter);
     }
     fprintf(stdout,"\n");
-
   }
 
   return 0;
-}
-
-/* get_up_or_down_nodes
- * - a wrapper function used to avoid duplicate code.
- */
-int get_up_or_down_nodes(struct arginfo *arginfo, 
-                         enum whatsup_output_type output_type, 
-                         nodeupdown_t handle, 
-                         hostlist_t *nodes) {
-
-  genders_t genders_handle = NULL;
-  hostlist_t alternate_nodes = NULL; 
-  hostlist_iterator_t iter = NULL;
-  char *nodename = NULL;
-  char *src = NULL;
-  char *dest = NULL;
-  int dest_len = 0;
-  int retval; 
-
-  if (hostlist_count(arginfo->nodes) > 0) {
-    if (check_if_nodes_are_up_or_down(arginfo, 
-                                      output_type, 
-                                      handle, 
-                                      *nodes) != 0) {
-      return -1;
-    }
-  }
-  else {
-    /* get all up or down nodes */
-    if (get_all_up_or_down_nodes(arginfo, 
-                                 output_type, 
-                                 handle, 
-                                 *nodes) != 0) {
-      return -1;
-    }
-  }
-  
-  /* remove nodes that don't have a genders attribute */
-  if (arginfo->genders_attribute != NULL) {
-    if ((genders_handle = genders_handle_create()) == NULL) {
-      output_error("genders_handle_create() error", NULL);
-      goto cleanup;
-    }
-
-    if (genders_load_data(genders_handle, arginfo->genders_filename) == -1) {
-      output_error("genders_load_data() error", 
-                   genders_strerror(genders_errnum(genders_handle)));
-      goto cleanup;
-    }
-
-    if ((iter = hostlist_iterator_create(*nodes)) == NULL) {
-      output_error("hostlist_iterator_create() error", NULL);
-      goto cleanup;
-    }
-
-    while ((nodename = hostlist_next(iter)) != NULL) {
-      if ((retval = genders_testattr(genders_handle, nodename, 
-                                     arginfo->genders_attribute, NULL, 0)) == -1) {
-        output_error("genders_testattr() error", 
-                     genders_strerror(genders_errnum(genders_handle)));
-        goto cleanup;
-      }
-
-      if (retval == 0) {
-        if (hostlist_remove(iter) == 0) {
-          output_error("hostlist_remove() error", NULL);
-          goto cleanup;
-        }
-      }
-
-      free(nodename);
-    }
-    nodename = NULL;
-
-    if (genders_handle_destroy(genders_handle) == -1) {
-      output_error("genders_handle_destroy() error", 
-                   genders_strerror(genders_errnum(genders_handle)));
-      goto cleanup;
-    }
-    genders_handle = NULL;
-
-    hostlist_iterator_destroy(iter);
-    iter = NULL;
-  }
-
-  /* get alternate names?? */
-  if (arginfo->list_altnames == WHATSUP_ON) {
-    
-    if ((src = get_hostlist_ranged_string(*nodes)) == NULL) {
-      output_error("get_hostlist_ranged_string()", NULL);
-      goto cleanup;
-    }
-
-    do {
-      free(dest);
-      dest_len += WHATSUP_BUFFERLEN;
-      if ((dest = (char *)malloc(dest_len)) == NULL) {
-        output_error("out of memory", NULL);
-        goto cleanup;
-      }
-      memset(dest, '\0', WHATSUP_BUFFERLEN);
-      
-      if (nodeupdown_convert_string_to_altnames(handle, src, dest, dest_len) == -1) {
-        output_error("nodeupdown_convert_string_to_altnames() error", NULL);
-        goto cleanup;
-      }
-    } while (nodeupdown_errnum(handle) == NODEUPDOWN_ERR_OVERFLOW); 
-    
-    
-    if ((alternate_nodes = hostlist_create(dest)) == NULL) {
-      output_error("hostlist_create() error", NULL);
-      goto cleanup;
-    }
-
-    hostlist_destroy(*nodes);
-    *nodes = alternate_nodes;
-    alternate_nodes = NULL;
-    free(src);
-    free(dest);
-    src = NULL;
-    dest = NULL;
-  }    
-
-  return 0;
-
- cleanup:
-  
-  if (src != NULL) {
-    free(src);
-  }
-  if (dest != NULL) {
-    free(dest);
-  }
-  if (nodename != NULL) {
-    free(nodename);
-  }
-  if (alternate_nodes != NULL) {
-    hostlist_destroy(alternate_nodes);
-  }
-  if (iter != NULL) {
-    hostlist_iterator_destroy(iter);
-  }
-  if (genders_handle != NULL) {
-    (void)genders_handle_destroy(genders_handle);
-  }
-  return -1;
 }
 
 int main(int argc, char **argv) {
@@ -923,12 +968,8 @@ int main(int argc, char **argv) {
   }
 
   /* get up nodes */
-  if (arginfo->output_type == WHATSUP_UP ||
+  if (arginfo->output_type == WHATSUP_UP || 
       arginfo->output_type == WHATSUP_UP_AND_DOWN) {
-    if ((up_nodes = hostlist_create(NULL)) == NULL) {
-      goto cleanup;
-    }
-    
     if (get_up_or_down_nodes(arginfo, 
                              WHATSUP_UP, 
                              handle, 
@@ -938,12 +979,8 @@ int main(int argc, char **argv) {
   }
 
   /* get down nodes */
-  if (arginfo->output_type == WHATSUP_DOWN ||
+  if (arginfo->output_type == WHATSUP_DOWN || 
       arginfo->output_type == WHATSUP_UP_AND_DOWN) {
-    if ((down_nodes = hostlist_create(NULL)) == NULL) {
-      goto cleanup;
-    }
-    
     if (get_up_or_down_nodes(arginfo, 
                              WHATSUP_DOWN, 
                              handle, 
@@ -981,13 +1018,16 @@ int main(int argc, char **argv) {
   }
 
   cleanup_struct_arginfo(arginfo);
+
   (void)nodeupdown_handle_destroy(handle);
+
   if (up_nodes != NULL) {
     hostlist_destroy(up_nodes);
   }
   if (down_nodes != NULL) {
     hostlist_destroy(down_nodes);
   }
+
   exit(0);
 
  cleanup:
@@ -998,11 +1038,6 @@ int main(int argc, char **argv) {
   if (handle != NULL) {
     (void)nodeupdown_handle_destroy(handle);
   }
-  if (up_nodes != NULL) {
-    hostlist_destroy(up_nodes);
-  }
-  if (down_nodes != NULL) {
-    hostlist_destroy(down_nodes);
-  }
+
   exit(1);
 }
