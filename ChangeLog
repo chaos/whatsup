@@ -1,3 +1,8 @@
+2003-12-30  Albert Chu  <chu11@llnl.gov>
+
+	* src/whatsup/whatsup.c (cmdline_parse): All command line option
+	errors now output a little commandline option error message.
+
 2003-12-29  Albert Chu  <chu11@llnl.gov>
 
 	* DISCLAIMER: New file.

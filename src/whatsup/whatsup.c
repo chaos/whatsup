@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.77 2003-12-29 19:02:02 achu Exp $
+ *  $Id: whatsup.c,v 1.78 2003-12-30 17:02:00 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -230,12 +230,8 @@ static int cmdline_parse(struct winfo *winfo, int argc, char **argv) {
       winfo->altnames = WHATSUP_TRUE;
       break;
 #endif 
-    case '?':
-      fprintf(stderr, "Usage: invalid command line option entered\n");
-      return -1;
-      break;
     default:
-      fprintf(stderr, "Error: getopt() error\n");
+      fprintf(stderr, "Error: command line option error\n");
       return -1;
       break;
     }
