@@ -1,10 +1,12 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.4 2003-02-25 02:03:01 achu Exp $
+## $Id: Makefile.am,v 1.5 2003-02-25 16:29:35 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
 
-AM_CFLAGS = -I$(top_srcdir)/src/libnodeupdown
+include $(top_srcdir)/config/Make-inc.mk
+
+CPPFLAGS = -I$(top_srcdir)/src/libnodeupdown
 
 LDADD = $(top_builddir)/src/libnodeupdown/libnodeupdown.la
 
