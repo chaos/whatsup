@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_load_data.3,v 1.10 2003-04-30 18:47:32 achu Exp $
+\."$Id: nodeupdown_load_data.3,v 1.11 2003-04-30 21:32:59 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -70,6 +70,9 @@ Internal network failure.
 .B NODEUPDOWN_ERR_ISLOADED
 .BR nodeupdown_load_data (3) 
 has already been called with \fIhandle\fR.  
+.TP
+.B NODEUPDOWN_ERR_PARAMETERS
+An incorrect parameter has been passed in.
 .TP
 .B NODEUPDOWN_ERR_OUTMEM
 .BR malloc (3)
