@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown.h,v 1.11 2003-03-18 01:23:16 achu Exp $
+ *  $Id: nodeupdown.h,v 1.12 2003-03-18 18:21:32 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h,v $
  *    
  */
@@ -20,18 +20,19 @@
 #define NODEUPDOWN_ERR_TIMEOUT            4 /* network connect timeout */
 #define NODEUPDOWN_ERR_ADDRESS            5 /* network address error */
 #define NODEUPDOWN_ERR_NETWORK            6 /* network error */
-#define NODEUPDOWN_ERR_LOAD               7 /* data not loaded */
-#define NODEUPDOWN_ERR_OVERFLOW           8 /* overflow on list passed in */
-#define NODEUPDOWN_ERR_PARAMETERS         9 /* incorrect parameters passed in */
-#define NODEUPDOWN_ERR_NULLPTR           10 /* null pointer in list */
-#define NODEUPDOWN_ERR_OUTMEM            11 /* out of memory */
-#define NODEUPDOWN_ERR_NODE_CONFLICT     12 /* conflict between gmond & genders */
-#define NODEUPDOWN_ERR_NOTFOUND          13 /* node not found */ 
-#define NODEUPDOWN_ERR_GENDERS           14 /* internal genders error */
-#define NODEUPDOWN_ERR_GANGLIA           15 /* internal ganglia error */
-#define NODEUPDOWN_ERR_HOSTLIST          16 /* internal hostlist error */
-#define NODEUPDOWN_ERR_MAGIC             17 /* magic number error */
-#define NODEUPDOWN_ERR_INTERNAL          18 /* internal system error */
+#define NODEUPDOWN_ERR_ISLOADED           7 /* data already loaded */
+#define NODEUPDOWN_ERR_LOAD               8 /* data not loaded */
+#define NODEUPDOWN_ERR_OVERFLOW           9 /* overflow on list passed in */
+#define NODEUPDOWN_ERR_PARAMETERS        10 /* incorrect parameters passed in */
+#define NODEUPDOWN_ERR_NULLPTR           11 /* null pointer in list */
+#define NODEUPDOWN_ERR_OUTMEM            12 /* out of memory */
+#define NODEUPDOWN_ERR_NODE_CONFLICT     13 /* conflict between gmond & genders */
+#define NODEUPDOWN_ERR_NOTFOUND          14 /* node not found */ 
+#define NODEUPDOWN_ERR_GENDERS           15 /* internal genders error */
+#define NODEUPDOWN_ERR_GANGLIA           16 /* internal ganglia error */
+#define NODEUPDOWN_ERR_HOSTLIST          17 /* internal hostlist error */
+#define NODEUPDOWN_ERR_MAGIC             18 /* magic number error */
+#define NODEUPDOWN_ERR_INTERNAL          19 /* internal system error */
 
 typedef struct nodeupdown *nodeupdown_t;
 
