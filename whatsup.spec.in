@@ -8,10 +8,23 @@ Source: %{name}-%{version}-%{release}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}
 
 %description
-Whatsup is a cluster node up/down detection utility.  Node up/down
-information is calculated based on information gathered from ganglia
-and a master list of cluster nodes.  C and perl libraries are also
-supplied for detecting up/down nodes.
+Whatsup is a cluster node up/down detection utility.
+
+%package genders
+Summary: whatsup genders modules package
+Group: System Environment/Base
+Requires: whatsup
+Requires: genders >= 1.2
+%description genders
+Genders modules packages.
+
+%package gendersllnl
+Summary: whatsup gendersllnl modules package
+Group: System Environment/Base
+Requires: whatsup
+Requires: gendersllnl
+%description genders
+Gendersllnl modules packages.
 
 %prep
 %setup -q -n %{name}-%{version}-%{release}
@@ -44,3 +57,13 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_libdir}/libnodeupdown.*
 %{_perldir}/*
 %{_mandir}/*
+
+%files genders
+%defattr(-,root,root)
+%{_libdir}/nodeupdown/*genders.*
+
+%files gendersllnl
+%defattr(-,root,root)
+%{_libdir}/nodeupdown/*gendersllnl.*
+%{_libdir}/whatsup/*gendersllnl.*
+
