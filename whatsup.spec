@@ -1,4 +1,4 @@
-# $Id: whatsup.spec,v 1.29 2003-08-18 16:28:01 achu Exp $
+# $Id: whatsup.spec,v 1.30 2003-08-19 01:00:02 achu Exp $
 
 Name:           whatsup
 Version:        1.1
@@ -88,6 +88,7 @@ fi
 /usr/man/man1/
 /usr/man/man3/
 /usr/man/man5/
+/usr/share/man/
 
 
 
