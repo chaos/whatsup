@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.97 2004-01-12 22:56:06 achu Exp $
+ *  $Id: nodeupdown.c,v 1.98 2004-01-12 23:15:16 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -175,7 +175,14 @@ int nodeupdown_handle_destroy(nodeupdown_t handle) {
   return 0;
 }  
 
-static CONFFILE_OPTION_FUNC(_gmond_hostnames) {
+static int _gmond_hostnames(conffile_t cf,
+                            char *optionname,
+                            int option_type,
+                            struct conffile_data *data,
+                            void *option_ptr,
+                            int option_ptr_arg,
+                            void *app_ptr,
+                            int app_ptr_arg) {
   List l = (List)option_ptr;
   char *str;
   int i;

@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.11 2004-01-10 00:48:45 achu Exp $
+## $Id: Makefile.am,v 1.12 2004-01-12 23:15:16 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -28,14 +28,11 @@ lib_LTLIBRARIES = libnodeupdown.la
 
 libnodeupdown_la_SOURCES = nodeupdown.c nodeupdown_masterlist.c
 
-libnodeupdown_la_LIBADD = ../libcommon/libcommon.la ../libdotconf/libdotconf.la ../libexpat/libexpat.la $(GENDERS_LIBS) $(GENDERSLLNL_LIBS)
+libnodeupdown_la_LIBADD = ../libcommon/libcommon.la ../libexpat/libexpat.la $(GENDERS_LIBS) $(GENDERSLLNL_LIBS)
 
 libnodeupdown_la_LDFLAGS = -version-info $(current):$(rev):$(age)
 
 ../libcommon/libcommon.la: force-dependency-check
-	@cd `dirname $@` && make `basename $@`
-
-../libdotconf/libdotconf.la: force-dependency-check
 	@cd `dirname $@` && make `basename $@`
 
 ../libexpat/libexpat.la: force-dependency-check
