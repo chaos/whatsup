@@ -1,3 +1,7 @@
+2004-12-29  Albert Chu  <chu11@llnl.gov>
+	 
+        * Makefile.am: distcheck fix.
+
 2004-12-18  Albert Chu  <chu11@llnl.gov>
 
 	* whatsup.spec.in, configure.ac, src/Libnodeupdown/Makefile.am,
