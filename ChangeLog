@@ -1,6 +1,8 @@
 2003-08-18  Albert Chu  <chu11@llnl.gov>
 
-	* Added src/Nodeupdown Perl OO API to nodeupdown.
+	* src/Nodeupdown: Added Nodeupdown Perl OO API to nodeupdown.
+
+	* man/: Replaced "Release 1.2" with "August 2003" in all manpages. 
 	
 2003-08-15  Albert Chu  <chu11@llnl.gov>
 
