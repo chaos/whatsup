@@ -9,10 +9,19 @@
 
 	* src/libcommon/Makefile.am: Updated for new files.
 	
-	* configure.ac: Re-work for use with dynamically loadable modules.
-
 	* bootstrap: Renamed to autogen.sh
-	
+
+	* man/libnodeupdown.3.in: Renamd to libnodeupdown.3, removed
+	masterlist manpage conditionals.
+
+	* man/nodeupdown_load_data.3.in: Renamd to nodeupdown_load_data.3,
+	removed masterlist manpage conditionals.
+
+	* man/nodeupdown_hostsfile.conf.5.in: Removed file.
+
+	* configure.ac: Re-work for use with dynamically loadable modules.
+	Adjusted for .in file changes.
+
 2005-03-30  Albert Chu  <chu11@llnl.gov>
 
 	Preparing to support multiple backend technologies for whatsup.

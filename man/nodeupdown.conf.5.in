@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown.conf.5.in,v 1.9 2005-03-31 00:27:38 achu Exp $
+\."$Id: nodeupdown.conf.5.in,v 1.10 2005-03-31 21:04:14 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -26,7 +26,8 @@
 
 .TH NODEUPDOWN.CONF 5 "November 2003" "LLNL" "LIBNODEUPDOWN"
 .SH NAME
-nodeupdown.conf \- specify alternate default values to nodeupdown_load_data(3)
+nodeupdown.conf \- specify alternate default values for the nodeupdown
+                   library
 .SH DESCRIPTION
 
 Through a configuration file, system administrators may override the
@@ -49,55 +50,56 @@ character, and lines can be continued on the next using backslash
 ("\\").
 
 .TP
-.I gmond_hostnames  host1 host2 host3 ...
-Specify the gmond hostname to use.  Multiple hostnames can be listed
-up to a maximum of 8.
+.I hostnames host1 host2 host3 ...
+Specify the hostname of the server to reach.  Multiple hostnames can
+be listed up to a maximum of 8.
 .TP
-.I gmond_port       port
-Specify the gmond port.
+.I port num
+Specify the port.
 .TP
-.I timeout_len      seconds
+.I timeout_len seconds
 Specify the timeout length in seconds.
-
-.if @MANPAGE_HOSTSFILE@ \{
 .TP
-.I hostsfile        path
-Specify the default hostsfile path.
-\}
+.I masterlist_module ( name | filename | path)
+Specify the masterlist module to use.  Masterlist modules are
+first searched for in the nodeupdown package library, 
+@NODEUPDOWN_MODULE_DIR@.  They are then searched for in the
+current directory.
 
-.if (@MANPAGE_GENDERS@ : @MANPAGE_GENDERSLLNL@) \{
+The following masterlist modules are available by default:
+
+.if @MANPAGE_GENDERSLLNL@ \{
+gendersllnl
+  
+\}
+  
+.if @MANPAGE_GENDERS@ \{
+genders
+  
+\}
+  
+hostsfile
+  
+none
 .TP
-.I gendersfile      path
-Specify the default genders file path.
-\}
+.I masterlist_module_options str
+Specify arguments to pass to the masterlist module.  The arguments
+are typically passed as key=value pairs.
 
-.SH EXAMPLE
+The following parse options are currently supported by the default
+masterlist modules:
 
-\."I know this stinks, but things don't seem to align properly if you
-\."do it the smart way.  Someday I'll learn to use groff for real.
-
-.if @MANPAGE_HOSTSFILE@ \{
-# Nodeupdown configuration
-.br
-gmond_hostnames     mymachine1
-.br
-gmond_port          8689
-.br
-timeout_len         30
-.br
-hostsfile           /etc/hostsfile2
+.if @MANPAGE_GENDERSLLNL@ \{
+gendersllnl: filename=<file> - Specify the path to the genders database.
+  
 \}
-.if (@MANPAGE_GENDERS@ : @MANPAGE_GENDERSLLNL@) \{
-# Nodeupdown configuration
-.br
-gmond_hostnames     mymachine1
-.br
-gmond_port          8689
-.br
-timeout_len         30
-.br
-gendersfile         /etc/genders2
+  
+.if @MANPAGE_GENDERS@ \{
+genders: filename=<file> - Specify the path to the genders database.
+  
 \}
+  
+hostsfile: filename=<file> - Specify the path to the hostsfile database.
 
 .br
 .SH FILES

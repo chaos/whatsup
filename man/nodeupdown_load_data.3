@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown_load_data.3.in,v 1.14 2005-03-31 00:27:38 achu Exp $
+\."$Id: nodeupdown_load_data.3,v 1.19 2005-03-31 21:04:14 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -29,15 +29,7 @@ nodeupdown_load_data \- load data from ganglia
 .SH SYNOPSIS
 .B #include <nodeupdown.h>
 .sp
-.if @MANPAGE_NOMASTERLIST@ \{
 .BI "int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname, int gmond_port, int timeout_len, void *masterlist);"
-\}
-.if @MANPAGE_HOSTSFILE@ \{
-.BI "int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname, int gmond_port, int timeout_len, char *hostsfile);"
-\}
-.if (@MANPAGE_GENDERS@ : @MANPAGE_GENDERSLLNL@) \{
-.BI "int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname, int gmond_port, int timeout_len, char *gendersfile);"
-\}
 .br
 .SH DESCRIPTION
 \fBnodeupdown_load_data()\fR loads data from ganglia so
@@ -158,6 +150,3 @@ An internal system error has occurred.
 libnodeupdown(3), nodeupdown_handle_create(3),
 nodeupdown_handle_destroy(3), nodeupdown_errnum(3),
 nodeupdown_strerror(3), nodeupdown.conf(5)
-.if @MANPAGE_HOSTSFILE@ \{
-nodeupdown_hostsfile.conf(5)
-\}

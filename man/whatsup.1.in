@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: whatsup.1.in,v 1.13 2005-03-31 00:27:38 achu Exp $
+\."$Id: whatsup.1.in,v 1.14 2005-03-31 21:04:14 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -101,16 +101,6 @@ List nodes in newline separated list
 .TP
 .B \-s, \-\-space
 List nodes in space separated list
-.if @MANPAGE_HOSTSFILE@ \{
-.TP
-.B \-f \fISTRING\fR, \fB\-\-filename\fR=\fISTRING\fR
-Location of master list file (default=@NODEUPDOWN_MASTERLIST_DEFAULT@)
-\}
-.if (@MANPAGE_GENDERS@ : @MANPAGE_GENDERSLLNL@) \{
-.TP
-.B \-f \fISTRING\fR, \fB\-\-filename\fR=\fISTRING\fR
-Location of genders file (default=@NODEUPDOWN_MASTERLIST_DEFAULT@)
-\}
 .if @MANPAGE_GENDERSLLNL@ \{
 .TP
 .B \-a, \-\-altnames
