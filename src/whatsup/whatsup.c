@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.8 2003-03-12 18:03:50 achu Exp $
+ * $Id: whatsup.c,v 1.9 2003-03-12 18:05:58 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -453,7 +453,7 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
      * machine nams. Output error 
      */
     if (strchr(argv[index], '.') != NULL) {
-      output_error("ERROR: nodes must be listed in short hostname format", NULL);
+      output_error("nodes must be listed in short hostname format", NULL);
       return -1;
     }
 
