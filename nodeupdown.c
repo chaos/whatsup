@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.2 2003-02-20 01:40:17 achu Exp $
+ * $Id: nodeupdown.c,v 1.3 2003-02-21 01:24:25 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/nodeupdown.c,v $
  *    
  */
@@ -496,6 +496,8 @@ int nodeupdown_retrieve_gmond_data(nodeupdown_t handle) {
     return -1;
   }
 
+  hostlist_sort(handle->gmond_nodes);
+
   return 0;
 }
 
@@ -516,6 +518,8 @@ int nodeupdown_retrieve_gmond_up_nodes_data(nodeupdown_t handle) {
     return -1;
   }
 
+  hostlist_sort(handle->gmond_up_nodes);
+
   return 0;
 }
 
@@ -535,6 +539,8 @@ int nodeupdown_retrieve_gmond_down_nodes_data(nodeupdown_t handle) {
     handle->errnum = NODEUPDOWN_ERR_GANGLIA;
     return -1;
   }
+
+  hostlist_sort(handle->gmond_down_nodes);
 
   return 0;
 }
@@ -635,6 +641,8 @@ int nodeupdown_convert_up_nodes_to_standard_hostnames(nodeupdown_t handle) {
   free(genders_nodes[0]);
   free(genders_nodes);
 
+  hostlist_sort(handle->whatsup_up_nodes);
+
   return 0;
 
  cleanup: 
@@ -724,6 +732,8 @@ int nodeupdown_convert_down_nodes_to_standard_hostnames(nodeupdown_t handle) {
 
   free(genders_nodes[0]);
   free(genders_nodes);
+
+  hostlist_sort(handle->whatsup_down_nodes);
 
   return 0;
 
@@ -844,6 +854,8 @@ int nodeupdown_compare_genders_to_gmond_down_nodes(nodeupdown_t handle) {
     handle->errnum = NODEUPDOWN_ERR_GENDERS;
     goto cleanup;
   }
+
+  hostlist_sort(handle->whatsup_down_nodes);
 
   return 0;
 

@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.2 2003-02-20 01:40:17 achu Exp $
+ * $Id: whatsup.c,v 1.3 2003-02-21 01:24:25 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/whatsup.c,v $
  *    
  */
@@ -592,7 +592,7 @@ int check_if_nodes_are_up_or_down(struct arginfo *arginfo,
     }
     else if (ret == -1) {
       hostlist_iterator_destroy(iter);
-      output_error("nodeupdown_is_node_down",
+      output_error("nodeupdown_is_node_up/down",
 		   nodeupdown_strerror(nodeupdown_errnum(handle))); 
       return -1;
     }
@@ -634,9 +634,12 @@ int get_up_or_down_nodes(struct arginfo *arginfo,
 int output_nodes(struct arginfo *arginfo, hostlist_t nodes) {
 
   char *str = NULL;
-  int str_len;
+  int i, str_len, num_nodes;
   char break_type;
   hostlist_iterator_t iter;
+
+  /* sort nodes ahead of time */
+  hostlist_sort(nodes);
 
   if (arginfo->list_type == WHATSUP_HOSTLIST) {
     /* output nodes in hostlist format */
@@ -681,13 +684,24 @@ int output_nodes(struct arginfo *arginfo, hostlist_t nodes) {
       break;
     }
 
-    if ((iter = hostlist_iterator_create(nodes)) == NULL) {
-      output_error("hostlist_iterator_create", NULL);
+    if ((num_nodes = hostlist_count(nodes)) < 0) {
+      output_error("hostlist_count", NULL);
       return -1;
     }
 
-    while ((str = hostlist_next(iter)) != NULL) {
-      fprintf(stdout, "%s%c",str, break_type);
+    if (num_nodes > 0) {
+      if ((iter = hostlist_iterator_create(nodes)) == NULL) {
+	output_error("hostlist_iterator_create", NULL);
+	return -1;
+      }
+     
+      for (i = 0; i < (num_nodes - 1); i++) {
+	str = hostlist_next(iter);
+	fprintf(stdout, "%s%c",str, break_type);
+	free(str);
+      }
+      str = hostlist_next(iter);
+      fprintf(stdout, "%s",str);
       free(str);
     }
     fprintf(stdout,"\n");
