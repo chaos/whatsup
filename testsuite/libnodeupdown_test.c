@@ -1,5 +1,5 @@
 /*
- * $Id: libnodeupdown_test.c,v 1.6 2003-03-11 20:18:46 achu Exp $
+ * $Id: libnodeupdown_test.c,v 1.7 2003-03-12 01:28:57 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/testsuite/libnodeupdown_test.c,v $
  *    
  */
@@ -402,9 +402,9 @@ void cleanup_test_env(struct test_env *test_env) {
 }
 
 /* compare_nodes_to_string
- * - compare the set of nodes to the string.  Whatever nodes
- *   are indicated should be in the string, and whatever nodes
- *   are not indicated must not be in the list.
+ * - compare the set of nodes to the nodes indicated in the string.  
+ *   Whatever nodes are indicated should be in the string, and whatever 
+ *   nodes are not indicated must not be in the string.
  * - returns 1 if nodes and list match, 0 if not, -1 on error.
  */ 
 int compare_nodes_to_string(struct test_env *test_env, 
@@ -475,59 +475,34 @@ int compare_nodes_to_list(struct test_env *test_env,
 			  int nodes) {
   int retval = 1;
 
-  if (compare_nodes_to_list_helper(test_env, 
-				   list, 
-				   len, 
-				   nodes, 
-				   NODE_A, 
-				   test_env->nodes[0]) == 0) {
+  if (compare_nodes_to_list_helper(test_env, list, len, nodes, 
+				   NODE_A, test_env->nodes[0]) == 0) {
     retval = 0;
   }
 
-  if (compare_nodes_to_list_helper(test_env,
-				   list, 
-				   len,
-				   nodes,
-				   NODE_B,
-				   test_env->nodes[1]) == 0) {
+  if (compare_nodes_to_list_helper(test_env, list, len, nodes,
+				   NODE_B, test_env->nodes[1]) == 0) {
     retval = 0;
   }
 
-  if (compare_nodes_to_list_helper(test_env,
-				   list, 
-				   len,
-				   nodes,
-				   NODE_C,
-				   test_env->nodes[2]) == 0) {
+  if (compare_nodes_to_list_helper(test_env, list, len, nodes,
+				   NODE_C, test_env->nodes[2]) == 0) {
     retval = 0;
   }
-  if (compare_nodes_to_list_helper(test_env, 
-				   list, 
-				   len, 
-				   nodes, 
-				   NODE_A_ALT, 
-				   test_env->altnodes[0]) == 0) {
+  if (compare_nodes_to_list_helper(test_env, list, len, nodes, 
+				   NODE_A_ALT, test_env->altnodes[0]) == 0) {
     retval = 0;
   }
 
-  if (compare_nodes_to_list_helper(test_env,
-				   list, 
-				   len,
-				   nodes,
-				   NODE_B_ALT,
-				   test_env->altnodes[1]) == 0) {
+  if (compare_nodes_to_list_helper(test_env, list, len, nodes,
+				   NODE_B_ALT, test_env->altnodes[1]) == 0) {
     retval = 0;
   }
 
-  if (compare_nodes_to_list_helper(test_env,
-				   list, 
-				   len,
-				   nodes,
-				   NODE_C_ALT,
-				   test_env->altnodes[2]) == 0) {
+  if (compare_nodes_to_list_helper(test_env, list, len, nodes,
+				   NODE_C_ALT, test_env->altnodes[2]) == 0) {
     retval = 0;
   }
-
 
   return retval;
 }
@@ -536,7 +511,10 @@ int compare_nodes_to_list(struct test_env *test_env,
  * - handles common operation of compare_nodes_to_hostlist
  * - checks is "node_to_check" is in the hostlist
  */
-int compare_nodes_to_hostlist_helper(hostlist_t hl, int nodes, int node_to_check, char *nodename) {
+int compare_nodes_to_hostlist_helper(hostlist_t hl, 
+				     int nodes, 
+				     int node_to_check, 
+				     char *nodename) {
   int retval = 1;
 
   if (nodes & node_to_check) {
@@ -566,9 +544,12 @@ int compare_nodes_to_hostlist(struct test_env *test_env,
   retval = compare_nodes_to_hostlist_helper(hl, nodes, NODE_A, test_env->nodes[0]);
   retval = compare_nodes_to_hostlist_helper(hl, nodes, NODE_B, test_env->nodes[1]);
   retval = compare_nodes_to_hostlist_helper(hl, nodes, NODE_C, test_env->nodes[2]);
-  retval = compare_nodes_to_hostlist_helper(hl, nodes, NODE_A_ALT, test_env->altnodes[0]);
-  retval = compare_nodes_to_hostlist_helper(hl, nodes, NODE_B_ALT, test_env->altnodes[1]);
-  retval = compare_nodes_to_hostlist_helper(hl, nodes, NODE_C_ALT, test_env->altnodes[2]);
+  retval = compare_nodes_to_hostlist_helper(hl, nodes, NODE_A_ALT, 
+					    test_env->altnodes[0]);
+  retval = compare_nodes_to_hostlist_helper(hl, nodes, NODE_B_ALT, 
+					    test_env->altnodes[1]);
+  retval = compare_nodes_to_hostlist_helper(hl, nodes, NODE_C_ALT, 
+					    test_env->altnodes[2]);
 
   return retval;
 }
@@ -580,52 +561,22 @@ int compare_nodes_to_hostlist(struct test_env *test_env,
 int map_nodes_to_char_ptr(struct test_env *test_env, int nodes, char **ptr) {
 
   switch(nodes) {
-  case NODE_A:
-    *ptr = test_env->nodes[0];
-    break;
-  case NODE_B:
-    *ptr = test_env->nodes[1];
-    break;
-  case NODE_C:
-    *ptr = test_env->nodes[2];
-    break;
-  case NODE_AB:
-    *ptr = test_env->nodes_ab;
-    break;
-  case NODE_AC:
-    *ptr = test_env->nodes_ac;
-    break;
-  case NODE_BC:
-    *ptr = test_env->nodes_bc;
-    break;
-  case NODE_ABC:
-    *ptr = test_env->nodes_abc; 
-    break;
-  case NODE_A_ALT:
-    *ptr = test_env->altnodes[0];
-    break;
-  case NODE_B_ALT:
-    *ptr = test_env->altnodes[1];
-    break;
-  case NODE_C_ALT:
-    *ptr = test_env->altnodes[2];
-    break;
-  case NODE_AB_ALT:
-    *ptr = test_env->nodes_ab_alt;
-    break;
-  case NODE_AC_ALT:
-    *ptr = test_env->nodes_ac_alt;
-    break;
-  case NODE_BC_ALT:
-    *ptr = test_env->nodes_bc_alt;
-    break;
-  case NODE_ABC_ALT:
-    *ptr = test_env->nodes_abc_alt; 
-    break;
+  case NODE_A:          *ptr = test_env->nodes[0];        break;
+  case NODE_B:          *ptr = test_env->nodes[1];        break;
+  case NODE_C:          *ptr = test_env->nodes[2];        break;
+  case NODE_AB:         *ptr = test_env->nodes_ab;        break;
+  case NODE_AC:         *ptr = test_env->nodes_ac;        break;
+  case NODE_BC:         *ptr = test_env->nodes_bc;        break;
+  case NODE_ABC:        *ptr = test_env->nodes_abc;       break;
+  case NODE_A_ALT:      *ptr = test_env->altnodes[0];     break;
+  case NODE_B_ALT:      *ptr = test_env->altnodes[1];     break;
+  case NODE_C_ALT:      *ptr = test_env->altnodes[2];     break;
+  case NODE_AB_ALT:     *ptr = test_env->nodes_ab_alt;    break;
+  case NODE_AC_ALT:     *ptr = test_env->nodes_ac_alt;    break;
+  case NODE_BC_ALT:     *ptr = test_env->nodes_bc_alt;    break;
+  case NODE_ABC_ALT:    *ptr = test_env->nodes_abc_alt;   break;
   case NODE_NONE:
-  case LOCALHOST:
-    *ptr = NULL;
-    break;
+  case LOCALHOST:       *ptr = NULL;                      break;
   default:
     printf("INTERNAL ERROR: incorrect nodes value in map_nodes_to_char_ptr()\n");
     return -1;
@@ -1131,10 +1082,12 @@ void func_test(struct test_env *test_env,
   }
 
   if (function == GET_UP_NODES_STRING) {
-    result = nodeupdown_get_up_nodes_string(test_env->handle_loaded, node, MAXBUFFERLEN);
+    result = nodeupdown_get_up_nodes_string(test_env->handle_loaded, node, 
+					    MAXBUFFERLEN);
   }
   else if (function == GET_DOWN_NODES_STRING) {
-    result = nodeupdown_get_down_nodes_string(test_env->handle_loaded, node, MAXBUFFERLEN);
+    result = nodeupdown_get_down_nodes_string(test_env->handle_loaded, node, 
+					      MAXBUFFERLEN);
   }
   else if (function == GET_UP_NODES_LIST) {
     result = nodeupdown_get_up_nodes_list(test_env->handle_loaded, list, len);
@@ -1155,10 +1108,12 @@ void func_test(struct test_env *test_env,
   }
 #endif
   else if (function == GET_UP_NODES_STRING_ALTNAMES) {
-    result = nodeupdown_get_up_nodes_string_altnames(test_env->handle_loaded, node, MAXBUFFERLEN);
+    result = nodeupdown_get_up_nodes_string_altnames(test_env->handle_loaded, node, 
+						     MAXBUFFERLEN);
   }
   else if (function == GET_DOWN_NODES_STRING_ALTNAMES) {
-    result = nodeupdown_get_down_nodes_string_altnames(test_env->handle_loaded, node, MAXBUFFERLEN);
+    result = nodeupdown_get_down_nodes_string_altnames(test_env->handle_loaded, node, 
+						       MAXBUFFERLEN);
   }
   else if (function == GET_UP_NODES_LIST_ALTNAMES) {
     result = nodeupdown_get_up_nodes_list_altnames(test_env->handle_loaded, list, len);
@@ -1172,10 +1127,12 @@ void func_test(struct test_env *test_env,
   }
 #ifdef NODEUPDOWN_HOSTLIST_API 
   else if (function == GET_UP_NODES_HOSTLIST_ALTNAMES) {
-    result = nodeupdown_get_up_nodes_hostlist_altnames(test_env->handle_loaded, hostlist);
+    result = nodeupdown_get_up_nodes_hostlist_altnames(test_env->handle_loaded, 
+						       hostlist);
   }
   else if (function == GET_DOWN_NODES_HOSTLIST_ALTNAMES){
-    result = nodeupdown_get_down_nodes_hostlist_altnames(test_env->handle_loaded, hostlist);
+    result = nodeupdown_get_down_nodes_hostlist_altnames(test_env->handle_loaded, 
+							 hostlist);
   }
 #endif
   else if (function == IS_NODE_UP) {
@@ -1605,14 +1562,14 @@ int run_param_tests(struct test_env *test_env) {
   printf("--------------------------------------------------------------\n");
   while (get_string_param_tests[i].nodeupdown_handle != -1) {
     get_nodes_string_param_test(test_env, 
-			      GET_UP_NODES_STRING_ALTNAMES, 
-			      i, 
-			      get_string_param_tests[i].nodeupdown_handle, 
-			      get_string_param_tests[i].buf, 
-			      get_string_param_tests[i].buflen, 
-			      get_string_param_tests[i].nodeupdown_load_data, 
-			      get_string_param_tests[i].return_value, 
-			      get_string_param_tests[i].return_errnum);  
+				GET_UP_NODES_STRING_ALTNAMES, 
+				i, 
+				get_string_param_tests[i].nodeupdown_handle, 
+				get_string_param_tests[i].buf, 
+				get_string_param_tests[i].buflen, 
+				get_string_param_tests[i].nodeupdown_load_data, 
+				get_string_param_tests[i].return_value, 
+				get_string_param_tests[i].return_errnum);  
     i++;
   }
   printf("\n\n");
