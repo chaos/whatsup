@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.11 2003-03-05 02:17:50 achu Exp $
+ * $Id: nodeupdown.c,v 1.12 2003-03-05 18:18:11 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -1525,6 +1525,16 @@ int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list) {
     return -1;
   }
 
+  if (list == NULL) {
+    handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
+    return -1;
+  }
+
+  if (handle->genders_handle == NULL || handle->gmond_nodes == NULL) {
+    handle->errnum = NODEUPDOWN_ERR_LOAD;
+    return -1;
+  }
+
   node = (char **)malloc(sizeof(char *) * handle->max_nodes);
   if (node == NULL) {
     handle->errnum = NODEUPDOWN_ERR_OUTMEM;
@@ -1563,6 +1573,11 @@ int nodeupdown_nodelist_clear(nodeupdown_t handle, char **list) {
     return -1;
   }
 
+  if (handle->genders_handle == NULL || handle->gmond_nodes == NULL) {
+    handle->errnum = NODEUPDOWN_ERR_LOAD;
+    return -1;
+  }
+
   for (i = 0; i < handle->max_nodes; i++) {
     memset(list[i], '\0', MAXHOSTNAMELEN);
   }
@@ -1581,6 +1596,11 @@ int nodeupdown_nodelist_destroy(nodeupdown_t handle, char **list) {
 
   if (list == NULL) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
+    return -1;
+  }
+
+  if (handle->genders_handle == NULL || handle->gmond_nodes == NULL) {
+    handle->errnum = NODEUPDOWN_ERR_LOAD;
     return -1;
   }
 
