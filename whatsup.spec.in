@@ -27,8 +27,8 @@ Release: @RELEASE@
 Summary: whatsup node up/down detection utility
 Group: Applications/Communications
 License: GPL
-Source: %{name}-%{version}-@RELEASE@.tgz
-BuildRoot: %{_tmppath}/%{name}-%{version}-@RELEASE@
+Source0: %{name}-%{version}-%{release}.tgz
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}
 
 %if %{?_with_genders:1}%{!?_with_genders:0}
 Requires:       genders >= 1.2
@@ -44,7 +44,7 @@ and a master list of cluster nodes.  C and perl libraries are also
 supplied for detecting up/down nodes.
 
 %prep
-%setup -q -n %{name}-%{version}-@RELEASE@
+%setup -q -n %{name}-%{version}-%{release}
 
 %build
 %configure --program-prefix=%{?_program_prefix:%{_program_prefix}} \
