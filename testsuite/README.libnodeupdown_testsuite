@@ -43,13 +43,9 @@ the following (in order) on each line:
     5) test node #1 hostname
     6) test node #2 hostname
     7) test node #3 hostname
-    8) test node #1 alternate name
-    9) test node #2 alternate name
-    10) test node #3 alternate name
 
     There must be 3 test nodes listed in the configuration file, no more, 
-    and no less.  If there are no alternate names for the three test nodes,
-    simply use the same node names that were originally listed. 
+    and no less. 
 
 Step 2)
 
