@@ -10,7 +10,7 @@ require DynaLoader;
 
 our @ISA = qw(Exporter DynaLoader);
 
-our $VERSION = '0.01';
+our $VERSION = '1.3';
 
 bootstrap Libnodeupdown $VERSION;
 

@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.70 2003-11-06 00:53:29 achu Exp $
+ * $Id: nodeupdown.c,v 1.71 2003-11-06 01:36:36 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -579,12 +579,9 @@ static int _get_gmond_data(nodeupdown_t handle, int sockfd, int timeout_len) {
   return retval;
 }
 
+/* compare gmond nodes to the master list */
+static int _compare_gmond_nodes_to_master_list(nodeupdown_t handle) {
 #if HAVE_GENDERS
-/* compare genders nodes to gmond nodes to identify additional
- * nodes that are down. 
- * Return -1 on error, 0 on success
- */
-static int _compare_genders_to_gmond_nodes(nodeupdown_t handle) {
   int i, ret, num;
   char **nlist = NULL;
   genders_t gh = handle->genders_handle;
@@ -624,8 +621,10 @@ static int _compare_genders_to_gmond_nodes(nodeupdown_t handle) {
  cleanup: 
   (void)genders_nodelist_destroy(gh, nlist);
   return -1;
-}
+#else
+  return 0;
 #endif /* HAVE_GENDERS */
+}
 
 int nodeupdown_load_data(nodeupdown_t handle, 
 #if HAVE_GENDERS
@@ -664,10 +663,8 @@ int nodeupdown_load_data(nodeupdown_t handle,
   if (_get_gmond_data(handle, sockfd, timeout_len) == -1)
     goto cleanup;
 
-#if HAVE_GENDERS
-  if (_compare_genders_to_gmond_nodes(handle))
+  if (_compare_gmond_nodes_to_master_list(handle))
     goto cleanup;
-#endif /* HAVE_GENDERS */
 
   hostlist_sort(handle->up_nodes);
   hostlist_sort(handle->down_nodes);

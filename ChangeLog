@@ -10,6 +10,13 @@
 	* src/libnodeupdown/Makefile.am, src/whatsup/Makefile.am: Updated
 	for use of libcommon.
 
+	* src/libnodeupdown/nodeupdown.c
+	(_compare_genders_to_gmond_nodes): Renamed to
+	_compare_gmond_nodes_to_master_list.
+
+	* src/Libnodeupdown/Libnodeupdown.pm: Fixed version to match
+	config.h version.
+
 2003-11-05  Albert Chu  <chu11@llnl.gov>
 
 	various code/configuration  cleaned up
