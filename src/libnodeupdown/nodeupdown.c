@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.84 2003-12-03 23:00:52 achu Exp $
+ * $Id: nodeupdown.c,v 1.85 2003-12-05 23:19:22 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -77,6 +77,7 @@ static char * errmsg[] = {
   "node not found",
   "internal master list error",
   "internal XML error",
+  "configuration file error",
   "internal hostlist error",
   "nodeupdown handle magic number incorrect, improper handle passed in",
   "internal system error",
@@ -213,7 +214,7 @@ static const char *_cb_gendersfile(command_t *cmd, context_t *ctx) {
 #endif
 
 /* parse configuration file and store data into confdata */
-static void _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd) {
+static int _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd) {
   configfile_t *cf = NULL;
   configoption_t options[] = {
     {NODEUPDOWN_CONF_GMOND_HOSTNAME, ARG_LIST, _cb_gmond_hostname, cd, 0},
@@ -226,30 +227,24 @@ static void _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd) 
 #endif
     LAST_OPTION
   };
-  int reset = 1;
+  int ret = -1;
 
   /* NODEUPDOWN_CONF_FILE defined in config.h */
-  if (!(cf = dotconf_create(NODEUPDOWN_CONF_FILE, options, 0, CASE_INSENSITIVE)))
+  if (!(cf = dotconf_create(NODEUPDOWN_CONF_FILE, options, 0, CASE_INSENSITIVE))) {
+    handle->errnum = NODEUPDOWN_ERR_INTERNAL; 
     goto cleanup;
+  }
 
-  if (dotconf_command_loop_until_error(cf) != NULL)
+  if (dotconf_command_loop_until_error(cf) != NULL) {
+    handle->errnum = NODEUPDOWN_ERR_CONF;
     goto cleanup;
+  }
 
-  reset = 0;
+  ret = 0;
  cleanup:
   if (cf != NULL)
     dotconf_cleanup(cf);
-  if (reset) { 
-    /* reset as if nothing was found */
-    cd->gmond_hostnames_found = 0;
-    cd->gmond_port_found = 0;
-    cd->timeout_len_found = 0;
-#if HAVE_HOSTSFILE
-    cd->hostsfile_found = 0;
-#elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
-    cd->gendersfile_found = 0;
-#endif
-  }
+  return ret;
 }
 
 static int _low_timeout_connect(nodeupdown_t handle, const char *hostname, 
@@ -513,7 +508,8 @@ int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname,
   if ((cd.gmond_hostnames = list_create((ListDelF)free)) == NULL)
     goto cleanup;
 
-  _read_conffile(handle, &cd); 
+  if (_read_conffile(handle, &cd) < 0)
+    goto cleanup;
 
   /* Must call masterlist_init before _connect_to_gmond */
 #if HAVE_NOMASTERLIST

@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_load_data.3.in,v 1.11 2003-12-03 23:00:51 achu Exp $
+\."$Id: nodeupdown_load_data.3.in,v 1.12 2003-12-05 23:19:22 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -115,8 +115,11 @@ has failed internally, system is out of memory.
 .B NODEUPDOWN_ERR_MASTERLIST
 internal error with the Nodeupdown master list of nodes.
 .TP
-.B NODEUPDOWN_ERR_GANGLIA 
-ganglia library has failed internally.
+.B NODEUPDOWN_ERR_EXPAT
+XML parsing error
+.TP
+.B NODEUPDOWN_ERR_CONF
+Nodeupdown configuration file error
 .TP
 .B NODEUPDOWN_ERR_HOSTLIST
 hostlist API has failed internally.

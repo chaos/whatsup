@@ -155,6 +155,14 @@ NODEUPDOWN_ERR_EXPAT (sv=&PL_sv_undef)
         RETVAL    
 
 int
+NODEUPDOWN_ERR_CONF (sv=&PL_sv_undef)
+    SV *sv    
+    CODE:
+        RETVAL = NODEUPDOWN_ERR_CONF;
+    OUTPUT:
+        RETVAL    
+
+int
 NODEUPDOWN_ERR_HOSTLIST (sv=&PL_sv_undef)
     SV *sv    
     CODE:

@@ -47,6 +47,7 @@ Libnodeupdown - Perl extension for libnodeupdown
  Libnodeupdown::NODEUPDOWN_ERR_NOTFOUND
  Libnodeupdown::NODEUPDOWN_ERR_MASTERLIST
  Libnodeupdown::NODEUPDOWN_ERR_EXPAT
+ Libnodeupdown::NODEUPDOWN_ERR_CONF
  Libnodeupdown::NODEUPDOWN_ERR_HOSTLIST
  Libnodeupdown::NODEUPDOWN_ERR_MAGIC
  Libnodeupdown::NODEUPDOWN_ERR_INTERNAL
@@ -195,6 +196,7 @@ can be accessed through the following functions:
  Libnodeupdown::NODEUPDOWN_ERR_NOTFOUND
  Libnodeupdown::NODEUPDOWN_ERR_MASTERLIST
  Libnodeupdown::NODEUPDOWN_ERR_EXPAT
+ Libnodeupdown::NODEUPDOWN_ERR_CONF
  Libnodeupdown::NODEUPDOWN_ERR_HOSTLIST
  Libnodeupdown::NODEUPDOWN_ERR_MAGIC
  Libnodeupdown::NODEUPDOWN_ERR_INTERNAL

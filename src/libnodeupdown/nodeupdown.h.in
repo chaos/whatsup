@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown.h.in,v 1.9 2003-12-03 23:00:52 achu Exp $
+ *  $Id: nodeupdown.h.in,v 1.10 2003-12-05 23:19:22 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h.in,v $
  *    
  */
@@ -31,10 +31,11 @@
 #define NODEUPDOWN_ERR_NOTFOUND          15 /* node not found */ 
 #define NODEUPDOWN_ERR_MASTERLIST        16 /* internal master list error */
 #define NODEUPDOWN_ERR_EXPAT             17 /* internal expat error */
-#define NODEUPDOWN_ERR_HOSTLIST          18 /* internal hostlist error */
-#define NODEUPDOWN_ERR_MAGIC             19 /* magic number error */
-#define NODEUPDOWN_ERR_INTERNAL          20 /* internal system error */
-#define NODEUPDOWN_ERR_ERRNUMRANGE       21 /* error number out of range */ 
+#define NODEUPDOWN_ERR_CONF              18 /* configuration file error */
+#define NODEUPDOWN_ERR_HOSTLIST          19 /* internal hostlist error */
+#define NODEUPDOWN_ERR_MAGIC             20 /* magic number error */
+#define NODEUPDOWN_ERR_INTERNAL          21 /* internal system error */
+#define NODEUPDOWN_ERR_ERRNUMRANGE       22 /* error number out of range */ 
 
 #define NODEUPDOWN_TIMEOUT_LEN           60
 

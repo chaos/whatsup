@@ -1,6 +1,26 @@
 2003-12-05  Albert Chu  <chu11@llnl.gov>
 
-	* src/whatsup.com (cmdline_parse): Fixed declaration bug.
+	Added configuration file error
+
+	* src/libnodeupdown/nodeupdown.h.in: Added NODEUPDOWN_ERR_CONF.
+
+	* src/libnodeupdown/nodeupdown.c (_read_conffile): Return -1 on
+	configuration file error.
+
+	* src/libnodeupdown/nodeupdown.c (nodeupdown_load_data): Return
+	error on configuration file error.
+
+	* man/nodeupdown_load_data.3.in: Added NDOEUPDOWN_ERR_CONF error.
+
+	* src/Libnodeupdown/Libnodeupdown.xs,
+	src/Libnodeupdown/Libnodeupdown.pm.in: Added NODEUPDOWN_ERR_CONF.
+
+	Misc.
+	
+	* man/nodeupdown_load_data.3.in: Replaced NODEUPDOWN_ERR_GANGLIA
+	with NODEUPDOWN_ERR_EXPAT.
+
+	* src/whatsup.c (cmdline_parse): Fixed declaration bug.
 
 	* src/Libnodeupdown/Makefile.am, src/Libnodeupdown/Makefile.PL:
 	Fixed build problems.
