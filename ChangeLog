@@ -1,3 +1,6 @@
+2003-05-14 Albert Chu <chu11@llnl.gov>
+	- fixed memory leak in nodeupdown
+
 2003-04-29 Albert Chu <chu11@llnl.gov>
 	- fixed variety of minor issues in manpages
 	- fixed potential memory leak in whatsup
