@@ -1,8 +1,8 @@
-# $Id: whatsup.spec,v 1.25 2003-06-30 23:40:43 achu Exp $
+# $Id: whatsup.spec,v 1.26 2003-07-15 22:45:08 achu Exp $
 
 Name:           whatsup
-Version:        1.0
-Release:        6
+Version:        1.1
+Release:        1
 
 Summary:        whatsup
 Group:          Applications/Communications
@@ -12,10 +12,9 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}
 
 Source0:        %{name}-%{version}.tgz
 
+Requires:       genders >= 1.2
 Requires:       gendersllnl
-
 Requires:       ganglia-monitor-core
-
 Requires:       ganglia-monitor-core-lib 
 
 %description
