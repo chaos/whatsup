@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_load_data.3,v 1.4 2003-04-24 15:46:31 achu Exp $
+\."$Id: nodeupdown_load_data.3,v 1.5 2003-04-24 18:23:06 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -16,7 +16,7 @@ nodeupdown_load_data \- load data from genders and ganglia
 that the remaining nodeupdown library functions can properly return
 information about up and down nodes.  \fIhandle\fR is a nodeupdown
 handle created by
-.BR nodeupdown_create (3).  
+.BR nodeupdown_handle_create (3).  
 \fIfilename\fR should indicate the genders filename to be loaded.  If
 \fIfilename\fR is NULL, the default genders file DEFAULT_GENDERS_FILE
 will be used.  \fIgmond_hostname\fR and \fIgmond_ip\fR should
@@ -50,7 +50,7 @@ Error codes are defined in nodeupdown.h.
 .B NODEUPDOWN_ERR_NULLHANDLE
 The handle parameter is NULL.  The nodeupdown handle must be created
 with 
-.BR nodeupdown_create (3).
+.BR nodeupdown_handle_create (3).
 .TP
 .B NODEUPDOWN_ERR_OPEN
 The genders file pointed to by \fIfilename\fR cannot be opened.
@@ -87,7 +87,7 @@ hostlist API has failed internally.
 .B NODEUPDOWN_ERR_MAGIC 
 \fIhandle\fR has an incorrect magic number.  \fIhandle\fR does not point to a nodeupdown
 handle or \fIhandle\fR has been destroyed by 
-.BR nodeupdown_destroy (3).
+.BR nodeupdown_handle_destroy (3).
 .TP
 .B NODEUPDOWN_ERR_INTERNAL
 An internal system error has occurred.  
@@ -95,4 +95,4 @@ An internal system error has occurred.
 .SH FILES
 /usr/include/nodeupdown.h
 .SH SEE ALSO
-libnodeupdown(3), nodeupdown_create(3), nodeupdown_destroy(3), nodeupdown_errnum(3), nodeupdown_strerror(3)
+libnodeupdown(3), nodeupdown_handle_create(3), nodeupdown_handle_destroy(3), nodeupdown_errnum(3), nodeupdown_strerror(3)

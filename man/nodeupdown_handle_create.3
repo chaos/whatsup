@@ -1,19 +1,19 @@
 \."#################################################################
-\."$Id: nodeupdown_create.3,v 1.2 2003-03-18 18:19:32 achu Exp $
+\."$Id: nodeupdown_handle_create.3,v 1.1 2003-04-24 18:23:06 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
-.TH NODEUPDOWN_CREATE 3 "Release 1.1" "LLNL" "LIBNODEUPDOWN"
+.TH NODEUPDOWN_HANDLE_CREATE 3 "Release 1.1" "LLNL" "LIBNODEUPDOWN"
 .SH NAME
-nodeupdown_create \- create a nodeupdown handle 
+nodeupdown_handle_create \- create a nodeupdown handle 
 .SH SYNOPSIS
 .B #include <nodeupdown.h>
 .sp
-.BI "nodeupdown_t nodeupdown_create(void);"
+.BI "nodeupdown_t nodeupdown_handle_create(void);"
 .br
 .SH DESCRIPTION
 .br
-\fBnodeupdown_create()\fR creates a nodeupdown handle for use with the
+\fBnodeupdown_handle_create()\fR creates a nodeupdown handle for use with the
 nodeupdown library of functions.  A nodeupdown handle is of type
 nodeupdown_t, which is defined in nodeupdown.h.  The nodeupdown handle
 must be passed to most of the nodeupdown library functions.
@@ -25,4 +25,4 @@ error, NULL is returned.
 .SH FILES
 /usr/include/nodeupdown.h
 .SH SEE ALSO
-nodeupdown_destroy(3), nodeupdown_load_data(3)
+nodeupdown_handle_destroy(3), nodeupdown_load_data(3)

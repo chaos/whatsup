@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: libnodeupdown.3,v 1.4 2003-03-18 18:19:32 achu Exp $
+\."$Id: libnodeupdown.3,v 1.5 2003-04-24 18:23:06 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -9,11 +9,11 @@ libnodeupdown \- a library of functions to determine if a node is up or down
 .SH SYNOPSIS
 .B #include <nodeupdown.h>
 .sp
-.BI "nodeupdown_t nodeupdown_create(void);"
+.BI "nodeupdown_t nodeupdown_handle_create(void);"
 .sp
-.BI "int nodeupdown_load_data(nodeupdown_t handle, char *genders_filename, char *gmond_hostname, char *gmond_ip, int gmond_port);"
+.BI "int nodeupdown_handle_destroy(nodeupdown_t handle);"
 .sp
-.BI "int nodeupdown_destroy(nodeupdown_t handle);"
+.BI "int nodeupdown_load_data(nodeupdown_t handle, char *genders_filename, char *gmond_hostname, char *gmond_ip, int gmond_port, int timeout_len);"
 .sp
 .BI "int nodeupdown_errnum(nodeupdown_t handle);"
 .sp
@@ -65,4 +65,4 @@ functions above, or read the comments written in
 .SH FILES
 /usr/include/nodeupdown.h
 .SH "SEE ALSO"
-libgenders(3), nodeupdown_create(3), nodeupdown_load_data(3), nodeupdown_destroy(3), nodeupdown_errnum(3), nodeupdown_strerror(3), nodeupdown_errormsg(3), nodeupdown_perror(3), nodeupdown_dump(3), nodeupdown_get_up_nodes_string(3), nodeupdown_get_down_nodes_string(3), nodeupdown_get_up_nodes_list(3), nodeupdown_get_down_nodes_list(3), nodeupdown_get_up_nodes_string_altnames(3), nodeupdown_get_down_nodes_string_altnames(3), nodeupdown_get_up_nodes_list_altnames(3), nodeupdown_get_down_nodes_list_altnames(3), nodeupdown_is_node_up(3), nodeupdown_is_node_down(3), nodeupdown_convert_string_to_altnames(3), nodeupdown_convert_list_to_altnames(3), nodeupdown_nodelist_create(3), nodeupdown_nodelist_clear(3), nodeupdown_nodelist_destroy(3)
+libgenders(3), nodeupdown_handle_create(3), nodeupdown_load_data(3), nodeupdown_handle_destroy(3), nodeupdown_errnum(3), nodeupdown_strerror(3), nodeupdown_errormsg(3), nodeupdown_perror(3), nodeupdown_dump(3), nodeupdown_get_up_nodes_string(3), nodeupdown_get_down_nodes_string(3), nodeupdown_get_up_nodes_list(3), nodeupdown_get_down_nodes_list(3), nodeupdown_get_up_nodes_string_altnames(3), nodeupdown_get_down_nodes_string_altnames(3), nodeupdown_get_up_nodes_list_altnames(3), nodeupdown_get_down_nodes_list_altnames(3), nodeupdown_is_node_up(3), nodeupdown_is_node_down(3), nodeupdown_convert_string_to_altnames(3), nodeupdown_convert_list_to_altnames(3), nodeupdown_nodelist_create(3), nodeupdown_nodelist_clear(3), nodeupdown_nodelist_destroy(3)
