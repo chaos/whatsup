@@ -1,5 +1,5 @@
 /*
- * $Id: libnodeupdown_testcases.h,v 1.3 2003-03-07 23:47:47 achu Exp $
+ * $Id: libnodeupdown_testcases.h,v 1.4 2003-03-08 00:13:57 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/testsuite/libnodeupdown_testcases.h,v $
  *    
  */
@@ -260,6 +260,7 @@ struct {
   int return_value;
   int return_errnum;
 } func_tests[] = {
+#if 0
   {GET_UP_NODES_HOSTLIST,   NODE_ALL, NODE_ALL,  LOCALHOST, 0, NODEUPDOWN_ERR_SUCCESS},
   {GET_DOWN_NODES_HOSTLIST, NODE_ALL, NODE_NONE, LOCALHOST, 0, NODEUPDOWN_ERR_SUCCESS},
   {GET_UP_NODES_LIST,       NODE_ALL, NODE_ALL,  LOCALHOST, 0, NODEUPDOWN_ERR_SUCCESS},
@@ -290,6 +291,7 @@ struct {
   {IS_NODE_DOWN,            NODE_ALL, NODE_A,    NODE_B,    0, NODEUPDOWN_ERR_SUCCESS},
   {IS_NODE_DOWN,            NODE_ALL, NODE_B,    NODE_B,    0, NODEUPDOWN_ERR_SUCCESS},
   {IS_NODE_DOWN,            NODE_ALL, NODE_C,    NODE_B,    0, NODEUPDOWN_ERR_SUCCESS},
+#endif
   {GET_UP_NODES_HOSTLIST,   NODE_A,   NODE_A,    LOCALHOST, 0, NODEUPDOWN_ERR_SUCCESS},
   {GET_DOWN_NODES_HOSTLIST, NODE_A,   NODE_BC,   LOCALHOST, 0, NODEUPDOWN_ERR_SUCCESS},
   {GET_UP_NODES_LIST,       NODE_A,   NODE_A,    LOCALHOST, 0, NODEUPDOWN_ERR_SUCCESS},
@@ -332,6 +334,8 @@ struct {
   {IS_NODE_DOWN,            NODE_AB,  NODE_C,    LOCALHOST, 1, NODEUPDOWN_ERR_SUCCESS},
   {GET_UP_NODES_HOSTLIST,   NODE_AB,  NODE_AB,   NODE_A,    0, NODEUPDOWN_ERR_SUCCESS},
   {GET_DOWN_NODES_HOSTLIST, NODE_AB,  NODE_C,    NODE_A,    0, NODEUPDOWN_ERR_SUCCESS},
+  {GET_UP_NODES_LIST,       NODE_AB,  NODE_AB,   NODE_A,    0, NODEUPDOWN_ERR_SUCCESS},
+  {GET_DOWN_NODES_LIST,     NODE_AB,  NODE_C,    NODE_A,    0, NODEUPDOWN_ERR_SUCCESS},
   {IS_NODE_UP,              NODE_AB,  NODE_A,    NODE_A,    1, NODEUPDOWN_ERR_SUCCESS},
   {IS_NODE_UP,              NODE_AB,  NODE_B,    NODE_A,    1, NODEUPDOWN_ERR_SUCCESS},
   {IS_NODE_UP,              NODE_AB,  NODE_C,    NODE_A,    0, NODEUPDOWN_ERR_SUCCESS},

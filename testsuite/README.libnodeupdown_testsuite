@@ -71,12 +71,23 @@ Due to the constant closing and restarting of gmond servers, it is
 possible for nodeupdown_load_data() to fail connecting to a server or
 for functionality tests to fail if the gmond servers have not had time
 to re-establish and re-synchronize themselves after being restarted.
-If a nodeupdown_load_data() connection error occurs during the test
-suite, simply try again.  
-
 Pauses have been put within the test suite to give the gmonds daemons
 time to re-establish themselves.  However, there is always the
-possibility the timeouts may be long enough.
+possibility the timeouts may be long enough.  If a
+nodeupdown_load_data() connection error occurs during the test suite,
+simply try again.
+ 
+In addition, there is a known bug in libganglia.  If you constantly
+call libganglia to connect to a gmond server, libganglia can return
+that no nodes are up and no nodes are down, even though they are
+obviously up or down.  This is only an issue when the library is
+called multiple times within the same process (such as this test
+suite) and not when it is called once (such as in the 'whatsup'
+command).  If this bug pops up, and you suddenly get test cases
+failing because of empty lists of nodes, try commenting out test cases
+and eliminating the number of times libganglia must be called within
+the test suite.  A set of test cases has already been commented out in
+the libnodeupdown_testcases.h file.
 
 V.  SPECIAL NOTES
 
@@ -86,7 +97,7 @@ don't give up if the test suite looks like it is hung.
 nodeupdown_get_hostlist_alternate_names() and
 nodeupdown_get_list_alternate_names() are not tested for functionality
 in this test suite.  Their functionality is dependent upon genders,
-and not ganglia.
+not ganglia.
 
 The test suite is not an extremely thorough test suite.  Many test
 situations have not been hit.  But it hits a lot of the situations.
