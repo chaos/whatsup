@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.18 2003-04-24 00:54:59 achu Exp $
+ * $Id: whatsup.c,v 1.19 2003-04-24 18:41:35 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -906,8 +906,8 @@ int main(int argc, char **argv) {
     goto cleanup;
   }
   
-  if ((handle = nodeupdown_create()) == NULL) {
-    output_error("nodeupdown_create() error", NULL);
+  if ((handle = nodeupdown_handle_create()) == NULL) {
+    output_error("nodeupdown_handle_create() error", NULL);
     goto cleanup;
   }
 
@@ -917,7 +917,7 @@ int main(int argc, char **argv) {
                            arginfo->gmond_ip, 
                            arginfo->gmond_port,
                            0) == -1) {
-    output_error("nodeupdown_create() error", 
+    output_error("nodeupdown_load_data() error", 
                  nodeupdown_strerror(nodeupdown_errnum(handle))); 
     goto cleanup;
   }
@@ -981,7 +981,7 @@ int main(int argc, char **argv) {
   }
 
   cleanup_struct_arginfo(arginfo);
-  (void)nodeupdown_destroy(handle);
+  (void)nodeupdown_handle_destroy(handle);
   if (up_nodes != NULL) {
     hostlist_destroy(up_nodes);
   }
@@ -996,7 +996,7 @@ int main(int argc, char **argv) {
   }
 
   if (handle != NULL) {
-    (void)nodeupdown_destroy(handle);
+    (void)nodeupdown_handle_destroy(handle);
   }
   if (up_nodes != NULL) {
     hostlist_destroy(up_nodes);
