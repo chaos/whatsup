@@ -1,5 +1,5 @@
 /*
- * $Id: libnodeupdown_test.c,v 1.7 2003-03-12 01:28:57 achu Exp $
+ * $Id: libnodeupdown_test.c,v 1.8 2003-03-12 17:03:11 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/testsuite/libnodeupdown_test.c,v $
  *    
  */
@@ -64,14 +64,14 @@ struct test_env {
   /* test environment for individual tests */
   nodeupdown_t handle_not_loaded;
   nodeupdown_t handle_loaded;
-  hostlist_t empty_hostlist_1;
-  hostlist_t empty_hostlist_2;
-  char **empty_list_1;
-  char **empty_list_2;
   char *empty_string_1;
   char *empty_string_2;
-  int empty_list_len;
-  int empty_string_len;
+  char *full_string_1;
+  char **empty_list_1;
+  char **empty_list_2;
+  char **full_list_1;
+  hostlist_t empty_hostlist_1;
+  hostlist_t empty_hostlist_2;
 };
 
 /*****************************************************************
@@ -947,7 +947,10 @@ void convert_param_test(struct test_env *test_env,
     }
     if (dest_flag == IS_NOT_NULL) {
       dest_s = test_env->empty_string_2;
-    }
+    } 
+    if (return_errnum == NODEUPDOWN_ERR_OVERFLOW) {
+      src_s = test_env->full_string_1;
+    } 
   }
   else if (function == CONVERT_LIST_TO_ALTNAMES) {
     if (src_flag == IS_NOT_NULL) {
@@ -956,8 +959,11 @@ void convert_param_test(struct test_env *test_env,
     if (dest_flag == IS_NOT_NULL) {
       dest_c = test_env->empty_list_2;
     }
+    if (return_errnum == NODEUPDOWN_ERR_OVERFLOW) {
+      src_c = test_env->full_list_1;
+    } 
   }
-  else if (function == CONVERT_LIST_TO_ALTNAMES) {
+  else if (function == CONVERT_HOSTLIST_TO_ALTNAMES) {
     if (src_flag == IS_NOT_NULL) {
       src_h = test_env->empty_hostlist_1;
     }
@@ -1213,8 +1219,10 @@ int initialize_test_env_parameter_tests(struct test_env *test_env) {
   test_env->handle_loaded = NULL;
   test_env->empty_string_1 = NULL;
   test_env->empty_string_2 = NULL;
+  test_env->full_string_1 = NULL;
   test_env->empty_list_1 = NULL;
   test_env->empty_list_2 = NULL;
+  test_env->full_list_1 = NULL;
   test_env->empty_hostlist_1 = NULL;
   test_env->empty_hostlist_2 = NULL;
 
@@ -1262,6 +1270,11 @@ int initialize_test_env_parameter_tests(struct test_env *test_env) {
     return -1;
   }
 
+  if (map_nodes_to_char_ptr(test_env, NODE_ALL, &test_env->full_string_1) == -1) {
+    printf("map_nodes_to_char_ptr() error\n");
+    return -1;
+  }
+
   if (nodeupdown_nodelist_create(test_env->handle_loaded, 
 				 &test_env->empty_list_1) == -1) {
     printf("nodeupdown_nodelist_create() error\n");
@@ -1273,6 +1286,15 @@ int initialize_test_env_parameter_tests(struct test_env *test_env) {
     printf("nodeupdown_nodelist_create() error\n");
     return -1;
   }
+
+  if (nodeupdown_nodelist_create(test_env->handle_loaded, 
+				 &test_env->full_list_1) == -1) {
+    printf("nodeupdown_nodelist_create() error\n");
+    return -1;
+  }
+  strcpy(test_env->full_list_1[0], test_env->nodes[0]);
+  strcpy(test_env->full_list_1[1], test_env->nodes[1]);
+  strcpy(test_env->full_list_1[2], test_env->nodes[2]);
 
   if ((test_env->empty_hostlist_1 = hostlist_create(NULL)) == NULL) {
     printf("hostlist_create() error\n");
@@ -1293,12 +1315,12 @@ int initialize_test_env_parameter_tests(struct test_env *test_env) {
 int cleanup_test_env_parameter_tests(struct test_env *test_env) {
   int retval = 0;
 
-  if (test_env->empty_hostlist_1 != NULL) {
-    hostlist_destroy(test_env->empty_hostlist_1);
+  if (test_env->empty_string_1 != NULL) {
+    free(test_env->empty_string_1);
   }
 
-  if (test_env->empty_hostlist_2 != NULL) {
-    hostlist_destroy(test_env->empty_hostlist_2);
+  if (test_env->empty_string_2 != NULL) {
+    free(test_env->empty_string_2);
   }
 
   if (test_env->empty_list_1 != NULL) {
@@ -1317,6 +1339,22 @@ int cleanup_test_env_parameter_tests(struct test_env *test_env) {
     }
   }
 
+  if (test_env->full_list_1 != NULL) {
+    if (nodeupdown_nodelist_destroy(test_env->handle_loaded, 
+				    test_env->full_list_1) == -1) {
+      printf("nodeupdown_nodelist_destroy() error\n");
+      retval = -1;
+    }
+  }
+
+  if (test_env->empty_hostlist_1 != NULL) {
+    hostlist_destroy(test_env->empty_hostlist_1);
+  }
+
+  if (test_env->empty_hostlist_2 != NULL) {
+    hostlist_destroy(test_env->empty_hostlist_2);
+  }
+
   if (test_env->handle_not_loaded != NULL) {
     if (nodeupdown_destroy(test_env->handle_not_loaded) == -1) {
       printf("nodeupdown_destroy() error\n");
@@ -1329,14 +1367,6 @@ int cleanup_test_env_parameter_tests(struct test_env *test_env) {
       printf("nodeupdown_destroy() error\n");
       retval = -1;
     }
-  }
-
-  if (test_env->empty_string_1 != NULL) {
-    free(test_env->empty_string_1);
-  }
-
-  if (test_env->empty_string_2 != NULL) {
-    free(test_env->empty_string_2);
   }
 
   if (close_gmonds(test_env, NODE_ALL) == -1) {

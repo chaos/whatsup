@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.17 2003-03-12 00:10:45 achu Exp $
+ * $Id: nodeupdown.c,v 1.18 2003-03-12 17:03:31 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -1120,7 +1120,7 @@ int nodeupdown_get_up_nodes_list(nodeupdown_t handle, char **list, int len) {
     return -1;
   }
 
-  if (list == NULL || len <= 0 || len > handle->max_nodes) {
+  if (list == NULL || len <= 0) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
   }
@@ -1156,7 +1156,7 @@ int nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len) {
     return -1;
   }
   
-  if (list == NULL || len <= 0 || len > handle->max_nodes) {
+  if (list == NULL || len <= 0) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
   }
@@ -1413,7 +1413,7 @@ int nodeupdown_get_up_nodes_list_altnames(nodeupdown_t handle,
     return -1;
   }
   
-  if (dest == NULL || dest_len <= 0 || dest_len > handle->max_nodes) {
+  if (dest == NULL || dest_len <= 0) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
   }
@@ -1469,7 +1469,7 @@ int nodeupdown_get_down_nodes_list_altnames(nodeupdown_t handle,
     return -1;
   }
   
-  if (dest == NULL || dest_len <= 0 || dest_len > handle->max_nodes) {
+  if (dest == NULL || dest_len <= 0) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
   }
