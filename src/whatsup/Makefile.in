@@ -95,7 +95,10 @@ LDADD = $(top_builddir)/src/libnodeupdown/libnodeupdown.la
 
 bin_PROGRAMS = whatsup
 
-whatsup_SOURCES = whatsup.c
+whatsup_SOURCES = \
+	whatsup.c \
+	hostlist.c
+
 subdir = src/whatsup
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
@@ -103,7 +106,7 @@ CONFIG_CLEAN_FILES =
 bin_PROGRAMS = whatsup$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
-am_whatsup_OBJECTS = whatsup.$(OBJEXT)
+am_whatsup_OBJECTS = whatsup.$(OBJEXT) hostlist.$(OBJEXT)
 whatsup_OBJECTS = $(am_whatsup_OBJECTS)
 whatsup_LDADD = $(LDADD)
 whatsup_DEPENDENCIES = \
@@ -116,7 +119,7 @@ LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/whatsup.Po
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/hostlist.Po ./$(DEPDIR)/whatsup.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -177,6 +180,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hostlist.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/whatsup.Po@am__quote@
 
 distclean-depend:

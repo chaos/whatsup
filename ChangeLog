@@ -25,6 +25,8 @@
 	     functions:
 	     - int nodeupdown_get_up_nodes_hostlist_altnames();
 	     - int nodeupdown_get_down_nodes_hostlist_altnames();
+	   - updated whatsup command for new API
+	   - added -V (version) option to whatsup
 	
 
 2003-03-07 Albert Chu <chu11@llnl.gov>

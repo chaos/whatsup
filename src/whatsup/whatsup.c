@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.5 2003-03-08 00:16:31 achu Exp $
+ * $Id: whatsup.c,v 1.6 2003-03-11 22:00:24 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -24,6 +24,7 @@
 #include <mcheck.h>
 #endif
 
+#include "hostlist.h"
 #include "nodeupdown.h"
 
 /********************************
@@ -96,10 +97,12 @@ struct arginfo {
  ********************************/
 
 static void usage(void);
+static void version(void);
 static void err_usage(char *);
 static void output_error(char *, char *);
 static void cleanup_struct_arginfo(struct arginfo *);
 static int cmdline_parse(struct arginfo *, int, char **);
+static char * get_hostlist_ranged_string(hostlist_t hostlist);
 static int check_if_nodes_are_up_or_down(struct arginfo *, 
 					 enum whatsup_output_type,
 					 nodeupdown_t, 
@@ -120,20 +123,26 @@ int handle_up_or_down_nodes(struct arginfo *,
  */
 static void usage(void) {
   fprintf(stderr, "Usage: whatsup [OPTIONS]... [NODES]...\n");
-  fprintf(stderr,"  -h        --help             Print help and exit\n");
+  fprintf(stderr,"  -h         --help             Print help and exit\n");
+  fprintf(stderr,"  -V         --version          Print version and exit\n");
   fprintf(stderr,"  -f STRING  --filename=STRING  Location of genders file (default=%s)\n", DEFAULT_GENDERS_FILE);
   fprintf(stderr,"  -o STRING  --hostname=STRING  gmond server hostname (default=localhost)\n");
   fprintf(stderr,"  -i STRING  --ip=STRING        gmond server IP address (default=127.0.0.1)\n");
   fprintf(stderr,"  -p INT     --port=INT         gmond server port (default=%d)\n",GANGLIA_DEFAULT_XML_PORT);
-  fprintf(stderr,"  -b        --updown           List both up and down nodes (default)\n");
-  fprintf(stderr,"  -u        --up               List only up nodes\n");
-  fprintf(stderr,"  -d        --down             List only down nodes\n");
-  fprintf(stderr,"  -l        --hostlist         List nodes in hostlist format (default)\n");
-  fprintf(stderr,"  -c        --comma            List nodes in comma separated list\n");
-  fprintf(stderr,"  -n        --newline          List nodes in newline separated list\n");
-  fprintf(stderr,"  -s        --space            List nodes in space separated list\n");
-  fprintf(stderr,"  -a        --altnames         List nodes by alternate names (default=off)\n");
+  fprintf(stderr,"  -b         --updown           List both up and down nodes (default)\n");
+  fprintf(stderr,"  -u         --up               List only up nodes\n");
+  fprintf(stderr,"  -d         --down             List only down nodes\n");
+  fprintf(stderr,"  -l         --hostlist         List nodes in hostlist format (default)\n");
+  fprintf(stderr,"  -c         --comma            List nodes in comma separated list\n");
+  fprintf(stderr,"  -n         --newline          List nodes in newline separated list\n");
+  fprintf(stderr,"  -s         --space            List nodes in space separated list\n");
+  fprintf(stderr,"  -a         --altnames         List nodes by alternate names (default=off)\n");
   fprintf(stderr,"\n");
+  exit(1);
+}
+
+static void version(void) {
+  fprintf(stderr, "whatsup 1.0.3\n");
   exit(1);
 }
 
@@ -200,7 +209,7 @@ static void cleanup_struct_arginfo(struct arginfo *arginfo) {
  * - store info in a struct arginfo strcuture
  */
 static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
-  int hopt = 0, fopt = 0, oopt = 0, iopt = 0, popt = 0, bopt = 0;
+  int hopt = 0, Vopt = 0, fopt = 0, oopt = 0, iopt = 0, popt = 0, bopt = 0;
   int uopt = 0, dopt = 0, lopt = 0, copt = 0, nopt = 0, sopt = 0, aopt = 0;
   int c, index, i, ret;
 
@@ -209,9 +218,10 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
   char *ip = "127.0.0.1";
   int port = GANGLIA_DEFAULT_XML_PORT;
 
-  char *options = "hf:o:i:p:budlcnsa";
+  char *options = "hf:o:i:p:budlcnsaV";
   struct option long_options[] = {
     {"help",     0, NULL, 'h'},
+    {"version",  0, NULL, 'V'},
     {"filename", 1, NULL, 'f'},
     {"hostname", 1, NULL, 'o'},
     {"ip",       1, NULL, 'i'},
@@ -275,6 +285,9 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
     case 'a':
       aopt++;
       break;
+    case 'V':
+      Vopt++;
+      break;
     case '?':
       err_usage("invalid command line option entered");
       break;
@@ -287,6 +300,10 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
 
   if (hopt > 0) {
     usage();
+  }
+
+  if (Vopt > 0) {
+    version();
   }
 
   if (fopt > 1) {
@@ -576,6 +593,35 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
   return 0;
 }
 
+/* get_hostlist_ranged_string
+ * - get a hostlist ranged string 
+ */
+char * get_hostlist_ranged_string(hostlist_t hostlist) {
+  char *str;
+  int str_len;
+
+  str_len = WHATSUP_BUFFERLEN;
+  if ((str = (char *)malloc(str_len)) == NULL) {
+    output_error("out of memory\n", NULL);
+    return NULL;
+  }
+  memset(str, '\0', str_len);
+
+  /* loop until the buffer is large enough */
+  while (hostlist_ranged_string(hostlist, str_len, str) == -1) {
+    free(str);
+    str_len += WHATSUP_BUFFERLEN;
+    if ((str = (char *)malloc(str_len)) == NULL) {
+      output_error("out of memory\n", NULL);
+      return NULL;
+    }
+    memset(str, '\0', str_len);
+  }
+  
+  return str;
+}
+
+
 /* check_if_nodes_are_up_or_down
  * - determine if specific nodes passed in at the command line are up or down 
  */
@@ -628,21 +674,43 @@ int get_all_up_or_down_nodes(struct arginfo *arginfo,
 			     nodeupdown_t handle, 
 			     hostlist_t nodes) {
 
-  if (output_type == WHATSUP_UP) {
-    if (nodeupdown_get_up_nodes_hostlist(handle, nodes) == -1) {
-      output_error("nodeupdown_get_up_nodes_hostlist() error",
-		   nodeupdown_strerror(nodeupdown_errnum(handle)));
-      return -1;
-    }
-  }
-  else {
-    if (nodeupdown_get_down_nodes_hostlist(handle, nodes) == -1) {
-      output_error("nodeupdown_get_up_nodes_hostlist() error",
-		   nodeupdown_strerror(nodeupdown_errnum(handle)));
-      return -1;
-    }
-  }
+  int str_len = 0;
+  char *str = NULL;
 
+  do {
+    free(str);
+    str_len += WHATSUP_BUFFERLEN;
+    if ((str = (char *)malloc(str_len)) == NULL) {
+      output_error("out of memory", NULL);
+      return -1;
+    }
+    memset(str, '\0', WHATSUP_BUFFERLEN);
+    
+    if (output_type == WHATSUP_UP) {
+      if (nodeupdown_get_up_nodes_string(handle, str, str_len) == -1) {
+	if (nodeupdown_errnum(handle) != NODEUPDOWN_ERR_OVERFLOW) {
+	  output_error("nodeupdown_get_up_nodes_string() error",
+		       nodeupdown_strerror(nodeupdown_errnum(handle)));
+	  free(str);
+	  return -1;
+	}
+      }
+    }
+    else {
+      if (nodeupdown_get_down_nodes_string(handle, str, str_len) == -1) {
+	if (nodeupdown_errnum(handle) != NODEUPDOWN_ERR_OVERFLOW) {
+	  output_error("nodeupdown_get_up_nodes_string() error",
+		       nodeupdown_strerror(nodeupdown_errnum(handle)));
+	  free(str);
+	  return -1;
+	}
+      }
+    }
+  } while (nodeupdown_errnum(handle) == NODEUPDOWN_ERR_OVERFLOW); 
+  
+  
+  (void)hostlist_push(nodes, str); 
+  free(str);
   return 0;
 }
 
@@ -652,7 +720,7 @@ int get_all_up_or_down_nodes(struct arginfo *arginfo,
 int output_nodes(struct arginfo *arginfo, hostlist_t nodes) {
 
   char *str = NULL;
-  int i, str_len, num_nodes;
+  int i, num_nodes;
   char break_type;
   hostlist_iterator_t iter = NULL;
 
@@ -662,21 +730,9 @@ int output_nodes(struct arginfo *arginfo, hostlist_t nodes) {
   if (arginfo->list_type == WHATSUP_HOSTLIST) {
     /* output nodes in hostlist format */
 
-    str_len = WHATSUP_BUFFERLEN;
-    if ((str = (char *)malloc(str_len)) == NULL) {
-      output_error("out of memory", NULL);
+    if ((str = get_hostlist_ranged_string(nodes)) == NULL) {
+      output_error("get_hostlist_ranged_string() error\n", NULL);
       return -1;
-    }
-    memset(str, '\0', str_len);
-
-    while (hostlist_ranged_string(nodes, str_len, str) == -1) {
-      free(str);
-      str_len += WHATSUP_BUFFERLEN;
-      if ((str = (char *)malloc(str_len)) == NULL) {
-	output_error("out of memory", NULL);
-	return -1;
-      }
-      memset(str, '\0', str_len);
     }
     fprintf(stdout, "%s\n", str);
     free(str);
@@ -742,50 +798,75 @@ int handle_up_or_down_nodes(struct arginfo *arginfo,
 			    enum whatsup_output_type output_type, 
 			    nodeupdown_t handle, 
 			    hostlist_t *nodes) {
-  hostlist_t alternate_nodes = NULL;
+
+  hostlist_t alternate_nodes = NULL; 
+  char *src = NULL;
+  char *dest = NULL;
+  int dest_len = 0;
 
   if (hostlist_count(arginfo->nodes) > 0) {
     if (check_if_nodes_are_up_or_down(arginfo, 
 				      output_type, 
 				      handle, 
 				      *nodes) != 0) {
-      goto cleanup;
+      return -1;
     }
   }
   else {
     /* get all nodes */
     if (get_all_up_or_down_nodes(arginfo, 
-			     output_type, 
-			     handle, 
-			     *nodes) != 0) {
-      goto cleanup;
+				 output_type, 
+				 handle, 
+				 *nodes) != 0) {
+      return -1;
     }
   }
-
-  if (arginfo->list_altnames == WHATSUP_ON) {
   
-    if ((alternate_nodes = hostlist_create(NULL)) == NULL) {
+  if (arginfo->list_altnames == WHATSUP_ON) {
+    
+    if ((src = get_hostlist_ranged_string(*nodes)) == NULL) {
+      output_error("get_hostlist_ranged_string()", NULL);
+      goto cleanup;
+    }
+
+    do {
+      free(dest);
+      dest_len += WHATSUP_BUFFERLEN;
+      if ((dest = (char *)malloc(dest_len)) == NULL) {
+	output_error("out of memory", NULL);
+	goto cleanup;
+      }
+      memset(dest, '\0', WHATSUP_BUFFERLEN);
+      
+      if (nodeupdown_convert_string_to_altnames(handle, src, dest, dest_len) == -1) {
+	output_error("nodeupdown_convert_string_to_altnames() error", NULL);
+	goto cleanup;
+      }
+    } while (nodeupdown_errnum(handle) == NODEUPDOWN_ERR_OVERFLOW); 
+    
+    
+    if ((alternate_nodes = hostlist_create(dest)) == NULL) {
       output_error("hostlist_create() error", NULL);
       goto cleanup;
     }
-    
-    if (nodeupdown_get_hostlist_alternate_names(handle, 
-						*nodes, 
-						alternate_nodes)) {
-      output_error("nodeupdown_get_hostlist_alternate_names() error", 
-		   nodeupdown_strerror(nodeupdown_errnum(handle)));
-      goto cleanup;
-    }
-    
+
     hostlist_destroy(*nodes);
     *nodes = alternate_nodes;
     alternate_nodes = NULL;
+    free(src);
+    free(dest);
   }    
 
   return 0;
 
  cleanup:
-
+  
+  if (src != NULL) {
+    free(src);
+  }
+  if (dest != NULL) {
+    free(dest);
+  }
   if (alternate_nodes != NULL) {
     hostlist_destroy(alternate_nodes);
   }
