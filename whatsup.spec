@@ -1,4 +1,4 @@
-# $Id: whatsup.spec,v 1.10 2003-02-26 01:42:16 achu Exp $
+# $Id: whatsup.spec,v 1.11 2003-02-26 01:44:18 achu Exp $
 
 Name:		whatsup
 Version:	1.0
@@ -31,8 +31,8 @@ make
 rm -rf "$RPM_BUILD_ROOT"
 mkdir -p "$RPM_BUILD_ROOT"
 mkdir -p $RPM_BUILD_ROOT/usr/man/man1
-gzip src/whatsup.1
-install whatsup.1.gz $RPM_BUILD_ROOT/usr/man/man1
+gzip man/whatsup.1
+install man/whatsup.1.gz $RPM_BUILD_ROOT/usr/man/man1
 DESTDIR="$RPM_BUILD_ROOT" make install
 
 %clean
