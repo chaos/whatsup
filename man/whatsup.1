@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: whatsup.1,v 1.9 2003-04-08 22:18:09 achu Exp $
+\."$Id: whatsup.1,v 1.10 2003-04-08 23:53:57 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -14,16 +14,26 @@ whatsup \- list up and/or down nodes in a cluster
 .B whatsup
 lists which nodes are currently up or down in a
 cluster.  It determines which nodes are up or down based on
-information gathered from genders and ganglia.
+information gathered from genders and ganglia.  
 
 .B whatsup
 will check on the status of every node in the cluster unless specific
 nodes are listed at the command line.  The nodes can be listed in
-hostlist format, comma separated lists, newline separated lists, or
-space separated lists.  See the section below on HOST RANGES for
-instructions on how to list hosts in hostlist format.  The hostnames
-listed must be the shortened names of hostnames.  What information is
-listed and how it is listed is dependent on the options listed below.
+hostlist format, comma separated lists, or space separated lists.  See
+the section below on HOST RANGES for instructions on how to list hosts
+in hostlist format.  The hostnames listed must be the shortened names
+of hostnames.  What information is listed and how it is listed is
+dependent on the options listed below.
+
+.B whatsup 
+is configured to work on nodes in which ganglia is not setup to be
+deaf.  Generally speaking, non-deaf ganglia nodes are only executed
+on management nodes, not login or compute nodes.  In order to execute
+.B whatsup
+on a deaf ganglia node, use the --hostname ('o') option to force
+.B whatsup
+to contact a management node's gmond daemon instead of the local gmond
+daemon.
 .br
 .SH OPTIONS
 .TP
@@ -97,7 +107,7 @@ List all nodes among foo7,foo9,foo10 that are up and down
 As a reminder to the reader, some shells will interpret brackets
 ('[' and ']') for pattern matching.  Depending on your shell, it may 
 be necessary to enclose hostlist formatted lists within quotes.  For 
-example, the above two examples would be execuated as:
+example, in tcsh, the above two examples should be executed as:
 
     whatsup "foo[01-05]"
     whatsup "foo[7,9-10]"
