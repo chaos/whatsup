@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.38 2003-04-25 23:55:56 achu Exp $
+ * $Id: nodeupdown.c,v 1.39 2003-05-08 00:05:16 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -264,22 +264,19 @@ char * get_hostlist_ranged_string(nodeupdown_t handle, hostlist_t hostlist) {
 }
 
 int nodeupdown_handle_err_check(nodeupdown_t handle) {
-  if (handle == NULL) {
+  if (handle == NULL)
     return -1;
-  }
 
-  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM)
     return -1;
-  }
 
   return 0;
 }
 
 int nodeupdown_unloaded_handle_err_check(nodeupdown_t handle) {
   
-  if (nodeupdown_handle_err_check(handle) == -1) {
+  if (nodeupdown_handle_err_check(handle) == -1)
     return -1;
-  }
 
   if (handle->loaded_flag == NODEUPDOWN_DATA_LOADED) {
     handle->errnum = NODEUPDOWN_ERR_ISLOADED;
@@ -290,9 +287,8 @@ int nodeupdown_unloaded_handle_err_check(nodeupdown_t handle) {
 }
 
 int nodeupdown_loaded_handle_err_check(nodeupdown_t handle) {
-  if (nodeupdown_handle_err_check(handle) == -1) {
+  if (nodeupdown_handle_err_check(handle) == -1)
     return -1;
-  }
 
   if (handle->loaded_flag == NODEUPDOWN_DATA_NOT_LOADED) {
     handle->errnum = NODEUPDOWN_ERR_NOTLOADED;
@@ -304,9 +300,8 @@ int nodeupdown_loaded_handle_err_check(nodeupdown_t handle) {
 
 nodeupdown_t nodeupdown_handle_create() {
   nodeupdown_t handle;
-  if ((handle = (nodeupdown_t)malloc(sizeof(struct nodeupdown))) == NULL) {
+  if ((handle = (nodeupdown_t)malloc(sizeof(struct nodeupdown))) == NULL)
     return NULL;
-  }
   
   nodeupdown_initialization(handle);
 
@@ -315,9 +310,9 @@ nodeupdown_t nodeupdown_handle_create() {
 }
 
 int nodeupdown_initialization(nodeupdown_t handle) {
-  if (handle == NULL) {
+  if (handle == NULL)
     return -1;
-  }
+
   handle->magic = NODEUPDOWN_MAGIC_NUM;
   handle->loaded_flag = NODEUPDOWN_DATA_NOT_LOADED;
   handle->up_nodes = NULL;
@@ -330,9 +325,8 @@ int nodeupdown_initialization(nodeupdown_t handle) {
 
 int nodeupdown_handle_destroy(nodeupdown_t handle) {
 
-  if (nodeupdown_handle_err_check(handle) == -1) {
+  if (nodeupdown_handle_err_check(handle) == -1)
     return -1;
-  }
 
   nodeupdown_cleanup(handle);
 
@@ -346,18 +340,17 @@ int nodeupdown_handle_destroy(nodeupdown_t handle) {
 }  
 
 int nodeupdown_cleanup(nodeupdown_t handle) {
-  if (handle == NULL) {
+  if (handle == NULL)
     return -1;
-  }
-  if (handle->up_nodes != NULL) {
+
+  if (handle->up_nodes != NULL)
     hostlist_destroy(handle->up_nodes);
-  }
-  if (handle->down_nodes != NULL) {
+
+  if (handle->down_nodes != NULL)
     hostlist_destroy(handle->down_nodes);
-  }
-  if (handle->genders_handle != NULL) {
+
+  if (handle->genders_handle != NULL)
     (void)genders_handle_destroy(handle->genders_handle);
-  }
 
   nodeupdown_initialization(handle);
 
@@ -373,9 +366,8 @@ int nodeupdown_load_data(nodeupdown_t handle,
 
   char ip_buffer[INET_ADDRSTRLEN];
 
-  if (nodeupdown_unloaded_handle_err_check(handle) == -1) {
+  if (nodeupdown_unloaded_handle_err_check(handle) == -1)
     return -1;
-  }
 
   if (gmond_port < -1 || timeout_len < -1) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
@@ -383,9 +375,8 @@ int nodeupdown_load_data(nodeupdown_t handle,
   }
 
   /* determine filename */
-  if (genders_filename == NULL) {
+  if (genders_filename == NULL)
     genders_filename = DEFAULT_GENDERS_FILE;
-  }
 
   /* handle hostname and IP paramters, there are four combinations
    *  of parameters 
@@ -423,13 +414,11 @@ int nodeupdown_load_data(nodeupdown_t handle,
     strcpy(ip_buffer, gmond_ip);
   }
 
-  if (gmond_port == 0 || gmond_port == -1) {
+  if (gmond_port == 0 || gmond_port == -1)
     gmond_port = GANGLIA_DEFAULT_XML_PORT;
-  }
 
-  if (timeout_len == 0 || timeout_len == -1) {
+  if (timeout_len == 0 || timeout_len == -1)
     timeout_len = NODEUPDOWN_TIMEOUT_LEN;
-  }
 
   if (nodeupdown_retrieve_genders_data(handle, genders_filename) == -1) {
     goto cleanup;
@@ -448,13 +437,11 @@ int nodeupdown_load_data(nodeupdown_t handle,
   if (nodeupdown_retrieve_gmond_data(handle, 
                                      ip_buffer, 
                                      gmond_port, 
-                                     timeout_len) == -1) {
+                                     timeout_len) == -1)
     goto cleanup;
-  }
 
-  if (nodeupdown_compare_genders_to_gmond_nodes(handle)) {
+  if (nodeupdown_compare_genders_to_gmond_nodes(handle))
     goto cleanup;
-  }
 
   if ((handle->max_nodes = genders_getnumnodes(handle->genders_handle)) == -1) {
     handle->errnum = NODEUPDOWN_ERR_GENDERS;
@@ -501,9 +488,8 @@ int nodeupdown_retrieve_gmond_data(nodeupdown_t handle,
   struct parse_vars parse_vars;
   struct timeval tv;
 
-  if ((sockfd = low_timeout_connect(handle, ip, port)) == -1) {
+  if ((sockfd = low_timeout_connect(handle, ip, port)) == -1)
     goto cleanup;
-  }
 
   parse_vars.handle = handle;
   parse_vars.timeout_len = timeout_len;
@@ -523,6 +509,7 @@ int nodeupdown_retrieve_gmond_data(nodeupdown_t handle,
   while (1) {
     int bytes_read;
     void *buff = XML_GetBuffer(xml_parser, BUFSIZ);
+
     if (buff == NULL) {
       handle->errnum = NODEUPDOWN_ERR_GANGLIA;
       goto cleanup;
@@ -538,9 +525,8 @@ int nodeupdown_retrieve_gmond_data(nodeupdown_t handle,
       goto cleanup;
     }
 
-    if (bytes_read == 0) {
+    if (bytes_read == 0)
       break;
-    }
   }
 
   close(sockfd);
@@ -550,13 +536,11 @@ int nodeupdown_retrieve_gmond_data(nodeupdown_t handle,
 
  cleanup:
 
-  if (sockfd != -1) {
+  if (sockfd != -1)
     close(sockfd);
-  }
 
-  if (xml_parser != NULL) {
+  if (xml_parser != NULL)
     XML_ParserFree(xml_parser);
-  }
 
   return -1;
 }
@@ -667,9 +651,8 @@ int low_timeout_connect(nodeupdown_t handle, const char *ip, int port) {
   return sockfd;
 
  cleanup:
-  if (sockfd != -1) {
+  if (sockfd != -1)
     close(sockfd);
-  }
   
   return -1;
 }
@@ -706,14 +689,12 @@ void xml_parse_start(void *data, const char *e1, const char **attr) {
       return;
     }
 
-    if (get_genders_nodename(handle, attr[1], &buffer) == -1) {
+    if (get_genders_nodename(handle, attr[1], &buffer) == -1)
       return;
-    }
 
     /* shorten hostname if necessary */
-    if ((ptr = strchr(buffer, '.')) != NULL) {
+    if ((ptr = strchr(buffer, '.')) != NULL)
       *ptr = '\0';
-    }
 
     /* store up or down */
     reported = atol(attr[5]);
@@ -796,9 +777,8 @@ int get_genders_nodename(nodeupdown_t handle,
 
  cleanup:
 
-  if (buf != NULL) {
+  if (buf != NULL)
     free(buf);
-  }
 
   return -1;
 }
@@ -878,32 +858,27 @@ int nodeupdown_compare_genders_to_gmond_nodes(nodeupdown_t handle) {
   return 0;
 
  cleanup: 
-  if (genders_nodes != NULL) {
+  if (genders_nodes != NULL)
     (void)genders_nodelist_destroy(handle->genders_handle, genders_nodes);
-  }
 
-  if (altname != NULL) {
+  if (altname != NULL)
     free(altname);
-  }
 
   return -1;
 }
 
 int nodeupdown_errnum(nodeupdown_t handle) {
-  if (handle == NULL) {
+  if (handle == NULL)
     return NODEUPDOWN_ERR_NULLHANDLE;
-  }
-  else if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+  else if (handle->magic != NODEUPDOWN_MAGIC_NUM)
     return NODEUPDOWN_ERR_MAGIC;
-  }
 
   return handle->errnum;
 }
 
 char *nodeupdown_strerror(int errnum) {
-  if (errnum < NODEUPDOWN_ERR_MIN || errnum > NODEUPDOWN_ERR_MAX) {
+  if (errnum < NODEUPDOWN_ERR_MIN || errnum > NODEUPDOWN_ERR_MAX)
     return errmsg[NODEUPDOWN_ERR_ERRNUMRANGE];
-  }
 
   return errmsg[errnum];
 }
@@ -918,40 +893,34 @@ void nodeupdown_perror(nodeupdown_t handle, const char *msg) {
 
   errormsg = nodeupdown_strerror(nodeupdown_errnum(handle));
 
-  if (msg == NULL) {
+  if (msg == NULL)
     fprintf(stderr, "%s\n", errormsg);
-  }
-  else {
+  else
     fprintf(stderr, "%s: %s\n", msg, errormsg);
-  }
 }
 
 int nodeupdown_dump(nodeupdown_t handle, FILE *stream) {
 
-  if (nodeupdown_loaded_handle_err_check(handle) == -1) {
+  if (nodeupdown_loaded_handle_err_check(handle) == -1)
     return -1;
-  }
 
-  if (stream == NULL) {
+  if (stream == NULL)
     stream = stdout;
-  }
 
   if (handle->up_nodes != NULL) {
     if (output_hostlist_nodes(handle, 
                               handle->up_nodes, 
                               stream, 
-                              "whatsup up nodes") == -1) {
+                              "whatsup up nodes") == -1)
       return -1;
-    }
   }
 
   if (handle->down_nodes != NULL) {
     if (output_hostlist_nodes(handle, 
                               handle->down_nodes, 
                               stream, 
-                              "whatsup down nodes") == -1) {
+                              "whatsup down nodes") == -1)
       return -1;
-    }
   }
   fprintf(stream, "\n");
 
@@ -965,9 +934,8 @@ int output_hostlist_nodes(nodeupdown_t handle,
                           char *msg) {
   char *str;
 
-  if ((str = get_hostlist_ranged_string(handle, hostlist)) == NULL) {
+  if ((str = get_hostlist_ranged_string(handle, hostlist)) == NULL)
     return -1;
-  }
 
   fprintf(stream, "%s: %s\n", msg, str);
   free(str);
@@ -1002,25 +970,21 @@ int nodeupdown_get_nodes_string(nodeupdown_t handle,
   char *str = NULL;
   hostlist_t hl;
 
-  if (nodeupdown_loaded_handle_err_check(handle) == -1) {
+  if (nodeupdown_loaded_handle_err_check(handle) == -1)
     return -1;
-  }
 
   if (buf == NULL || buflen <= 0) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
   }
 
-  if (up_or_down == NODEUPDOWN_UP_NODES) {
+  if (up_or_down == NODEUPDOWN_UP_NODES)
     hl = handle->up_nodes;
-  }
-  else {
+  else
     hl = handle->down_nodes;
-  }
 
-  if ((str = get_hostlist_ranged_string(handle, hl)) == NULL) {
+  if ((str = get_hostlist_ranged_string(handle, hl)) == NULL)
     return -1;
-  }
 
   if (strlen(str) >= buflen) {
     free(str);
@@ -1062,28 +1026,24 @@ int nodeupdown_get_nodes_list(nodeupdown_t handle,
   int ret;
   hostlist_t hl;
 
-  if (nodeupdown_loaded_handle_err_check(handle) == -1) {
+  if (nodeupdown_loaded_handle_err_check(handle) == -1)
     return -1;
-  }
 
   if (list == NULL || len <= 0) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
   }
 
-  if (up_or_down == NODEUPDOWN_UP_NODES) {
+  if (up_or_down == NODEUPDOWN_UP_NODES)
     hl = handle->up_nodes;
-  }
-  else {
+  else
     hl = handle->down_nodes;
-  }
 
   if ((ret = nodeupdown_copy_nodes_into_list(handle, 
                                              hl,
                                              list,
-                                             len)) == -1) {
+                                             len)) == -1)
     return -1;
-  }
  
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return ret;
@@ -1109,10 +1069,12 @@ int nodeupdown_copy_nodes_into_list(nodeupdown_t handle,
       handle->errnum = NODEUPDOWN_ERR_OVERFLOW;
       return -1;
     }
+
     if (dest[count] == NULL) {
       handle->errnum = NODEUPDOWN_ERR_NULLPTR;
       return -1;
     }
+
     strcpy(dest[count], nodename);
     free(nodename);
     count++;
@@ -1135,27 +1097,23 @@ int nodeupdown_is_node(nodeupdown_t handle, const char *node, int up_or_down) {
   int ret;
   hostlist_t hl;
 
-  if (nodeupdown_loaded_handle_err_check(handle) == -1) {
+  if (nodeupdown_loaded_handle_err_check(handle) == -1)
     return -1;
-  }
 
   if (node == NULL) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
   }
 
-  if (up_or_down == NODEUPDOWN_UP_NODES) {
+  if (up_or_down == NODEUPDOWN_UP_NODES)
     hl = handle->up_nodes;
-  }
-  else {
+  else
     hl = handle->down_nodes;
-  }
 
   if ((ret = nodeupdown_check_if_node_in_hostlist(handle,
                                                   hl,
-                                                  node)) == -1) {
+                                                  node)) == -1)
     return -1;
-  }
 
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return ret;
@@ -1176,16 +1134,13 @@ int nodeupdown_check_if_node_in_hostlist(nodeupdown_t handle,
      * so lets find the main node name
      */
 
-    if (get_genders_nodename(handle, node, &buffer) == -1) {
+    if (get_genders_nodename(handle, node, &buffer) == -1)
       goto cleanup;
-    }
 
-    if (hostlist_find(nodes, buffer) != -1) {
+    if (hostlist_find(nodes, buffer) != -1)
       return_value = 1;
-    }
-    else {
+    else
       return_value = 0;
-    }
     
     free(buffer);
   }
@@ -1194,9 +1149,8 @@ int nodeupdown_check_if_node_in_hostlist(nodeupdown_t handle,
 
  cleanup:
 
-  if (buffer != NULL) {
+  if (buffer != NULL)
     free(buffer);
-  }
   
   return -1;
 }
@@ -1205,9 +1159,8 @@ int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list) {
   int i, j;
   char **node;
   
-  if (nodeupdown_loaded_handle_err_check(handle) == -1) {
+  if (nodeupdown_loaded_handle_err_check(handle) == -1)
     return -1;
-  }
 
   if (list == NULL) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
@@ -1243,9 +1196,8 @@ int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list) {
 int nodeupdown_nodelist_clear(nodeupdown_t handle, char **list) {
   int i;
   
-  if (nodeupdown_loaded_handle_err_check(handle) == -1) {
+  if (nodeupdown_loaded_handle_err_check(handle) == -1)
     return -1;
-  }
 
   if (list == NULL) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
@@ -1268,21 +1220,18 @@ int nodeupdown_nodelist_clear(nodeupdown_t handle, char **list) {
 int nodeupdown_nodelist_destroy(nodeupdown_t handle, char **list) {
   int i;
 
-  if (nodeupdown_loaded_handle_err_check(handle) == -1) {
+  if (nodeupdown_loaded_handle_err_check(handle) == -1)
     return -1;
-  }
 
   if (list == NULL) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
   }
 
-  for (i = 0; i < handle->max_nodes; i++) {
+  for (i = 0; i < handle->max_nodes; i++)
     free(list[i]);
-  }
   free(list);
 
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return 0;
-
 }
