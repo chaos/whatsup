@@ -1,5 +1,6 @@
 2003-02-28 Albert Chu <chu11@llnl.gov>
            - added manpages for libnodeupdown
+	   - fixed errnum output order in libnodeupdown.
            - tagged whatsup-1-0-2
 
 2003-02-24  Albert Chu  <chu11@llnl.gov>
