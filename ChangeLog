@@ -18,6 +18,8 @@
 	* configure.ac: Added genders vs. gendersllnl option support.
 
 	* README: Updated with more info. 
+
+	* whatsup.spec.in: Updated to inclue conditional builds.
 	
 2003-11-10  Albert Chu  <chu11@llnl.gov>
 

@@ -1,4 +1,4 @@
-# $Id: whatsup.spec.in,v 1.3 2003-11-08 16:55:16 achu Exp $
+# $Id: whatsup.spec.in,v 1.4 2003-11-14 00:25:49 achu Exp $
 
 Name:           @PROJECT@
 Version:        @VERSION@
@@ -12,10 +12,11 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}
 
 Source0:        %{name}-%{version}.tgz
 
-Requires:       genders >= 1.2
-Requires:       gendersllnl
 Requires:       ganglia-monitor-core
 Requires:       ganglia-monitor-core-lib 
+
+%{?_with_genders: Requires: genders >= 1.2}
+%{?_with_gendersllnl: Requires: gendersllnl}
 
 %description
 whatsup is a tool that lists which nodes are currently up or down in a
@@ -30,7 +31,7 @@ programmatically determine if a node is up or down.
 
 %build
 ./bootstrap
-./configure --prefix=/usr --with-perl-install-prefix="$RPM_BUILD_ROOT/usr" --with-genders
+./configure --prefix=/usr --with-perl-install-prefix="$RPM_BUILD_ROOT/usr" %{?_with_masterlist} %{?_without_masterlist} %{?_with_genders} %{?_without_genders} %{?_with_gendersllnl} %{?_without_gendersllnl}
 make
 
 %install
