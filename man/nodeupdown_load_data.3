@@ -1,9 +1,9 @@
 \."#################################################################
-\."$Id: nodeupdown_load_data.3,v 1.14 2003-07-16 01:54:07 achu Exp $
+\."$Id: nodeupdown_load_data.3,v 1.15 2003-07-16 18:01:29 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
-.TH NODEUPDOWN_LOAD_DATA 3 "Release 1.0" "LLNL" "LIBNODEUPDOWN"
+.TH NODEUPDOWN_LOAD_DATA 3 "Release 1.1" "LLNL" "LIBNODEUPDOWN"
 .SH NAME
 nodeupdown_load_data \- load data from genders and ganglia
 .SH SYNOPSIS
@@ -36,14 +36,14 @@ Only one of the parameters is necessary.  The other parameter can be
 set to NULL.  If both \fIgmond_hostname\fR and \fIgmond_ip\fR are
 non-NULL, the \fIgmond_hostname\fR parameter will be ignored.
 
-System administrators may optionally store a default gmond IP address
-and port number in a nodeupdown configuration file.  The configuration
-file should be stored at the location defined by NODEUPDOWN_CONF_FILE.
-The configuration file will give
+System administrators may optionally specify a different default gmond
+IP address and port number in a nodeupdown configuration file.  The
+configuration file should be stored at the location defined by
+NODEUPDOWN_CONF_FILE.  The existence of the configuration file informs
 .BR nodeupdown_load_data (3) 
-a second chance to connect to a gmond server when the default values
-fail to connect.  Below is an example of a nodeupdown configuration
-file:
+to attempt to connect to a different gmond server and port when the
+default hostname, ip address, and port are specified.  Below is an
+example of a nodeupdown configuration file:
 
 # gmond_ip    gmond_port
 .br
@@ -51,8 +51,14 @@ file:
 .br
 
 The IP address and port may be separated by any amount of whitespace.
-They must be stored on the first line of the configuration
-file or the second line if the first line contains a comment.
+They must be stored on the first line of the configuration file, or the
+second line if the first line contains a comment beginning with '#'.
+
+If the configuration file is improperly formatted or the connection
+to the specified gmond server fails,
+.BR nodeupdown_load_data (3)
+will attempt to connect to the default IP address and port specified
+above.
 .br
 .SH RETURN VALUES
 On success, 0 is returned.  On error, -1 is returned, and an error

@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.63 2003-07-16 01:54:07 achu Exp $
+ * $Id: nodeupdown.c,v 1.64 2003-07-16 18:01:29 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -331,39 +331,44 @@ int _connect_gmond(nodeupdown_t handle,
   char buf[NODEUPDOWN_BUFFERLEN];
   char *ip_ptr, *port_ptr;
   
-  if ((sockfd = _low_timeout_connect(handle, gmond_ip, gmond_port)) == -1) {
-
-    if (check_conf) {
-
+  if (check_conf) {
       /* 
        * Attempt to read gmond ip/port from conf file.  If anything
-       * fails prior to the next connection attempt, just fail and
-       * return error code from the previous _low_timeout_connect()
+       * fails, try again with normal defaults.
        */
 
       if ((fd = open(NODEUPDOWN_CONF_FILE, O_RDONLY)) < 0)
-        goto cleanup;
+        goto try_default;
 
-      if (_readline(fd, buf, NODEUPDOWN_BUFFERLEN) < 0)
-        goto cleanup;
+      memset(buf, '\0', NODEUPDOWN_BUFFERLEN);
+      if (_readline(fd, buf, NODEUPDOWN_BUFFERLEN) <= 0)
+        goto try_default;
 
       if (buf[0] == '#') {
-        if (_readline(fd, buf, NODEUPDOWN_BUFFERLEN) < 0)
-          goto cleanup;
+        memset(buf, '\0', NODEUPDOWN_BUFFERLEN);
+        if (_readline(fd, buf, NODEUPDOWN_BUFFERLEN) <= 0)
+          goto try_default;
       }
       
       ip_ptr = buf;
-      strtok(buf, " \t");
+      if (strtok(buf, " \t") == NULL)
+        goto try_default;
+        
       if ((port_ptr = strtok(NULL, " \t")) == NULL)
-        goto cleanup;
+        goto try_default;
 
       port = atoi(port_ptr);
 
-      sockfd = _low_timeout_connect(handle, ip_ptr, port);
-    }
+      if ((sockfd = _low_timeout_connect(handle, ip_ptr, port)) < 0)
+        goto try_default;
+
+      goto done;
   }
 
- cleanup:
+ try_default:
+  sockfd = _low_timeout_connect(handle, gmond_ip, gmond_port);
+
+ done:
   return sockfd;
 }
 
