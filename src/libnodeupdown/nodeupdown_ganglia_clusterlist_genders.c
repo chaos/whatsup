@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_genders.c,v 1.2 2005-04-01 01:37:47 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_genders.c,v 1.3 2005-04-01 16:19:32 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -37,6 +37,7 @@
 #include "nodeupdown_common.h"
 #include "nodeupdown_ganglia_clusterlist.h"
 #include "nodeupdown_ganglia_clusterlist_util.h"
+#include "nodeupdown_ganglia_clusterlist_genders_util.h"
 #include "hostlist.h"
 
 static genders_t genders_handle = NULL;
@@ -48,100 +49,29 @@ genders_ganglia_clusterlist_parse_options(nodeupdown_t handle, char **options)
   return nodeupdown_ganglia_clusterlist_parse_filename(handle, options, genders_file, MAXPATHLEN);
 }
 
-static int
-_load_genders_data(nodeupdown_t handle)
-{
-  char *file = NULL;
-
-  if (genders_file)
-    file = genders_file;
-
-  if (!(genders_handle = genders_handle_create())) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_OUTMEM;
-      goto cleanup;
-    }
- 
-  if (genders_load_data(genders_handle, file) < 0) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_MASTERLIST_OPEN;
-      goto cleanup;
-    }
- 
-  return 0;
-
- cleanup:
-  genders_handle_destroy(genders_handle);
-  genders_handle = NULL;
-  return -1;
-}
 
 int 
 genders_ganglia_clusterlist_init(nodeupdown_t handle, void *ptr) 
 {
-  return _load_genders_data(handle);
+  return genders_util_ganglia_clusterlist_init(handle, &genders_handle, genders_file);
 }
 
 int 
 genders_ganglia_clusterlist_finish(nodeupdown_t handle) 
 {
-  handle->max_nodes = genders_getnumnodes(genders_handle);
-  return 0;
+  return genders_util_ganglia_clusterlist_finish(handle, genders_handle);
 }
 
 int 
 genders_ganglia_clusterlist_cleanup(nodeupdown_t handle) 
 {
-  genders_handle_destroy(genders_handle);
-  genders_handle = NULL;
-  return 0;
+  return genders_util_ganglia_clusterlist_cleanup(handle, &genders_handle);
 }
 
 int 
 genders_ganglia_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
 {
-  int i, num;
-  char **nlist = NULL;
- 
-  /* get all genders nodes */
-  if ((num = genders_nodelist_create(genders_handle, &nlist)) < 0) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
-      goto cleanup;
-    }
-   
-  if (genders_getnodes(genders_handle, nlist, num, NULL, NULL) < 0) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
-      goto cleanup;
-    }
-   
-  for (i = 0; i < num; i++) 
-    {
-      if ((hostlist_find(handle->up_nodes, nlist[i]) < 0)
-          && (hostlist_find(handle->down_nodes, nlist[i]) < 0)) 
-        {
-          /* This node must also be down */
-          if (hostlist_push_host(handle->down_nodes, nlist[i]) == 0) 
-            {
-              handle->errnum = NODEUPDOWN_ERR_HOSTLIST;
-              goto cleanup;
-            }
-        }
-    }
- 
-  if (genders_nodelist_destroy(genders_handle, nlist) < 0) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
-      goto cleanup;
-    }
- 
-  hostlist_sort(handle->down_nodes);
-  return 0;
- 
- cleanup:
-  (void)genders_nodelist_destroy(genders_handle, nlist);
-  return -1;
+  return genders_util_ganglia_clusterlist_compare_to_clusterlist(handle, genders_handle);
 }
 
 int 

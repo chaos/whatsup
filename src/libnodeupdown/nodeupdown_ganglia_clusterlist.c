@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist.c,v 1.1 2005-04-01 01:37:47 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist.c,v 1.2 2005-04-01 16:19:32 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -56,18 +56,18 @@ static struct nodeupdown_ganglia_clusterlist_module_info *ganglia_clusterlist_mo
 static int
 _load_module(nodeupdown_t handle, char *module_path)
 {
-  if (!(clusterlist_module_dl_handle = lt_dlopen(module_path)))
+  if (!(ganglia_clusterlist_module_dl_handle = lt_dlopen(module_path)))
     {
       handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
       return -1;
     }
-                                                                                               
-  if (!(clusterlist_module_info = (struct cerebrod_clusterlist_module_info *)lt_dlsym(ganglia_clusterlist_module_dl_handle, "ganglia_clusterlist_module_info")))
+
+  if (!(ganglia_clusterlist_module_info = (struct nodeupdown_ganglia_clusterlist_module_info *)lt_dlsym(ganglia_clusterlist_module_dl_handle, "ganglia_clusterlist_module_info")))
     {
       handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
       return -1;
     }
-                                                                                               
+
   if (!ganglia_clusterlist_module_info->ganglia_clusterlist_module_name
       || !ganglia_clusterlist_module_info->parse_options
       || !ganglia_clusterlist_module_info->init
@@ -95,27 +95,30 @@ _search_dir_for_module(nodeupdown_t handle,
   DIR *dir;
   int i = 0, found = 0;
  
+  /* Can't open the directory? we assume it doesn't exit, so its not
+   * an error.
+   */
   if (!(dir = opendir(search_dir)))
     return 0;
-                                                                                               
+
   for (i = 0; i < modules_list_len; i++)
     {
       struct dirent *dirent;
-                                                                                               
+
       while ((dirent = readdir(dir)))
         {
           if (!strcmp(dirent->d_name, modules_list[i]))
             {
               char filebuf[MAXPATHLEN+1];
               int ret;
-                                                                                               
+
               memset(filebuf, '\0', MAXPATHLEN+1);
               snprintf(filebuf, MAXPATHLEN, "%s/%s",
                        search_dir, modules_list[i]);
-                                                                                               
+
               if ((ret = _load_module(handle, filebuf)) < 0)
-                goto done;
-                                                                                               
+                goto cleanup;
+
               if (ret)
                 {
                   found++;
@@ -125,10 +128,10 @@ _search_dir_for_module(nodeupdown_t handle,
         }
       rewinddir(dir);
     }
-                                                                                               
+
  done:
   closedir(dir);
-                                                                                               
+
   return (found) ? 1 : 0;
 
  cleanup:
@@ -189,7 +192,7 @@ nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlis
       if (rv)
         goto done;
 
-      handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
+      handle->errnum = NODEUPDOWN_ERR_CONF_OPEN;
       goto cleanup;
     }
   else
@@ -230,6 +233,7 @@ nodeupdown_gangali_clusterlist_unload_module(nodeupdown_t handle)
   lt_dlexit();
   ganglia_clusterlist_module_info = NULL;
   ganglia_clusterlist_module_dl_handle = NULL;
+  return 0;
 }
  
 int 

@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.21 2005-04-01 00:53:05 achu Exp $
+## $Id: Makefile.am,v 1.22 2005-04-01 16:19:32 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -14,7 +14,7 @@ noinst_HEADERS  = nodeupdown_masterlist.h nodeupdown_common.h
 lib_LTLIBRARIES = libnodeupdown.la
 libnodeupdown_la_CFLAGS = -D_REENTRANT -I ../../config \
 	                  -I $(srcdir)/../libcommon -I $(srcdir)/../libexpat
-libnodeupdown_la_SOURCES = nodeupdown.c nodeupdown_masterlist.c
+libnodeupdown_la_SOURCES = nodeupdown.c nodeupdown_masterlist.c nodeupdown_ganglia_clusterlist.c
 libnodeupdown_la_LIBADD = ../libcommon/libcommon.la ../libexpat/libexpat.la $(GENDERS_LIBS) $(GENDERSLLNL_LIBS)
 libnodeupdown_la_LDFLAGS = -version-info @LIBNODEUPDOWN_VERSION_INFO@ -export-dynamic $(OTHER_FLAGS)
 EXTRA_DIST = nodeupdown.map
@@ -34,6 +34,7 @@ nodeupdownmodulelib_LTLIBRARIES = \
 
 nodeupdown_ganglia_clusterlist_gendersllnl_la_SOURCES = \
 	nodeupdown_ganglia_clusterlist_gendersllnl.c \
+	nodeupdown_ganglia_clusterlist_genders_util.c \
 	nodeupdown_ganglia_clusterlist_util.c
 nodeupdown_ganglia_clusterlist_gendersllnl_la_LDFLAGS = \
 	$(MODULE_FLAGS) $(GENDERSLLNL_LIBS)
@@ -42,6 +43,7 @@ nodeupdown_ganglia_clusterlist_gendersllnl_la_CFLAGS  = \
  
 nodeupdown_ganglia_clusterlist_genders_la_SOURCES = \
 	nodeupdown_ganglia_clusterlist_genders.c \
+	nodeupdown_ganglia_clusterlist_genders_util.c \
 	nodeupdown_ganglia_clusterlist_util.c
 nodeupdown_ganglia_clusterlist_genders_la_LDFLAGS = \
 	$(MODULE_FLAGS) $(GENDERS_LIBS)

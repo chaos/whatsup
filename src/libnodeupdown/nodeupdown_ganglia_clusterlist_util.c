@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_util.c,v 1.1 2005-04-01 00:53:05 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_util.c,v 1.2 2005-04-01 16:19:32 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -45,6 +45,7 @@ nodeupdown_ganglia_clusterlist_parse_filename(nodeupdown_t handle, char **option
 {
   int i = 0;
  
+  memset(filename, '\0', filename_len);
   while (options[i] != NULL)
     {
       if (strstr(options[i], "filename"))
