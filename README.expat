@@ -1,8 +1,3 @@
-The Expat XML parsing library is included in Ganglia's libganglia
-library.  However, due to compilation issues between different
-versions of libganglia, whatsup will include expat to eliminate
-dependence on libganglia.
-
 The Expat XML parsing library is written by James Clark
 <jjc@jclark.com>.  The webpage can be found at
 http://www.jclark.com/xml/expat.html.  Expat comes with the following
