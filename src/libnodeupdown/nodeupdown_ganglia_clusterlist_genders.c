@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_genders.c,v 1.1 2005-04-01 00:56:53 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_genders.c,v 1.2 2005-04-01 01:37:47 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -180,7 +180,6 @@ genders_ganglia_clusterlist_get_nodename(nodeupdown_t handle,
 int 
 genders_ganglia_clusterlist_increase_max_nodes(nodeupdown_t handle) 
 {
-  handle->max_nodes++;
   return 0;
 }
 
@@ -195,4 +194,5 @@ struct nodeupdown_ganglia_clusterlist_module_info ganglia_clusterlist_module_inf
     &genders_ganglia_clusterlist_is_node_in_cluster,
     &genders_ganglia_clusterlist_is_node_discovered,
     &genders_ganglia_clusterlist_get_nodename,
+    &genders_ganglia_clusterlist_increase_max_nodes,
   };

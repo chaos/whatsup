@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist.h,v 1.2 2005-04-01 00:53:05 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist.h,v 1.3 2005-04-01 01:37:47 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -41,6 +41,7 @@ typedef int (*Nodeupdown_ganglia_clusterlist_compare_to_clusterlist)(nodeupdown_
 typedef int (*Nodeupdown_ganglia_clusterlist_is_node_in_cluster)(nodeupdown_t, const char *);
 typedef int (*Nodeupdown_ganglia_clusterlist_is_node_discovered)(nodeupdown_t, const char *);
 typedef int (*Nodeupdown_ganglia_clusterlist_get_nodename)(nodeupdown_t, const char *, char *, int);
+typedef int (*Nodeupdown_ganglia_clusterlist_increase_max_nodes)(nodeupdown_t);
 
 /* 
  * Define all module information. 
@@ -57,13 +58,22 @@ struct nodeupdown_ganglia_clusterlist_module_info
   Nodeupdown_ganglia_clusterlist_is_node_in_cluster is_node_in_cluster;
   Nodeupdown_ganglia_clusterlist_is_node_discovered is_node_discovered;
   Nodeupdown_ganglia_clusterlist_get_nodename get_nodename;
+  Nodeupdown_ganglia_clusterlist_increase_max_nodes increase_max_nodes;
 };
 
 /*
  * Load the clusterlist module
  */
-int nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle);
+int nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlist_module);
 
+/*  
+ * Unload the clusterlist module
+ */
+int nodeupdown_gangali_clusterlist_unload_module(nodeupdown_t handle);
+
+/*
+ * Pasre the clusterlist module options
+ */
 int nodeupdown_ganglia_clusterlist_parse_options(nodeupdown_t handle, char **options);
 
 /* 

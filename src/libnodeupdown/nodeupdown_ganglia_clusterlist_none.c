@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_none.c,v 1.3 2005-04-01 00:53:05 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_none.c,v 1.4 2005-04-01 01:37:47 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -125,4 +125,5 @@ struct nodeupdown_ganglia_clusterlist_module_info ganglia_clusterlist_module_inf
     &none_ganglia_clusterlist_is_node_in_cluster,
     &none_ganglia_clusterlist_is_node_discovered,
     &none_ganglia_clusterlist_get_nodename,
+    &none_ganglia_clusterlist_increase_max_nodes,
   };
