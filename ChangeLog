@@ -2,6 +2,8 @@
 
 	* src/libnodeupdown/Makefile.am: Compile with _REENTRANT.
 
+	* tagged whatsup-1-3-1
+
 2003-01-15  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown_masterlist.c (_readline): fix
