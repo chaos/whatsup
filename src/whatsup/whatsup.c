@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.31 2003-05-15 20:19:37 achu Exp $
+ * $Id: whatsup.c,v 1.32 2003-05-15 20:24:23 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -506,7 +506,7 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
  * - get a hostlist ranged string 
  */
 char * get_hostlist_string(hostlist_t hostlist, int which) {
-  char *str;
+  char *str = NULL;
   int ret, str_len;
 
   do {
