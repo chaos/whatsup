@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown.h,v 1.2 2003-02-20 01:40:17 achu Exp $
+ *  $Id: nodeupdown.h,v 1.3 2003-02-21 18:52:22 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/nodeupdown.h,v $
  *    
  */
@@ -64,8 +64,9 @@ nodeupdown_t nodeupdown_create(void);
 /* nodeupdown_load_data
  * - loads data from genders and ganglia
  * - sorts and processes information to determine up and down nodes
- * - user may pass in hostname, or IP address, or both.  if both
- *   are NULL, defaults are used.
+ * - user may pass in hostname, or IP address (presentable format), or both.  
+ * - if both hostname and IP are passed in, IP address is used.
+ * - if hostname and IP address is NULL, default IP is used.
  * - returns 0 on success, -1 on error
  */
 int nodeupdown_load_data(nodeupdown_t handle, 
