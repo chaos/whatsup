@@ -1,3 +1,7 @@
+2004-11-08  Albert Chu  <chu11@llnl.gov>
+
+	* whatsup.spec.in: Fix up description.
+	
 2004-10-28  Albert Chu  <chu11@llnl.gov>
 
 	* whatsup.spec.in: Fix for portability issues:

@@ -15,12 +15,12 @@ Requires:       gendersllnl
 %endif
 
 %description
-whatsup is a tool that lists which nodes are currently up or down in a
-cluster.  It determines which nodes are up or down based on
-information gathered from genders and ganglia.
+whatsup is a cluster node up/down detection utility.  Node up/down
+information is calculated based on information gathered from ganglia
+and a master list of cluster nodes.
 
-The nodeupdown library is a C library that allows users to 
-programmatically determine if a node is up or down.
+The nodeupdown library is supplies an API to determine the up and down
+nodes in a cluster.
 
 %prep
 %setup -q -n %{name}-%{version}-%{release}
