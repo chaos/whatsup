@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.32 2003-05-15 20:24:23 achu Exp $
+ * $Id: whatsup.c,v 1.33 2003-05-16 16:00:42 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -112,7 +112,7 @@ static int get_all_up_or_down_nodes(struct arginfo *,
                                     nodeupdown_t, 
                                     char **);
 
-static int convert_to_altnames(struct arginfo *, char **;
+static int convert_to_altnames(struct arginfo *, char **);
 
 static int get_up_or_down_nodes(struct arginfo *, 
                                 enum whatsup_output_type, 
@@ -505,7 +505,7 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
 /* get_hostlist_string
  * - get a hostlist ranged string 
  */
-char * get_hostlist_string(hostlist_t hostlist, int which) {
+char * get_hostlist_string(hostlist_t hl, int which) {
   char *str = NULL;
   int ret, str_len;
 
@@ -513,15 +513,15 @@ char * get_hostlist_string(hostlist_t hostlist, int which) {
     free(str);
     str_len = WHATSUP_BUFFERLEN;
     if ((str = (char *)malloc(str_len)) == NULL) {
-      handle->errnum = WHATSUP_ERR_OUTMEM;
+      output_error("out of memory", NULL);
       return NULL;
     }
     memset(str, '\0', str_len);
 
     if (which == RANGED_STRING)
-      ret = hostlist_ranged_string(hostlist, str_len, str);
+      ret = hostlist_ranged_string(hl, str_len, str);
     else
-      ret = hostlist_deranged_string(hostlist, str_len, str);
+      ret = hostlist_deranged_string(hl, str_len, str);
   } while (ret == -1);
   
   return str;
@@ -590,7 +590,7 @@ int check_if_nodes_are_up_or_down(struct arginfo *arginfo,
   free(str);
   
   hostlist_iterator_destroy(iter);
-  hostlist_iterator_destroy(hl);
+  hostlist_destroy(hl);
 
   return -1;
 }
@@ -714,7 +714,7 @@ int get_up_or_down_nodes(struct arginfo *arginfo,
     if (check_if_nodes_are_up_or_down(arginfo, 
                                       output_type, 
                                       handle, 
-                                      str) != 0)
+                                      &str) != 0)
       goto cleanup;
   }
   else {
@@ -722,7 +722,7 @@ int get_up_or_down_nodes(struct arginfo *arginfo,
     if (get_all_up_or_down_nodes(arginfo, 
                                  output_type, 
                                  handle, 
-                                 str) != 0)
+                                 &str) != 0)
       goto cleanup;
   }
 
@@ -751,9 +751,6 @@ int output_nodes(struct arginfo *arginfo, char *nodes) {
   char *ptr;
   char break_type;
   hostlist_t hl = NULL;
-
-  /* sort nodes ahead of time */
-  hostlist_sort(nodes);
 
   if (arginfo->list_type == WHATSUP_HOSTLIST)
     fprintf(stdout, "%s\n", nodes);
