@@ -1,5 +1,6 @@
+
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.4 2004-01-12 18:58:01 achu Exp $
+ *  $Id: conffile.c,v 1.5 2004-01-12 19:19:52 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -64,11 +65,11 @@ static char *_errmsg[] = {
     "overflow line length on line %d",
     "overflow option name length on line %d",
     "overflow arg length on line %d",
-    "no argument for option \"%s\" on line %d",
-    "invalid number of arguments listed for option \"%s\" on line %d",
+    "missing argument for option \"%s\" on line %d",
+    "too many arguments listed for option \"%s\" on line %d",
     "invalid argument listed for option \"%s\" on line %d",
     "quotation marks used improperly on line %d",
-    "continuation \\ used improperly on line %d",
+    "continuation character '\\' used improperly on line %d",
     "callback function generated error",
     "configuration file does not exist",
     "configuration file cannot be opened",
@@ -520,6 +521,18 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
         return -1;
     }
 
+    if ((option->option_type == CONFFILE_OPTION_LIST_INT
+         || option->option_type == CONFFILE_OPTION_LIST_DOUBLE
+         || option->option_type == CONFFILE_OPTION_LIST_STRING)
+        && option->option_type_arg > 0
+        && numargs != option->option_type_arg) {
+        if (numargs < option->option_type_arg)
+            cf->errnum = CONFFILE_ERR_PARSE_ARG_MISSING;
+        else
+            cf->errnum = CONFFILE_ERR_PARSE_ARG_TOOMANY;
+        return -1;
+    }
+
     if (option->option_type == CONFFILE_OPTION_BOOL) {
         if (strcmp(args[0], "1") != 0
             && strcmp(args[0], "0") != 0
@@ -624,6 +637,10 @@ conffile_parse(conffile_t cf,
           || options[i].option_type > CONFFILE_OPTION_LIST_STRING
           || (options[i].option_type != CONFFILE_OPTION_IGNORE
               && options[i].callback_func == NULL)
+          || ((options[i].option_type == CONFFILE_OPTION_LIST_INT
+               || options[i].option_type == CONFFILE_OPTION_LIST_DOUBLE
+               || options[i].option_type == CONFFILE_OPTION_LIST_STRING)
+              && options[i].option_type_arg == 0)
           || options[i].max_count < 0
           || options[i].required_count < 0
           || options[i].count_ptr == NULL) {

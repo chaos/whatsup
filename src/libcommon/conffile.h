@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.h,v 1.2 2004-01-12 18:58:01 achu Exp $
+ *  $Id: conffile.h,v 1.3 2004-01-12 19:19:52 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -100,6 +100,11 @@
  * LIST_DOUBLE - up to MAX_ARGS double args
  * LIST_STRING - up to MAX_ARGS string args, each string up to 
  *               MAX_ARGLEN in length
+ *  
+ * For LIST_INT, LIST_DOUBLE, and LIST_STRING, option_type_arg in
+ * struct conffile_option can be set to the length of the list
+ * desired, or < 0 for a variable length list.  For all other option
+ * types option_type_arg will be ignored.
  *
  * If an argument is missing a PARSE_NO_ARG error is returned.  If the
  * incorrect number of arguments is listed, PARSE_NUM_ARGS is
@@ -247,7 +252,8 @@ typedef int (*conffile_option_func)(char *optionname,
  *
  * 'optionname' is the option name that should be serached for.
  * 'option_type' is the option type specified in conffile.  See 
- *      OPTION TYPES above.   
+ *      OPTION TYPES above.
+ * 'option_type_arg' argument for the option type.  See OPTION TYPES above.
  * 'callback_func' is the callback function to be called when the
  *     option has been found.
  * 'max_count' is the maximum number of times this option can be
@@ -266,6 +272,7 @@ typedef int (*conffile_option_func)(char *optionname,
 struct conffile_option {
     char *optionname;
     int option_type;
+    int option_type_arg;
     conffile_option_func callback_func;
     int max_count;
     int required_count;
