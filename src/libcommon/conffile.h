@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.h,v 1.10 2004-01-13 19:29:56 achu Exp $
+ *  $Id: conffile.h,v 1.11 2004-01-15 01:09:35 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -175,6 +175,9 @@
 #define CONFFILE_ERR_NULLHANDLE                0x13
 #define CONFFILE_ERR_INTERNAL                  0x14
 #define CONFFILE_ERR_ERRNUMRANGE               0x15
+
+#define CONFFILE_IS_PARSE_ERR(x)  ((x) >= CONFFILE_ERR_PARSE_OPTION_UNKNOWN \
+                                   && (x) <= CONFFILE_ERR_PARSE_CALLBACK)
 
 /* FLAGS
  * 

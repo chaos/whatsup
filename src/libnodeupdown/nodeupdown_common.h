@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_common.h,v 1.10 2004-01-10 01:25:10 achu Exp $
+ *  $Id: nodeupdown_common.h,v 1.11 2004-01-15 01:09:36 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -27,9 +27,7 @@
 #ifndef _NODEUPDOWN_COMMON_H
 #define _NODEUPDOWN_COMMON_H
 
-/* Common code, definitions, and functions in nodeupdown.c and
- * nodeupdown_masterlist.c 
- */
+/* Common code for nodeupdown.c and nodeupdown_masterlist.c */
 
 #if HAVE_CONFIG_H
 #include "config.h"

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.101 2004-01-14 22:50:40 achu Exp $
+ *  $Id: nodeupdown.c,v 1.102 2004-01-15 01:09:36 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -81,12 +81,10 @@ struct parse_vars {
 static char * errmsg[] = {
   "success",
   "nodeupdown handle is null",
-  "open file error",
-  "read file error",
-  "connection to server error",
-  "connection to server timeout",
-  "improper hostname error",
-  "improper address error",
+  "connection to gmond server error",
+  "connection to gmond server timeout",
+  "improper gmond hostname error",
+  "improper gmond address error",
   "network error",
   "data already loaded",
   "data not loaded",
@@ -96,8 +94,14 @@ static char * errmsg[] = {
   "out of memory",
   "node not found",
   "internal master list error",
-  "internal XML error",
-  "configuration file error",
+  "open masterlist file error",
+  "read masterlist file error",
+  "parse masterlist error",
+  "internal configuration file error",
+  "open conf file error",
+  "read conf file error",
+  "parse conf file error",
+  "internal XML parsing error",
   "internal hostlist error",
   "nodeupdown handle magic number incorrect, improper handle passed in",
   "internal system error",
@@ -245,8 +249,16 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd)
   if (conffile_parse(cf, NODEUPDOWN_CONF_FILE, options, num, NULL, 0, 0) < 0) {
       /* Not an error if the file does not exist */
       if (conffile_errnum(cf) != CONFFILE_ERR_EXIST) {
+        int errnum = conffile_errnum(cf);
+        if (errnum == CONFFILE_ERR_OPEN)
+          handle->errnum = NODEUPDOWN_ERR_CONF_OPEN;
+        else if (errnum == CONFFILE_ERR_READ)
+          handle->errnum = NODEUPDOWN_ERR_CONF_READ;
+        else if (CONFFILE_IS_PARSE_ERR(errnum))
+          handle->errnum = NODEUPDOWN_ERR_CONF_PARSE;
+        else
           handle->errnum = NODEUPDOWN_ERR_CONF;
-	  goto cleanup;
+        goto cleanup;
       }
   }
 

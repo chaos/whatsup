@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_masterlist.c,v 1.10 2004-01-14 23:34:50 achu Exp $
+ *  $Id: nodeupdown_masterlist.c,v 1.11 2004-01-15 01:09:36 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -72,14 +72,13 @@ _readline(nodeupdown_t handle, int fd, char *buf, int buflen)
   int ret;
 
   if ((ret = fd_read_line(fd, buf, buflen)) < 0) {
-    handle->errnum = NODEUPDOWN_ERR_READ;
+    handle->errnum = NODEUPDOWN_ERR_MASTERLIST_READ;
     return -1;
   }
   
-  /* overflow counts as a parse error */
-  /* XXX assumes buflen >= 2 */
-  if (ret == buflen && buf[buflen-2] != '\n') {
-    handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+  /* overflow is a parse error */
+  if (ret == buflen) {
+    handle->errnum = NODEUPDOWN_ERR_MASTERLIST_PARSE;
     return -1;
   }
 
@@ -101,20 +100,20 @@ _load_hostsfile_data(nodeupdown_t handle, const char *filename)
   }
 
   if ((fd = open(filename, O_RDONLY)) < 0) {
-    handle->errnum = NODEUPDOWN_ERR_OPEN;
+    handle->errnum = NODEUPDOWN_ERR_MASTERLIST_OPEN;
     return -1;
   }
 
-  /* XXX: This sucks, I need to find a good file parsing lib */
+  /* XXX: This sucks, I need to find a good & generic file parsing lib */
   while ((len = _readline(handle, fd, buf, NODEUPDOWN_BUFFERLEN)) > 0) {
     if (buf[0] == '#')		/* skip comments */
       continue;
     else if (strlen(buf) > MAXHOSTNAMELEN) {
-      handle->errnum = NODEUPDOWN_ERR_READ;
+      handle->errnum = NODEUPDOWN_ERR_MASTERLIST_PARSE;
       goto cleanup;
     }
     else if (strchr(buf, '.') != NULL) {
-      handle->errnum = NODEUPDOWN_ERR_READ;
+      handle->errnum = NODEUPDOWN_ERR_MASTERLIST_PARSE;
       goto cleanup;
     }
     else {
@@ -170,7 +169,7 @@ _load_genders_data(nodeupdown_t handle, const char *filename)
   }
 
   if (genders_load_data(handle->genders_handle, filename) == -1) {
-    handle->errnum = NODEUPDOWN_ERR_OPEN;
+    handle->errnum = NODEUPDOWN_ERR_MASTERLIST_OPEN;
     return -1;
   }
 
@@ -359,7 +358,8 @@ nodeupdown_masterlist_get_nodename(nodeupdown_t handle, const char *node,
   return 0;
 #else
   if ((strlen(node) + 1) > buflen) {
-    handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
+    /* nodeupdown library screwed up */
+    handle->errnum = NODEUPDOWN_ERR_INTERNAL;
     return -1;
   }
   strcpy(buffer, node);

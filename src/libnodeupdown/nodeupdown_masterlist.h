@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_masterlist.h,v 1.2 2003-12-29 19:02:02 achu Exp $
+ *  $Id: nodeupdown_masterlist.h,v 1.3 2004-01-15 01:09:36 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -61,6 +61,8 @@ int nodeupdown_masterlist_is_node_in_cluster(nodeupdown_t, const char *);
  * - Used if multiple node names may be used to specify a single node
  *   and node names need to be resolved to a common one.  Most of the time
  *   this just copies the nodename straight into the buffer.
+ * - Typically, this should be called after a check using "is_node_legit"
+ *   or "is_node_in_cluster".
  */
 int nodeupdown_masterlist_get_nodename(nodeupdown_t, const char *, char *, int);
 

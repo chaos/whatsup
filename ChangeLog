@@ -23,9 +23,11 @@
 
 	Cleaned up nodeupdown code
 
-	* src/libnodeupdown/nodeupdown.c,
+	* src/libnodeupdown/nodeupdown.h.in,
+	src/libnodeupdown/nodeupdown.c,
 	src/libnodeupdown/nodeupdown_masterlist.c: Modify code style and
-	error output to fit GNU coding standards more closely.
+	error output to fit GNU coding standards more closely.  Updated
+	with new error codes and more detailed error messages.
 
 2003-01-12  Albert Chu  <chu11@llnl.gov>
 

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.85 2004-01-15 00:04:31 achu Exp $
+ *  $Id: whatsup.c,v 1.86 2004-01-15 01:09:36 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -472,12 +472,13 @@ _log10(int num)
 
 static void
 _create_formats(char *upfmt, int upfmt_len, int up_count,
-                char *downfmt, int downfmt_len, int down_count)
+                char *downfmt, int downfmt_len, int down_count,
+                char *endstr)
 {
   int max = (up_count > down_count) ? _log10(up_count) : _log10(down_count);
   max++;
-  snprintf(upfmt,   upfmt_len,   "up:   %%%dd\n", max);
-  snprintf(downfmt, downfmt_len, "down: %%%dd\n", max);
+  snprintf(upfmt,   upfmt_len,   "up:   %%%dd%s", max, endstr);
+  snprintf(downfmt, downfmt_len, "down: %%%dd%s", max, endstr);
 }
 
 int 
@@ -532,10 +533,18 @@ main(int argc, char *argv[])
     int errnum = nodeupdown_errnum(winfo.handle);
 
     /* Check for "legit" errors and output appropriate message */
-    if (errnum == NODEUPDOWN_ERR_OPEN)
+    if (errnum == NODEUPDOWN_ERR_MASTERLIST_OPEN)
       _err_exit("Cannot open masterlist file");
-    else if (errnum == NODEUPDOWN_ERR_READ)
-      _err_exit("Error reading masterlist file");
+    else if (errnum == NODEUPDOWN_ERR_MASTERLIST_READ)
+      _err_exit("Cannot read masterlist file");
+    else if (errnum == NODEUPDOWN_ERR_MASTERLIST_PARSE)
+      _err_exit("Parse error in masterlist file");
+    else if (errnum == NODEUPDOWN_ERR_CONF_OPEN)
+      _err_exit("Cannot open conf file");
+    else if (errnum == NODEUPDOWN_ERR_CONF_READ)
+      _err_exit("Cannot read conf file");
+    else if (errnum == NODEUPDOWN_ERR_CONF_PARSE)
+      _err_exit("Parse error in conf file");
     else if (errnum == NODEUPDOWN_ERR_CONNECT) 
       _err_exit("Cannot connect to gmond server");
     else if (errnum == NODEUPDOWN_ERR_TIMEOUT)
@@ -544,8 +553,6 @@ main(int argc, char *argv[])
       _err_exit("Invalid gmond hostname");
     else if (errnum == NODEUPDOWN_ERR_ADDRESS)
       _err_exit("Invalid gmond address");
-    else if (errnum == NODEUPDOWN_ERR_CONF)
-      _err_exit("Error reading configuration file");
     else
       _err_exit("main: nodeupdown_load_data(): %s", 
                 nodeupdown_errormsg(winfo.handle));
@@ -559,7 +566,7 @@ main(int argc, char *argv[])
   if (winfo.count == WHATSUP_TRUE) {
     if (winfo.output == UP_AND_DOWN) {
       _create_formats(upfmt, WHATSUP_FORMATLEN, up_count,
-                      downfmt, WHATSUP_FORMATLEN, down_count);
+                      downfmt, WHATSUP_FORMATLEN, down_count, "\n");
       fprintf(stdout, upfmt, up_count);
       fprintf(stdout, downfmt, down_count);
     }
@@ -572,7 +579,7 @@ main(int argc, char *argv[])
     if (winfo.output == UP_AND_DOWN) {
       if (winfo.list != WHATSUP_NEWLINE)
         _create_formats(upfmt, WHATSUP_FORMATLEN, up_count,
-                        downfmt, WHATSUP_FORMATLEN, down_count);
+                        downfmt, WHATSUP_FORMATLEN, down_count, ": ");
       else {
         /* newline output is funny, thus special */
         snprintf(upfmt,   WHATSUP_FORMATLEN, "up %d:");

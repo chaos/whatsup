@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.h.in,v 1.11 2003-12-29 19:02:02 achu Exp $
+ *  $Id: nodeupdown.h.in,v 1.12 2004-01-15 01:09:36 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -35,27 +35,31 @@
 
 #define NODEUPDOWN_ERR_SUCCESS            0 /* success */
 #define NODEUPDOWN_ERR_NULLHANDLE         1 /* nodeupdown handle is null */
-#define NODEUPDOWN_ERR_OPEN               2 /* open file error */
-#define NODEUPDOWN_ERR_READ               3 /* read file error */
-#define NODEUPDOWN_ERR_CONNECT            4 /* network connection error */
-#define NODEUPDOWN_ERR_TIMEOUT            5 /* network connect timeout */
-#define NODEUPDOWN_ERR_HOSTNAME           6 /* hostname invalid */
-#define NODEUPDOWN_ERR_ADDRESS            7 /* network address error */
-#define NODEUPDOWN_ERR_NETWORK            8 /* network error */
-#define NODEUPDOWN_ERR_ISLOADED           9 /* data already loaded */
-#define NODEUPDOWN_ERR_NOTLOADED         10 /* data not loaded */
-#define NODEUPDOWN_ERR_OVERFLOW          11 /* overflow on list/string passed in */
-#define NODEUPDOWN_ERR_PARAMETERS        12 /* incorrect parameters passed in */
-#define NODEUPDOWN_ERR_NULLPTR           13 /* null pointer in list */
-#define NODEUPDOWN_ERR_OUTMEM            14 /* out of memory */
-#define NODEUPDOWN_ERR_NOTFOUND          15 /* node not found */ 
-#define NODEUPDOWN_ERR_MASTERLIST        16 /* internal master list error */
-#define NODEUPDOWN_ERR_EXPAT             17 /* internal expat error */
-#define NODEUPDOWN_ERR_CONF              18 /* configuration file error */
-#define NODEUPDOWN_ERR_HOSTLIST          19 /* internal hostlist error */
-#define NODEUPDOWN_ERR_MAGIC             20 /* magic number error */
-#define NODEUPDOWN_ERR_INTERNAL          21 /* internal system error */
-#define NODEUPDOWN_ERR_ERRNUMRANGE       22 /* error number out of range */ 
+#define NODEUPDOWN_ERR_CONNECT            2 /* network connection error */
+#define NODEUPDOWN_ERR_TIMEOUT            3 /* network connect timeout */
+#define NODEUPDOWN_ERR_HOSTNAME           4 /* hostname invalid */
+#define NODEUPDOWN_ERR_ADDRESS            5 /* network address error */
+#define NODEUPDOWN_ERR_NETWORK            6 /* network error */
+#define NODEUPDOWN_ERR_ISLOADED           7 /* data already loaded */
+#define NODEUPDOWN_ERR_NOTLOADED          8 /* data not loaded */
+#define NODEUPDOWN_ERR_OVERFLOW           9 /* overflow on list/string passed in */
+#define NODEUPDOWN_ERR_PARAMETERS        10 /* incorrect parameters passed in */
+#define NODEUPDOWN_ERR_NULLPTR           11 /* null pointer in list */
+#define NODEUPDOWN_ERR_OUTMEM            12 /* out of memory */
+#define NODEUPDOWN_ERR_NOTFOUND          13 /* node not found */ 
+#define NODEUPDOWN_ERR_MASTERLIST        14 /* internal master list error */
+#define NODEUPDOWN_ERR_MASTERLIST_OPEN   15 /* open masterlist file error */
+#define NODEUPDOWN_ERR_MASTERLIST_READ   16 /* read masterlist file error */
+#define NODEUPDOWN_ERR_MASTERLIST_PARSE  17 /* parse masterlist error */ 
+#define NODEUPDOWN_ERR_CONF              18 /* internal conf file error */
+#define NODEUPDOWN_ERR_CONF_OPEN         19 /* open conf file error */
+#define NODEUPDOWN_ERR_CONF_READ         20 /* read conf file error */
+#define NODEUPDOWN_ERR_CONF_PARSE        21 /* parse conf file error */
+#define NODEUPDOWN_ERR_EXPAT             22 /* internal expat error */
+#define NODEUPDOWN_ERR_HOSTLIST          23 /* internal hostlist error */
+#define NODEUPDOWN_ERR_MAGIC             24 /* magic number error */
+#define NODEUPDOWN_ERR_INTERNAL          25 /* internal system error */
+#define NODEUPDOWN_ERR_ERRNUMRANGE       26 /* error number out of range */ 
 
 #define NODEUPDOWN_TIMEOUT_LEN           60
 
