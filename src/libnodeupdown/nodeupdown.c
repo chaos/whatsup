@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.111 2005-04-05 21:51:54 achu Exp $
+ *  $Id: nodeupdown.c,v 1.112 2005-04-05 23:13:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -41,7 +41,6 @@
 #include "nodeupdown_common.h"
 #include "nodeupdown_util.h"
 #include "nodeupdown_ganglia.h"
-#include "nodeupdown_ganglia_clusterlist.h"
 #include "conffile.h"
 #include "hostlist.h"
 #include "list.h"
@@ -156,7 +155,7 @@ nodeupdown_handle_create()
 static void 
 _free_handle_data(nodeupdown_t handle) 
 {
-  nodeupdown_ganglia_free_data(handle);
+  nodeupdown_ganglia_cleanup(handle);
   hostlist_destroy(handle->up_nodes);
   hostlist_destroy(handle->down_nodes);
   _initialize_handle(handle);
@@ -291,10 +290,7 @@ nodeupdown_load_data(nodeupdown_t handle,
   if (cd.clusterlist_module_found)
     clusterlist_module = cd.clusterlist_module;
   
-  if (nodeupdown_ganglia_clusterlist_load_module(handle, clusterlist_module) < 0)
-    goto cleanup;
-
-  if (nodeupdown_ganglia_clusterlist_init(handle) < 0)
+  if (nodeupdown_ganglia_init(handle, clusterlist_module) < 0)
     goto cleanup;
 
   if (!(handle->up_nodes = hostlist_create(NULL))) 
@@ -374,15 +370,9 @@ nodeupdown_load_data(nodeupdown_t handle,
                                              timeout_len) < 0)
         goto cleanup;
     }
-  
-  if (nodeupdown_ganglia_clusterlist_compare_to_clusterlist(handle) < 0)
-    goto cleanup;
 
   hostlist_sort(handle->up_nodes);
   hostlist_sort(handle->down_nodes);
-
-  if (nodeupdown_ganglia_clusterlist_finish(handle) < 0)
-    goto cleanup;
 
   /* loading complete */
   handle->is_loaded++;

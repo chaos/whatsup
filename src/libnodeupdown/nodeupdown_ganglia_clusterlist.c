@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist.c,v 1.7 2005-04-02 05:51:16 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist.c,v 1.8 2005-04-05 23:13:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -80,7 +80,7 @@ _load_module(nodeupdown_t handle, char *module_path)
 
   if (!ganglia_clusterlist_module_info->ganglia_clusterlist_module_name
       || !ganglia_clusterlist_module_info->init
-      || !ganglia_clusterlist_module_info->finish
+      || !ganglia_clusterlist_module_info->complete_loading
       || !ganglia_clusterlist_module_info->cleanup
       || !ganglia_clusterlist_module_info->compare_to_clusterlist
       || !ganglia_clusterlist_module_info->is_node_in_cluster
@@ -290,12 +290,6 @@ nodeupdown_ganglia_clusterlist_init(nodeupdown_t handle)
 }
  
 int 
-nodeupdown_ganglia_clusterlist_finish(nodeupdown_t handle)
-{
-  return (*ganglia_clusterlist_module_info->finish)(handle);
-}
-
-int 
 nodeupdown_ganglia_clusterlist_cleanup(nodeupdown_t handle)
 {
   /* May have not been loaded, so can't cleanup */
@@ -305,6 +299,12 @@ nodeupdown_ganglia_clusterlist_cleanup(nodeupdown_t handle)
   return (*ganglia_clusterlist_module_info->cleanup)(handle);
 }
  
+int 
+nodeupdown_ganglia_clusterlist_complete_loading(nodeupdown_t handle)
+{
+  return (*ganglia_clusterlist_module_info->complete_loading)(handle);
+}
+
 int 
 nodeupdown_ganglia_clusterlist_compare_to_clusterlist(nodeupdown_t handle)
 {

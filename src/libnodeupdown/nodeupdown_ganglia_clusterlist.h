@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist.h,v 1.5 2005-04-01 21:29:02 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist.h,v 1.6 2005-04-05 23:13:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -34,8 +34,8 @@
  */
 
 typedef int (*Nodeupdown_ganglia_clusterlist_init)(nodeupdown_t);
-typedef int (*Nodeupdown_ganglia_clusterlist_finish)(nodeupdown_t);
 typedef int (*Nodeupdown_ganglia_clusterlist_cleanup)(nodeupdown_t);
+typedef int (*Nodeupdown_ganglia_clusterlist_complete_loading)(nodeupdown_t);
 typedef int (*Nodeupdown_ganglia_clusterlist_compare_to_clusterlist)(nodeupdown_t);
 typedef int (*Nodeupdown_ganglia_clusterlist_is_node_in_cluster)(nodeupdown_t, const char *);
 typedef int (*Nodeupdown_ganglia_clusterlist_is_node_discovered)(nodeupdown_t, const char *);
@@ -50,8 +50,8 @@ struct nodeupdown_ganglia_clusterlist_module_info
 {
   char *ganglia_clusterlist_module_name;
   Nodeupdown_ganglia_clusterlist_init init;
-  Nodeupdown_ganglia_clusterlist_finish finish;
   Nodeupdown_ganglia_clusterlist_cleanup cleanup;
+  Nodeupdown_ganglia_clusterlist_complete_loading complete_loading;
   Nodeupdown_ganglia_clusterlist_compare_to_clusterlist compare_to_clusterlist;
   Nodeupdown_ganglia_clusterlist_is_node_in_cluster is_node_in_cluster;
   Nodeupdown_ganglia_clusterlist_is_node_discovered is_node_discovered;
@@ -75,14 +75,14 @@ int nodeupdown_ganglia_clusterlist_unload_module(nodeupdown_t handle);
 int nodeupdown_ganglia_clusterlist_init(nodeupdown_t handle);
 
 /* 
- * finish up clusterlist work
- */
-int nodeupdown_ganglia_clusterlist_finish(nodeupdown_t handle);
-
-/* 
  * cleanup up clusterlist
  */
 int nodeupdown_ganglia_clusterlist_cleanup(nodeupdown_t handle);
+
+/* 
+ * complete_loading up clusterlist work
+ */
+int nodeupdown_ganglia_clusterlist_complete_loading(nodeupdown_t handle);
 
 /* 
  * Compare all nodes retrieved with nodes from the clusterlist 

@@ -15,3 +15,5 @@ for rework
 abstract backend modules
 
 maps for modules
+
+make clusterlist non-ganglia specific.  make generic

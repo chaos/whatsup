@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_gendersllnl.c,v 1.8 2005-04-02 00:57:01 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_gendersllnl.c,v 1.9 2005-04-05 23:13:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -65,15 +65,15 @@ gendersllnl_ganglia_clusterlist_init(nodeupdown_t handle)
 }
 
 int 
-gendersllnl_ganglia_clusterlist_finish(nodeupdown_t handle) 
-{
-  return genders_util_ganglia_clusterlist_finish(handle, gendersllnl_handle);
-}
-
-int 
 gendersllnl_ganglia_clusterlist_cleanup(nodeupdown_t handle) 
 {
   return genders_util_ganglia_clusterlist_cleanup(handle, &gendersllnl_handle);
+}
+
+int 
+gendersllnl_ganglia_clusterlist_complete_loading(nodeupdown_t handle) 
+{
+  return genders_util_ganglia_clusterlist_complete_loading(handle, gendersllnl_handle);
 }
 
 int 
@@ -181,8 +181,8 @@ struct nodeupdown_ganglia_clusterlist_module_info ganglia_clusterlist_module_inf
   {
     "gendersllnl",
     &gendersllnl_ganglia_clusterlist_init,
-    &gendersllnl_ganglia_clusterlist_finish,
     &gendersllnl_ganglia_clusterlist_cleanup,
+    &gendersllnl_ganglia_clusterlist_complete_loading,
     &gendersllnl_ganglia_clusterlist_compare_to_clusterlist,
     &gendersllnl_ganglia_clusterlist_is_node_in_cluster,
     &gendersllnl_ganglia_clusterlist_is_node_discovered,

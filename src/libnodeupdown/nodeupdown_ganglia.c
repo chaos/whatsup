@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia.c,v 1.6 2005-04-05 21:51:54 achu Exp $
+ *  $Id: nodeupdown_ganglia.c,v 1.7 2005-04-05 23:13:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -68,6 +68,18 @@ int
 nodeupdown_ganglia_get_default_port(nodeupdown_t handle)
 {
   return NODEUPDOWN_GANGLIA_DEFAULT_PORT;
+}
+
+int
+nodeupdown_ganglia_init(nodeupdown_t handle, char *clusterlist_module)
+{
+  if (nodeupdown_ganglia_clusterlist_load_module(handle, clusterlist_module) < 0)
+    return -1;
+                                                                                      
+  if (nodeupdown_ganglia_clusterlist_init(handle) < 0)
+    return -1;
+
+  return 0;
 }
 
 /* xml start function for use with expat XML parsing library
@@ -192,6 +204,12 @@ nodeupdown_ganglia_get_updown_data(nodeupdown_t handle,
         break;
     }
   
+  if (nodeupdown_ganglia_clusterlist_compare_to_clusterlist(handle) < 0)
+    goto cleanup;
+
+  if (nodeupdown_ganglia_clusterlist_complete_loading(handle) < 0)
+    goto cleanup;
+
   retval = 0;
 
  cleanup:
@@ -202,7 +220,7 @@ nodeupdown_ganglia_get_updown_data(nodeupdown_t handle,
 }
 
 void
-nodeupdown_ganglia_free_data(nodeupdown_t handle)
+nodeupdown_ganglia_cleanup(nodeupdown_t handle)
 {
   nodeupdown_ganglia_clusterlist_cleanup(handle);
   nodeupdown_ganglia_clusterlist_unload_module(handle);

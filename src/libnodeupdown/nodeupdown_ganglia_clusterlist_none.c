@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_none.c,v 1.6 2005-04-02 00:57:01 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_none.c,v 1.7 2005-04-05 23:13:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -59,13 +59,13 @@ none_ganglia_clusterlist_init(nodeupdown_t handle)
 }
 
 int 
-none_ganglia_clusterlist_finish(nodeupdown_t handle) 
+none_ganglia_clusterlist_cleanup(nodeupdown_t handle) 
 {
   return 0;
 }
 
 int 
-none_ganglia_clusterlist_cleanup(nodeupdown_t handle) 
+none_ganglia_clusterlist_complete_loading(nodeupdown_t handle) 
 {
   return 0;
 }
@@ -114,8 +114,8 @@ struct nodeupdown_ganglia_clusterlist_module_info ganglia_clusterlist_module_inf
   {
     "none",
     &none_ganglia_clusterlist_init,
-    &none_ganglia_clusterlist_finish,
     &none_ganglia_clusterlist_cleanup,
+    &none_ganglia_clusterlist_complete_loading,
     &none_ganglia_clusterlist_compare_to_clusterlist,
     &none_ganglia_clusterlist_is_node_in_cluster,
     &none_ganglia_clusterlist_is_node_discovered,

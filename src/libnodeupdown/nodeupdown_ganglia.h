@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia.h,v 1.3 2005-04-05 21:51:54 achu Exp $
+ *  $Id: nodeupdown_ganglia.h,v 1.4 2005-04-05 23:13:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -32,11 +32,13 @@
 
 int nodeupdown_ganglia_get_default_port(nodeupdown_t handle);
 
+int nodeupdown_ganglia_init(nodeupdown_t handle, char *clusterlist_module);
+
 int nodeupdown_ganglia_get_updown_data(nodeupdown_t handle, 
                                        const char *hostname,
                                        int port,
                                        int timeout_len);
 
-void nodeupdown_ganglia_free_data(nodeupdown_t handle);
+void nodeupdown_ganglia_cleanup(nodeupdown_t handle);
 
 #endif /* _NODEUPDOWN_GANGLIA_H  */

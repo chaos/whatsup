@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_hostsfile.c,v 1.7 2005-04-02 00:57:01 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_hostsfile.c,v 1.8 2005-04-05 23:13:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -207,18 +207,18 @@ hostsfile_ganglia_clusterlist_init(nodeupdown_t handle)
 }
 
 int 
-hostsfile_ganglia_clusterlist_finish(nodeupdown_t handle) 
-{
-  handle->max_nodes = list_count(hosts);
-  return 0;
-}
-
-int 
 hostsfile_ganglia_clusterlist_cleanup(nodeupdown_t handle) 
 {
   if (hosts)
     list_destroy(hosts);
   hosts = NULL;
+  return 0;
+}
+
+int 
+hostsfile_ganglia_clusterlist_compelte_loading(nodeupdown_t handle) 
+{
+  handle->max_nodes = list_count(hosts);
   return 0;
 }
 
@@ -308,8 +308,8 @@ struct nodeupdown_ganglia_clusterlist_module_info ganglia_clusterlist_module_inf
   {
     "hostsfile",
     &hostsfile_ganglia_clusterlist_init,
-    &hostsfile_ganglia_clusterlist_finish,
     &hostsfile_ganglia_clusterlist_cleanup,
+    &hostsfile_ganglia_clusterlist_compelte_loading,
     &hostsfile_ganglia_clusterlist_compare_to_clusterlist,
     &hostsfile_ganglia_clusterlist_is_node_in_cluster,
     &hostsfile_ganglia_clusterlist_is_node_discovered,
