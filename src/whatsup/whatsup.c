@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.51 2003-06-28 15:53:38 achu Exp $
+ * $Id: whatsup.c,v 1.52 2003-07-01 18:44:33 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -113,8 +113,8 @@ static void version(void) {
 static void err_msg(char *msg, char *errno_msg) {
   if (errno_msg == NULL)
     fprintf(stderr, "whatsup error: %s\n", msg);
-
-  fprintf(stderr, "whatsup error: %s, %s\n", msg, errno_msg);
+  else
+    fprintf(stderr, "whatsup error: %s, %s\n", msg, errno_msg);
 }
 
 /* initialize_struct_arginfo
