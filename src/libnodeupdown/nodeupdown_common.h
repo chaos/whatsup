@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown_common.h,v 1.6 2003-12-03 23:00:52 achu Exp $
+ *  $Id: nodeupdown_common.h,v 1.7 2003-12-05 18:17:11 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown_common.h,v $
  *    
  */
@@ -12,7 +12,7 @@
  */
 
 #if HAVE_CONFIG_H
-#include <config.h>
+#include "config.h"
 #endif
 
 #if HAVE_HOSTSFILE
