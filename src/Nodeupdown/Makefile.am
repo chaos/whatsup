@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.4.2.1 2004-11-16 21:30:10 achu Exp $
+## $Id: Makefile.am,v 1.4.2.2 2004-11-16 21:40:39 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -13,7 +13,7 @@ all: Makefile.pm
 	$(MAKE) -f Makefile.pm
 
 Makefile.pm: Makefile.PL
-	# Hacks to make distcheck work
+# Hacks to make distcheck work
 	if ! test -a Makefile.PL; then \
 		cp $(srcdir)/Makefile.PL .; \
 	fi
