@@ -1,0 +1,62 @@
+# $Id: whatsup.spec.in,v 1.1 2003-09-10 22:09:31 achu Exp $
+
+Name:           @PROJECT@
+Version:        @VERSION@
+Release:        @RELEASE@
+
+Summary:        whatsup
+Group:          Applications/Communications
+License:        GPL
+
+BuildRoot:      %{_tmppath}/%{name}-%{version}
+
+Source0:        %{name}-%{version}.tgz
+
+Requires:       genders >= 1.2
+Requires:       gendersllnl
+Requires:       ganglia-monitor-core
+Requires:       ganglia-monitor-core-lib 
+
+%description
+whatsup is a tool that lists which nodes are currently up or down in a
+cluster.  It determines which nodes are up or down based on
+information gathered from genders and ganglia.
+
+The nodeupdown library is a C library that allows users to 
+programmatically determine if a node is up or down.
+
+%prep
+%setup
+
+%build
+./bootstrap
+./configure --prefix=/usr --with-xs-prefix="$RPM_BUILD_ROOT/usr" --with-nodeupdown-pm-prefix="$RPM_BUILD_ROOT/usr"
+make
+
+%install
+rm -rf "$RPM_BUILD_ROOT"
+DESTDIR="$RPM_BUILD_ROOT" make install
+
+%clean
+rm -rf "$RPM_BUILD_ROOT"
+
+%files
+%defattr(-,root,root,0755)
+%doc AUTHORS
+%doc COPYING
+%doc ChangeLog
+%doc INSTALL
+%doc NEWS
+%doc README
+%{_bindir}/*
+%{_includedir}/*
+%{_libdir}/*
+/usr/man/man1/
+/usr/man/man3/
+/usr/man/man5/
+/usr/share/man/
+
+
+
+
+
