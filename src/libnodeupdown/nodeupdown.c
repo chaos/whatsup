@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.21 2003-03-14 20:44:33 achu Exp $
+ * $Id: nodeupdown.c,v 1.22 2003-03-17 16:18:12 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -45,6 +45,8 @@
 
 #define NODEUPDOWN_BUFFERLEN             65536
 
+#define NODEUPDOWN_MAGIC_NUM             0xfeedbeef
+
 #ifndef GENDERS_ALTNAME_ATTRIBUTE
 #define GENDERS_ALTNAME_ATTRIBUTE        "altname"
 #endif
@@ -60,6 +62,7 @@
 
 /* struct nodeupdown
  * - handle for all nodeupdown API functions
+ * magic - magic number
  * errnum - error number
  * genders_filename - genders filename
  * gmond_ip - gmond server IP address
@@ -74,6 +77,7 @@
  */
 
 struct nodeupdown {
+  int magic;
   int errnum;
   char *genders_filename;
   char *gmond_ip;
@@ -105,6 +109,7 @@ static char * errmsg[] = {
   "internal genders error",
   "internal ganglia error",
   "internal hostlist error",
+  "nodeupdown handle magic number incorrect, improper handle passed in",
   "internal system error"
 };
 
@@ -219,6 +224,7 @@ int nodeupdown_initialization(nodeupdown_t handle) {
   if (handle == NULL) {
     return -1;
   }
+  handle->magic = NODEUPDOWN_MAGIC_NUM;
   handle->genders_filename = NULL;
   handle->gmond_ip = NULL;
   handle->gmond_port = -1;
@@ -238,6 +244,11 @@ int nodeupdown_load_data(nodeupdown_t handle,
 			 char *gmond_ip, 
 			 int gmond_port) {
   if (handle == NULL) {
+    return -1;
+  }
+
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -869,7 +880,20 @@ int nodeupdown_compare_genders_to_gmond_down_nodes(nodeupdown_t handle) {
 }
 
 int nodeupdown_destroy(nodeupdown_t handle) {
+  if (handle == NULL) {
+    return -1;
+  }
+
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
+    return -1;
+  }
+
   nodeupdown_cleanup(handle);
+
+  /* clear magic number */
+  handle->magic = 0;
+
   free(handle);
   return 0;
 }  
@@ -960,6 +984,10 @@ int nodeupdown_errnum(nodeupdown_t handle) {
   if (handle == NULL) {
     return -1;
   }
+  else if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    /* special case */
+    return NODEUPDOWN_ERR_MAGIC;
+  }
 
   return handle->errnum;
 }
@@ -1001,6 +1029,11 @@ void nodeupdown_perror(nodeupdown_t handle, char *msg) {
 
 int nodeupdown_dump(nodeupdown_t handle, FILE *stream) {
   if (handle == NULL) {
+    return -1;
+  }
+
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -1111,6 +1144,11 @@ int nodeupdown_get_up_nodes_string(nodeupdown_t handle, char *buf, int buflen) {
     return -1;
   }
 
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
+    return -1;
+  }
+
   if (buf == NULL || buflen <= 0) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
@@ -1154,6 +1192,11 @@ int nodeupdown_get_down_nodes_string(nodeupdown_t handle, char *buf, int buflen)
     return -1;
   }
   
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
+    return -1;
+  }
+
   if (buf == NULL || buflen <= 0) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
@@ -1197,6 +1240,11 @@ int nodeupdown_get_up_nodes_list(nodeupdown_t handle, char **list, int len) {
     return -1;
   }
 
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
+    return -1;
+  }
+
   if (list == NULL || len <= 0) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
@@ -1233,6 +1281,11 @@ int nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len) {
     return -1;
   }
   
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
+    return -1;
+  }
+
   if (list == NULL || len <= 0) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
@@ -1302,6 +1355,11 @@ int nodeupdown_get_up_nodes_hostlist(nodeupdown_t handle, hostlist_t hl) {
     return -1;
   }
 
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
+    return -1;
+  }
+
   if (hl == NULL) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
@@ -1332,6 +1390,11 @@ int nodeupdown_get_up_nodes_hostlist(nodeupdown_t handle, hostlist_t hl) {
 int nodeupdown_get_down_nodes_hostlist(nodeupdown_t handle, hostlist_t hl) {
 
   if (handle == NULL) {
+    return -1;
+  }
+
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -1399,6 +1462,11 @@ int nodeupdown_get_up_nodes_string_altnames(nodeupdown_t handle,
     return -1;
   }
   
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
+    return -1;
+  }
+
   if (dest == NULL || dest_len <= 0) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
@@ -1444,6 +1512,11 @@ int nodeupdown_get_down_nodes_string_altnames(nodeupdown_t handle,
     return -1;
   }
   
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
+    return -1;
+  }
+
   if (dest == NULL || dest_len <= 0) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
@@ -1490,6 +1563,11 @@ int nodeupdown_get_up_nodes_list_altnames(nodeupdown_t handle,
     return -1;
   }
   
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
+    return -1;
+  }
+
   if (dest == NULL || dest_len <= 0) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
@@ -1546,6 +1624,11 @@ int nodeupdown_get_down_nodes_list_altnames(nodeupdown_t handle,
     return -1;
   }
   
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
+    return -1;
+  }
+
   if (dest == NULL || dest_len <= 0) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
@@ -1601,6 +1684,11 @@ int nodeupdown_get_up_nodes_hostlist_altnames(nodeupdown_t handle,
     return -1;
   }
   
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
+    return -1;
+  }
+
   if (dest == NULL) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
@@ -1644,6 +1732,11 @@ int nodeupdown_get_down_nodes_hostlist_altnames(nodeupdown_t handle,
     return -1;
   }
   
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
+    return -1;
+  }
+
   if (dest == NULL) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
@@ -1688,6 +1781,11 @@ int nodeupdown_is_node_up(nodeupdown_t handle, char *node) {
     return -1;
   }
 
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
+    return -1;
+  }
+
   if (node == NULL) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
@@ -1720,6 +1818,11 @@ int nodeupdown_is_node_down(nodeupdown_t handle, char *node) {
   int ret;
 
   if (handle == NULL) {
+    return -1;
+  }
+
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -1842,6 +1945,11 @@ int nodeupdown_convert_string_to_altnames(nodeupdown_t handle,
     return -1;
   }
 
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
+    return -1;
+  }
+
   if (src == NULL || dest == NULL || buflen <= 0) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
@@ -1913,6 +2021,11 @@ int nodeupdown_convert_list_to_altnames(nodeupdown_t handle,
   hostlist_iterator_t iter = NULL;
 
   if (handle == NULL) {
+    return -1;
+  }
+
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -2002,6 +2115,11 @@ int nodeupdown_convert_hostlist_to_altnames(nodeupdown_t handle,
 					    hostlist_t src, 
 					    hostlist_t dest) {
   if (handle == NULL) {
+    return -1;
+  }
+
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 
@@ -2144,6 +2262,11 @@ int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list) {
     return -1;
   }
 
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
+    return -1;
+  }
+
   if (list == NULL) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
@@ -2187,6 +2310,11 @@ int nodeupdown_nodelist_clear(nodeupdown_t handle, char **list) {
     return -1;
   }
 
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
+    return -1;
+  }
+
   if (list == NULL) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
@@ -2214,6 +2342,11 @@ int nodeupdown_nodelist_destroy(nodeupdown_t handle, char **list) {
   int i;
 
   if (handle == NULL) {
+    return -1;
+  }
+
+  if (handle->magic != NODEUPDOWN_MAGIC_NUM) {
+    handle->errnum = NODEUPDOWN_ERR_MAGIC;
     return -1;
   }
 

@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown.h,v 1.9 2003-03-14 18:20:51 achu Exp $
+ *  $Id: nodeupdown.h,v 1.10 2003-03-17 16:18:12 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h,v $
  *    
  */
@@ -30,7 +30,8 @@
 #define NODEUPDOWN_ERR_GENDERS           14 /* internal genders error */
 #define NODEUPDOWN_ERR_GANGLIA           15 /* internal ganglia error */
 #define NODEUPDOWN_ERR_HOSTLIST          16 /* internal hostlist error */
-#define NODEUPDOWN_ERR_INTERNAL          17 /* internal system error */
+#define NODEUPDOWN_ERR_MAGIC             17 /* magic number error */
+#define NODEUPDOWN_ERR_INTERNAL          18 /* internal system error */
 
 typedef struct nodeupdown *nodeupdown_t;
 
