@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.5 2003-03-04 01:40:25 achu Exp $
+ * $Id: nodeupdown.c,v 1.6 2003-03-05 01:06:50 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -308,32 +308,7 @@ int nodeupdown_retrieve_gmond_data(nodeupdown_t handle) {
     handle->errnum = NODEUPDOWN_ERR_GANGLIA;
     return -1;
   }
-
-  /********************************************************
-   * FIX LATER
-   *
-   * For some odd reason, the ganglia_cluster_init() 
-   * function allocates several list node entries, but
-   * never assigns values to them.  We set their values
-   * to NULL to make sure we clean up correctly in the
-   * nodeupdown_cleanup() function later on.  This block
-   * should be removed once (if?) the ganglia library 
-   * implements a "destroy cluster structure" function.
-   ********************************************************/
-  {
-    if (handle->ganglia_cluster->source_list != NULL) {
-      handle->ganglia_cluster->source_list->val = NULL;
-      handle->ganglia_cluster->source_list->prev = NULL;
-      handle->ganglia_cluster->source_list->next = NULL;
-    }
-
-    if (handle->ganglia_cluster->llist != NULL) {
-      handle->ganglia_cluster->llist->val = NULL;
-      handle->ganglia_cluster->llist->prev = NULL;
-      handle->ganglia_cluster->llist->next = NULL;
-    }
-  }
-  
+ 
   if (ganglia_add_datasource(handle->ganglia_cluster, 
 			     NODEUPDOWN_GANGLIA_CLUSTER_NAME, 
 			     handle->gmond_ip, 
@@ -790,60 +765,13 @@ int nodeupdown_cleanup(nodeupdown_t handle) {
     (void)genders_handle_destroy(handle->genders_handle);
   }
   if (handle->ganglia_cluster != NULL) {
-
     /********************************************************
      * FIX LATER
      *
      * As of the time of this code writing, There is currently no API
      * function that handles "destroy cluster data" or "free cluster
-     * data".  Therefore, the following block of code must manually
-     * free the data.
-     *
-     * If the libganglia library is updated to include a 
-     * "destroy" or "free" API function in the future, the
-     * following block of code can be replaced with the
-     * appropriate API call.
+     * data".  
      ********************************************************/
-
-    {
-
-      llist_entry *temp;
-      
-      /* free hashes */
-
-      if (handle->ganglia_cluster->host_cache != NULL) {
-	hash_destroy(handle->ganglia_cluster->host_cache);
-      }
-      if (handle->ganglia_cluster->nodes != NULL) {
-	hash_destroy(handle->ganglia_cluster->nodes);
-      }
-      if (handle->ganglia_cluster->dead_nodes != NULL) {
-	hash_destroy(handle->ganglia_cluster->dead_nodes);
-      }
-      
-      /* free lists */
-
-      while (handle->ganglia_cluster->source_list != NULL) {
-	temp = handle->ganglia_cluster->source_list->next;
-	if (handle->ganglia_cluster->source_list->val != NULL) {
-	  free(handle->ganglia_cluster->source_list->val);
-	}
-	free(handle->ganglia_cluster->source_list);
-	handle->ganglia_cluster->source_list = temp;
-      }
-      
-      while (handle->ganglia_cluster->llist != NULL) {
-	temp = handle->ganglia_cluster->llist->next;
-	if (handle->ganglia_cluster->llist->val != NULL) {
-	  free(handle->ganglia_cluster->llist->val);
-	}
-	free(handle->ganglia_cluster->llist);
-	handle->ganglia_cluster->llist = temp;
-      }
-
-      free(handle->ganglia_cluster);
-
-    }
   }
   nodeupdown_initialization(handle);
 
