@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.8 2003-08-18 16:28:01 achu Exp $
+## $Id: configure.ac,v 1.9 2003-08-18 19:29:36 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -81,6 +81,27 @@ if test -z "$XS_PREFIX"; then
 fi
 AC_SUBST(XS_PREFIX)
 
+# Nodeupdown.pm install location
+AC_MSG_CHECKING(for --with-nodeupdown-pm-prefix )
+AC_ARG_WITH(nodeupdown-pm-prefix,
+    AC_HELP_STRING([--with-nodeupdown-pm-prefix=path], [define nodeupdown.pm prefix dir]),
+    [ case "$withval" in
+    yes)
+        withnodeupdownpm=yes
+        ;;
+    no)
+        ;;
+    *)
+        withnodeupdownpm=yes
+        NODEUPDOWN_PM_PREFIX="$withval"
+        ;;
+    esac ]
+)
+AC_MSG_RESULT(${withnodeupdownpm=no})
+if test -z "$NODEUPDOWN_PM_PREFIX"; then
+   NODEUPDOWN_PM_PREFIX='${prefix}'
+fi
+AC_SUBST(NODEUPDOWN_PM_PREFIX)
 
 ##
 # Checks for programs.

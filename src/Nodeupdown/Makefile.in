@@ -84,6 +84,8 @@ LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
 MAINT = @MAINT@
 NODEUPDOWN_CONF_FILE = @NODEUPDOWN_CONF_FILE@
+
+NODEUPDOWN_PM_PREFIX = @NODEUPDOWN_PM_PREFIX@
 OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 PERL = @PERL@
@@ -96,8 +98,6 @@ XS_PREFIX = @XS_PREFIX@
 am__include = @am__include@
 am__quote = @am__quote@
 install_sh = @install_sh@
-
-NODEUPDOWN_PM_PREFIX = @NODEUPDOWN_PM_PREFIX@
 subdir = src/Nodeupdown
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
