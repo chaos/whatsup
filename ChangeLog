@@ -2,8 +2,8 @@
 
 	* whatsup.spec.in: Added license.
 
-	* configure.ac: If genders or gendersllnl isn't found, default to
-	hostsfile masterlist mechanism.
+	* README, configure.ac: If genders or gendersllnl isn't found,
+	default to hostsfile masterlist mechanism.
 	
 2004-11-13  Albert Chu  <chu11@llnl.gov>
 
