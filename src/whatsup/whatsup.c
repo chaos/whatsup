@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.53 2003-07-25 15:38:20 achu Exp $
+ * $Id: whatsup.c,v 1.54 2003-09-24 16:12:35 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -59,6 +59,7 @@ struct arginfo {
   int output;                 /* output type */ 
   char list_type;             /* list type */
   int list_altnames;          /* list altnames? */
+  int count;                  /* list count? */
   hostlist_t nodes;           /* nodes entered at command line */
 };
 
@@ -92,6 +93,7 @@ static void usage(void) {
     "  -b         --updown            List both up and down nodes\n"
     "  -u         --up                List only up nodes\n"
     "  -d         --down              List only down nodes\n"
+    "  -t         --count             List only node count\n"
     "  -l         --hostlist          List nodes in hostlist format\n"
     "  -c         --comma             List nodes in comma separated list\n"
     "  -n         --newline           List nodes in newline separated list\n"
@@ -128,6 +130,7 @@ static int initialize_struct_arginfo(struct arginfo *arginfo) {
   arginfo->output = UP_AND_DOWN;
   arginfo->list_type = HOSTLIST;
   arginfo->list_altnames = WHATSUP_OFF;
+  arginfo->count = WHATSUP_OFF;
   arginfo->nodes = NULL;
   return 0;
 }
@@ -139,7 +142,7 @@ static int initialize_struct_arginfo(struct arginfo *arginfo) {
 static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
   int c, index, oopt = 0, iopt = 0;
 
-  char *options = "hVf:o:i:p:budlcnsag:";
+  char *options = "hVf:o:i:p:budtlcnsa";
   struct option long_options[] = {
     {"help",      0, NULL, 'h'},
     {"version",   0, NULL, 'V'},
@@ -150,11 +153,12 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
     {"updown",    0, NULL, 'b'},
     {"up",        0, NULL, 'u'},
     {"down",      0, NULL, 'd'},
-    {"altnames",  0, NULL, 'a'},
+    {"count",     0, NULL, 't'},
     {"hostlist",  0, NULL, 'l'},
     {"comma",     0, NULL, 'c'},
     {"newline",   0, NULL, 'n'},
     {"space",     0, NULL, 's'},
+    {"altnames",  0, NULL, 'a'},
     {0, 0, 0, 0}
   };
 
@@ -193,6 +197,9 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
       break;
     case 'd':
       arginfo->output = DOWN_NODES;
+      break;
+    case 't':
+      arginfo->count = WHATSUP_ON;
       break;
     case 'l':
       arginfo->list_type = HOSTLIST;
@@ -519,6 +526,7 @@ int main(int argc, char **argv) {
   nodeupdown_t handle = NULL;
   char *up_nodes = NULL;
   char *down_nodes = NULL;
+  int up_count, down_count;
 
   if (argc == 2 && strcasecmp(argv[1],"doc") == 0)
     fprintf(stderr,"Shhhhhh.  Be very very quiet.  I'm hunting wabbits.\n");
@@ -551,49 +559,73 @@ int main(int argc, char **argv) {
     goto cleanup;
   }
 
-  /* get up nodes */
-  if (arginfo->output == UP_NODES || arginfo->output == UP_AND_DOWN) {
-    if (get_nodes_common(arginfo, UP_NODES, handle, &up_nodes) == -1)
+  if (arginfo->count == WHATSUP_ON || arginfo->output == UP_AND_DOWN) {
+    if ((up_count = nodeupdown_up_count(handle)) < 0) {
+      err_msg("nodeupdown_up_count()", nodeupdown_errormsg(handle));
       goto cleanup;
+    }
+
+    if ((down_count = nodeupdown_down_count(handle)) < 0) {
+      err_msg("nodeupdown_down_count()", nodeupdown_errormsg(handle));
+      goto cleanup;
+    }
   }
 
-  /* get down nodes */
-  if (arginfo->output == DOWN_NODES || arginfo->output == UP_AND_DOWN) {
-    if (get_nodes_common(arginfo, DOWN_NODES, handle, &down_nodes) == -1)
-      goto cleanup;
+  if (arginfo->count == WHATSUP_ON) {
+    if (arginfo->output == UP_AND_DOWN) {
+      fprintf(stdout, "up: %d\n", up_count);
+      fprintf(stdout, "down: %d\n", down_count);
+    }
+    else if (arginfo->output == UP_NODES)
+      fprintf(stdout, "%d\n", up_count);
+    else
+      fprintf(stdout, "%d\n", down_count);
   }
+  else {
+    /* get up nodes */
+    if (arginfo->output == UP_NODES || arginfo->output == UP_AND_DOWN) {
+      if (get_nodes_common(arginfo, UP_NODES, handle, &up_nodes) == -1)
+        goto cleanup;
+    }
 
-  /* output up, down, or both up and down nodes */
-  if (arginfo->output == UP_AND_DOWN) {
-    fprintf(stdout, "up:\t");
+    /* get down nodes */
+    if (arginfo->output == DOWN_NODES || arginfo->output == UP_AND_DOWN) {
+      if (get_nodes_common(arginfo, DOWN_NODES, handle, &down_nodes) == -1)
+        goto cleanup;
+    }
 
-    /* handle odd situation with output formatting */
-    if (arginfo->list_type == NEWLINE)
-      fprintf(stdout, "\n");
+    /* output up, down, or both up and down nodes */
+    if (arginfo->output == UP_AND_DOWN) {
+      fprintf(stdout, "up: %d:\t", up_count);
+      
+      /* handle odd situation with output formatting */
+      if (arginfo->list_type == NEWLINE)
+        fprintf(stdout, "\n");
 
-    if (output_nodes(arginfo, up_nodes) != 0)
-      goto cleanup;
+      if (output_nodes(arginfo, up_nodes) != 0)
+        goto cleanup;
 
-    /* handle odd situation with output formatting */
-    if (arginfo->list_type == NEWLINE)
-      fprintf(stdout, "\n");
- 
-    fprintf(stdout, "down:\t");
+      /* handle odd situation with output formatting */
+      if (arginfo->list_type == NEWLINE)
+        fprintf(stdout, "\n");
+      
+      fprintf(stdout, "down: %d:\t", down_count);
 
-    /* handle odd situation with output formatting */
-    if (arginfo->list_type == NEWLINE)
-      fprintf(stdout, "\n");
+      /* handle odd situation with output formatting */
+      if (arginfo->list_type == NEWLINE)
+        fprintf(stdout, "\n");
 
-    if (output_nodes(arginfo, down_nodes) != 0)
-      goto cleanup;
-  }
-  else if (arginfo->output == UP_NODES) {
-    if (output_nodes(arginfo, up_nodes) != 0)
-      goto cleanup;
-  }
-  else if (arginfo->output == DOWN_NODES) {
-    if (output_nodes(arginfo, down_nodes) != 0)
-      goto cleanup;
+      if (output_nodes(arginfo, down_nodes) != 0)
+        goto cleanup;
+    }
+    else if (arginfo->output == UP_NODES) {
+      if (output_nodes(arginfo, up_nodes) != 0)
+        goto cleanup;
+    }
+    else {
+      if (output_nodes(arginfo, down_nodes) != 0)
+        goto cleanup;
+    }
   }
 
   hostlist_destroy(arginfo->nodes);
