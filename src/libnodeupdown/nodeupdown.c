@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.109 2005-04-02 01:30:29 achu Exp $
+ *  $Id: nodeupdown.c,v 1.110 2005-04-04 20:23:29 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -713,7 +713,8 @@ _is_node(nodeupdown_t handle, const char *node, int up_or_down)
       return -1;
     }
 
-  if ((ret = nodeupdown_ganglia_clusterlist_is_node_discovered(handle, node)) < 0)
+  if ((ret = nodeupdown_ganglia_clusterlist_is_node_discovered(handle, 
+                                                               node)) < 0)
     return -1;
 
   if (!ret) 

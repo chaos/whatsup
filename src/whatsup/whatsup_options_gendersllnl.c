@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup_options_gendersllnl.c,v 1.3 2005-04-04 16:17:58 achu Exp $
+ *  $Id: whatsup_options_gendersllnl.c,v 1.4 2005-04-04 20:23:29 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -130,7 +130,8 @@ gendersllnl_options_convert_nodenames(char *nodes, char *buf, int buflen)
               genders_errormsg(handle));
 
   if (genders_string_to_altnames_preserve(handle, nodes, buf, buflen) < 0)
-    err_exit("gendersllnl_options_convert_nodenames: genders_string_to_altnames_preserve(): %s",
+    err_exit("gendersllnl_options_convert_nodenames: "
+             "genders_string_to_altnames_preserve(): %s",
               genders_errormsg(handle));
 
   (void)genders_handle_destroy(handle);
