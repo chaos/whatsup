@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia.c,v 1.8 2005-04-05 23:54:50 achu Exp $
+ *  $Id: nodeupdown_ganglia.c,v 1.9 2005-04-06 00:22:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -64,22 +64,43 @@ struct parse_vars
   unsigned long localtime;
 };
 
+char ganglia_default_hostname[NODEUPDOWN_MAXHOSTNAMELEN+1];
+
+char *
+nodeupdown_ganglia_default_hostname(nodeupdown_t handle)
+{
+  memset(ganglia_default_hostname, '\0', NODEUPDOWN_MAXHOSTNAMELEN+1);
+  if (gethostname(ganglia_default_hostname, NODEUPDOWN_MAXHOSTNAMELEN) < 0)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return NULL;
+    }
+  return &ganglia_default_hostname[0];
+}
+
 int 
-nodeupdown_ganglia_get_default_port(nodeupdown_t handle)
+nodeupdown_ganglia_default_port(nodeupdown_t handle)
 {
   return NODEUPDOWN_GANGLIA_DEFAULT_PORT;
 }
 
-int
-nodeupdown_ganglia_init(nodeupdown_t handle, char *clusterlist_module)
+int 
+nodeupdown_ganglia_default_timeout_len(nodeupdown_t handle)
 {
-  if (nodeupdown_clusterlist_load_module(handle, clusterlist_module) < 0)
-    return -1;
-                                                                                      
-  if (nodeupdown_clusterlist_init(handle) < 0)
-    return -1;
+  return NODEUPDOWN_GANGLIA_DEFAULT_TIMEOUT_LEN;
+}
 
+int 
+nodeupdown_ganglia_init(nodeupdown_t handle)
+{
+  /* nothing to do */
   return 0;
+}
+
+void
+nodeupdown_ganglia_cleanup(nodeupdown_t handle)
+{
+  /* nothing to do */
 }
 
 /* xml start function for use with expat XML parsing library
@@ -144,7 +165,8 @@ int
 nodeupdown_ganglia_get_updown_data(nodeupdown_t handle, 
                                    const char *hostname,
                                    int port,
-                                   int timeout_len) 
+                                   int timeout_len,
+                                   char *reserved) 
 {
   XML_Parser xml_parser = NULL;
   struct parse_vars pv;
@@ -219,9 +241,3 @@ nodeupdown_ganglia_get_updown_data(nodeupdown_t handle,
   return retval;
 }
 
-void
-nodeupdown_ganglia_cleanup(nodeupdown_t handle)
-{
-  nodeupdown_clusterlist_cleanup(handle);
-  nodeupdown_clusterlist_unload_module(handle);
-}

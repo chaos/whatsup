@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.h,v 1.29 2005-04-05 01:32:44 achu Exp $
+ *  $Id: nodeupdown.h,v 1.30 2005-04-06 00:22:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -60,8 +60,6 @@
 #define NODEUPDOWN_ERR_MAGIC             24 /* magic number error */
 #define NODEUPDOWN_ERR_INTERNAL          25 /* internal system error */
 #define NODEUPDOWN_ERR_ERRNUMRANGE       26 /* error number out of range */ 
-
-#define NODEUPDOWN_TIMEOUT_LEN           60
 
 typedef struct nodeupdown *nodeupdown_t;
 

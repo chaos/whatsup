@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia.h,v 1.4 2005-04-05 23:13:01 achu Exp $
+ *  $Id: nodeupdown_ganglia.h,v 1.5 2005-04-06 00:22:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -27,18 +27,24 @@
 #ifndef _NODEUPDOWN_GANGLIA_H
 #define _NODEUPDOWN_GANGLIA_H
 
-#define NODEUPDOWN_GANGLIA_DEFAULT_PORT  8649
-#define NODEUPDOWN_GANGLIA_CONNECT_LEN   5 
+#define NODEUPDOWN_GANGLIA_DEFAULT_PORT        8649
+#define NODEUPDOWN_GANGLIA_DEFAULT_TIMEOUT_LEN 60
+#define NODEUPDOWN_GANGLIA_CONNECT_LEN         5 
 
-int nodeupdown_ganglia_get_default_port(nodeupdown_t handle);
+char *nodeupdown_ganglia_default_hostname(nodeupdown_t handle);
 
-int nodeupdown_ganglia_init(nodeupdown_t handle, char *clusterlist_module);
+int nodeupdown_ganglia_default_port(nodeupdown_t handle);
+
+int nodeupdown_ganglia_default_timeout_len(nodeupdown_t handle);
+
+int nodeupdown_ganglia_init(nodeupdown_t handle);
+
+void nodeupdown_ganglia_cleanup(nodeupdown_t handle);
 
 int nodeupdown_ganglia_get_updown_data(nodeupdown_t handle, 
                                        const char *hostname,
                                        int port,
-                                       int timeout_len);
-
-void nodeupdown_ganglia_cleanup(nodeupdown_t handle);
+                                       int timeout_len,
+                                       char *reserved);
 
 #endif /* _NODEUPDOWN_GANGLIA_H  */

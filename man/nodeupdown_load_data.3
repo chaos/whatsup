@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown_load_data.3,v 1.21 2005-04-05 01:32:44 achu Exp $
+\."$Id: nodeupdown_load_data.3,v 1.22 2005-04-06 00:22:19 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -41,8 +41,8 @@ handle created by
 .BR nodeupdown_handle_create (3).  
 
 \fIhostname\fR should indicate the location of the server.  If
-\fIhostname\fR is NULL, nodeupdown assumes the server is on the local
-node.
+\fIhostname\fR is NULL, nodeupdown assumes the backend tool's default
+server.
 
 \fIport\fR should indicate the port number of the server.  If
 \fIport\fR less than or equal to 0, nodeupdown assumes the server is
@@ -50,8 +50,7 @@ running on the backend tool's default port.
 
 \fItimeout_len\fR should indicate the timeout length in seconds that
 determines if a node is up or down.  If \fItimeout_len\fR is less than
-or equal to 0, nodeupdown assumes the default timeout length defined
-by NODEUPDOWN_TIMEOUT_LEN.
+or equal to 0, nodeupdown assumes the backend tool's default timeout.
  
 \fIreserved\fR is no longer used.  It remains for backwards
 compatability with older libraries.

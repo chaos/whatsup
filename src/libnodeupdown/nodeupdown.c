@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.113 2005-04-05 23:54:50 achu Exp $
+ *  $Id: nodeupdown.c,v 1.114 2005-04-06 00:22:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -33,9 +33,6 @@
 #if STDC_HEADERS
 #include <string.h>
 #endif /* STDC_HEADERS */
-#if HAVE_UNISTD_H
-#include <unistd.h>
-#endif /* HAVE_UNISTD_H */
 
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
@@ -156,6 +153,8 @@ nodeupdown_handle_create()
 static void 
 _free_handle_data(nodeupdown_t handle) 
 {
+  nodeupdown_clusterlist_cleanup(handle);
+  nodeupdown_clusterlist_unload_module(handle);
   nodeupdown_ganglia_cleanup(handle);
   hostlist_destroy(handle->up_nodes);
   hostlist_destroy(handle->down_nodes);
@@ -291,7 +290,10 @@ nodeupdown_load_data(nodeupdown_t handle,
   if (cd.clusterlist_module_found)
     clusterlist_module = cd.clusterlist_module;
   
-  if (nodeupdown_ganglia_init(handle, clusterlist_module) < 0)
+  if (nodeupdown_clusterlist_load_module(handle, clusterlist_module) < 0)
+    goto cleanup;
+                                                                                      
+  if (nodeupdown_clusterlist_init(handle) < 0)
     goto cleanup;
 
   if (!(handle->up_nodes = hostlist_create(NULL))) 
@@ -311,7 +313,7 @@ nodeupdown_load_data(nodeupdown_t handle,
       if (cd.port_found)
         port = cd.port;
       else
-        port = nodeupdown_ganglia_get_default_port(handle);
+        port = nodeupdown_ganglia_default_port(handle);
     }
   
   if (timeout_len <= 0)
@@ -319,7 +321,7 @@ nodeupdown_load_data(nodeupdown_t handle,
       if (cd.timeout_len_found)
         timeout_len = cd.timeout_len;
       else
-        timeout_len = NODEUPDOWN_TIMEOUT_LEN;
+        timeout_len = nodeupdown_ganglia_default_timeout_len(handle);
     }
 
   if (!hostname && cd.hostnames_found)
@@ -335,7 +337,8 @@ nodeupdown_load_data(nodeupdown_t handle,
           if (nodeupdown_ganglia_get_updown_data(handle, 
                                                  hostnamePtr,
                                                  port,
-                                                 timeout_len) < 0)
+                                                 timeout_len,
+                                                 reserved) < 0)
             continue;
           else
             break;
@@ -349,18 +352,12 @@ nodeupdown_load_data(nodeupdown_t handle,
     }
   else 
     {
-      char hostnamebuf[NODEUPDOWN_MAXHOSTNAMELEN+1];
       char *hostnamePtr;
 
       if (!hostname)
         {
-          memset(hostnamebuf, '\0', NODEUPDOWN_MAXHOSTNAMELEN+1);
-          if (gethostname(hostnamebuf, NODEUPDOWN_MAXHOSTNAMELEN) < 0)
-            {
-              handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-              goto cleanup;
-            }
-          hostnamePtr = hostnamebuf;
+          if (!(hostnamePtr = nodeupdown_ganglia_default_hostname(handle)))
+            goto cleanup;
         }
       else
         hostnamePtr = (char *)hostname;
@@ -368,7 +365,8 @@ nodeupdown_load_data(nodeupdown_t handle,
       if (nodeupdown_ganglia_get_updown_data(handle, 
                                              hostnamePtr,
                                              port, 
-                                             timeout_len) < 0)
+                                             timeout_len,
+                                             reserved) < 0)
         goto cleanup;
     }
 
