@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.13 2003-03-05 22:44:42 achu Exp $
+ * $Id: nodeupdown.c,v 1.14 2003-03-07 23:38:50 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -863,6 +863,16 @@ char *nodeupdown_strerror(int errnum) {
   }
 
   return errmsg[errnum];
+}
+
+
+char *nodeupdown_errormsg(nodeupdown_t handle) {
+  if (handle == NULL) {
+    return NULL;
+  }
+  else {
+    return nodeupdown_strerror(nodeupdown_errnum(handle));
+  }
 }
 
 void nodeupdown_perror(nodeupdown_t handle, char *msg) {

@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown.h,v 1.4 2003-02-26 21:31:36 achu Exp $
+ *  $Id: nodeupdown.h,v 1.5 2003-03-07 23:38:50 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h,v $
  *    
  */
@@ -98,6 +98,13 @@ int nodeupdown_errnum(nodeupdown_t handle);
  * - returns pointer to message on success, NULL on error
  */
 char *nodeupdown_strerror(int errnum);
+
+/* nodeupdown_errormsg
+ * - return a string message describing the most recently
+ *   occurred error
+ * - returns pointer to message on success, NULL on error
+ */
+char *nodeupdown_errormsg(nodeupdown_t handle);
 
 /* nodeupdown_perror
  * - output a message to standard error 
