@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.22 2003-04-25 18:52:11 achu Exp $
+ * $Id: whatsup.c,v 1.23 2003-04-25 19:07:14 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -901,11 +901,6 @@ int output_nodes(struct arginfo *arginfo, hostlist_t nodes) {
       break;
     }
 
-    /* handle odd situation to ensure output w/ newlines doesn't look odd */
-    if (break_type == '\n' && arginfo->output_type == WHATSUP_UP_AND_DOWN) {
-      fprintf(stdout, "\n");
-    }
-
     if ((num_nodes = hostlist_count(nodes)) < 0) {
       output_error("hostlist_count() error", NULL);
       return -1;
@@ -995,16 +990,28 @@ int main(int argc, char **argv) {
   /* output up, down, or both up and down nodes */
   if (arginfo->output_type == WHATSUP_UP_AND_DOWN) {
     fprintf(stdout, "up:\t");
-    if (output_nodes(arginfo, up_nodes) != 0) {
-      goto cleanup;
-    }
 
-    /* handle odd situation with output formatting */
+    /* handle odd situations with output formatting */
     if (arginfo->list_type == WHATSUP_NEWLINE) {
       fprintf(stdout, "\n");
     }
 
+    if (output_nodes(arginfo, up_nodes) != 0) {
+      goto cleanup;
+    }
+
+    /* handle odd situations with output formatting */
+    if (arginfo->list_type == WHATSUP_NEWLINE) {
+      fprintf(stdout, "\n");
+    }
+ 
     fprintf(stdout, "down:\t");
+
+    /* handle odd situations with output formatting */
+    if (arginfo->list_type == WHATSUP_NEWLINE) {
+      fprintf(stdout, "\n");
+    }
+
     if (output_nodes(arginfo, down_nodes) != 0) {
       goto cleanup;
     }

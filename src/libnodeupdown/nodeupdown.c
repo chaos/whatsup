@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.35 2003-04-25 18:54:05 achu Exp $
+ * $Id: nodeupdown.c,v 1.36 2003-04-25 19:07:38 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -112,13 +112,6 @@ static char * errmsg[] = {
  * Function Definitions           *
  **********************************/
 
-/* Retrieve the primary node name listed in genders
- * Returns -1 on error, 0 on success
- */
-static int get_genders_nodename(nodeupdown_t handle, 
-                                char *node, 
-                                char **buffer); 
-
 /* get hostlist ranged string from specified hostlist 
  * Returns -1 on error, 0 on success
  */
@@ -179,6 +172,13 @@ static void xml_parse_start(void *data, const char *e1, const char **attr);
  */
 static void xml_parse_end(void *data, const char *e1);
 
+/* Retrieve the primary node name listed in genders
+ * Returns -1 on error, 0 on success
+ */
+static int get_genders_nodename(nodeupdown_t handle, 
+                                char *node, 
+                                char **buffer); 
+
 /* compare genders nodes to gmond nodes
  * - There is a chance gmond does not know of a node listed in genders, 
  *   because gmond never received a multicast message from that noe.
@@ -236,72 +236,6 @@ static int nodeupdown_is_node(nodeupdown_t handle,
 static int nodeupdown_check_if_node_in_hostlist(nodeupdown_t handle,
                                                 hostlist_t nodes,
                                                 char *node);
-
-
-int get_genders_nodename(nodeupdown_t handle, 
-                         char *node, 
-                         char **buffer) {
-  int ret, len;
-  char *buf = NULL;
-
-  ret = genders_testnode(handle->genders_handle, node);
-  if (ret == -1) {
-    handle->errnum = NODEUPDOWN_ERR_GENDERS;
-    goto cleanup;
-  }
-  else {
-    if (ret == 1) {
-      /* it is a genders node! */
-
-      if ((buf = (char *)malloc(strlen(node) + 1)) == NULL) {
-        handle->errnum = NODEUPDOWN_ERR_OUTMEM;
-        goto cleanup;
-      }
-      strcpy(buf, node);
-    }
-    else {
-      /* node is the alternate name? */
-
-      if ((len = genders_getmaxnodelen(handle->genders_handle)) == -1) {
-        handle->errnum = NODEUPDOWN_ERR_GENDERS;
-        goto cleanup;
-      }
-
-      if ((buf = (char *)malloc(len + 1)) == NULL) {
-        handle->errnum = NODEUPDOWN_ERR_GENDERS;
-        goto cleanup;
-      }
-      memset(buf, '\0', len + 1);
-
-      ret = genders_getnodes(handle->genders_handle,
-                             &buf,
-                             1,
-                             GENDERS_ALTNAME_ATTRIBUTE,
-                             node);
-      if (ret == 0) {
-        handle->errnum = NODEUPDOWN_ERR_NOTFOUND;
-        goto cleanup;
-      }
-      else if (ret == -1 || ret > 1) {
-        handle->errnum = NODEUPDOWN_ERR_GENDERS;
-        goto cleanup;
-      }
-      /* else ret == 1, node name stored in buf */
-    }
-  }
-
-  *buffer = buf;
-
-  return 0;
-
- cleanup:
-
-  if (buf != NULL) {
-    free(buf);
-  }
-
-  return -1;
-}
 
 char * get_hostlist_ranged_string(nodeupdown_t handle, hostlist_t hostlist) {
   char *str;
@@ -803,6 +737,71 @@ void xml_parse_start(void *data, const char *e1, const char **attr) {
 
 void xml_parse_end(void *data, const char *e1) {
   /* do nothing for the time being */
+}
+
+int get_genders_nodename(nodeupdown_t handle, 
+                         char *node, 
+                         char **buffer) {
+  int ret, len;
+  char *buf = NULL;
+
+  ret = genders_testnode(handle->genders_handle, node);
+  if (ret == -1) {
+    handle->errnum = NODEUPDOWN_ERR_GENDERS;
+    goto cleanup;
+  }
+  else {
+    if (ret == 1) {
+      /* it is a genders node! */
+
+      if ((buf = (char *)malloc(strlen(node) + 1)) == NULL) {
+        handle->errnum = NODEUPDOWN_ERR_OUTMEM;
+        goto cleanup;
+      }
+      strcpy(buf, node);
+    }
+    else {
+      /* node is the alternate name? */
+
+      if ((len = genders_getmaxnodelen(handle->genders_handle)) == -1) {
+        handle->errnum = NODEUPDOWN_ERR_GENDERS;
+        goto cleanup;
+      }
+
+      if ((buf = (char *)malloc(len + 1)) == NULL) {
+        handle->errnum = NODEUPDOWN_ERR_GENDERS;
+        goto cleanup;
+      }
+      memset(buf, '\0', len + 1);
+
+      ret = genders_getnodes(handle->genders_handle,
+                             &buf,
+                             1,
+                             GENDERS_ALTNAME_ATTRIBUTE,
+                             node);
+      if (ret == 0) {
+        handle->errnum = NODEUPDOWN_ERR_NOTFOUND;
+        goto cleanup;
+      }
+      else if (ret == -1 || ret > 1) {
+        handle->errnum = NODEUPDOWN_ERR_GENDERS;
+        goto cleanup;
+      }
+      /* else ret == 1, node name stored in buf */
+    }
+  }
+
+  *buffer = buf;
+
+  return 0;
+
+ cleanup:
+
+  if (buf != NULL) {
+    free(buf);
+  }
+
+  return -1;
 }
 
 int nodeupdown_compare_genders_to_gmond_nodes(nodeupdown_t handle) {
