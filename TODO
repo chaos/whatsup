@@ -6,6 +6,7 @@
 - repackage for multilib
 
 for rework
+- fix code style to GNU
 - filename options in whatsup?
 - error checking in clusterlist modules
 - #if stuff all over
