@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown_load_data.3.in,v 1.13 2003-12-29 19:02:01 achu Exp $
+\."$Id: nodeupdown_load_data.3.in,v 1.14 2005-03-31 00:27:38 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -29,13 +29,13 @@ nodeupdown_load_data \- load data from ganglia
 .SH SYNOPSIS
 .B #include <nodeupdown.h>
 .sp
-.if @WITH_NOMASTERLIST@ \{
+.if @MANPAGE_NOMASTERLIST@ \{
 .BI "int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname, int gmond_port, int timeout_len, void *masterlist);"
 \}
-.if @WITH_HOSTSFILE@ \{
+.if @MANPAGE_HOSTSFILE@ \{
 .BI "int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname, int gmond_port, int timeout_len, char *hostsfile);"
 \}
-.if (@WITH_GENDERS@ : @WITH_GENDERSLLNL@) \{
+.if (@MANPAGE_GENDERS@ : @MANPAGE_GENDERSLLNL@) \{
 .BI "int nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname, int gmond_port, int timeout_len, char *gendersfile);"
 \}
 .br
@@ -61,18 +61,18 @@ determines if a node is up or down.  If \fItimeout_len\fR is less than
 or equal to 0, nodeupdown assumes the default timeout length defined
 by NODEUPDOWN_TIMEOUT_LEN.
  
-.if @WITH_HOSTSFILE@ \{
+.if @MANPAGE_HOSTSFILE@ \{
 \fIhostsfile\fR should indicate a filename that lists every node in
 the cluster.  The file should list shortened hostnames, one per line.
 Lines beginning with a pound sign ("#") will be ignored.  If set to
 NULL, the default @NODEUPDOWN_MASTERLIST_DEFAULT@ will be used.
 \}
-.if (@WITH_GENDERS@ : @WITH_GENDERSLLNL@) \{
+.if (@MANPAGE_GENDERS@ : @MANPAGE_GENDERSLLNL@) \{
 \fIgendersfile\fR should indicate the genders file to be loaded.  If
 \fIgendersfile\fR is NULL, the default genders file
 @NODEUPDOWN_MASTERLIST_DEFAULT@ will be used.
 \}
-.if @WITH_NOMASTERLIST@ \{
+.if @MANPAGE_NOMASTERLIST@ \{
 \fImasterlist\fR can be set to anything, it will be ignored in this
 configuration of nodeupdown.
 \}
@@ -96,11 +96,11 @@ The handle parameter is NULL.  The nodeupdown handle must be created
 with
 .BR nodeupdown_handle_create (3).
 .TP
-.if @WITH_HOSTSFILE@ \{
+.if @MANPAGE_HOSTSFILE@ \{
 .B NODEUPDOWN_ERR_OPEN
 The hostsfile cannot be opened.
 \}
-.if (@WITH_GENDERS@ : @WITH_GENDERSLLNL@) \{
+.if (@MANPAGE_GENDERS@ : @MANPAGE_GENDERSLLNL@) \{
 .B NODEUPDOWN_ERR_OPEN
 The genders file cannot be opened.
 \}
@@ -158,6 +158,6 @@ An internal system error has occurred.
 libnodeupdown(3), nodeupdown_handle_create(3),
 nodeupdown_handle_destroy(3), nodeupdown_errnum(3),
 nodeupdown_strerror(3), nodeupdown.conf(5)
-.if @WITH_HOSTSFILE@ \{
+.if @MANPAGE_HOSTSFILE@ \{
 nodeupdown_hostsfile.conf(5)
 \}

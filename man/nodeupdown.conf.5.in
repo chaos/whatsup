@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown.conf.5.in,v 1.8 2004-01-13 16:39:52 achu Exp $
+\."$Id: nodeupdown.conf.5.in,v 1.9 2005-03-31 00:27:38 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -59,13 +59,13 @@ Specify the gmond port.
 .I timeout_len      seconds
 Specify the timeout length in seconds.
 
-.if @WITH_HOSTSFILE@ \{
+.if @MANPAGE_HOSTSFILE@ \{
 .TP
 .I hostsfile        path
 Specify the default hostsfile path.
 \}
 
-.if (@WITH_GENDERS@ : @WITH_GENDERSLLNL@) \{
+.if (@MANPAGE_GENDERS@ : @MANPAGE_GENDERSLLNL@) \{
 .TP
 .I gendersfile      path
 Specify the default genders file path.
@@ -76,7 +76,7 @@ Specify the default genders file path.
 \."I know this stinks, but things don't seem to align properly if you
 \."do it the smart way.  Someday I'll learn to use groff for real.
 
-.if @WITH_HOSTSFILE@ \{
+.if @MANPAGE_HOSTSFILE@ \{
 # Nodeupdown configuration
 .br
 gmond_hostnames     mymachine1
@@ -87,7 +87,7 @@ timeout_len         30
 .br
 hostsfile           /etc/hostsfile2
 \}
-.if (@WITH_GENDERS@ : @WITH_GENDERSLLNL@) \{
+.if (@MANPAGE_GENDERS@ : @MANPAGE_GENDERSLLNL@) \{
 # Nodeupdown configuration
 .br
 gmond_hostnames     mymachine1
