@@ -71,6 +71,9 @@ see what I can do.
 
 Comments, patches, fixes, suggestions are always welcome.
 
+Please read DISCLAIMER and COPYING for copyright and license
+information.
+
 By the way, whatsup.spec.in defaults to the gendersllnl mechanism.
 You'll probably want to specify a different one at the command line if
 you plan on building a rpm package.
