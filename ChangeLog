@@ -1,3 +1,14 @@
+2003-09-24  Albert Chu  <chu11@llnl.gov>
+
+	: src/whatsup/whatsup.c (get_arg_nodes, get_all_nodes, get_nodes):
+	New functions, renamed from get_arg_nodes_common,
+	get_all_nodes_common, get_nodes_common.
+
+	* src/whatsup/whatsup.c (get_nodes): Added additional count
+	parameter, which returns the node count to the caller.
+
+	* src/whatsup/whatsup.c (main): Added support for --count option.
+
 2003-09-23  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown.c (nodeupdown_up_count,
