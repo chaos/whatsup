@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.115 2005-04-06 00:56:23 achu Exp $
+ *  $Id: nodeupdown.c,v 1.116 2005-04-06 04:24:16 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -36,9 +36,9 @@
 
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
-#include "nodeupdown_util.h"
-#include "nodeupdown_ganglia.h"
+#include "nodeupdown_backend.h"
 #include "nodeupdown_clusterlist.h"
+#include "nodeupdown_util.h"
 #include "conffile.h"
 #include "hostlist.h"
 #include "list.h"
@@ -53,6 +53,8 @@ struct nodeupdown_confdata
   int port_found;
   int timeout_len;
   int timeout_len_found;
+  char backend_module[NODEUPDOWN_MAXPATHLEN+1];
+  int backend_module_found;
   char clusterlist_module[NODEUPDOWN_MAXPATHLEN+1];
   int clusterlist_module_found;
 };
@@ -83,6 +85,7 @@ static char * nodeupdown_errmsg[] =
     "read conf file error",
     "parse conf file error",
     "backend error",
+    "backend open error",
     "internal XML parsing error",
     "internal hostlist error",
     "nodeupdown handle magic number incorrect, improper handle passed in",
@@ -155,9 +158,10 @@ nodeupdown_handle_create()
 static void 
 _free_handle_data(nodeupdown_t handle) 
 {
+  nodeupdown_backend_cleanup(handle);
+  nodeupdown_backend_unload_module(handle);
   nodeupdown_clusterlist_cleanup(handle);
   nodeupdown_clusterlist_unload_module(handle);
-  nodeupdown_ganglia_cleanup(handle);
   lt_dlexit();
   hostlist_destroy(handle->up_nodes);
   hostlist_destroy(handle->down_nodes);
@@ -228,6 +232,9 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd)
        conffile_int, 1, 0, &(cd->port_found), &(cd->port), 0},
       {NODEUPDOWN_CONF_TIMEOUT_LEN, CONFFILE_OPTION_INT, 0, 
        conffile_int, 1, 0, &(cd->timeout_len_found), &(cd->timeout_len), 0},
+      {NODEUPDOWN_CONF_BACKEND_MODULE, CONFFILE_OPTION_STRING, 0,
+       conffile_string, 1, 0, &(cd->backend_module_found), 
+       cd->backend_module, NODEUPDOWN_MAXPATHLEN},
       {NODEUPDOWN_CONF_CLUSTERLIST_MODULE, CONFFILE_OPTION_STRING, 0,
        conffile_string, 1, 0, &(cd->clusterlist_module_found), 
        cd->clusterlist_module, NODEUPDOWN_MAXPATHLEN},
@@ -276,6 +283,7 @@ nodeupdown_load_data(nodeupdown_t handle,
                      char *reserved)
 {
   struct nodeupdown_confdata cd;
+  char *backend_module = NULL;
   char *clusterlist_module = NULL;
 
   if (_unloaded_handle_error_check(handle) < 0)
@@ -294,6 +302,15 @@ nodeupdown_load_data(nodeupdown_t handle,
   memset(&cd, '\0', sizeof(struct nodeupdown_confdata));
 
   if (_read_conffile(handle, &cd) < 0)
+    goto cleanup;
+
+  if (cd.backend_module_found)
+    backend_module = cd.backend_module;
+  
+  if (nodeupdown_backend_load_module(handle, backend_module) < 0)
+    goto cleanup;
+                                                                                      
+  if (nodeupdown_backend_init(handle) < 0)
     goto cleanup;
 
   if (cd.clusterlist_module_found)
@@ -322,7 +339,7 @@ nodeupdown_load_data(nodeupdown_t handle,
       if (cd.port_found)
         port = cd.port;
       else
-        port = nodeupdown_ganglia_default_port(handle);
+        port = nodeupdown_backend_default_port(handle);
     }
   
   if (timeout_len <= 0)
@@ -330,7 +347,7 @@ nodeupdown_load_data(nodeupdown_t handle,
       if (cd.timeout_len_found)
         timeout_len = cd.timeout_len;
       else
-        timeout_len = nodeupdown_ganglia_default_timeout_len(handle);
+        timeout_len = nodeupdown_backend_default_timeout_len(handle);
     }
 
   if (!hostname && cd.hostnames_found)
@@ -343,7 +360,7 @@ nodeupdown_load_data(nodeupdown_t handle,
       
       while ((hostnamePtr = list_next(itr)) != NULL)
         {
-          if (nodeupdown_ganglia_get_updown_data(handle, 
+          if (nodeupdown_backend_get_updown_data(handle, 
                                                  hostnamePtr,
                                                  port,
                                                  timeout_len,
@@ -365,13 +382,13 @@ nodeupdown_load_data(nodeupdown_t handle,
 
       if (!hostname)
         {
-          if (!(hostnamePtr = nodeupdown_ganglia_default_hostname(handle)))
+          if (!(hostnamePtr = nodeupdown_backend_default_hostname(handle)))
             goto cleanup;
         }
       else
         hostnamePtr = (char *)hostname;
 
-      if (nodeupdown_ganglia_get_updown_data(handle, 
+      if (nodeupdown_backend_get_updown_data(handle, 
                                              hostnamePtr,
                                              port, 
                                              timeout_len,

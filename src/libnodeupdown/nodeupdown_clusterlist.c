@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist.c,v 1.2 2005-04-06 00:56:23 achu Exp $
+ *  $Id: nodeupdown_clusterlist.c,v 1.3 2005-04-06 04:24:16 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -38,12 +38,12 @@
 #if HAVE_UNISTD_H
 #include <unistd.h>
 #endif /* HAVE_UNISTD_H */
-#include <dirent.h>
 #include <errno.h>
 
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
 #include "nodeupdown_clusterlist.h"
+#include "nodeupdown_util.h"
 #include "ltdl.h"
 
 static char *clusterlist_modules[] = {
@@ -99,58 +99,6 @@ _load_module(nodeupdown_t handle, char *module_path)
     lt_dlclose(clusterlist_module_dl_handle);
   clusterlist_module_info = NULL;
   clusterlist_module_dl_handle = NULL;
-  return -1;
-}
-
-static int
-_search_dir_for_module(nodeupdown_t handle, 
-                       char *search_dir,
-                       char **modules_list,
-                       int modules_list_len)
-{
-  DIR *dir;
-  int i = 0, found = 0;
- 
-  /* Can't open the directory? we assume it doesn't exit, so its not
-   * an error.
-   */
-  if (!(dir = opendir(search_dir)))
-    return 0;
-
-  for (i = 0; i < modules_list_len; i++)
-    {
-      struct dirent *dirent;
-
-      while ((dirent = readdir(dir)))
-        {
-          if (!strcmp(dirent->d_name, modules_list[i]))
-            {
-              char filebuf[NODEUPDOWN_MAXPATHLEN+1];
-              int ret;
-
-              memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
-              snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/%s",
-                       search_dir, modules_list[i]);
-
-              if ((ret = _load_module(handle, filebuf)) < 0)
-                  goto cleanup;
-
-              if (ret)
-                {
-                  found++;
-                  goto done;
-                }
-            }
-        }
-      rewinddir(dir);
-    }
-
- done:
-  closedir(dir);
-
-  return (found) ? 1 : 0;
-
- cleanup:
   return -1;
 }
 
@@ -222,33 +170,36 @@ nodeupdown_clusterlist_load_module(nodeupdown_t handle, char *clusterlist_module
       if (rv)
         goto done;
 
-      handle->errnum = NODEUPDOWN_ERR_CONF_OPEN;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_OPEN;
       goto cleanup;
     }
   else
     {
-      if ((rv = _search_dir_for_module(handle,
-                                       NODEUPDOWN_MODULE_DIR,
-                                       clusterlist_modules,
-                                       clusterlist_modules_len)) < 0)
+      if ((rv = nodeupdown_util_search_dir_for_module(handle,
+						      NODEUPDOWN_MODULE_DIR,
+						      clusterlist_modules,
+						      clusterlist_modules_len,
+						      _load_module)) < 0)
         goto cleanup;
                      
       if (rv)
         goto done;
                                                                           
-      if ((rv = _search_dir_for_module(handle,
-                                       ".",
-                                       clusterlist_modules,
-                                       clusterlist_modules_len)) < 0)
+      if ((rv = nodeupdown_util_search_dir_for_module(handle,
+						      ".",
+						      clusterlist_modules,
+						      clusterlist_modules_len,
+						      _load_module)) < 0)
         goto cleanup;
 
       if (rv)
         goto done;
 
-      if ((rv = _search_dir_for_module(handle,
-                                       NODEUPDOWN_MODULE_BUILDDIR,
-                                       clusterlist_modules,
-                                       clusterlist_modules_len)) < 0)
+      if ((rv = nodeupdown_util_search_dir_for_module(handle,
+						      NODEUPDOWN_MODULE_BUILDDIR,
+						      clusterlist_modules,
+						      clusterlist_modules_len,
+						      _load_module)) < 0)
         goto cleanup;
 
       if (rv)

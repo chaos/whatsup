@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend.h,v 1.2 2005-04-06 00:56:23 achu Exp $
+ *  $Id: nodeupdown_backend.h,v 1.3 2005-04-06 04:24:16 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -46,6 +46,10 @@ struct nodeupdown_backend_module_info
   Nodeupdown_backend_cleanup cleanup;
   Nodeupdown_backend_get_updown_data get_updown_data;
 };
+
+int nodeupdown_backend_load_module(nodeupdown_t handle, char *backend_module);
+
+int nodeupdown_backend_unload_module(nodeupdown_t handle);
 
 char *nodeupdown_backend_default_hostname(nodeupdown_t handle);
 

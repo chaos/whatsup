@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_util.c,v 1.1 2005-04-05 21:51:54 achu Exp $
+ *  $Id: nodeupdown_util.c,v 1.2 2005-04-06 04:24:16 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -45,10 +45,13 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/select.h>
+#include <dirent.h>
 #include <errno.h>
 
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
+#include "nodeupdown_util.h"
+#include "ltdl.h"
 
 int
 nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
@@ -182,5 +185,58 @@ nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
 
  cleanup:
   close(fd);
+  return -1;
+}
+
+int
+nodeupdown_util_search_dir_for_module(nodeupdown_t handle, 
+				      char *search_dir,
+				      char **modules_list,
+				      int modules_list_len,
+				      Nodeupdown_util_load_module load_module)
+{
+  DIR *dir;
+  int i = 0, found = 0;
+ 
+  /* Can't open the directory? we assume it doesn't exit, so its not
+   * an error.
+   */
+  if (!(dir = opendir(search_dir)))
+    return 0;
+
+  for (i = 0; i < modules_list_len; i++)
+    {
+      struct dirent *dirent;
+
+      while ((dirent = readdir(dir)))
+        {
+          if (!strcmp(dirent->d_name, modules_list[i]))
+            {
+              char filebuf[NODEUPDOWN_MAXPATHLEN+1];
+              int ret;
+
+              memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
+              snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/%s",
+                       search_dir, modules_list[i]);
+
+              if ((ret = load_module(handle, filebuf)) < 0)
+                  goto cleanup;
+
+              if (ret)
+                {
+                  found++;
+                  goto done;
+                }
+            }
+        }
+      rewinddir(dir);
+    }
+
+ done:
+  closedir(dir);
+
+  return (found) ? 1 : 0;
+
+ cleanup:
   return -1;
 }

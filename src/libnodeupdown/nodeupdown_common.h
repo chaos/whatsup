@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_common.h,v 1.16 2005-04-05 21:51:54 achu Exp $
+ *  $Id: nodeupdown_common.h,v 1.17 2005-04-06 04:24:16 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -50,6 +50,7 @@
 #define NODEUPDOWN_CONF_HOSTNAME_MAX               8
 #define NODEUPDOWN_CONF_PORT                       "port"
 #define NODEUPDOWN_CONF_TIMEOUT_LEN                "timeout_len"
+#define NODEUPDOWN_CONF_BACKEND_MODULE             "backend_module"
 #define NODEUPDOWN_CONF_CLUSTERLIST_MODULE         "clusterlist_module"
 
 struct nodeupdown {

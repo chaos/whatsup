@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia.c,v 1.10 2005-04-06 00:56:23 achu Exp $
+ *  $Id: nodeupdown_ganglia.c,v 1.11 2005-04-06 04:24:16 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -50,8 +50,8 @@
 
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
-#include "nodeupdown_ganglia.h"
 #include "nodeupdown_clusterlist.h"
+#include "nodeupdown_ganglia.h"
 #include "nodeupdown_util.h"
 #include "hostlist.h"
 #include "xmlparse.h"

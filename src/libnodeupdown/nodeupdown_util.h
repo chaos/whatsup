@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_util.h,v 1.1 2005-04-05 21:51:54 achu Exp $
+ *  $Id: nodeupdown_util.h,v 1.2 2005-04-06 04:24:16 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -29,9 +29,17 @@
 
 #include "nodeupdown.h"
 
+typedef int (*Nodeupdown_util_load_module)(nodeupdown_t, char *);
+
 int nodeupdown_util_low_timeout_connect(nodeupdown_t handle, 
                                         const char *hostname, 
                                         int port,
                                         int connect_timeout); 
+
+int nodeupdown_util_search_dir_for_module(nodeupdown_t handle, 
+					  char *search_dir,
+					  char **modules_list,
+					  int modules_list_len,
+					  Nodeupdown_util_load_module load_module);
 
 #endif /* _NODEUPDOWN_UTIL_H */
