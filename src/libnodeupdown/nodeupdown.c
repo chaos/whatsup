@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.102 2004-01-15 01:09:36 achu Exp $
+ *  $Id: nodeupdown.c,v 1.103 2004-01-16 00:13:42 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -571,7 +571,7 @@ nodeupdown_load_data(nodeupdown_t handle, const char *gmond_hostname,
       port = (gmond_port <= 0 && cd.gmond_port_found > 0) ? 
         cd.gmond_port : gmond_port;
       if ((fd = _low_timeout_connect(handle, str, port)) >= 0) 
-	break;
+        break;
     }
 
     if (itr)

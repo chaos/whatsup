@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_masterlist.c,v 1.13 2004-01-15 16:45:26 achu Exp $
+ *  $Id: nodeupdown_masterlist.c,v 1.14 2004-01-16 00:13:43 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -106,7 +106,7 @@ _load_hostsfile_data(nodeupdown_t handle, const char *filename)
 
   /* XXX: This sucks, I need to find a generic file parsing lib */
   while ((len = _readline(handle, fd, buf, NODEUPDOWN_BUFFERLEN)) > 0) {
-    if (buf[0] == '#')		/* skip comments */
+    if (buf[0] == '#')          /* skip comments */
       continue;
     else if (strlen(buf) > MAXHOSTNAMELEN) {
       handle->errnum = NODEUPDOWN_ERR_MASTERLIST_PARSE;
