@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.4.2.2 2004-11-16 21:40:39 achu Exp $
+## $Id: Makefile.am,v 1.4.2.3 2004-12-14 22:09:54 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -20,7 +20,8 @@ Makefile.pm: Makefile.PL
 	if ! test -a Nodeupdown.pm; then \
 		cp $(srcdir)/Nodeupdown.pm .; \
 	fi
-	$(PERL) Makefile.PL PREFIX=$(PERL_INSTALL_PREFIX) MAKEFILE=Makefile.pm FIRST_MAKEFILE=Makefile.pm
+	TEMPINSTALLSITELIB=`perl -e 'use Config; print $$Config{installsitearch}'`; \
+	$(PERL) Makefile.PL PREFIX=$(PERL_INSTALL_PREFIX)$(prefix) MAKEFILE=Makefile.pm FIRST_MAKEFILE=Makefile.pm INSTALLSITELIB=$(PERL_INSTALL_PREFIX)$$TEMPINSTALLSITELIB
 
 install: Makefile.pm
 	$(MAKE) -f Makefile.pm pure_install

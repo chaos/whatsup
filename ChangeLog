@@ -1,3 +1,12 @@
+2004-12-14  Albert Chu  <chu11@llnl.gov>
+
+	* whatsup.spec.in, src/Nodeupdown/Makefile.am,
+	src/Libnodeupdown/Makefile.am: Backport to fix 64bit build issue.
+ 
+	* META: Updated for new release.
+	  
+	* tagged whatsup-1-3-3
+	
 2004-11-17  Albert Chu  <chu11@llnl.gov>
 
 	* whatsup.spec.in, README, README.genders_install,

@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.10.2.3 2004-11-16 21:58:07 achu Exp $
+## $Id: Makefile.am,v 1.10.2.4 2004-12-14 22:09:54 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -33,7 +33,7 @@ Makefile.xs: Makefile.PL Libnodeupdown.xs Libnodeupdown.pm
 	if ! test -a Libnodeupdown.xs; then \
 		cp $(srcdir)/Libnodeupdown.xs .; \
 	fi
-	$(PERL) Makefile.PL PREFIX=$(PERL_INSTALL_PREFIX) MAKEFILE=Makefile.xs FIRST_MAKEFILE=Makefile.xs INC=$(PERL_INC)
+	$(PERL) Makefile.PL PREFIX=$(PERL_INSTALL_PREFIX)$(prefix) MAKEFILE=Makefile.xs FIRST_MAKEFILE=Makefile.xs INC=$(PERL_INC)
 
 test: Makefile.xs 
 	$(MAKE) -f Makefile.xs test
