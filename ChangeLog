@@ -1,3 +1,7 @@
+2003-04-29 Albert Chu <chu11@llnl.gov>
+	- fixed release number in manpages
+	- fixed lack of 'const' in manpages as well as other man page typos
+
 2003-04-24 Albert Chu <chu11@llnl.gov>
         - Added NODEUPDOWN_ERR_NULLHANDLE and NODEUPDOWN_ERR_ERRNUMRANGE
 	- renamed nodeupdown_create() to nodeupdown_handle_create() and
