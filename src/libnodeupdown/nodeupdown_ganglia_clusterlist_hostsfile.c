@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_hostsfile.c,v 1.6 2005-04-01 21:29:02 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_hostsfile.c,v 1.7 2005-04-02 00:57:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -26,15 +26,19 @@
 
 #if HAVE_CONFIG_H
 #include "config.h"
-#endif
+#endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
 #include <stdlib.h>
+#if STDC_HEADERS
 #include <string.h>
 #include <ctype.h>
+#endif /* STDC_HEADERS */
 #include <sys/types.h>
 #include <sys/stat.h>
+#if HAVE_FCNTL_H
 #include <fcntl.h>
+#endif /* HAVE_FCNTL_H */
 
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
@@ -169,7 +173,7 @@ _load_hostsfile_data(nodeupdown_t handle)
           goto cleanup;
         }
                                                                                      
-      if (strlen(hostPtr) > MAXHOSTNAMELEN)
+      if (strlen(hostPtr) > NODEUPDOWN_MAXHOSTNAMELEN)
         {
           handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_PARSE;
           goto cleanup;
@@ -197,7 +201,7 @@ _load_hostsfile_data(nodeupdown_t handle)
 }
 
 int 
-hostsfile_ganglia_clusterlist_init(nodeupdown_t handle, void *ptr) 
+hostsfile_ganglia_clusterlist_init(nodeupdown_t handle) 
 {
   return _load_hostsfile_data(handle);
 }

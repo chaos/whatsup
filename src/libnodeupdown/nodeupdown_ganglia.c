@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia.c,v 1.2 2005-04-01 21:45:25 achu Exp $
+ *  $Id: nodeupdown_ganglia.c,v 1.3 2005-04-02 00:57:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -26,22 +26,36 @@
 
 #if HAVE_CONFIG_H
 #include "config.h"
-#endif
+#endif /* HAVE_CONFIG_H */
 
-#include <netdb.h>
+#include <stdio.h>
 #include <stdlib.h>
+#if STDC_HEADERS
 #include <string.h>
+#endif /* STDC_HEADERS */
+#if HAVE_UNISTD_H
 #include <unistd.h>
+#endif /* HAVE_UNISTD_H */
+#if TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else  /* !TIME_WITH_SYS_TIME */
+# if HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else /* !HAVE_SYS_TIME_H */
+#  include <time.h>
+# endif /* !HAVE_SYS_TIME_H */
+#endif /* !TIME_WITH_SYS_TIME */
 #include <errno.h>
-#include <sys/time.h> 
 
-#include "hostlist.h"
-#include "xmlparse.h"
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
+#include "nodeupdown_ganglia.h"
 #include "nodeupdown_ganglia_clusterlist.h"
+#include "hostlist.h"
+#include "xmlparse.h"
 
-/* to pass multiple variables as one during XML parsing */
+/* Used to pass multiple variables as one during XML parsing */
 struct parse_vars 
 {
   nodeupdown_t handle;
@@ -58,10 +72,8 @@ _xml_parse_start(void *data, const char *e1, const char **attr)
   nodeupdown_t handle = ((struct parse_vars *)data)->handle;
   int timeout_len = ((struct parse_vars *)data)->timeout_len;
   unsigned long localtime = ((struct parse_vars *)data)->localtime;
-  char shorthostname[MAXHOSTNAMELEN+1];
-  char buffer[MAXHOSTNAMELEN+1];
+  char buffer[NODEUPDOWN_MAXHOSTNAMELEN+1];
   unsigned long reported;
-  char *ptr;
   int ret;
 
   if (strcmp("HOST", e1) == 0) 
@@ -76,17 +88,13 @@ _xml_parse_start(void *data, const char *e1, const char **attr)
        * - remaining attributes aren't needed 
        */
 
-      /* shorten hostname if necessary */
-      memset(shorthostname, '\0', MAXHOSTNAMELEN+1);
-      strncpy(shorthostname, attr[1], MAXHOSTNAMELEN);
-      if ((ptr = strchr(shorthostname, '.')) != NULL)
-        *ptr = '\0';
-      
-      if (nodeupdown_ganglia_clusterlist_is_node_in_cluster(handle, shorthostname) <= 0)
+      if (nodeupdown_ganglia_clusterlist_is_node_in_cluster(handle, attr[1]) <= 0)
         return;
       
-      if (nodeupdown_ganglia_clusterlist_get_nodename(handle, shorthostname, 
-                                                      buffer, MAXHOSTNAMELEN+1) < 0)
+      if (nodeupdown_ganglia_clusterlist_get_nodename(handle, 
+                                                      attr[1], 
+                                                      buffer, 
+                                                      NODEUPDOWN_MAXHOSTNAMELEN+1) < 0)
         return;
       
       /* store as up or down */
@@ -110,7 +118,7 @@ _xml_parse_start(void *data, const char *e1, const char **attr)
 static void 
 _xml_parse_end(void *data, const char *e1) 
 {
-  /* nothing to do at this time */
+  /* nothing to parse at this time */
 }
 
 int 

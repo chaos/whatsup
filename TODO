@@ -12,3 +12,4 @@ for rework
 - #if stuff all over
 - nodename vs. hostname
 - #include order consistency
+- allow re-load

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_gendersllnl.c,v 1.7 2005-04-01 21:29:02 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_gendersllnl.c,v 1.8 2005-04-02 00:57:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -26,11 +26,13 @@
 
 #if HAVE_CONFIG_H
 #include "config.h"
-#endif
+#endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
 #include <stdlib.h>
+#if STDC_HEADERS
 #include <string.h>
+#endif /* STDC_HEADERS */
 #include <gendersllnl.h>
 
 #include "nodeupdown.h"
@@ -38,12 +40,11 @@
 #include "nodeupdown_ganglia_clusterlist.h"
 #include "nodeupdown_ganglia_clusterlist_util.h"
 #include "nodeupdown_ganglia_clusterlist_genders_util.h"
-#include "hostlist.h"
 
 static genders_t gendersllnl_handle = NULL;
 
 int 
-gendersllnl_ganglia_clusterlist_init(nodeupdown_t handle, void *ptr) 
+gendersllnl_ganglia_clusterlist_init(nodeupdown_t handle) 
 {
   int rv;
 
@@ -85,7 +86,24 @@ int
 gendersllnl_ganglia_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) 
 {
   int ret;
-  if ((ret = genders_isnode_or_altnode(gendersllnl_handle, node)) < 0) 
+  char nodebuf[NODEUPDOWN_MAXHOSTNAMELEN+1];
+  char *nodePtr = NULL;
+
+  /* Shorten hostname if necessary */
+  if (strchr(node, '.'))
+    {
+      char *p;
+ 
+      memset(nodebuf, '\0', NODEUPDOWN_MAXHOSTNAMELEN+1);
+      strncpy(nodebuf, node, NODEUPDOWN_MAXHOSTNAMELEN);
+      p = strchr(nodebuf, '.');
+      *p = '\0';
+      nodePtr = nodebuf;
+    }
+  else
+    nodePtr = (char *)node;
+
+  if ((ret = genders_isnode_or_altnode(gendersllnl_handle, nodePtr)) < 0) 
     {
       handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
       return -1;
@@ -97,7 +115,24 @@ int
 gendersllnl_ganglia_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node) 
 {
   int ret;
-  if ((ret = genders_isnode_or_altnode(gendersllnl_handle, node)) < 0) 
+  char nodebuf[NODEUPDOWN_MAXHOSTNAMELEN+1];
+  char *nodePtr = NULL;
+
+  /* Shorten hostname if necessary */
+  if (strchr(node, '.'))
+    {
+      char *p;
+ 
+      memset(nodebuf, '\0', NODEUPDOWN_MAXHOSTNAMELEN+1);
+      strncpy(nodebuf, node, NODEUPDOWN_MAXHOSTNAMELEN);
+      p = strchr(nodebuf, '.');
+      *p = '\0';
+      nodePtr = nodebuf;
+    }
+  else
+    nodePtr = (char *)node;
+
+  if ((ret = genders_isnode_or_altnode(gendersllnl_handle, nodePtr)) < 0) 
     {
       handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
       return -1;
@@ -111,7 +146,24 @@ gendersllnl_ganglia_clusterlist_get_nodename(nodeupdown_t handle,
                                              char *buffer, 
                                              int buflen) 
 {
-  if (genders_to_gendname(gendersllnl_handle, node, buffer, buflen) < 0) 
+  char nodebuf[NODEUPDOWN_MAXHOSTNAMELEN+1];
+  char *nodePtr = NULL;
+
+  /* Shorten hostname if necessary */
+  if (strchr(node, '.'))
+    {
+      char *p;
+ 
+      memset(nodebuf, '\0', NODEUPDOWN_MAXHOSTNAMELEN+1);
+      strncpy(nodebuf, node, NODEUPDOWN_MAXHOSTNAMELEN);
+      p = strchr(nodebuf, '.');
+      *p = '\0';
+      nodePtr = nodebuf;
+    }
+  else
+    nodePtr = (char *)node;
+
+  if (genders_to_gendname(gendersllnl_handle, nodePtr, buffer, buflen) < 0) 
     {
       handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST;
       return -1;

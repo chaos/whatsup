@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.107 2005-04-01 21:29:02 achu Exp $
+ *  $Id: nodeupdown.c,v 1.108 2005-04-02 00:57:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -26,34 +26,46 @@
 
 #if HAVE_CONFIG_H
 #include "config.h"
-#endif
+#endif /* HAVE_CONFIG_H */
 
-#include <netdb.h>
+#include <stdio.h>
 #include <stdlib.h>
+#if STDC_HEADERS
 #include <string.h>
+#endif /* STDC_HEADERS */
+#if HAVE_UNISTD_H
 #include <unistd.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <errno.h>
+#endif /* HAVE_UNISTD_H */
+#if HAVE_FCNTL_H
 #include <fcntl.h>
+#endif /* HAVE_FCNTL_H */
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <netinet/in.h>
 #include <sys/socket.h>
-#include <sys/time.h> 
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/param.h>
+#include <sys/select.h>
+#if TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else  /* !TIME_WITH_SYS_TIME */
+# if HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else /* !HAVE_SYS_TIME_H */
+#  include <time.h>
+# endif /* !HAVE_SYS_TIME_H */
+#endif /* !TIME_WITH_SYS_TIME */
+#include <errno.h>
 
-#include "list.h"
-#include "hostlist.h"
-#include "conffile.h"
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
 #include "nodeupdown_ganglia.h"
 #include "nodeupdown_ganglia_clusterlist.h"
+#include "conffile.h"
+#include "hostlist.h"
+#include "list.h"
 
-#define NODEUPDOWN_MAX_ARGS       16
-#define NODEUPDOWN_MAX_ARGSLEN    128
-
-/* to store config file data */
+/* Used to store configuration data */
 struct nodeupdown_confdata 
 {
   List hostnames;
@@ -62,19 +74,19 @@ struct nodeupdown_confdata
   int port_found;
   int timeout_len;
   int timeout_len_found;
-  char clusterlist_module[MAXPATHLEN+1];
+  char clusterlist_module[NODEUPDOWN_MAXPATHLEN+1];
   int clusterlist_module_found;
 };
 
 /* error messages */
-static char * errmsg[] = 
+static char * nodeupdown_errmsg[] = 
   {
     "success",
     "nodeupdown handle is null",
-    "connection to gmond server error",
-    "connection to gmond server timeout",
-    "improper gmond hostname error",
-    "improper gmond address error",
+    "connection to server error",
+    "connection to server timeout",
+    "improper hostname error",
+    "improper IP address error",
     "network error",
     "data already loaded",
     "data not loaded",
@@ -101,7 +113,7 @@ static char * errmsg[] =
 static int 
 _handle_error_check(nodeupdown_t handle) 
 {
-  if (handle == NULL || handle->magic != NODEUPDOWN_MAGIC_NUM)
+  if (!handle || handle->magic != NODEUPDOWN_MAGIC_NUM)
     return -1;
 
   return 0;
@@ -152,7 +164,7 @@ nodeupdown_handle_create()
 {
   nodeupdown_t handle;
 
-  if ((handle = (nodeupdown_t)malloc(sizeof(struct nodeupdown))) == NULL)
+  if (!(handle = (nodeupdown_t)malloc(sizeof(struct nodeupdown))))
     return NULL;
   
   _initialize_handle(handle);
@@ -189,20 +201,31 @@ _cb_hostnames(conffile_t cf, struct conffile_data *data, char *optionname,
               int option_type, void *option_ptr, int option_data,
               void *app_ptr, int app_data) 
 {
-  List l = (List)option_ptr;
+  List *l = (List *)option_ptr;
   char *str;
   int i;
   
   if (data->stringlist_len > NODEUPDOWN_CONF_HOSTNAME_MAX)
     return -1;
 
+  /*  
+   * Destroyed in nodeupdown_load_data, so no need to cleanup on
+   * error.
+   */
+
+  if (!(*l = list_create((ListDelF)free)))
+    {
+      conffile_seterrnum(cf, CONFFILE_ERR_OUTMEM); 
+      return -1;
+    }
+
   for (i = 0; i < data->stringlist_len; i++) 
     {
-      if (strlen(data->stringlist[i]) > MAXHOSTNAMELEN)
+      if (strlen(data->stringlist[i]) > NODEUPDOWN_MAXHOSTNAMELEN)
         return -1;
-      if ((str = strdup(data->stringlist[i])) == NULL)
+      if (!(str = strdup(data->stringlist[i])))
         return -1;
-      if (list_append(l, str) == NULL)
+      if (!list_append(*l, str))
         return -1;
     }
   return 0;
@@ -217,19 +240,19 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd)
     {
       {NODEUPDOWN_CONF_HOSTNAME, CONFFILE_OPTION_LIST_STRING, -1, 
        _cb_hostnames, 1, 0, &(cd->hostnames_found),
-       cd->hostnames, 0},
+       &(cd->hostnames), 0},
       {NODEUPDOWN_CONF_PORT, CONFFILE_OPTION_INT, 0, 
        conffile_int, 1, 0, &(cd->port_found), &(cd->port), 0},
       {NODEUPDOWN_CONF_TIMEOUT_LEN, CONFFILE_OPTION_INT, 0, 
        conffile_int, 1, 0, &(cd->timeout_len_found), &(cd->timeout_len), 0},
       {NODEUPDOWN_CONF_CLUSTERLIST_MODULE, CONFFILE_OPTION_STRING, 0,
        conffile_string, 1, 0, &(cd->clusterlist_module_found), 
-       cd->clusterlist_module, MAXPATHLEN},
+       cd->clusterlist_module, NODEUPDOWN_MAXPATHLEN},
     };
   conffile_t cf = NULL;
   int num, ret = -1;
   
-  if ((cf = conffile_handle_create()) == NULL) 
+  if (!(cf = conffile_handle_create())) 
     {
       handle->errnum = NODEUPDOWN_ERR_INTERNAL;
       goto cleanup;
@@ -261,7 +284,10 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd)
 }
 
 static int 
-_low_timeout_connect(nodeupdown_t handle, const char *hostname, int port, int default_port) 
+_low_timeout_connect(nodeupdown_t handle, 
+                     const char *hostname, 
+                     int port, 
+                     int default_port) 
 {
   int ret, old_flags, error, len, sockfd = -1;
   int sa_in_size = sizeof(struct sockaddr_in);
@@ -271,14 +297,14 @@ _low_timeout_connect(nodeupdown_t handle, const char *hostname, int port, int de
   char ip_buf[INET_ADDRSTRLEN+1];
 
   /* use default hostname? */
-  if (hostname == NULL)
+  if (!hostname)
     strncpy(ip_buf, "127.0.0.1", INET_ADDRSTRLEN);
   else 
     {
       struct hostent *hptr;
 
       /* valgrind will report a mem-leak in gethostbyname() */
-      if ((hptr = gethostbyname(hostname)) == NULL) 
+      if (!(hptr = gethostbyname(hostname))) 
         {
           handle->errnum = NODEUPDOWN_ERR_HOSTNAME;
           return -1;
@@ -405,19 +431,17 @@ nodeupdown_load_data(nodeupdown_t handle, const char *hostname,
                      char *reserved)
 {
   struct nodeupdown_confdata cd;
-  int port_l, fd = -1;
   char *clusterlist_module = NULL;
+  int fd = -1;
 
   if (_unloaded_handle_error_check(handle) < 0)
     return -1;
 
-  /* Read conffile */
+  /* Read configuration before loading a potential clusterlist module.
+   * The configuration file may indicate which module to load.
+   */
+
   memset(&cd, '\0', sizeof(struct nodeupdown_confdata));
-  if ((cd.hostnames = list_create((ListDelF)free)) == NULL) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      goto cleanup;
-    }
 
   if (_read_conffile(handle, &cd) < 0)
     goto cleanup;
@@ -431,20 +455,22 @@ nodeupdown_load_data(nodeupdown_t handle, const char *hostname,
   if (nodeupdown_ganglia_clusterlist_init(handle) < 0)
     goto cleanup;
 
-  if (hostname == NULL && cd.hostnames_found > 0) 
+  port = (port <= 0 && cd.port_found) ? cd.port : port;
+  
+  if (!hostname && cd.hostnames_found > 0) 
     {
       ListIterator itr = NULL;
       char *str;
       
-      /* Use conffile hostnames as default */
-      if ((itr = list_iterator_create(cd.hostnames)) == NULL)
+      if (!(itr = list_iterator_create(cd.hostnames)))
         goto cleanup;
       
       while ((str = list_next(itr)) != NULL) 
         {
-          port_l = (port <= 0 && cd.port_found > 0) ? 
-            cd.port : port;
-          if ((fd = _low_timeout_connect(handle, str, port_l, NODEUPDOWN_GANGLIA_DEFAULT_PORT)) >= 0) 
+          if ((fd = _low_timeout_connect(handle, 
+                                         str, 
+                                         port, 
+                                         NODEUPDOWN_GANGLIA_DEFAULT_PORT)) >= 0) 
             break;
         }
 
@@ -453,21 +479,22 @@ nodeupdown_load_data(nodeupdown_t handle, const char *hostname,
     }
   else 
     {
-      port_l = (port <= 0 && cd.port_found > 0) ? 
-        cd.port : port;
-      fd = _low_timeout_connect(handle, hostname, port_l, NODEUPDOWN_GANGLIA_DEFAULT_PORT);
+      fd = _low_timeout_connect(handle, 
+                                hostname, 
+                                port, 
+                                NODEUPDOWN_GANGLIA_DEFAULT_PORT);
     }
 
   if (fd < 0)
     goto cleanup;
 
-  if ((handle->up_nodes = hostlist_create(NULL)) == NULL) 
+  if (!(handle->up_nodes = hostlist_create(NULL))) 
     {
       handle->errnum = NODEUPDOWN_ERR_OUTMEM;
       goto cleanup;
     }
 
-  if ((handle->down_nodes = hostlist_create(NULL)) == NULL) 
+  if (!(handle->down_nodes = hostlist_create(NULL))) 
     {
       handle->errnum = NODEUPDOWN_ERR_OUTMEM;
       goto cleanup;
@@ -475,6 +502,7 @@ nodeupdown_load_data(nodeupdown_t handle, const char *hostname,
 
   timeout_len = (timeout_len <= 0 && cd.timeout_len_found > 0) ? 
     cd.timeout_len : timeout_len;
+
   if (nodeupdown_ganglia_get_gmond_data(handle, fd, timeout_len) < 0)
     goto cleanup;
 
@@ -491,7 +519,8 @@ nodeupdown_load_data(nodeupdown_t handle, const char *hostname,
   handle->is_loaded++;
 
   close(fd);
-  list_destroy(cd.hostnames);
+  if (cd.hostnames)
+    list_destroy(cd.hostnames);
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return 0;
 
@@ -506,7 +535,7 @@ nodeupdown_load_data(nodeupdown_t handle, const char *hostname,
 int 
 nodeupdown_errnum(nodeupdown_t handle) 
 {
-  if (handle == NULL)
+  if (!handle)
     return NODEUPDOWN_ERR_NULLHANDLE;
   else if (handle->magic != NODEUPDOWN_MAGIC_NUM)
     return NODEUPDOWN_ERR_MAGIC;
@@ -518,9 +547,9 @@ char *
 nodeupdown_strerror(int errnum) 
 {
   if (errnum < NODEUPDOWN_ERR_SUCCESS || errnum > NODEUPDOWN_ERR_ERRNUMRANGE)
-    return errmsg[NODEUPDOWN_ERR_ERRNUMRANGE];
+    return nodeupdown_errmsg[NODEUPDOWN_ERR_ERRNUMRANGE];
 
-  return errmsg[errnum];
+  return nodeupdown_errmsg[errnum];
 }
 
 char *
@@ -534,7 +563,7 @@ nodeupdown_perror(nodeupdown_t handle, const char *msg)
 {
   char *errormsg = nodeupdown_strerror(nodeupdown_errnum(handle));
 
-  if (msg == NULL)
+  if (!msg)
     fprintf(stderr, "%s\n", errormsg);
   else
     fprintf(stderr, "%s: %s\n", msg, errormsg);
@@ -548,7 +577,7 @@ _get_nodes_string(nodeupdown_t handle, char *buf, int buflen, int up_or_down)
   if (_loaded_handle_error_check(handle) < 0)
     return -1;
 
-  if (buf == NULL || buflen <= 0) 
+  if (!buf || buflen <= 0) 
     {
       handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
       return -1;
@@ -592,7 +621,7 @@ _get_nodes_list(nodeupdown_t handle, char **list, int len, int up_or_down)
   if (_loaded_handle_error_check(handle) < 0)
     return -1;
 
-  if (list == NULL || len <= 0) 
+  if (!list || len <= 0) 
     {
       handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
       return -1;
@@ -603,7 +632,7 @@ _get_nodes_list(nodeupdown_t handle, char **list, int len, int up_or_down)
   else
     hl = handle->down_nodes;
 
-  if ((iter = hostlist_iterator_create(hl)) == NULL) 
+  if (!(iter = hostlist_iterator_create(hl))) 
     {
       handle->errnum = NODEUPDOWN_ERR_HOSTLIST;
       return -1;
@@ -617,7 +646,7 @@ _get_nodes_list(nodeupdown_t handle, char **list, int len, int up_or_down)
           goto cleanup;
         }
 
-      if (list[count] == NULL) 
+      if (!list[count]) 
         {
           handle->errnum = NODEUPDOWN_ERR_NULLPTR;
           goto cleanup;
@@ -653,13 +682,13 @@ nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len)
 static int 
 _is_node(nodeupdown_t handle, const char *node, int up_or_down) 
 { 
-  char buffer[MAXHOSTNAMELEN+1];
+  char buffer[NODEUPDOWN_MAXHOSTNAMELEN+1];
   int ret, retval = -1;
 
   if (_loaded_handle_error_check(handle) < 0)
     return -1;
 
-  if (node == NULL) 
+  if (!node) 
     {
       handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
       return -1;
@@ -674,8 +703,10 @@ _is_node(nodeupdown_t handle, const char *node, int up_or_down)
       return -1;
     }
 
-  if (nodeupdown_ganglia_clusterlist_get_nodename(handle, node, 
-                                                  buffer, MAXHOSTNAMELEN+1) < 0)
+  if (nodeupdown_ganglia_clusterlist_get_nodename(handle, 
+                                                  node, 
+                                                  buffer, 
+                                                  NODEUPDOWN_MAXHOSTNAMELEN+1) < 0)
     return -1;
 
   if (up_or_down == NODEUPDOWN_UP_NODES)
@@ -742,13 +773,13 @@ nodeupdown_nodelist_create(nodeupdown_t handle, char ***list)
   if (_loaded_handle_error_check(handle) < 0)
     return -1;
 
-  if (list == NULL) 
+  if (!list) 
     {
       handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
       return -1;
     }
 
-  if ((nodes = (char **)malloc(sizeof(char *) * handle->max_nodes)) == NULL) 
+  if (!(nodes = (char **)malloc(sizeof(char *) * handle->max_nodes))) 
     {
       handle->errnum = NODEUPDOWN_ERR_OUTMEM;
       return -1;
@@ -756,7 +787,7 @@ nodeupdown_nodelist_create(nodeupdown_t handle, char ***list)
 
   for (i = 0; i < handle->max_nodes; i++) 
     {
-      if ((nodes[i] = (char *)malloc(MAXHOSTNAMELEN+1)) == NULL) 
+      if (!(nodes[i] = (char *)malloc(NODEUPDOWN_MAXHOSTNAMELEN+1))) 
         {
           for (j = 0; j < i; j++) 
             free(nodes[j]);
@@ -765,7 +796,7 @@ nodeupdown_nodelist_create(nodeupdown_t handle, char ***list)
           handle->errnum = NODEUPDOWN_ERR_OUTMEM;
           return -1;
         }
-      memset(nodes[i], '\0', MAXHOSTNAMELEN+1);
+      memset(nodes[i], '\0', NODEUPDOWN_MAXHOSTNAMELEN+1);
     }
 
   *list = nodes;
@@ -782,7 +813,7 @@ nodeupdown_nodelist_clear(nodeupdown_t handle, char **list)
   if (_loaded_handle_error_check(handle) < 0)
     return -1;
 
-  if (list == NULL) 
+  if (!list) 
     {
       handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
       return -1;
@@ -790,12 +821,12 @@ nodeupdown_nodelist_clear(nodeupdown_t handle, char **list)
 
   for (i = 0; i < handle->max_nodes; i++) 
     {
-      if (list[i] == NULL) 
+      if (!list[i]) 
         {
           handle->errnum = NODEUPDOWN_ERR_NULLPTR;
           return -1;
         }
-      memset(list[i], '\0', MAXHOSTNAMELEN+1);
+      memset(list[i], '\0', NODEUPDOWN_MAXHOSTNAMELEN+1);
     }
 
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
@@ -810,7 +841,7 @@ nodeupdown_nodelist_destroy(nodeupdown_t handle, char **list)
   if (_loaded_handle_error_check(handle) < 0)
     return -1;
 
-  if (list == NULL) 
+  if (!list) 
     {
       handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
       return -1;

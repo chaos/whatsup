@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_none.c,v 1.5 2005-04-01 21:29:02 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_none.c,v 1.6 2005-04-02 00:57:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -26,11 +26,13 @@
 
 #if HAVE_CONFIG_H
 #include "config.h"
-#endif
+#endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
 #include <stdlib.h>
+#if STDC_HEADERS
 #include <string.h>
+#endif /* STDC_HEADERS */
 
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
@@ -51,7 +53,7 @@ none_ganglia_clusterlist_free_handle_data(nodeupdown_t handle)
 }
 
 int 
-none_ganglia_clusterlist_init(nodeupdown_t handle, void *ptr) 
+none_ganglia_clusterlist_init(nodeupdown_t handle) 
 {
   return 0;
 }

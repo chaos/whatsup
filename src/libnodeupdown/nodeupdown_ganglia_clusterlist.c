@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist.c,v 1.5 2005-04-01 21:29:02 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist.c,v 1.6 2005-04-02 00:57:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -26,31 +26,34 @@
 
 #if HAVE_CONFIG_H
 #include "config.h"
-#endif
+#endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
 #include <stdlib.h>
+#if STDC_HEADERS
 #include <string.h>
-#include <unistd.h>
-#include <errno.h>
+#endif /* STDC_HEADERS */
 #include <sys/types.h>
 #include <sys/stat.h>
+#if HAVE_UNISTD_H
 #include <unistd.h>
+#endif /* HAVE_UNISTD_H */
 #include <dirent.h>
+#include <errno.h>
 
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
 #include "nodeupdown_ganglia_clusterlist.h"
 #include "ltdl.h"
 
-char *clusterlist_modules[] = {
+static char *ganglia_clusterlist_modules[] = {
   "nodeupdown_ganglia_clusterlist_gendersllnl.la",
   "nodeupdown_ganglia_clusterlist_genders.la",
   "nodeupdown_ganglia_clusterlist_none.la",
   "nodeupdown_ganglia_clusterlist_hostsfile.la",
   NULL
 };
-int clusterlist_modules_len = 4;
+static int ganglia_clusterlist_modules_len = 4;
 
 static lt_dlhandle ganglia_clusterlist_module_dl_handle = NULL;
 static struct nodeupdown_ganglia_clusterlist_module_info *ganglia_clusterlist_module_info = NULL;
@@ -122,11 +125,11 @@ _search_dir_for_module(nodeupdown_t handle,
         {
           if (!strcmp(dirent->d_name, modules_list[i]))
             {
-              char filebuf[MAXPATHLEN+1];
+              char filebuf[NODEUPDOWN_MAXPATHLEN+1];
               int ret;
 
-              memset(filebuf, '\0', MAXPATHLEN+1);
-              snprintf(filebuf, MAXPATHLEN, "%s/%s",
+              memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
+              snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/%s",
                        search_dir, modules_list[i]);
 
               if ((ret = _load_module(handle, filebuf)) < 0)
@@ -164,10 +167,10 @@ nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlis
 
   if (clusterlist_module)
     {
-      char filebuf[MAXPATHLEN+1];
+      char filebuf[NODEUPDOWN_MAXPATHLEN+1];
       
-      memset(filebuf, '\0', MAXPATHLEN+1);
-      snprintf(filebuf, MAXPATHLEN, "%s/%s",
+      memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
+      snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/%s",
                NODEUPDOWN_MODULE_DIR, clusterlist_module);
 
       if ((rv = _load_module(handle, filebuf)) < 0)
@@ -176,8 +179,8 @@ nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlis
       if (rv)
         goto done;
 
-      memset(filebuf, '\0', MAXPATHLEN+1);
-      snprintf(filebuf, MAXPATHLEN, "./%s", clusterlist_module);
+      memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
+      snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "./%s", clusterlist_module);
 
       if ((rv = _load_module(handle, filebuf)) < 0)
         goto cleanup;
@@ -185,8 +188,8 @@ nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlis
       if (rv)
         goto done;
 
-      memset(filebuf, '\0', MAXPATHLEN+1);
-      snprintf(filebuf, MAXPATHLEN, "%s/%s",
+      memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
+      snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/%s",
                NODEUPDOWN_MODULE_BUILDDIR, clusterlist_module);
 
       if ((rv = _load_module(handle, filebuf)) < 0)
@@ -195,8 +198,8 @@ nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlis
       if (rv)
         goto done;
 
-      memset(filebuf, '\0', MAXPATHLEN+1);
-      snprintf(filebuf, MAXPATHLEN, "%s/nodeupdown_ganglia_clusterlist_%s.la",
+      memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
+      snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/nodeupdown_ganglia_clusterlist_%s.la",
                NODEUPDOWN_MODULE_DIR, clusterlist_module);
 
       if ((rv = _load_module(handle, filebuf)) < 0)
@@ -205,8 +208,8 @@ nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlis
       if (rv)
         goto done;
 
-      memset(filebuf, '\0', MAXPATHLEN+1);
-      snprintf(filebuf, MAXPATHLEN, "./nodeupdown_ganglia_clusterlist_%s.la",
+      memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
+      snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "./nodeupdown_ganglia_clusterlist_%s.la",
                clusterlist_module);
 
       if ((rv = _load_module(handle, filebuf)) < 0)
@@ -215,8 +218,8 @@ nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlis
       if (rv)
         goto done;
 
-      memset(filebuf, '\0', MAXPATHLEN+1);
-      snprintf(filebuf, MAXPATHLEN, "%s/nodeupdown_ganglia_clusterlist_%s.la",
+      memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
+      snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/nodeupdown_ganglia_clusterlist_%s.la",
                NODEUPDOWN_MODULE_BUILDDIR, clusterlist_module);
 
       if ((rv = _load_module(handle, filebuf)) < 0)
@@ -232,8 +235,8 @@ nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlis
     {
       if ((rv = _search_dir_for_module(handle,
                                        NODEUPDOWN_MODULE_DIR,
-                                       clusterlist_modules,
-                                       clusterlist_modules_len)) < 0)
+                                       ganglia_clusterlist_modules,
+                                       ganglia_clusterlist_modules_len)) < 0)
         goto cleanup;
                      
       if (rv)
@@ -241,8 +244,8 @@ nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlis
                                                                           
       if ((rv = _search_dir_for_module(handle,
                                        ".",
-                                       clusterlist_modules,
-                                       clusterlist_modules_len)) < 0)
+                                       ganglia_clusterlist_modules,
+                                       ganglia_clusterlist_modules_len)) < 0)
         goto cleanup;
 
       if (rv)
@@ -250,8 +253,8 @@ nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *clusterlis
 
       if ((rv = _search_dir_for_module(handle,
                                        NODEUPDOWN_MODULE_BUILDDIR,
-                                       clusterlist_modules,
-                                       clusterlist_modules_len)) < 0)
+                                       ganglia_clusterlist_modules,
+                                       ganglia_clusterlist_modules_len)) < 0)
         goto cleanup;
 
       if (rv)

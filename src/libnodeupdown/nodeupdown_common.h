@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_common.h,v 1.14 2005-04-01 21:29:02 achu Exp $
+ *  $Id: nodeupdown_common.h,v 1.15 2005-04-02 00:57:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -29,18 +29,14 @@
 
 #if HAVE_CONFIG_H
 #include "config.h"
-#endif
+#endif /* HAVE_CONFIG_H */
 
-#include <sys/param.h>
-#include "hostlist.h"
 #include "nodeupdown.h"
+#include "hostlist.h"
 
-#ifndef MAXHOSTNAMELEN
-#define MAXHOSTNAMELEN 64
-#endif
-#ifndef MAXPATHLEN
-#define MAXPATHLEN 255
-#endif
+#define NODEUPDOWN_MAXHOSTNAMELEN        64
+
+#define NODEUPDOWN_MAXPATHLEN            255
 
 #define NODEUPDOWN_UP_NODES              1
 #define NODEUPDOWN_DOWN_NODES            0

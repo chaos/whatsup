@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.41 2005-03-31 23:59:28 achu Exp $
+## $Id: configure.ac,v 1.42 2005-04-02 00:57:01 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -56,6 +56,19 @@ AC_PROG_LIBTOOL
 AC_LIB_LTDL
 AM_CONDITIONAL(WITH_GNU_LD, test "$with_gnu_ld" = "yes")
 AC_PATH_PROG(PERL, perl)
+AC_DEBUG
+
+##
+# Checks for header files.
+##
+AC_HEADER_STDC
+AC_HEADER_TIME
+AC_HEADER_SYS_WAIT
+AC_CHECK_HEADERS( \
+  fcntl.h \
+  unistd.h \
+  getopt.h \
+)
 
 #
 # Check for defaults paths
@@ -91,22 +104,6 @@ if test "$ac_with_gendersllnl" = "yes"; then
 fi
 
 ##
-# Checks for header files.
-##
-AC_HEADER_STDC
-AC_CHECK_HEADERS( \
-  errno.h \
-  fcntl.h \
-  socket.h \
-  time.h \
-  types.h \
-  stdlib.h \
-  stdio.h \
-  string.h \
-  unistd.h \
-)
-
-##
 # Checks for typedefs, structures, and compiler characteristics.
 ##
 AC_C_BIGENDIAN
@@ -126,10 +123,6 @@ AC_CHECK_FUNCS( \
   strtok \ 
 )
 AC_CHECK_FUNCS([getopt_long])
-
-# Do this last, you could add compile options which can make
-# function checks fail
-AC_DEBUG
 
 ##
 # Epilogue.

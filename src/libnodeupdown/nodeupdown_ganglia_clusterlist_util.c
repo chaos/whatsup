@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_util.c,v 1.3 2005-04-01 21:29:02 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_util.c,v 1.4 2005-04-02 00:57:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -30,15 +30,13 @@
  
 #include <stdio.h>
 #include <stdlib.h>
+#if STDC_HEADERS
 #include <string.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#endif /* STDC_HEADERS */
 
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
-#include "nodeupdown_ganglia_clusterlist.h"
+#include "nodeupdown_ganglia_clusterlist_util.h"
 
 int 
 nodeupdown_ganglia_clusterlist_copy_nodename(nodeupdown_t handle, const char *node, char *buf, unsigned int buflen)
