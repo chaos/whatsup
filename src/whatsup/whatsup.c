@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.94 2005-04-05 21:51:54 achu Exp $
+ *  $Id: whatsup.c,v 1.95 2005-04-06 17:24:04 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -40,6 +40,7 @@
 #include <getopt.h>
 #endif /* HAVE_GETOPT_H */
 #include <dirent.h>
+#include <assert.h>
 #include <errno.h>
 
 #include "whatsup_options.h"
@@ -58,29 +59,17 @@ extern int optind, opterr, optopt;
 /* 
  * Definitions 
  */
-typedef enum 
-  {
-    WHATSUP_TRUE, 
-    WHATSUP_FALSE
-  } 
-whatsup_bool_t;
+#define WHATSUP_TRUE              1
+#define WHATSUP_FALSE             0
 
-typedef enum 
-  {
-    WHATSUP_UP_NODES, 
-    WHATSUP_DOWN_NODES, 
-    WHATSUP_UP_AND_DOWN
-  } 
-whatsup_output_t;
+#define WHATSUP_UP_NODES          0 
+#define WHATSUP_DOWN_NODES        1
+#define WHATSUP_UP_AND_DOWN       2
 
-typedef enum 
-  {
-    WHATSUP_HOSTLIST = '\0', /* anything not ',', '\n', or ' ' */
-    WHATSUP_COMMA = ',',
-    WHATSUP_NEWLINE = '\n',
-    WHATSUP_SPACE = ' '
-  } 
-whatsup_list_t;
+#define WHATSUP_HOSTLIST          '\0'
+#define WHATSUP_COMMA             ','
+#define WHATSUP_NEWLINE           '\n'
+#define WHATSUP_SPACE             ' '
 
 #define WHATSUP_BUFFERLEN         65536
 #define WHATSUP_FORMATLEN         64
@@ -96,12 +85,12 @@ whatsup_list_t;
  */
 struct whatsup_data 
 {
-  nodeupdown_t handle;
   char *hostname;
   int port;
-  whatsup_output_t output;
-  whatsup_list_t list;
-  whatsup_bool_t count;
+  int updown_output;
+  int list_output;
+  int count_output;
+  nodeupdown_t handle;
   hostlist_t cmdline_nodes;
   lt_dlhandle module_handles[WHATSUP_MODULES_LEN];
   struct whatsup_options_module_info *module_info[WHATSUP_MODULES_LEN];
@@ -111,7 +100,7 @@ struct whatsup_data
 /*  
  * whatsup_options_modules
  *
- * list of modules to search for
+ * list of options modules to search for
  */
 static char *whatsup_options_modules[] = 
   {
@@ -119,6 +108,170 @@ static char *whatsup_options_modules[] =
     NULL
   };
 
+/* 
+ * _init_whatsup_data
+ *
+ * initialize whatsup_data struct with defaults
+ */
+static void
+_init_whatsup_data(struct whatsup_data *w)
+{
+  memset(w, '\0', sizeof(struct whatsup_data));
+
+  w->hostname = NULL;
+  w->port = 0;
+  w->updown_output = WHATSUP_UP_AND_DOWN;
+  w->list_output = WHATSUP_HOSTLIST;
+  w->count_output = WHATSUP_FALSE;
+
+  if (!(w->handle = nodeupdown_handle_create()))
+    err_exit("_init_whatsup_data: nodeupdown_handle_create()");
+
+  if (!(w->cmdline_nodes = hostlist_create(NULL)))
+    err_exit("_init_whatsup_data: hostlist_create()");
+
+  w->module_loaded_count = 0;
+}
+
+/* 
+ * _cleanup_whatsup_data
+ *
+ * cleanup whatsup_data struct
+ */
+static void
+_cleanup_whatsup_data(struct whatsup_data *w)
+{
+  (void)nodeupdown_handle_destroy(w->handle);
+  hostlist_destroy(w->cmdline_nodes);
+}
+
+/*  
+ * _load_options_module
+ *
+ * dynamically load a whatsup options module
+ */
+static void
+_load_options_module(struct whatsup_data *w, char *module_path)
+{
+  int count = w->module_loaded_count;
+  int i;
+
+  if (count >= WHATSUP_MODULES_LEN)
+    return;
+
+  if (!(w->module_handles[count] = lt_dlopen(module_path)))
+    err_exit("_load_options_module: lt_dlopen: module_path=%s: %s",
+	     module_path, lt_dlerror());
+
+  if (!(w->module_info[count] = lt_dlsym(w->module_handles[count],
+					 "options_module_info")))
+    err_exit("_load_options_module: lt_dlsym: module_path=%s: %s",
+	     module_path, lt_dlerror());
+
+  if (!w->module_info[count]->options_module_name
+      || !w->module_info[count]->output_usage
+      || !w->module_info[count]->register_option
+      || !w->module_info[count]->add_long_option
+      || !w->module_info[count]->check_option
+      || !w->module_info[count]->convert_nodenames)
+    err_exit("_load_options_module: module_path=%s: invalid module options");
+  
+  for (i = 0; i < count; i++)
+    {
+      if (!strcmp(w->module_info[i]->options_module_name,
+		  w->module_info[count]->options_module_name))
+	goto already_loaded;
+    }
+
+  w->module_loaded_count++;
+  return;
+
+ already_loaded:
+  lt_dlclose(w->module_handles[count]);
+  w->module_handles[count] = NULL;
+  w->module_info[count] = NULL;
+  return;
+}
+
+/*  
+ * _load_options_modules_in_dir
+ *
+ * Search for whatsup options modules in the specified directory.  If
+ * one is found, load it.
+ */
+static void
+_load_options_modules_in_dir(struct whatsup_data *w, char *search_dir)
+{
+  DIR *dir;
+  int i = 0;
+
+  /* Can't open the directory? we assume it doesn't exit, so its not
+   * an error.
+   */
+  if (!(dir = opendir(search_dir)))
+    return;
+
+  while (whatsup_options_modules[i])
+    {
+      struct dirent *dirent;
+
+      while ((dirent = readdir(dir)))
+        {
+          if (!strcmp(dirent->d_name, whatsup_options_modules[i]))
+            {
+              char filebuf[WHATSUP_MAXPATHLEN+1];
+
+              memset(filebuf, '\0', WHATSUP_MAXPATHLEN+1);
+              snprintf(filebuf, WHATSUP_MAXPATHLEN, "%s/%s",
+                       search_dir, whatsup_options_modules[i]);
+
+              _load_options_module(w, filebuf);
+            }
+        }
+      rewinddir(dir);
+      i++;
+    }
+}
+
+/*  
+ * _load_options_modules
+ *
+ * Load whatsup options modules
+ */
+static void
+_load_options_modules(struct whatsup_data *w)
+{
+  if (lt_dlinit() != 0)
+    err_exit("_load_options_modules: lt_dlinit: %s", lt_dlerror());
+
+  _load_options_modules_in_dir(w, WHATSUP_MODULE_BUILDDIR);
+  _load_options_modules_in_dir(w, WHATSUP_MODULE_DIR);
+  _load_options_modules_in_dir(w, ".");
+}
+
+/*  
+ * _unload_options_modules
+ *
+ * Unload whatsup options modules
+ */
+static void
+_unload_options_modules(struct whatsup_data *w)
+{
+  int i;
+
+  for (i = 0; i < w->module_loaded_count; i++)
+    {
+      lt_dlclose(w->module_handles[i]);
+      i++;
+    }
+  lt_dlexit();
+}
+
+/* 
+ * _usage
+ *
+ * output usage and exit
+ */
 static void 
 _usage(struct whatsup_data *w) 
 {
@@ -140,12 +293,21 @@ _usage(struct whatsup_data *w)
 	  "  -s         --space             Output in space separated list\n");
 
   for (i = 0; i < w->module_loaded_count; i++)
-    (*w->module_info[i]->output_usage)();
+    {
+      if ((*w->module_info[i]->output_usage)() < 0)
+        err_exit("_usage: %s output_usage error",
+                 w->module_info[i]->options_module_name);
+    }
 
   fprintf(stderr, "\n");
   exit(1);
 }
 
+/*  
+ * _version
+ *
+ * output version and exit
+ */
 static void 
 _version(void) 
 {
@@ -153,17 +315,27 @@ _version(void)
   exit(1);
 }
 
+/* 
+ * _push_nodes_on_hostlist
+ *
+ * push nodes onto a hostlist structure
+ */
 static void
-_push_nodes_on_hostlist(struct whatsup_data *w, char *string) 
+_push_nodes_on_hostlist(struct whatsup_data *w, char *nodes) 
 {
   /* Error if nodes aren't short hostnames */
-  if (strchr(string, '.') != NULL)
+  if (strchr(nodes, '.') != NULL)
     err_exit("nodes must be listed in short hostname format");
         
-  if (!hostlist_push(w->cmdline_nodes, string))
+  if (!hostlist_push(w->cmdline_nodes, nodes))
     err_exit("nodes improperly formatted");
 }
 
+/* 
+ * _read_nodes_from_stdin
+ *
+ * read nodes off of standard input rather than the command line
+ */
 static void 
 _read_nodes_from_stdin(struct whatsup_data *w) 
 {
@@ -187,6 +359,11 @@ _read_nodes_from_stdin(struct whatsup_data *w)
     }
 }
 
+/* 
+ * _cmdline_parse
+ *
+ * parse all cmdline input
+ */
 static void
 _cmdline_parse(struct whatsup_data *w, int argc, char **argv) 
 {
@@ -231,25 +408,36 @@ _cmdline_parse(struct whatsup_data *w, int argc, char **argv)
       c = module_options;
       while (*c != '\0')
 	{
+          /* Don't install this option if it already exists */
 	  if (strchr(options, *c))
 	    continue;
 
-	  if ((*w->module_info[i]->add_options)(*c, options) < 0)
-	    err_exit("_cmdline_parse: %s add_options failure",
+	  if ((*w->module_info[i]->register_option)(*c, options) < 0)
+	    err_exit("_cmdline_parse: %s register_option failure",
 		     w->module_info[i]->options_module_name);
 	  
-	  if ((*w->module_info[i]->add_long_options)(*c, &long_options[12]) < 0)
+	  if ((*w->module_info[i]->add_long_option)(*c, 
+                                                    &long_options[long_options_count]) < 0)
 	    err_exit("_cmdline_parse: %s add_long_options failure",
 		     w->module_info[i]->options_module_name);
 
-	  if (strlen(options) >= WHATSUP_OPTIONS_LEN)
-	    break;
-	  
 	  long_options_count++;
 	  long_options[long_options_count].name = NULL;
 	  long_options[long_options_count].has_arg = 0;
 	  long_options[long_options_count].flag = NULL;
 	  long_options[long_options_count].val = 0;
+
+          /* If we're out of space for more options, this is
+           * all the user gets.
+           */
+
+          /* We take into account the -1 b/c the module may want the
+           * option to take an argument.  In other words, the next
+           * register_option call may copy in two chars rather than
+           * one.
+           */
+	  if (strlen(options) >= (WHATSUP_OPTIONS_LEN - 1))
+	    break;
 
 	  if (long_options_count >= WHATSUP_LONG_OPTIONS_LEN)
 	    break;
@@ -280,28 +468,28 @@ _cmdline_parse(struct whatsup_data *w, int argc, char **argv)
         w->port = atoi(optarg);
         break;
       case 'b':
-        w->output = WHATSUP_UP_AND_DOWN;
+        w->updown_output = WHATSUP_UP_AND_DOWN;
         break;
       case 'u':
-        w->output = WHATSUP_UP_NODES;
+        w->updown_output = WHATSUP_UP_NODES;
         break;
       case 'd':
-        w->output = WHATSUP_DOWN_NODES;
+        w->updown_output = WHATSUP_DOWN_NODES;
         break;
       case 't':
-        w->count = WHATSUP_TRUE;
+        w->count_output = WHATSUP_TRUE;
         break;
       case 'q':
-        w->list = WHATSUP_HOSTLIST;
+        w->list_output = WHATSUP_HOSTLIST;
         break;
       case 'c':
-        w->list = WHATSUP_COMMA;
+        w->list_output = WHATSUP_COMMA;
         break;
       case 'n':
-        w->list = WHATSUP_NEWLINE;
+        w->list_output = WHATSUP_NEWLINE;
         break;
       case 's':
-        w->list = WHATSUP_SPACE;
+        w->list_output = WHATSUP_SPACE;
         break;
       default:
 	used_option = 0;
@@ -329,9 +517,6 @@ _cmdline_parse(struct whatsup_data *w, int argc, char **argv)
       }
     }
 
-  if ((w->cmdline_nodes = hostlist_create(NULL)) == NULL)
-    err_exit("_cmdline_parse: hostlist_create()");
-
   index = optind;
   
   /* Read nodes in from the command line or standard input */
@@ -352,6 +537,12 @@ _cmdline_parse(struct whatsup_data *w, int argc, char **argv)
     }
 }
 
+/* 
+ * _get_cmdline_nodes
+ *
+ * Get the up or down status of nodes specified on the cmdline or
+ * standard input.
+ */
 static void 
 _get_cmdline_nodes(struct whatsup_data *w, 
 		   int up_or_down, 
@@ -360,23 +551,25 @@ _get_cmdline_nodes(struct whatsup_data *w,
 {
   hostlist_t hl = NULL;
   hostlist_iterator_t iter = NULL;
-  char *str = NULL;
+  char *node = NULL;
   int ret;
 
-  if ((hl = hostlist_create(NULL)) == NULL)
+  assert(up_or_down == WHATSUP_UP_NODES || up_or_down == WHATSUP_DOWN_NODES);
+
+  if (!(hl = hostlist_create(NULL)))
     err_exit("_get_cmdline_nodes: hostlist_create()");
 
-  if ((iter = hostlist_iterator_create(w->cmdline_nodes)) == NULL)
+  if (!(iter = hostlist_iterator_create(w->cmdline_nodes)))
     err_exit("_get_cmdline_nodes: hostlist_iterator_create()");
 
-  while ((str = hostlist_next(iter)) != NULL) 
+  while ((node = hostlist_next(iter)) != NULL) 
     {
       if (up_or_down == WHATSUP_UP_NODES) 
         {
-          if ((ret = nodeupdown_is_node_up(w->handle, str)) < 0) 
+          if ((ret = nodeupdown_is_node_up(w->handle, node)) < 0) 
             {
               if (nodeupdown_errnum(w->handle) == NODEUPDOWN_ERR_NOTFOUND)
-                err_exit("Unknown node \"%s\"", str);
+                err_exit("Unknown node \"%s\"", node);
               else
                 err_exit("_get_cmdline_nodes: nodeupdown_is_node_up(): %s",
 			 nodeupdown_errormsg(w->handle));
@@ -384,10 +577,10 @@ _get_cmdline_nodes(struct whatsup_data *w,
         }
       else 
         {
-          if ((ret = nodeupdown_is_node_down(w->handle, str)) < 0) 
+          if ((ret = nodeupdown_is_node_down(w->handle, node)) < 0) 
             {
               if (nodeupdown_errnum(w->handle) == NODEUPDOWN_ERR_NOTFOUND)
-                err_exit("Unknown node \"%s\"", str);
+                err_exit("Unknown node \"%s\"", node);
               else
                 err_exit("_get_cmdline_nodes: nodeupdown_is_node_down(): %s",
 			 nodeupdown_errormsg(w->handle));
@@ -396,11 +589,11 @@ _get_cmdline_nodes(struct whatsup_data *w,
       
       if (ret) 
         {
-          if (!hostlist_push_host(hl, str))
+          if (!hostlist_push_host(hl, node))
             err_exit("_get_cmdline_nodes: hostlist_push_host()");
         }
 
-      free(str);
+      free(node);
     }
   
   hostlist_sort(hl);
@@ -412,6 +605,11 @@ _get_cmdline_nodes(struct whatsup_data *w,
   hostlist_destroy(hl);
 }
  
+/* 
+ * _get_all_nodes
+ *
+ * Get the up or down status of all nodes.
+ */
 static void
 _get_all_nodes(struct whatsup_data *w, 
                int up_or_down, 
@@ -432,6 +630,12 @@ _get_all_nodes(struct whatsup_data *w,
     }
 }
 
+/*  
+ * _get_nodes
+ *
+ * get the up or down status of nodes.  The appropriate function call
+ * to _get_cmdline_nodes or _get_all_nodes will be done.
+ */
 static void 
 _get_nodes(struct whatsup_data *w, 
            int up_or_down, 
@@ -448,6 +652,7 @@ _get_nodes(struct whatsup_data *w,
   else
     _get_all_nodes(w, up_or_down, buf, buflen);
 
+  /* convert the nodenames if desired */
   for (i = 0; i < w->module_loaded_count; i++)
     {
       int rv;
@@ -470,7 +675,7 @@ _get_nodes(struct whatsup_data *w,
   /* can't use nodeupdown_up/down_count, b/c we may be counting the
    * nodes specified by the user on the cmdline
    */
-  if ((hl = hostlist_create(buf)) == NULL)
+  if (!(hl = hostlist_create(buf)))
     err_exit("_get_nodes: hostlist_create()");
   
   *count = hostlist_count(hl);
@@ -478,35 +683,41 @@ _get_nodes(struct whatsup_data *w,
   hostlist_destroy(hl);
 }
 
+/* 
+ * _output_nodes
+ * 
+ * output the nodes specified in the nodebuf to stdout
+ */
 static void
 _output_nodes(struct whatsup_data *w, char *nodebuf) 
 {
-  char *ptr;
-  char tempbuf[WHATSUP_BUFFERLEN];
-  hostlist_t hl = NULL;
-
-  if (w->list == WHATSUP_HOSTLIST)
+  if (w->list_output == WHATSUP_HOSTLIST)
     fprintf(stdout, "%s\n", nodebuf);
   else 
     {
+      char tempbuf[WHATSUP_BUFFERLEN];
+      hostlist_t hl = NULL;
+      char *ptr;
+
       /* output nodes separated by some break type */
       memset(tempbuf, '\0', WHATSUP_BUFFERLEN);
     
-      if ((hl = hostlist_create(nodebuf)) == NULL)
+      if (!(hl = hostlist_create(nodebuf)))
         err_exit("_output_nodes: hostlist_create() error");
       
       if (hostlist_deranged_string(hl, WHATSUP_BUFFERLEN, tempbuf) < 0)
         err_exit("_output_nodes: hostlist_deranged_string() error");
       
       /* convert commas to appropriate break types */
-      if (w->list != WHATSUP_COMMA) 
+      if (w->list_output != WHATSUP_COMMA) 
         {
           while ((ptr = strchr(tempbuf, ',')) != NULL)
-            *ptr = (char)w->list;
+            *ptr = (char)w->list_output;
         }
 
       /* start on the next line if its a newline separator */
-      if (w->output == WHATSUP_UP_AND_DOWN && w->list == WHATSUP_NEWLINE)
+      if (w->updown_output == WHATSUP_UP_AND_DOWN 
+          && w->list_output == WHATSUP_NEWLINE)
         fprintf(stdout, "\n");
 
       fprintf(stdout,"%s\n", tempbuf);
@@ -514,6 +725,12 @@ _output_nodes(struct whatsup_data *w, char *nodebuf)
     }
 }
 
+/* 
+ * _log10
+ *
+ * portable log10() function that also allows us to avoid linking
+ * against the math library.
+ */
 static int 
 _log10(int num) 
 {
@@ -528,6 +745,11 @@ _log10(int num)
   return count;
 } 
 
+/* 
+ * _create_formats
+ *
+ * create the output formats based on the up and down count.
+ */
 static void
 _create_formats(char *upfmt, int upfmt_len, int up_count,
                 char *downfmt, int downfmt_len, int down_count,
@@ -546,94 +768,6 @@ _create_formats(char *upfmt, int upfmt_len, int up_count,
   snprintf(downfmt, downfmt_len, "down: %%%dd%s", max, endstr);
 }
 
-static void
-_load_module(struct whatsup_data *w, char *module_path)
-{
-  int count = w->module_loaded_count;
-  int i;
-
-  if (count >= WHATSUP_MODULES_LEN)
-    return;
-
-  if (!(w->module_handles[count] = lt_dlopen(module_path)))
-    err_exit("_load_module: lt_dlopen: module_path=%s: %s",
-	     module_path, lt_dlerror());
-
-  if (!(w->module_info[count] = lt_dlsym(w->module_handles[count],
-					 "options_module_info")))
-    err_exit("_load_module: lt_dlsym: module_path=%s: %s",
-	     module_path, lt_dlerror());
-
-  if (!w->module_info[count]->options_module_name
-      || !w->module_info[count]->output_usage
-      || !w->module_info[count]->add_options
-      || !w->module_info[count]->add_long_options
-      || !w->module_info[count]->check_option
-      || !w->module_info[count]->convert_nodenames)
-    err_exit("_load_module: module_path=%s: invalid module options");
-  
-  for (i = 0; i < count; i++)
-    {
-      if (!strcmp(w->module_info[i]->options_module_name,
-		  w->module_info[count]->options_module_name))
-	goto already_loaded;
-    }
-
-  w->module_loaded_count++;
-  return;
-
- already_loaded:
-  lt_dlclose(w->module_handles[count]);
-  w->module_handles[count] = NULL;
-  w->module_info[count] = NULL;
-  return;
-}
-
-static void
-_load_modules_in_dir(struct whatsup_data *w, char *search_dir)
-{
-  DIR *dir;
-  int i = 0;
-
-  /* Can't open the directory? we assume it doesn't exit, so its not
-   * an error.
-   */
-  if (!(dir = opendir(search_dir)))
-    return;
-
-  while (whatsup_options_modules[i])
-    {
-      struct dirent *dirent;
-
-      while ((dirent = readdir(dir)))
-        {
-          if (!strcmp(dirent->d_name, whatsup_options_modules[i]))
-            {
-              char filebuf[WHATSUP_MAXPATHLEN+1];
-
-              memset(filebuf, '\0', WHATSUP_MAXPATHLEN+1);
-              snprintf(filebuf, WHATSUP_MAXPATHLEN, "%s/%s",
-                       search_dir, whatsup_options_modules[i]);
-
-              _load_module(w, filebuf);
-            }
-        }
-      rewinddir(dir);
-      i++;
-    }
-}
-
-static void
-_load_options_modules(struct whatsup_data *w)
-{
-  if (lt_dlinit() != 0)
-    err_exit("_load_modules: lt_dlinit: %s", lt_dlerror());
-
-  _load_modules_in_dir(w, WHATSUP_MODULE_BUILDDIR);
-  _load_modules_in_dir(w, WHATSUP_MODULE_DIR);
-  _load_modules_in_dir(w, ".");
-}
-
 int 
 main(int argc, char *argv[]) 
 {
@@ -642,34 +776,21 @@ main(int argc, char *argv[])
   char down_nodes[WHATSUP_BUFFERLEN];
   char upfmt[WHATSUP_FORMATLEN];
   char downfmt[WHATSUP_FORMATLEN];
-  int up_count, down_count, exit_val = 1;
-  int buflen = WHATSUP_BUFFERLEN;
-  int i;
+  int up_count, down_count, exit_val;
 
   err_init(argv[0]);
   err_set_flags(ERROR_STDERR);
 
-  /* Initialize whatsup_data structure with defaults */
-  memset(&w, '\0', sizeof(struct whatsup_data));
-  w.hostname = NULL;
-  w.port = 0;
-  w.output = WHATSUP_UP_AND_DOWN;
-  w.list = WHATSUP_HOSTLIST;
-  w.count = WHATSUP_FALSE;
-  w.cmdline_nodes = NULL;
-  w.module_loaded_count = 0;
+  _init_whatsup_data(&w);
 
   /* 
-   * Load modules before calling cmdline_parse, b/c modules may need
-   * additional command line options parsed.
+   * Load options modules before calling cmdline_parse, b/c modules
+   * may need additional command line options parsed.
    */
   _load_options_modules(&w);
 
   _cmdline_parse(&w, argc, argv);
   
-  if ((w.handle = nodeupdown_handle_create()) == NULL)
-    err_exit("main: nodeupdown_handle_create()");
-
   if (nodeupdown_load_data(w.handle, 
                            w.hostname, 
                            w.port, 
@@ -704,20 +825,33 @@ main(int argc, char *argv[])
 		 nodeupdown_errormsg(w.handle));
     }
   
-  _get_nodes(&w, WHATSUP_UP_NODES, up_nodes, buflen, &up_count);
-  _get_nodes(&w, WHATSUP_DOWN_NODES, down_nodes, buflen, &down_count);
+  _get_nodes(&w, 
+             WHATSUP_UP_NODES, 
+             up_nodes, 
+             WHATSUP_BUFFERLEN, 
+             &up_count);
+  _get_nodes(&w, 
+             WHATSUP_DOWN_NODES, 
+             down_nodes, 
+             WHATSUP_BUFFERLEN, 
+             &down_count);
   
-  if (w.count == WHATSUP_TRUE) 
+  if (w.count_output == WHATSUP_TRUE) 
     {
       /* only output count */
-      if (w.output == WHATSUP_UP_AND_DOWN) 
+      if (w.updown_output == WHATSUP_UP_AND_DOWN) 
         {
-          _create_formats(upfmt, WHATSUP_FORMATLEN, up_count,
-                          downfmt, WHATSUP_FORMATLEN, down_count, "\n");
+          _create_formats(upfmt, 
+                          WHATSUP_FORMATLEN, 
+                          up_count,
+                          downfmt, 
+                          WHATSUP_FORMATLEN, 
+                          down_count, 
+                          "\n");
           fprintf(stdout, upfmt, up_count);
           fprintf(stdout, downfmt, down_count);
         }
-      else if (w.output == WHATSUP_UP_NODES)
+      else if (w.updown_output == WHATSUP_UP_NODES)
         fprintf(stdout, "%d\n", up_count);
       else
         fprintf(stdout, "%d\n", down_count);
@@ -725,50 +859,49 @@ main(int argc, char *argv[])
   else 
     {    
       /* output up, down, or both up and down nodes */
-      if (w.output == WHATSUP_UP_AND_DOWN) 
+      if (w.updown_output == WHATSUP_UP_AND_DOWN) 
         {
-          if (w.list != WHATSUP_NEWLINE)
-            _create_formats(upfmt, WHATSUP_FORMATLEN, up_count,
-                            downfmt, WHATSUP_FORMATLEN, down_count, ": ");
-          else 
+          if (w.list_output == WHATSUP_NEWLINE)
             {
               /* newline output is funny, thus special */
               snprintf(upfmt,   WHATSUP_FORMATLEN, "up %d:", up_count);
               snprintf(downfmt, WHATSUP_FORMATLEN, "down %d:", down_count);
             }
+          else
+            _create_formats(upfmt, 
+                            WHATSUP_FORMATLEN, 
+                            up_count,
+                            downfmt, 
+                            WHATSUP_FORMATLEN, 
+                            down_count, 
+                            ": ");
           
           fprintf(stdout, upfmt, up_count);
           
           _output_nodes(&w, up_nodes);
           
-          /* handle odd situation with output formatting */
-          if (w.list == WHATSUP_NEWLINE)
+          /* handle odd situation with newline output list */
+          if (w.list_output == WHATSUP_NEWLINE)
             fprintf(stdout, "\n");
           
           fprintf(stdout, downfmt, down_count);
           
           _output_nodes(&w, down_nodes);
         }
-      else if (w.output == WHATSUP_UP_NODES)
+      else if (w.updown_output == WHATSUP_UP_NODES)
         _output_nodes(&w, up_nodes);
       else
         _output_nodes(&w, down_nodes);
     }
   
-  if (w.output == WHATSUP_UP_AND_DOWN)
+  if (w.updown_output == WHATSUP_UP_AND_DOWN)
     exit_val = 0;
-  else if (w.output == WHATSUP_UP_NODES)
+  else if (w.updown_output == WHATSUP_UP_NODES)
     exit_val = (!down_count) ? 0 : 1;
   else
     exit_val = (!up_count) ? 0 : 1;
   
-  (void)nodeupdown_handle_destroy(w.handle);
-  hostlist_destroy(w.cmdline_nodes);
-  for (i = 0; i < w.module_loaded_count; i++)
-    {
-      lt_dlclose(w.module_handles[i]);
-      i++;
-    }
-  lt_dlexit();
+  _unload_options_modules(&w);
+  _cleanup_whatsup_data(&w);
   exit(exit_val);
 }

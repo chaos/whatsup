@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.44 2005-04-05 01:32:44 achu Exp $
+## $Id: configure.ac,v 1.45 2005-04-06 17:24:03 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -77,6 +77,12 @@ AC_HOSTSFILE
 AC_NODEUPDOWN_CONF
 AC_NODEUPDOWN_MODULE_DIR
 AC_WHATSUP_MODULE_DIR
+
+#
+# Check for static module compilation
+#
+AC_STATIC_MODULES
+AM_CONDITIONAL(WITH_STATIC_MODULES, [test "$ac_with_static_modules" = "yes"])
 
 #
 # Check for perl install destdir

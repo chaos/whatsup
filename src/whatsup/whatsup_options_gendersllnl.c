@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup_options_gendersllnl.c,v 1.5 2005-04-05 01:32:44 achu Exp $
+ *  $Id: whatsup_options_gendersllnl.c,v 1.6 2005-04-06 17:24:04 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -50,6 +50,11 @@ static int gendersllnl_option_a_registered = 0;
 
 static int gendersllnl_list_altnames_flag = 0;
 
+/* 
+ * gendersllnl_options_output_usage
+ * 
+ * gendersllnl output_usage func
+ */
 int 
 gendersllnl_options_output_usage(void)
 {
@@ -58,40 +63,56 @@ gendersllnl_options_output_usage(void)
   return 0;
 }
 
+/* 
+ * gendersllnl_options_options_string
+ * 
+ * gendersllnl options_string func
+ */
 char * 
 gendersllnl_options_options_string(void)
 {
   return "a";
 }
 
+/* 
+ * gendersllnl_options_register_option
+ * 
+ * gendersllnl register_option func
+ */
 int 
-gendersllnl_options_add_options(char c, char *options)
+gendersllnl_options_register_option(char c, char *options)
 {
   if (c == 'a')
-    {
-      strcat(options, "a");
-      gendersllnl_option_a_registered++;
-    }
+    gendersllnl_option_a_registered++;
 
   return 0;
 }
 
-#if HAVE_GETOPT_LONG
+/* 
+ * gendersllnl_options_add_long_option
+ * 
+ * gendersllnl add_long_option func
+ */
 int 
-gendersllnl_options_add_long_options(char c, struct option *long_options)
+gendersllnl_options_add_long_option(char c, struct option *long_option)
 {
+#if HAVE_GETOPT_LONG
   if (c == 'a' && gendersllnl_option_a_registered)
     {
-      long_options->name = GENDERSLLNL_OPTION_ALTNAME;
-      long_options->has_arg = 0;
-      long_options->flag = NULL;
-      long_options->val = 'a';
+      long_option->name = GENDERSLLNL_OPTION_ALTNAME;
+      long_option->has_arg = 0;
+      long_option->flag = NULL;
+      long_option->val = 'a';
     }
-
+#endif /* HAVE_GETOPT_LONG */
   return 0;
 }
-#endif /* HAVE_GETOPT_LONG */
 
+/* 
+ * gendersllnl_options_check_option
+ * 
+ * gendersllnl check_option func
+ */
 int
 gendersllnl_options_check_option(char c, char *optarg)
 {
@@ -104,6 +125,11 @@ gendersllnl_options_check_option(char c, char *optarg)
   return 1;
 }
 
+/* 
+ * gendersllnl_options_convert_nodenames
+ * 
+ * gendersllnl convert_nodenames func
+ */
 int
 gendersllnl_options_convert_nodenames(char *nodes, char *buf, int buflen)
 {
@@ -135,8 +161,8 @@ struct whatsup_options_module_info options_module_info =
     "gendersllnl",
     &gendersllnl_options_output_usage,
     &gendersllnl_options_options_string,
-    &gendersllnl_options_add_options,
-    &gendersllnl_options_add_long_options,
+    &gendersllnl_options_register_option,
+    &gendersllnl_options_add_long_option,
     &gendersllnl_options_check_option,
     &gendersllnl_options_convert_nodenames
   };
