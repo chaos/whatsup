@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.43 2003-05-23 21:33:23 achu Exp $
+ * $Id: whatsup.c,v 1.44 2003-05-27 15:56:29 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -269,9 +269,6 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
   /* store any nodes listed on the command line */
   index = optind;
   while (index < argc) {
-    char *bracket1 = NULL;
-    char *bracket2 = NULL;
-
     /* search for periods.  If there are periods, these are non-short hostname
      * machine names. Output error 
      */
@@ -280,20 +277,9 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
       return -1;
     }
 
-    bracket1 = strchr(argv[index], '[');
-    bracket2 = strchr(argv[index], ']');
-
-    /* Why doesn't C have XOR!!! */
-    if ((bracket1 == NULL && bracket2 != NULL) ||
-        (bracket1 != NULL && bracket2 == NULL)) {
-      err_msg("nodes listed incorrectly", NULL);
+    if (hostlist_push(arginfo->nodes, argv[index]) == 0) {
+      err_msg("hostlist_push_host() error", "nodes listed incorrectly");
       return -1;
-    }
-    else {
-      if (hostlist_push(arginfo->nodes, argv[index]) == 0) {
-        err_msg("hostlist_push_host() error", "nodes listed incorrectly");
-        return -1;
-      }
     }
 
     index++;
