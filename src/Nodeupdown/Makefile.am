@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.3 2003-11-07 19:10:04 achu Exp $
+## $Id: Makefile.am,v 1.4 2003-11-10 19:09:29 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -13,7 +13,7 @@ all: Makefile.pm
 	$(MAKE) -f Makefile.pm
 
 Makefile.pm: Makefile.PL
-	$(PERL) Makefile.PL PREFIX=$(NODEUPDOWN_PM_PREFIX) MAKEFILE=Makefile.pm FIRST_MAKEFILE=Makefile.pm
+	$(PERL) Makefile.PL PREFIX=$(PERL_INSTALL_PREFIX) MAKEFILE=Makefile.pm FIRST_MAKEFILE=Makefile.pm
 
 install: Makefile.pm
 	$(MAKE) -f Makefile.pm pure_install
