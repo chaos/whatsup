@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.36 2003-04-25 19:07:38 achu Exp $
+ * $Id: nodeupdown.c,v 1.37 2003-04-25 20:21:58 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -980,26 +980,20 @@ int nodeupdown_get_up_nodes_string(nodeupdown_t handle,
                                    char *buf, 
                                    int buflen) {
 
-  if (nodeupdown_get_nodes_string(handle, 
-                                  buf, 
-                                  buflen, 
-                                  NODEUPDOWN_UP_NODES) == -1) {
-    return -1;
-  } 
-  return 0;
+  return nodeupdown_get_nodes_string(handle, 
+                                     buf, 
+                                     buflen, 
+                                     NODEUPDOWN_UP_NODES);
 }
 
 int nodeupdown_get_down_nodes_string(nodeupdown_t handle, 
                                      char *buf, 
                                      int buflen) {
 
-  if (nodeupdown_get_nodes_string(handle, 
-                                  buf, 
-                                  buflen, 
-                                  NODEUPDOWN_DOWN_NODES) == -1) {
-    return -1;
-  } 
-  return 0;
+  return nodeupdown_get_nodes_string(handle, 
+                                     buf, 
+                                     buflen, 
+                                     NODEUPDOWN_DOWN_NODES);
 }
 
 int nodeupdown_get_nodes_string(nodeupdown_t handle, 
@@ -1046,26 +1040,20 @@ int nodeupdown_get_up_nodes_list(nodeupdown_t handle,
                                  char **list, 
                                  int len) {
 
-  if(nodeupdown_get_nodes_list(handle, 
-                               list, 
-                               len, 
-                               NODEUPDOWN_UP_NODES) == -1) {
-    return -1;
-  }
-  return 0;
+  return nodeupdown_get_nodes_list(handle, 
+                                   list, 
+                                   len, 
+                                   NODEUPDOWN_UP_NODES);
 }
 
 int nodeupdown_get_down_nodes_list(nodeupdown_t handle, 
                                    char **list, 
                                    int len) {
 
-  if(nodeupdown_get_nodes_list(handle, 
-                               list, 
-                               len, 
-                               NODEUPDOWN_DOWN_NODES) == -1) {
-    return -1;
-  }
-  return 0;
+  return nodeupdown_get_nodes_list(handle, 
+                                   list, 
+                                   len, 
+                                   NODEUPDOWN_DOWN_NODES);
 }
 
 int nodeupdown_get_nodes_list(nodeupdown_t handle, 
