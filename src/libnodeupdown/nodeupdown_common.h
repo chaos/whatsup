@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_common.h,v 1.13 2005-03-31 23:59:28 achu Exp $
+ *  $Id: nodeupdown_common.h,v 1.14 2005-04-01 21:29:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -31,14 +31,6 @@
 #include "config.h"
 #endif
 
-#if HAVE_HOSTSFILE
-#include "list.h"
-#elif HAVE_GENDERS
-#include <genders.h>
-#elif HAVE_GENDERSLLNL
-#include <gendersllnl.h>
-#endif 
-
 #include <sys/param.h>
 #include "hostlist.h"
 #include "nodeupdown.h"
@@ -65,7 +57,6 @@
 #define NODEUPDOWN_CONF_PORT                       "port"
 #define NODEUPDOWN_CONF_TIMEOUT_LEN                "timeout_len"
 #define NODEUPDOWN_CONF_CLUSTERLIST_MODULE         "clusterlist_module"
-#define NODEUPDOWN_CONF_CLUSTERLIST_MODULE_OPTIONS "clusterlist_module_options"
 
 struct nodeupdown {
   int magic;                  /* magic number */

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_util.c,v 1.3 2005-04-01 21:29:02 achu Exp $
+ *  $Id: nodeupdown_ganglia.h,v 1.1 2005-04-01 21:29:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -24,36 +24,13 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
 \*****************************************************************************/
 
-#if HAVE_CONFIG_H
-#include "config.h"
-#endif /* HAVE_CONFIG_H */
- 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#ifndef _NODEUPDOWN_GANGLIA_H
+#define _NODEUPDOWN_GANGLIA_H
 
-#include "nodeupdown.h"
-#include "nodeupdown_common.h"
-#include "nodeupdown_ganglia_clusterlist.h"
+#define NODEUPDOWN_GANGLIA_DEFAULT_PORT  8649
 
-int 
-nodeupdown_ganglia_clusterlist_copy_nodename(nodeupdown_t handle, const char *node, char *buf, unsigned int buflen)
-{
-  int len;
- 
-  len = strlen(node);
- 
-  if ((len + 1) > buflen)
-    {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      return -1;
-    }
- 
-  strcpy(buf, node);
- 
-  return 0;
-}
+int nodeupdown_ganglia_get_gmond_data(nodeupdown_t handle, int fd, int timeout_len);
+
+void nodeupdown_ganglia_free_data(nodeupdown_t handle);
+
+#endif /* _NODEUPDOWN_GANGLIA_H  */

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_genders_util.c,v 1.2 2005-04-01 17:59:01 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_genders_util.c,v 1.3 2005-04-01 21:29:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -40,21 +40,15 @@
 
 int 
 genders_util_ganglia_clusterlist_init(nodeupdown_t handle,
-                                      genders_t *genders_handle,
-                                      char *genders_file)
+                                      genders_t *genders_handle)
 {
-  char *file = NULL;
-
-  if (strlen(genders_file))
-    file = genders_file;
-
   if (!(*genders_handle = genders_handle_create()))
     {
       handle->errnum = NODEUPDOWN_ERR_OUTMEM;
       goto cleanup;
     }
 
-  if (genders_load_data(*genders_handle, file) < 0)
+  if (genders_load_data(*genders_handle, NULL) < 0)
     {
       handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_OPEN;
       goto cleanup;

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_hostsfile.c,v 1.5 2005-04-01 17:59:01 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_hostsfile.c,v 1.6 2005-04-01 21:29:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -45,13 +45,6 @@
 #include "list.h"
 
 static List hosts = NULL;
-static char hostsfile_file[MAXPATHLEN+1];
-
-int
-hostsfile_ganglia_clusterlist_parse_options(nodeupdown_t handle, char **options)
-{
-  return nodeupdown_ganglia_clusterlist_parse_filename(handle, options, hostsfile_file, MAXPATHLEN);
-}
 
 static int
 _readline(nodeupdown_t handle, int fd, char *buf, int buflen)
@@ -140,20 +133,14 @@ _load_hostsfile_data(nodeupdown_t handle)
 {
   int fd = -1, len;
   char buf[NODEUPDOWN_BUFFERLEN];
-  char *file;
 
   if (!(hosts = list_create((ListDelF)free)))
     {
       handle->errnum = NODEUPDOWN_ERR_OUTMEM;
       goto cleanup;
     }
-                                                                                     
-  if (hostsfile_file)
-    file = hostsfile_file;
-  else
-    file = NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT;
-                                                                                     
-  if ((fd = open(file, O_RDONLY)) < 0)
+                                                                                    
+  if ((fd = open(NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT, O_RDONLY)) < 0)
     {
       handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_OPEN;
       goto cleanup;
@@ -254,7 +241,7 @@ hostsfile_ganglia_clusterlist_compare_to_clusterlist(nodeupdown_t handle)
               handle->errnum = NODEUPDOWN_ERR_HOSTLIST;
               goto cleanup;
             }
-      }
+        }
     }
   
   list_iterator_destroy(itr);
@@ -316,7 +303,6 @@ hostsfile_ganglia_clusterlist_increase_max_nodes(nodeupdown_t handle)
 struct nodeupdown_ganglia_clusterlist_module_info ganglia_clusterlist_module_info =
   {
     "hostsfile",
-    &hostsfile_ganglia_clusterlist_parse_options,
     &hostsfile_ganglia_clusterlist_init,
     &hostsfile_ganglia_clusterlist_finish,
     &hostsfile_ganglia_clusterlist_cleanup,

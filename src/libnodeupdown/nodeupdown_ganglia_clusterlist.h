@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist.h,v 1.4 2005-04-01 17:59:01 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist.h,v 1.5 2005-04-01 21:29:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -33,7 +33,6 @@
  * Clusterlist function prototypes
  */
 
-typedef int (*Nodeupdown_ganglia_clusterlist_parse_options)(nodeupdown_t, char **);
 typedef int (*Nodeupdown_ganglia_clusterlist_init)(nodeupdown_t);
 typedef int (*Nodeupdown_ganglia_clusterlist_finish)(nodeupdown_t);
 typedef int (*Nodeupdown_ganglia_clusterlist_cleanup)(nodeupdown_t);
@@ -50,7 +49,6 @@ typedef int (*Nodeupdown_ganglia_clusterlist_increase_max_nodes)(nodeupdown_t);
 struct nodeupdown_ganglia_clusterlist_module_info
 {
   char *ganglia_clusterlist_module_name;
-  Nodeupdown_ganglia_clusterlist_parse_options parse_options;
   Nodeupdown_ganglia_clusterlist_init init;
   Nodeupdown_ganglia_clusterlist_finish finish;
   Nodeupdown_ganglia_clusterlist_cleanup cleanup;
@@ -70,11 +68,6 @@ int nodeupdown_ganglia_clusterlist_load_module(nodeupdown_t handle, char *cluste
  * Unload the clusterlist module
  */
 int nodeupdown_ganglia_clusterlist_unload_module(nodeupdown_t handle);
-
-/*
- * Pasre the clusterlist module options
- */
-int nodeupdown_ganglia_clusterlist_parse_options(nodeupdown_t handle, char **options);
 
 /* 
  * Initialize any clusterlist info, for example, loading data from a file 

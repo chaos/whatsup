@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_gendersllnl.c,v 1.6 2005-04-01 17:59:01 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_gendersllnl.c,v 1.7 2005-04-01 21:29:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -41,20 +41,13 @@
 #include "hostlist.h"
 
 static genders_t gendersllnl_handle = NULL;
-static char gendersllnl_file[MAXPATHLEN+1];
-
-int
-gendersllnl_ganglia_clusterlist_parse_options(nodeupdown_t handle, char **options)
-{
-  return nodeupdown_ganglia_clusterlist_parse_filename(handle, options, gendersllnl_file, MAXPATHLEN);
-}
 
 int 
 gendersllnl_ganglia_clusterlist_init(nodeupdown_t handle, void *ptr) 
 {
   int rv;
 
-  rv = genders_util_ganglia_clusterlist_init(handle, &gendersllnl_handle, gendersllnl_file);
+  rv = genders_util_ganglia_clusterlist_init(handle, &gendersllnl_handle);
 
 #if HAVE_GENDERS_INDEX_ATTRVALS
   if (!rv)
@@ -135,7 +128,6 @@ gendersllnl_ganglia_clusterlist_increase_max_nodes(nodeupdown_t handle)
 struct nodeupdown_ganglia_clusterlist_module_info ganglia_clusterlist_module_info =
   {
     "gendersllnl",
-    &gendersllnl_ganglia_clusterlist_parse_options,
     &gendersllnl_ganglia_clusterlist_init,
     &gendersllnl_ganglia_clusterlist_finish,
     &gendersllnl_ganglia_clusterlist_cleanup,

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.106 2005-04-01 17:59:01 achu Exp $
+ *  $Id: nodeupdown.c,v 1.107 2005-04-01 21:29:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -44,18 +44,14 @@
 
 #include "list.h"
 #include "hostlist.h"
-#include "xmlparse.h"
 #include "conffile.h"
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
+#include "nodeupdown_ganglia.h"
 #include "nodeupdown_ganglia_clusterlist.h"
 
-#ifndef GANGLIA_DEFAULT_XML_PORT
-#define GANGLIA_DEFAULT_XML_PORT  8649
-#endif
-
 #define NODEUPDOWN_MAX_ARGS       16
-#define NODEUPDOWN_MAX_ARGSLEN    64
+#define NODEUPDOWN_MAX_ARGSLEN    128
 
 /* to store config file data */
 struct nodeupdown_confdata 
@@ -68,16 +64,6 @@ struct nodeupdown_confdata
   int timeout_len_found;
   char clusterlist_module[MAXPATHLEN+1];
   int clusterlist_module_found;
-  char clusterlist_module_options[NODEUPDOWN_MAX_ARGS][NODEUPDOWN_MAX_ARGSLEN+1];
-  int clusterlist_module_options_found;
-};
-
-/* to pass multiple variables as one during XML parsing */
-struct parse_vars 
-{
-  nodeupdown_t handle;
-  int timeout_len;
-  unsigned long localtime;
 };
 
 /* error messages */
@@ -177,8 +163,7 @@ nodeupdown_handle_create()
 static void 
 _free_handle_data(nodeupdown_t handle) 
 {
-  nodeupdown_ganglia_clusterlist_cleanup(handle);
-  nodeupdown_ganglia_clusterlist_unload_module(handle);
+  nodeupdown_ganglia_free_data(handle);
   hostlist_destroy(handle->up_nodes);
   hostlist_destroy(handle->down_nodes);
   _initialize_handle(handle);
@@ -223,30 +208,6 @@ _cb_hostnames(conffile_t cf, struct conffile_data *data, char *optionname,
   return 0;
 }
 
-static int
-_cb_module_options(conffile_t cf, struct conffile_data *data,
-                   char *optionname, int option_type, void *option_ptr,
-                   int option_data, void *app_ptr, int app_data)
-{
-
-  if (data->stringlist_len > NODEUPDOWN_MAX_ARGS)
-    return -1;
-
-  if (data->stringlist_len > 0)
-    {
-      char **p = (char **)option_ptr;
-      int i;
-
-      for (i = 0; i < data->stringlist_len; i++)
-        {
-          if (strlen(data->stringlist[i]) > NODEUPDOWN_MAX_ARGSLEN)
-            return -1;
-          strncpy(p[i], data->stringlist[i], NODEUPDOWN_MAX_ARGSLEN);
-        }
-    }
-
-  return 0;
-}
 
 /* parse configuration file and store data into confdata */
 static int 
@@ -264,9 +225,6 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd)
       {NODEUPDOWN_CONF_CLUSTERLIST_MODULE, CONFFILE_OPTION_STRING, 0,
        conffile_string, 1, 0, &(cd->clusterlist_module_found), 
        cd->clusterlist_module, MAXPATHLEN},
-      {NODEUPDOWN_CONF_CLUSTERLIST_MODULE_OPTIONS, CONFFILE_OPTION_LIST_STRING, -1,
-       _cb_module_options, 1, 0, &(cd->clusterlist_module_options_found),
-       &(cd->clusterlist_module_options), 0},
     };
   conffile_t cf = NULL;
   int num, ret = -1;
@@ -296,14 +254,14 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd)
       }
     }
 
-  ret = 0;
+   ret = 0;
  cleanup:
   (void)conffile_handle_destroy(cf);
   return ret;
 }
 
 static int 
-_low_timeout_connect(nodeupdown_t handle, const char *hostname, int port) 
+_low_timeout_connect(nodeupdown_t handle, const char *hostname, int port, int default_port) 
 {
   int ret, old_flags, error, len, sockfd = -1;
   int sa_in_size = sizeof(struct sockaddr_in);
@@ -335,7 +293,7 @@ _low_timeout_connect(nodeupdown_t handle, const char *hostname, int port)
 
   /* use default port? */
   if (port <= 0)
-    port = GANGLIA_DEFAULT_XML_PORT;
+    port = default_port;
 
   /* Alot of this code is from Unix Network Programming, by Stevens */
 
@@ -441,137 +399,6 @@ _low_timeout_connect(nodeupdown_t handle, const char *hostname, int port)
   return -1;
 }
 
-/* xml start function for use with expat XML parsing library
- * - parse beginning tags like <FOO attr1=X attr2=Y> 
- */
-static void 
-_xml_parse_start(void *data, const char *e1, const char **attr) 
-{
-  nodeupdown_t handle = ((struct parse_vars *)data)->handle;
-  int timeout_len = ((struct parse_vars *)data)->timeout_len;
-  unsigned long localtime = ((struct parse_vars *)data)->localtime;
-  char shorthostname[MAXHOSTNAMELEN+1];
-  char buffer[MAXHOSTNAMELEN+1];
-  unsigned long reported;
-  char *ptr;
-  int ret;
-
-  if (strcmp("HOST", e1) == 0) 
-    {
-      /* attributes of XML HOST tag
-       * attr[0] - "NAME"
-       * attr[1] - hostname
-       * attr[2] - "IP"
-       * attr[3] - ip address of host
-       * attr[4] - "REPORTED"
-       * attr[5] - time gmond received a multicast message from the host
-       * - remaining attributes aren't needed 
-       */
-
-      /* shorten hostname if necessary */
-      memset(shorthostname, '\0', MAXHOSTNAMELEN+1);
-      strncpy(shorthostname, attr[1], MAXHOSTNAMELEN);
-      if ((ptr = strchr(shorthostname, '.')) != NULL)
-        *ptr = '\0';
-      
-      if (nodeupdown_ganglia_clusterlist_is_node_in_cluster(handle, shorthostname) <= 0)
-        return;
-      
-      if (nodeupdown_ganglia_clusterlist_get_nodename(handle, shorthostname, 
-                                                      buffer, MAXHOSTNAMELEN+1) < 0)
-        return;
-      
-      /* store as up or down */
-      reported = atol(attr[5]);
-      if (abs(localtime - reported) < timeout_len)
-        ret = hostlist_push(handle->up_nodes, buffer);
-      else
-        ret = hostlist_push(handle->down_nodes, buffer);
-      
-      if (ret == 0)
-        return;
-      
-      if (nodeupdown_ganglia_clusterlist_increase_max_nodes(handle) < 0)
-        return;
-    }
-}
-
-/* xml end function for use with expat XML parsing library
- * - parse end tags like </FOO>
- */
-static void 
-_xml_parse_end(void *data, const char *e1) 
-{
-  /* nothing to do at this time */
-}
-
-static int 
-_get_gmond_data(nodeupdown_t handle, int fd, int timeout_len) 
-{
-  XML_Parser xml_parser = NULL;
-  struct parse_vars pv;
-  struct timeval tv;
-  int retval = -1;
-
-  /* Setup parse vars to pass to _xml_parse_start */
-
-  pv.handle = handle;
-
-  if (timeout_len <= 0)
-    pv.timeout_len = NODEUPDOWN_TIMEOUT_LEN;
-  else
-    pv.timeout_len = timeout_len;
-
-  /* Call gettimeofday at the latest point right before XML stuff. */
-  if (gettimeofday(&tv, NULL) < 0) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      goto cleanup;
-    } 
-  pv.localtime = tv.tv_sec;
-
-  /* Following XML parsing loop more or less ripped from libganglia by
-   * Matt Massie <massie@CS.Berkeley.EDU>
-   */
-
-  xml_parser = XML_ParserCreate(NULL);
-  XML_SetElementHandler(xml_parser, _xml_parse_start, _xml_parse_end);
-  XML_SetUserData(xml_parser, (void *)&pv);
-
-  while (1) 
-    {
-      int bytes_read;
-      void *buff;
-      
-      if ((buff = XML_GetBuffer(xml_parser, BUFSIZ)) == NULL) 
-        {
-          handle->errnum = NODEUPDOWN_ERR_EXPAT;
-          goto cleanup;
-        }
-
-      if ((bytes_read = read(fd, buff, BUFSIZ)) < 0) 
-        {
-          handle->errnum = NODEUPDOWN_ERR_NETWORK;
-          goto cleanup;
-        }
-
-      if (XML_ParseBuffer(xml_parser, bytes_read, bytes_read == 0) == 0) 
-        {
-          handle->errnum = NODEUPDOWN_ERR_EXPAT;
-          goto cleanup;
-        }
-      
-      if (bytes_read == 0)
-        break;
-    }
-  
-  retval = 0;
- cleanup:
-  if (xml_parser != NULL)
-    XML_ParserFree(xml_parser);
-  return retval;
-}
-
 int 
 nodeupdown_load_data(nodeupdown_t handle, const char *hostname, 
                      int port, int timeout_len, 
@@ -617,7 +444,7 @@ nodeupdown_load_data(nodeupdown_t handle, const char *hostname,
         {
           port_l = (port <= 0 && cd.port_found > 0) ? 
             cd.port : port;
-          if ((fd = _low_timeout_connect(handle, str, port_l)) >= 0) 
+          if ((fd = _low_timeout_connect(handle, str, port_l, NODEUPDOWN_GANGLIA_DEFAULT_PORT)) >= 0) 
             break;
         }
 
@@ -628,7 +455,7 @@ nodeupdown_load_data(nodeupdown_t handle, const char *hostname,
     {
       port_l = (port <= 0 && cd.port_found > 0) ? 
         cd.port : port;
-      fd = _low_timeout_connect(handle, hostname, port_l);
+      fd = _low_timeout_connect(handle, hostname, port_l, NODEUPDOWN_GANGLIA_DEFAULT_PORT);
     }
 
   if (fd < 0)
@@ -648,7 +475,7 @@ nodeupdown_load_data(nodeupdown_t handle, const char *hostname,
 
   timeout_len = (timeout_len <= 0 && cd.timeout_len_found > 0) ? 
     cd.timeout_len : timeout_len;
-  if (_get_gmond_data(handle, fd, timeout_len) < 0)
+  if (nodeupdown_ganglia_get_gmond_data(handle, fd, timeout_len) < 0)
     goto cleanup;
 
   if (nodeupdown_ganglia_clusterlist_compare_to_clusterlist(handle) < 0)

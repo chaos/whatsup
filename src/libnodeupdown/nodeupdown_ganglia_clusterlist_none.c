@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia_clusterlist_none.c,v 1.4 2005-04-01 01:37:47 achu Exp $
+ *  $Id: nodeupdown_ganglia_clusterlist_none.c,v 1.5 2005-04-01 21:29:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -37,12 +37,6 @@
 #include "nodeupdown_ganglia_clusterlist.h"
 #include "nodeupdown_ganglia_clusterlist_util.h"
 #include "hostlist.h"
-
-int
-none_ganglia_clusterlist_parse_options(nodeupdown_t handle, char **options)
-{
-  return 0;
-}
 
 int
 none_ganglia_clusterlist_initialize_handle(nodeupdown_t handle) 
@@ -117,7 +111,6 @@ none_ganglia_clusterlist_increase_max_nodes(nodeupdown_t handle)
 struct nodeupdown_ganglia_clusterlist_module_info ganglia_clusterlist_module_info =
   {
     "none",
-    &none_ganglia_clusterlist_parse_options,
     &none_ganglia_clusterlist_init,
     &none_ganglia_clusterlist_finish,
     &none_ganglia_clusterlist_cleanup,
