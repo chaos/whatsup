@@ -1,3 +1,7 @@
+2003-12-01  Albert Chu  <chu11@llnl.gov>
+
+	* src/Nodeupdown/Nodeupdown.pm (new): Fixed typo.
+	
 2003-11-22  Albert Chu  <chu11@llnl.gov>
 
 	Massive massive changes throughout code, not worth listing
