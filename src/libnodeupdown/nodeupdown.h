@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.h,v 1.33 2005-04-06 21:50:19 achu Exp $
+ *  $Id: nodeupdown.h,v 1.34 2005-04-06 22:24:13 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -55,12 +55,13 @@
 #define NODEUPDOWN_ERR_CONF_OPEN            19
 #define NODEUPDOWN_ERR_CONF_READ            20
 #define NODEUPDOWN_ERR_CONF_PARSE           21
-#define NODEUPDOWN_ERR_CONF_INTERNAL        22
-#define NODEUPDOWN_ERR_XML                  23
-#define NODEUPDOWN_ERR_HOSTLIST             24
-#define NODEUPDOWN_ERR_MAGIC                25
-#define NODEUPDOWN_ERR_INTERNAL             26
-#define NODEUPDOWN_ERR_ERRNUMRANGE          27
+#define NODEUPDOWN_ERR_CONF_INPUT           22
+#define NODEUPDOWN_ERR_CONF_INTERNAL        23
+#define NODEUPDOWN_ERR_XML                  24
+#define NODEUPDOWN_ERR_HOSTLIST             25
+#define NODEUPDOWN_ERR_MAGIC                26
+#define NODEUPDOWN_ERR_INTERNAL             27
+#define NODEUPDOWN_ERR_ERRNUMRANGE          28
 
 typedef struct nodeupdown *nodeupdown_t;
 

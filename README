@@ -1,7 +1,4 @@
-Whatsup is cluster node up/down detection utility. Working in
-conjunction with Ganglia and a master list of cluster machine names,
-whatsup can quickly calculate and output the up and down nodes of a
-cluster.
+Whatsup is cluster node up/down detection utility. 
 
 The whatsup package includes:
 
@@ -23,57 +20,31 @@ The whatsup package includes:
   - A command that outputs the up and down nodes in a cluster. See
     whatsup(1).
 
-When dealing with up and down nodes in a cluster, there is a
-deficiency in ganglia that requires use of a master list of cluster
-machines as a work around.  Ganglia can report nodes as down only if
-it has had previous communication with the node.  For example, suppose
-a node from your cluster was removed for servicing, then the node
-running a non-deaf ganglia daemon is rebooted.  After the reboot, the
-node that was removed for servicing will not be listed by ganglia as
-down since it has no prior knowledge of that machine's existence.
+The nodeupdown library works in conjunction with one of several
+possible backend tools and a cluster database of nodes.  The backend tool
+and clusterlist are configurable through the nodeupdown configuration
+file.  See nodeupdown.conf(5) for more information. 
 
-A master list of cluster machines can be input several ways.
-Currently the following master list mechanisms are supported.  The one
-you choose for your system must be selected by selecting one of the
-following options in configure for installing the equivalent rpm.
+The currently available backend tools are:
 
-* Hosts file (--with-hostsfile)
-  - This mechanism uses a file that lists the shortened hostname of
-    every node in the cluster, one per line.  Comments can be placed
-    in the file using a pound sign ('#') at the beginning of a line.
-    Configure can be used to specify a default location of this
-    file.  If no default is chosen, the nodeupdown library and whatsup
-    will assume /etc/nodeupdown_hostsfile.conf is the default file.
-    If a default file is not put in the default location, nodeupdown
-    and whatsup will always require the file location to be specified.
-    Please read the README.hostsfile_install file for installation
-    instructions.
+Ganglia: See http://ganglia.sourceforge.net
 
-* Genders (--with-genders)
-  - Uses a genders database and the genders library to determine all 
-    of the nodes in the cluster.  Please read the
-    README.genders_install file for installation instructions.
+The currently clusterlist database tools are:
 
-* Gendersllnl (--with-gendersllnl)
-  - In addition to genders, uses the gendersllnl library to convert
-    between node names and alternate node names.  For the most part,
-    this is used in house at Lawrence Livermore National Laboratory
-    and sister labs that have clusters and genders setup in a
-    particular way that we like.  I have high doubts anyone else will
-    ever use this option.
+Gendersllnl - For the most part, specifically used by Lawrence
+Livermore National Laboratory.
 
-* None (--with-nomasterlist)
-  - Whatsup and nodeupdown will only use ganglia data to determine the
-    difference between up nodes, down nodes, and nodes in the cluster.
-    This is not recommended.
+Genders - Uses a genders database and the genders library to determine
+all nodes in the cluster.
 
-If none of the above is specified during configure time, configure
-will select a master list mechanism based on the libraries found on
-the build machine.  
+Hostsfile: Uses a file that lists the hostname of every node in the
+cluster.
 
-Other mechanisms may be implemented in the future.  If you are interested
-in seeing some new mechanism implemented, feel free to e-mail me and I'll
-see what I can do.
+None: No database will be used.
+
+Other backend and clusterlist modules may be implemented in the
+future.  If you are interested in seeing some new mechanism
+implemented, feel free to e-mail me and I'll see what I can do.
 
 Comments, patches, fixes, suggestions are always welcome.  Please read
 DISCLAIMER and COPYING for copyright and license information.

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.117 2005-04-06 21:50:19 achu Exp $
+ *  $Id: nodeupdown.c,v 1.118 2005-04-06 22:24:13 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -92,6 +92,7 @@ static char * nodeupdown_errmsg[] =
     "open config file error",
     "read config file error",
     "parse config file error",
+    "invalid config file input error",
     "internal config file error",
     "internal XML parse error",
     "internal hostlist error",

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: Libnodeupdown.xs,v 1.13 2005-04-06 21:50:19 achu Exp $
+ *  $Id: Libnodeupdown.xs,v 1.14 2005-04-06 22:24:13 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -209,6 +209,14 @@ NODEUPDOWN_ERR_CONF_PARSE (sv=&PL_sv_undef)
     SV *sv    
     CODE:
         RETVAL = NODEUPDOWN_ERR_CONF_PARSE;
+    OUTPUT:
+        RETVAL    
+
+int
+NODEUPDOWN_ERR_CONF_INPUT (sv=&PL_sv_undef)
+    SV *sv    
+    CODE:
+        RETVAL = NODEUPDOWN_ERR_CONF_INPUT;
     OUTPUT:
         RETVAL    
 

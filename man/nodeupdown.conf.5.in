@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown.conf.5.in,v 1.11 2005-03-31 22:44:22 achu Exp $
+\."$Id: nodeupdown.conf.5.in,v 1.12 2005-04-06 22:24:13 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -33,12 +33,9 @@ nodeupdown.conf \- specify alternate default values for the nodeupdown
 Through a configuration file, system administrators may override the
 statically configured default values in the 
 .BR nodeupdown_load_data(3)
-API function.  Overriding the statically configured default values
-allows tools such as 
-.BR whatsup(1)
-to work without using the --hostname or --port options on the command line.
+API function.
 
-By default, the configuration file is stored at @NODEUPDOWN_CONF_FILE@.
+The configuration file is stored at @NODEUPDOWN_CONF_FILE@.
 
 .SH CONFIGURATION OPTIONS
 The following are a list of configuration options that can be
@@ -59,6 +56,16 @@ Specify the port.
 .TP
 .I timeout_len seconds
 Specify the timeout length in seconds.
+.TP
+.I backend_module ( name | filename | path)
+Specify the backend module to use.  Backend modules are first searched
+for in the nodeupdown package library, @NODEUPDOWN_MODULE_DIR@.  They
+are then searched for in the current directory.
+
+The following backend modules are available by default:
+
+ganglia
+
 .TP
 .I clusterlist_module ( name | filename | path)
 Specify the clusterlist module to use.  Clusterlist modules are
@@ -81,26 +88,6 @@ genders
 hostsfile
   
 none
-.TP
-.I clusterlist_module_options str
-Specify arguments to pass to the clusterlist module.  The arguments
-are typically passed as key=value pairs.
-
-The following parse options are currently supported by the default
-clusterlist modules:
-
-.if @MANPAGE_GENDERSLLNL@ \{
-gendersllnl: filename=<file> - Specify the path to the genders database.
-  
-\}
-  
-.if @MANPAGE_GENDERS@ \{
-genders: filename=<file> - Specify the path to the genders database.
-  
-\}
-  
-hostsfile: filename=<file> - Specify the path to the hostsfile database.
-
 .br
 .SH FILES
 @NODEUPDOWN_CONF_FILE@

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend.c,v 1.4 2005-04-06 21:50:19 achu Exp $
+ *  $Id: nodeupdown_backend.c,v 1.5 2005-04-06 22:24:13 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -173,7 +173,7 @@ nodeupdown_backend_load_module(nodeupdown_t handle, char *backend_module)
       if (rv)
         goto done;
 
-      handle->errnum = NODEUPDOWN_ERR_CONF_OPEN;
+      handle->errnum = NODEUPDOWN_ERR_CONF_INPUT;
       goto cleanup;
     }
   else

@@ -2,6 +2,13 @@ This file describes changes in recent versions of whatsup. It
 primarily documents those changes that are of interest to users
 and admins.
 
+Changes in whatsup-1.4-1
+===========================
+- Re-worked whatsup and nodeupdown library to use dynamically loadable
+modules.
+- Whatsup -l option converted to -q option, for consistency with
+genders 'nodeattr' command.
+
 Changes in whatsup-1.3-1
 ===========================
 - Added nodeupdown_up_count and nodeupdown_down_count API functions.
@@ -28,4 +35,4 @@ Changes in whatsup-1.2-1
 ===========================
  -- started NEWS file.
 
-$Id: NEWS,v 1.8 2004-01-14 18:06:28 achu Exp $
+$Id: NEWS,v 1.9 2005-04-06 22:24:13 achu Exp $
