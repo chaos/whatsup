@@ -90,8 +90,7 @@ am__quote = @am__quote@
 install_sh = @install_sh@
 
 include_HEADERS = \
-	nodeupdown.h \
-	hostlist.h
+	nodeupdown.h 
 
 
 lib_LTLIBRARIES = \

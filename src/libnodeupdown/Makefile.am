@@ -1,12 +1,11 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.1 2003-02-24 19:30:42 achu Exp $
+## $Id: Makefile.am,v 1.2 2003-04-24 21:01:15 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
 
 include_HEADERS = \
-	nodeupdown.h \
-	hostlist.h
+	nodeupdown.h 
 
 lib_LTLIBRARIES = \
 	libnodeupdown.la
