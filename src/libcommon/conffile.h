@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.h,v 1.11 2004-01-15 01:09:35 achu Exp $
+ *  $Id: conffile.h,v 1.12 2004-03-17 21:24:50 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -98,8 +98,8 @@
  *        - useful for deprecating old configuration options
  * FLAG - no arguments, returns no arguments
  * BOOL - 1 argument, returns 1 or 0 
- *      - true strings - "1", "y", "yes", "on", "t", "true", "enabled"
- *      - false strings- "0", "n", "no" "off", "f", "false", "disabled"
+ *      - true strings - "1", "y", "yes", "on", "t", "true", "enable"
+ *      - false strings- "0", "n", "no" "off", "f", "false", "disable"
  * INT - 1 argument, returns an integer
  * DOUBLE - 1 argument, returns a double
  * STRING - 1 argument, returns a string

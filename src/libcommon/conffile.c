@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.13 2004-01-15 16:51:31 achu Exp $
+ *  $Id: conffile.c,v 1.14 2004-03-17 21:24:50 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -569,8 +569,8 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
             && strcasecmp(args[0], "f") != 0
             && strcasecmp(args[0], "true") != 0
             && strcasecmp(args[0], "false") != 0
-            && strcasecmp(args[0], "enabled") != 0
-            && strcasecmp(args[0], "disabled") != 0) {
+            && strcasecmp(args[0], "enable") != 0
+            && strcasecmp(args[0], "disable") != 0) {
             cf->errnum = CONFFILE_ERR_PARSE_ARG_INVALID;
             return -1;
         }
@@ -585,7 +585,7 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
             || !strcasecmp(args[0], "on")
             || !strcasecmp(args[0], "t")
             || !strcasecmp(args[0], "true")
-            || !strcasecmp(args[0], "enabled"))
+            || !strcasecmp(args[0], "enable"))
             data.bool = 1;
         else
             data.bool = 0;
