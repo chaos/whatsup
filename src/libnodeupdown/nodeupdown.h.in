@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown.h.in,v 1.6 2003-11-06 18:09:55 achu Exp $
+ *  $Id: nodeupdown.h.in,v 1.7 2003-11-14 02:14:50 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h.in,v $
  *    
  */
@@ -39,8 +39,6 @@
 #define NODEUPDOWN_TIMEOUT_LEN           60
 
 #define NODEUPDOWN_CONF_FILE             @NODEUPDOWN_CONF_FILE@
-
-#define NODEUPDOWN_MASTERLIST_DEFAULT    @NODEUPDOWN_MASTERLIST_DEFAULT@
 
 typedef struct nodeupdown *nodeupdown_t;
 

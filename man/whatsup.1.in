@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: whatsup.1.in,v 1.7 2003-11-14 00:02:04 achu Exp $
+\."$Id: whatsup.1.in,v 1.8 2003-11-14 02:14:50 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -76,7 +76,7 @@ List nodes in newline separated list
 .TP
 .B \-s, \-\-space
 List nodes in space separated list
-.if @WITH_MASTERLIST@ \{
+.if @WITH_HOSTSFILE@ \{
 .TP
 .B \-f \fISTRING\fR, \fB\-\-filename\fR=\fISTRING\fR
 Location of master list file (default=@NODEUPDOWN_MASTERLIST_DEFAULT@)

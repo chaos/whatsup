@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown_masterlist.c,v 1.5 2003-11-14 00:02:04 achu Exp $
+ *  $Id: nodeupdown_masterlist.c,v 1.6 2003-11-14 02:14:50 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown_masterlist.c,v $
  *    
  */
@@ -24,7 +24,7 @@
 #include "nodeupdown_common.h"
 
 void nodeupdown_masterlist_initialize_handle(nodeupdown_t handle) {
-#if HAVE_MASTERLIST
+#if HAVE_HOSTSFILE
   handle->masterlist = NULL;
 #elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
   handle->genders_handle = NULL;
@@ -32,7 +32,7 @@ void nodeupdown_masterlist_initialize_handle(nodeupdown_t handle) {
 }
 
 void nodeupdown_masterlist_free_handle_data(nodeupdown_t handle) {
-#if HAVE_MASTERLIST
+#if HAVE_HOSTSFILE
   if (handle->masterlist)
     (void)list_destroy(handle->masterlist);
 #elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
@@ -40,7 +40,7 @@ void nodeupdown_masterlist_free_handle_data(nodeupdown_t handle) {
 #endif
 }
 
-#if HAVE_MASTERLIST
+#if HAVE_HOSTSFILE
 static int _load_masterlist_data(nodeupdown_t handle, const char *filename) {
   int fd, len, retval = -1;
   char buf[NODEUPDOWN_BUFFERLEN];
@@ -106,7 +106,7 @@ static int _load_masterlist_data(nodeupdown_t handle, const char *filename) {
   close(fd);
   return retval;
 }
-#endif /* HAVE_MASTERLIST */
+#endif /* HAVE_HOSTSFILE */
 
 #if (HAVE_GENDERS || HAVE_GENDERSLLNL)
 static int _load_genders_data(nodeupdown_t handle, const char *filename) {
@@ -129,7 +129,7 @@ static int _load_genders_data(nodeupdown_t handle, const char *filename) {
 #endif /* HAVE_GENDERS || HAVE_GENDERSLLNL */
 
 int nodeupdown_masterlist_init(nodeupdown_t handle, void *ptr) {
-#if HAVE_MASTERLIST
+#if HAVE_HOSTSFILE
   return _load_masterlist_data(handle, (const char *)ptr);
 #elif (HAVE_GENDERS || HAVE_GENDERSLLNL)
   return _load_genders_data(handle, (const char *)ptr);
@@ -139,7 +139,7 @@ int nodeupdown_masterlist_init(nodeupdown_t handle, void *ptr) {
 }
 
 int nodeupdown_masterlist_finish(nodeupdown_t handle) {
-#if HAVE_MASTERLIST
+#if HAVE_HOSTSFILE
   /* set max_nodes */
   handle->max_nodes = list_count(handle->masterlist);
   return 0;
@@ -156,7 +156,7 @@ int nodeupdown_masterlist_finish(nodeupdown_t handle) {
 }
 
 int nodeupdown_masterlist_compare_gmond_to_masterlist(nodeupdown_t handle) {
-#if HAVE_MASTERLIST
+#if HAVE_HOSTSFILE
   ListIterator itr = NULL;
   char *nodename;
 
@@ -228,7 +228,7 @@ int nodeupdown_masterlist_compare_gmond_to_masterlist(nodeupdown_t handle) {
 #endif
 }
 
-#if HAVE_MASTERLIST
+#if HAVE_HOSTSFILE
 static int _find_str(void *x, void *key) {
   if (strcmp((char *)x, (char *)key) == 0)
     return 1;
@@ -237,7 +237,7 @@ static int _find_str(void *x, void *key) {
 #endif
 
 static int _is_node_common(nodeupdown_t handle, const char *node) {
-#if HAVE_MASTERLIST
+#if HAVE_HOSTSFILE
   void *ptr;
   ptr = list_find_first(handle->masterlist, _find_str, (void *)node);
   if (ptr != NULL)
@@ -262,7 +262,7 @@ static int _is_node_common(nodeupdown_t handle, const char *node) {
 }
 
 int nodeupdown_masterlist_is_node_legit(nodeupdown_t handle, const char *node) {
-#if (HAVE_MASTERLIST || HAVE_GENDERS || HAVE_GENDERSLLNL)
+#if (HAVE_HOSTSFILE || HAVE_GENDERS || HAVE_GENDERSLLNL)
   return _is_node_common(handle, node);
 #else
   /* Have to assume it is */
@@ -271,7 +271,7 @@ int nodeupdown_masterlist_is_node_legit(nodeupdown_t handle, const char *node) {
 }
 
 int nodeupdown_masterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) {
-#if (HAVE_MASTERLIST || HAVE_GENDERS || HAVE_GENDERSLLNL)
+#if (HAVE_HOSTSFILE || HAVE_GENDERS || HAVE_GENDERSLLNL)
   return _is_node_common(handle, node);
 #else
   /* Without a master list of some sort, this is the best we can do */

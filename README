@@ -40,15 +40,15 @@ selecting one of the following options in configure.
   - Whatsup and nodeupdown will only use ganglia data to determine the
     difference between up nodes, down nodes, and nodes in the cluster.
 
-* Master List Hosts file (--with-masterlist)
+* Hosts file (--with-hostsfile)
   - This mechanism simply uses a file that lists the shortened
     hostname of every node in the cluster, one per line.  Comments can
     be placed in the file using a pound sign ('#') at the beginning of
     a line.  Configure can be used to specify a default location of this
     file.  If no default is chosen, the nodeupdown library and whatsup
-    will assume /etc/nodeupdown_masterlist is the default file.  If
-    a default file is not put in the default location, nodeupdown and
-    whatsup will always require the file location be specified.
+    will assume /etc/nodeupdown_hostsfile.conf is the default file.
+    If a default file is not put in the default location, nodeupdown
+    and whatsup will always require the file location be specified.
 
 * Genders (--with-genders)
   - Uses a genders database and the genders library to determine all 

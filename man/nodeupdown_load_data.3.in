@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_load_data.3.in,v 1.8 2003-11-14 00:02:04 achu Exp $
+\."$Id: nodeupdown_load_data.3.in,v 1.9 2003-11-14 02:14:50 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -9,7 +9,7 @@ nodeupdown_load_data \- load data from ganglia
 .SH SYNOPSIS
 .B #include <nodeupdown.h>
 .sp
-.if @WITH_MASTERLIST@ \{
+.if @WITH_HOSTSFILE@ \{
 .BI "int nodeupdown_load_data(nodeupdown_t handle, const char *filename, const char *gmond_hostname, const char *gmond_ip, int gmond_port, int timeout_len);"
 \}
 .if (@WITH_GENDERS@ : @WITH_GENDERSLLNL@) \{
@@ -28,7 +28,7 @@ information about up and down nodes.
 handle created by
 .BR nodeupdown_handle_create (3).  
 
-.if @WITH_MASTERLIST@ \{
+.if @WITH_HOSTSFILE@ \{
 \fIfilename\fR should indicate a filename that lists every node in the
 cluster.  The file should list shortened hostnames, one per line.  Lines
 beginning with a pound sign ('#') will be ignored.  If set to NULL, the
@@ -140,6 +140,6 @@ An internal system error has occurred.
 libnodeupdown(3), nodeupdown_handle_create(3),
 nodeupdown_handle_destroy(3), nodeupdown_errnum(3),
 nodeupdown_strerror(3), nodeupdown.conf(5)
-.if @WITH_MASTERLIST@ \{
+.if @WITH_HOSTSFILE@ \{
 nodeupdown_masterlist.conf(5)
 \}

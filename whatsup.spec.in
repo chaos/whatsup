@@ -1,4 +1,4 @@
-# $Id: whatsup.spec.in,v 1.11 2003-11-14 01:57:52 achu Exp $
+# $Id: whatsup.spec.in,v 1.12 2003-11-14 02:14:50 achu Exp $
 
 Name:           @PROJECT@
 Version:        @VERSION@
@@ -16,7 +16,7 @@ Requires:       ganglia-monitor-core
 Requires:       ganglia-monitor-core-lib 
 
 # By default, we'll compile with gendersllnl if nothing else is specified
-%{!?_with_nomasterlist: %{!?_with_masterlist: %{!?_with_genders: %{!?_with_gendersllnl: %define _with_gendersllnl --with-gendersllnl}}}}
+%{!?_with_nomasterlist: %{!?_with_hostsfile: %{!?_with_genders: %{!?_with_gendersllnl: %define _with_gendersllnl --with-gendersllnl}}}}
 
 %if %{?_with_genders:1}%{!?_with_genders:0}
 Requires:       genders >= 1.2
@@ -39,8 +39,10 @@ programmatically determine if a node is up or down.
 %build
 ./bootstrap
 ./configure --prefix=/usr --with-perl-install-prefix="$RPM_BUILD_ROOT/usr" \
-        %{?_with_masterlist} \
-        %{?_without_masterlist} \
+        %{?_with_nomasterlist} \
+        %{?_without_nomasterlist} \
+        %{?_with_hostsfile} \
+        %{?_without_hostsfile} \
         %{?_with_genders} \
         %{?_without_genders} \
         %{?_with_gendersllnl} \

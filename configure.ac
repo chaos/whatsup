@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.22 2003-11-14 01:57:52 achu Exp $
+## $Id: configure.ac,v 1.23 2003-11-14 02:14:50 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -85,23 +85,23 @@ AC_ARG_WITH(nomasterlist,
 AC_MSG_RESULT(${withnomasterlist=no})
 
 # Build with master list host file mechanism
-AC_MSG_CHECKING(for --with-masterlist )
-AC_ARG_WITH(masterlist,
-    AC_HELP_STRING([--with-masterlist=path], 
+AC_MSG_CHECKING(for --with-hostsfile )
+AC_ARG_WITH(hostsfile,
+    AC_HELP_STRING([--with-hostsfile=path], 
                    [build with master list host file support, optionally 
                     supplying master list host file default path]),
     [ case "$withval" in
     yes)
-        withmasterlist=yes
+        withhostsfile=yes
         ;;
     no)
         ;;
     *)
-        withmasterlist=yes
+        withhostsfile=yes
         ;;
     esac ]
 )
-AC_MSG_RESULT(${withmasterlist=no})
+AC_MSG_RESULT(${withhostsfile=no})
 
 # Build with genders master list mechanism
 AC_MSG_CHECKING(for --with-genders )
@@ -160,19 +160,19 @@ AC_CHECK_LIB(gendersllnl, genders_get_cluster, [havegendersllnl=yes], [])
 ##
 
 if test "$withnomasterlist" != "yes" &&
-   test "$withmasterlist" != "yes" && 
+   test "$withhostsfile" != "yes" && 
    test "$withgenders" != "yes" &&
    test "$withgendersllnl" != "yes"; then
    AC_MSG_ERROR([You must specify a master list mechanism, either 
-                 --with-nomasterlist, --with-masterlist, --with-genders, 
+                 --with-nomasterlist, --with-hostsfile, --with-genders, 
                  or --with-gendersllnl])
 fi   
 
-if (test "$withnomasterlist" = "yes" && test "$withmasterlist" = "yes") ||
+if (test "$withnomasterlist" = "yes" && test "$withhostsfile" = "yes") ||
    (test "$withnomasterlist" = "yes" && test "$withgenders" = "yes") ||
    (test "$withnomasterlist" = "yes" && test "$withgendersllnl" = "yes") || 
-   (test "$withmasterlist" = "yes" && test "$withgenders" = "yes") ||
-   (test "$withmasterlist" = "yes" && test "$withgendersllnl" = "yes") ||
+   (test "$withhostsfile" = "yes" && test "$withgenders" = "yes") ||
+   (test "$withhostsfile" = "yes" && test "$withgendersllnl" = "yes") ||
    (test "$withgenders" = "yes" && test "$withgendersllnl" = "yes"); then
    AC_MSG_ERROR([You can only specify one master list mechanism])
 fi
@@ -189,20 +189,17 @@ fi
 AC_SUBST(WITH_NOMASTERLIST)
 AC_SUBST(HAVE_NOMASTERLIST)
 
-AC_SUBST(NODEUPDOWN_MASTERLIST_PTR)
-AC_SUBST(NODEUPDOWN_MASTERLIST_DEFAULT)
-
 # Build with master list host file mechanism
-if test "$withmasterlist" = "yes"; then
-  AC_DEFINE(HAVE_MASTERLIST, [1], [Define use of master list])
+if test "$withhostsfile" = "yes"; then
+  AC_DEFINE(HAVE_HOSTSFILE, [1], [Define use of master list])
   NODEUPDOWN_MASTERLIST_PTR="const char *filename"
-  NODEUPDOWN_MASTERLIST_DEFAULT="\"/etc/nodeupdown_masterlist.conf\""
-  WITH_MASTERLIST=1
+  NODEUPDOWN_MASTERLIST_DEFAULT="\"/etc/nodeupdown_hostsfile.conf\""
+  WITH_HOSTSFILE=1
 else
-  WITH_MASTERLIST=0
+  WITH_HOSTSFILE=0
 fi
-AC_SUBST(WITH_MASTERLIST)
-AC_SUBST(HAVE_MASTERLIST)
+AC_SUBST(WITH_HOSTSFILE)
+AC_SUBST(HAVE_HOSTSFILE)
 
 # Build with genders support
 if test "$withgenders" = "yes"; then
@@ -240,6 +237,9 @@ fi
 AC_SUBST(GENDERSLLNL_LIBS)
 AC_SUBST(WITH_GENDERSLLNL)
 AC_SUBST(HAVE_GENDERSLLNL)
+
+AC_SUBST(NODEUPDOWN_MASTERLIST_PTR)
+AC_SUBST(NODEUPDOWN_MASTERLIST_DEFAULT)
 
 ##
 # Checks for programs.

@@ -1,5 +1,16 @@
 2003-11-13  Albert Chu  <chu11@llnl.gov>
 
+	Renamed "masterlist" mechanism to "hostsfile".
+
+	* README, configure.ac, whatsup.spec.in, src/whatsup/whatsup.c,
+	src/libnodeupdown/nodeupdown.c,
+	src/libnodeupdown/nodeupdown_common.h,
+	src/libnodeupdown/nodeupdown_masterlist.c, man/libnodeupdown.3,
+	man/nodeupdown_load_data.3, man/whatsup.1: Renamed everything
+	appropriately.
+
+2003-11-13  Albert Chu  <chu11@llnl.gov>
+
 	Added genders mechanism to differentiate between genders and
 	gendersllnl libraries.  The old genders mechanism is now
 	gendersllnl.
@@ -16,10 +27,12 @@
 	Modified appropriately for new genders vs. gendersllnl mechanisms.
 
 	* configure.ac: Added genders vs. gendersllnl option support.
+	Also added --with-nomasterlist option.
 
 	* README: Updated with more info. 
 
-	* whatsup.spec.in: Updated to inclue conditional builds.
+	* whatsup.spec.in: Updated to inclue conditional builds.  Defaults
+	to --with-gendersllnl if not mechanism requested.
 	
 2003-11-10  Albert Chu  <chu11@llnl.gov>
 
