@@ -1,3 +1,12 @@
+2003-12-29  Albert Chu  <chu11@llnl.gov>
+
+	* DISCLAIMER: New file.
+
+	* ipmipower.spec.in: Added DISCLAIMER.
+
+	* Added Copyright header with UCRL code to all source and
+	documentation.
+	
 2003-12-09  Albert Chu  <chu11@llnl.gov>
 
 	* man/whatsup.1.in: Cleaned up wording.

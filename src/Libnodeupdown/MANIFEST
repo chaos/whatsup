@@ -3,5 +3,4 @@ Libnodeupdown.pm
 Libnodeupdown.xs
 Makefile.PL
 MANIFEST
-test.pl
 typemap
