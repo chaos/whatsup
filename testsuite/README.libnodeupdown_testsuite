@@ -59,7 +59,11 @@ uses 'pdsh' and 'pkill'.
 Step 4)
 
 Run the test suite with 'libnodeupdown_test' from the first node listed
-in the configuration file.
+in the configuration file.  
+
+Currently, there is something buggy with how 'pkill' and 'pdsh' are
+used in the testsuite.  If the testsuite does not start, simply try
+several times to get it going.
  
 IV. BUGS
 
