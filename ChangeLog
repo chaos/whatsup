@@ -7,7 +7,7 @@
 	  additional instructions on is_node_up() and is_node_down() 
 	- fixed error with magic numbers 
 	- Added note about shortened hostnames in man page for whatsup(1)  
-	- Added note about newline separated lists in man page for whatsup(1)
+	- Added note about which machines whatsup(1) works on to the man page.  
 	- Fixed typo in whatsup(1) manpage
 	- tagged whatsup-1-0-4
 	
