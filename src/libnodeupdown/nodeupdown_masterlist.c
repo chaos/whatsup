@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown_masterlist.c,v 1.3 2003-11-08 16:59:25 achu Exp $
+ *  $Id: nodeupdown_masterlist.c,v 1.4 2003-11-08 17:04:48 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown_masterlist.c,v $
  *    
  */
@@ -146,7 +146,7 @@ int nodeupdown_masterlist_finish(nodeupdown_t handle) {
 #elif HAVE_GENDERS
   /* set max_nodes */
   if ((handle->max_nodes = genders_getnumnodes(handle->genders_handle)) == -1) {
-    handle->errnum = NODEUPODWN_ERR_MASTERLIST;
+    handle->errnum = NODEUPDOWN_ERR_MASTERLIST;
     return -1;
   }
   return 0;
