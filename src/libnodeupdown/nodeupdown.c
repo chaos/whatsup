@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.18 2003-03-12 17:03:31 achu Exp $
+ * $Id: nodeupdown.c,v 1.19 2003-03-12 18:11:37 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -1828,7 +1828,7 @@ int nodeupdown_convert_string_to_altnames(nodeupdown_t handle,
 int nodeupdown_convert_list_to_altnames(nodeupdown_t handle, 
 					char **src, 
 					char **dest,
-					int len) {
+					int num_src_nodes) {
   int i, count;
   char *nodename = NULL; 
   hostlist_t src_hl = NULL;
@@ -1841,8 +1841,8 @@ int nodeupdown_convert_list_to_altnames(nodeupdown_t handle,
 
   if (src == NULL || 
       dest == NULL || 
-      len <= 0 || 
-      len > handle->max_nodes) {
+      num_src_nodes <= 0 || 
+      num_src_nodes > handle->max_nodes) {
     handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
     return -1;
   }
@@ -1862,7 +1862,7 @@ int nodeupdown_convert_list_to_altnames(nodeupdown_t handle,
     goto cleanup;
   }
 
-  for (i = 0; i < len; i++) {
+  for (i = 0; i < num_src_nodes; i++) {
     if (src[i] == NULL) {
       handle->errnum = NODEUPDOWN_ERR_NULLPTR;
       goto cleanup;
@@ -1884,7 +1884,7 @@ int nodeupdown_convert_list_to_altnames(nodeupdown_t handle,
 
   count = 0;
   while ((nodename = hostlist_next(iter)) != NULL) {
-    if (count >= len) {
+    if (count >= num_src_nodes) {
       handle->errnum = NODEUPDOWN_ERR_OVERFLOW;
       goto cleanup;
     }
