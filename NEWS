@@ -10,8 +10,7 @@ Changes in whatsup-1.3-1
 - Removed --ip option from whatsup
 - Default whatsup output also includes output of node counts. 
 - Whatsup and nodeupdown now compile and execute independently of 
-  libganglia.  If libganglia is not installed, whatsup can still
-  executed.
+  libganglia. 
 - The nodeupdown.conf(5) file now allows specification of multiple
   hostnames instead of just one.
 - Modified nodeupdown_load_data(3) API function to be far more
@@ -26,4 +25,4 @@ Changes in whatsup-1.2-1
 ===========================
  -- started NEWS file.
 
-$Id: NEWS,v 1.6 2003-11-24 16:13:19 achu Exp $
+$Id: NEWS,v 1.7 2004-01-13 21:30:42 achu Exp $
