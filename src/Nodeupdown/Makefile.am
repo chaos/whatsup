@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.4 2003-11-10 19:09:29 achu Exp $
+## $Id: Makefile.am,v 1.5 2004-05-20 00:28:29 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -28,3 +28,5 @@ clean:
 	if test -a Makefile.pm; then $(MAKE) -f Makefile.pm clean; fi
 	rm -f Makefile.pm
 	rm -f Makefile.pm.old
+
+EXTRA_DIST = Makefile.PL Nodeupdown.pm

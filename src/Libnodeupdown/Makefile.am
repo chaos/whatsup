@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.10 2004-01-16 17:35:22 achu Exp $
+## $Id: Makefile.am,v 1.11 2004-05-20 00:28:29 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -39,3 +39,5 @@ clean:
 	rm -f *.o
 	rm -f Makefile.xs
 	rm -f Makefile.xs.old
+
+EXTRA_DIST = Libnodeupdown.pm Libnodeupdown.xs Makefile.PL typemap
