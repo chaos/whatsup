@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia.c,v 1.3 2005-04-02 00:57:01 achu Exp $
+ *  $Id: nodeupdown_ganglia.c,v 1.4 2005-04-02 01:30:29 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -62,6 +62,12 @@ struct parse_vars
   int timeout_len;
   unsigned long localtime;
 };
+
+int 
+nodeupdown_ganglia_get_default_port(nodeupdown_t handle)
+{
+  return NODEUPDOWN_GANGLIA_DEFAULT_PORT;
+}
 
 /* xml start function for use with expat XML parsing library
  * - parse beginning tags like <FOO attr1=X attr2=Y> 
@@ -132,11 +138,7 @@ nodeupdown_ganglia_get_gmond_data(nodeupdown_t handle, int fd, int timeout_len)
   /* Setup parse vars to pass to _xml_parse_start */
 
   pv.handle = handle;
-
-  if (timeout_len <= 0)
-    pv.timeout_len = NODEUPDOWN_TIMEOUT_LEN;
-  else
-    pv.timeout_len = timeout_len;
+  pv.timeout_len = timeout_len;
 
   /* Call gettimeofday at the latest point right before XML stuff. */
   if (gettimeofday(&tv, NULL) < 0) 

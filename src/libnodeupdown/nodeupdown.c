@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.108 2005-04-02 00:57:01 achu Exp $
+ *  $Id: nodeupdown.c,v 1.109 2005-04-02 01:30:29 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -209,8 +209,8 @@ _cb_hostnames(conffile_t cf, struct conffile_data *data, char *optionname,
     return -1;
 
   /*  
-   * Destroyed in nodeupdown_load_data, so no need to cleanup on
-   * error.
+   * List is destroyed in nodeupdown_load_data, so no need to cleanup
+   * on error.
    */
 
   if (!(*l = list_create((ListDelF)free)))
@@ -271,6 +271,8 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd)
           handle->errnum = NODEUPDOWN_ERR_CONF_READ;
         else if (CONFFILE_IS_PARSE_ERR(errnum))
           handle->errnum = NODEUPDOWN_ERR_CONF_PARSE;
+        else if (CONFFILE_ERR_OUTMEM)
+          handle->errnum = NODEUPDOWN_ERR_OUTMEM;
         else
           handle->errnum = NODEUPDOWN_ERR_CONF;
         goto cleanup;
@@ -286,40 +288,25 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd)
 static int 
 _low_timeout_connect(nodeupdown_t handle, 
                      const char *hostname, 
-                     int port, 
-                     int default_port) 
+                     int port) 
 {
-  int ret, old_flags, error, len, sockfd = -1;
-  int sa_in_size = sizeof(struct sockaddr_in);
+  int ret, old_flags, sockfd = -1;
   struct sockaddr_in servaddr;
-  fd_set rset, wset;
-  struct timeval tval;
-  char ip_buf[INET_ADDRSTRLEN+1];
+  char ipbuf[INET_ADDRSTRLEN+1];
+  struct hostent *hptr;
 
-  /* use default hostname? */
-  if (!hostname)
-    strncpy(ip_buf, "127.0.0.1", INET_ADDRSTRLEN);
-  else 
+  /* valgrind will report a mem-leak in gethostbyname() */
+  if (!(hptr = gethostbyname(hostname))) 
     {
-      struct hostent *hptr;
-
-      /* valgrind will report a mem-leak in gethostbyname() */
-      if (!(hptr = gethostbyname(hostname))) 
-        {
-          handle->errnum = NODEUPDOWN_ERR_HOSTNAME;
-          return -1;
-        }
-      
-      if (!inet_ntop(AF_INET, (void *)hptr->h_addr, ip_buf, INET_ADDRSTRLEN)) 
-        {
-          handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-          return -1;
-        }
+      handle->errnum = NODEUPDOWN_ERR_HOSTNAME;
+      return -1;
     }
-
-  /* use default port? */
-  if (port <= 0)
-    port = default_port;
+      
+  if (!inet_ntop(AF_INET, (void *)hptr->h_addr, ipbuf, INET_ADDRSTRLEN)) 
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
 
   /* Alot of this code is from Unix Network Programming, by Stevens */
 
@@ -333,13 +320,13 @@ _low_timeout_connect(nodeupdown_t handle,
   servaddr.sin_family = AF_INET;
   servaddr.sin_port = htons(port);
 
-  if ((ret = inet_pton(AF_INET, ip_buf, (void *)&servaddr.sin_addr)) < 0) 
+  if ((ret = inet_pton(AF_INET, ipbuf, (void *)&servaddr.sin_addr)) < 0) 
     {
       handle->errnum = NODEUPDOWN_ERR_INTERNAL;
       goto cleanup;
     }
 
-  if (ret == 0) 
+  if (!ret) 
     {
       handle->errnum = NODEUPDOWN_ERR_ADDRESS;
       goto cleanup;
@@ -357,7 +344,9 @@ _low_timeout_connect(nodeupdown_t handle,
       goto cleanup;
     }
   
-  ret = connect(sockfd, (struct sockaddr *)&servaddr, sa_in_size);
+  ret = connect(sockfd, 
+                (struct sockaddr *)&servaddr, 
+                sizeof(struct sockaddr_in));
   if (ret < 0 && errno != EINPROGRESS) 
     {
       handle->errnum = NODEUPDOWN_ERR_CONNECT;
@@ -365,6 +354,9 @@ _low_timeout_connect(nodeupdown_t handle,
     }
   else if (ret < 0 && errno == EINPROGRESS) 
     {
+      fd_set rset, wset;
+      struct timeval tval;
+
       FD_ZERO(&rset);
       FD_SET(sockfd, &rset);
       FD_ZERO(&wset);
@@ -378,7 +370,7 @@ _low_timeout_connect(nodeupdown_t handle,
           goto cleanup;
         }
 
-      if (ret == 0) 
+      if (!ret) 
         {
           handle->errnum = NODEUPDOWN_ERR_TIMEOUT;
           goto cleanup;
@@ -387,6 +379,8 @@ _low_timeout_connect(nodeupdown_t handle,
         {
           if (FD_ISSET(sockfd, &rset) || FD_ISSET(sockfd, &wset)) 
             {
+              int len, error;
+
               len = sizeof(int);
               
               if (getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &error, &len) < 0) 
@@ -426,8 +420,10 @@ _low_timeout_connect(nodeupdown_t handle,
 }
 
 int 
-nodeupdown_load_data(nodeupdown_t handle, const char *hostname, 
-                     int port, int timeout_len, 
+nodeupdown_load_data(nodeupdown_t handle, 
+                     const char *hostname, 
+                     int port, 
+                     int timeout_len, 
                      char *reserved)
 {
   struct nodeupdown_confdata cd;
@@ -455,9 +451,15 @@ nodeupdown_load_data(nodeupdown_t handle, const char *hostname,
   if (nodeupdown_ganglia_clusterlist_init(handle) < 0)
     goto cleanup;
 
-  port = (port <= 0 && cd.port_found) ? cd.port : port;
+  if (port <= 0)
+    {
+      if (cd.port_found)
+        port = cd.port;
+      else
+        port = nodeupdown_ganglia_get_default_port(handle);
+    }
   
-  if (!hostname && cd.hostnames_found > 0) 
+  if (!hostname && cd.hostnames_found) 
     {
       ListIterator itr = NULL;
       char *str;
@@ -469,8 +471,7 @@ nodeupdown_load_data(nodeupdown_t handle, const char *hostname,
         {
           if ((fd = _low_timeout_connect(handle, 
                                          str, 
-                                         port, 
-                                         NODEUPDOWN_GANGLIA_DEFAULT_PORT)) >= 0) 
+                                         port)) >= 0) 
             break;
         }
 
@@ -479,12 +480,25 @@ nodeupdown_load_data(nodeupdown_t handle, const char *hostname,
     }
   else 
     {
-      fd = _low_timeout_connect(handle, 
-                                hostname, 
-                                port, 
-                                NODEUPDOWN_GANGLIA_DEFAULT_PORT);
-    }
+      char hostnamebuf[NODEUPDOWN_MAXHOSTNAMELEN+1];
+      char *hostnamePtr;
 
+      if (!hostname)
+        {
+          memset(hostnamebuf, '\0', NODEUPDOWN_MAXHOSTNAMELEN+1);
+          if (gethostname(hostnamebuf, NODEUPDOWN_MAXHOSTNAMELEN) < 0)
+            {
+              handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+              goto cleanup;
+            }
+          hostnamePtr = hostnamebuf;
+        }
+      else
+        hostnamePtr = (char *)hostname;
+
+      fd = _low_timeout_connect(handle, hostnamePtr, port);
+    }
+  
   if (fd < 0)
     goto cleanup;
 
@@ -500,8 +514,13 @@ nodeupdown_load_data(nodeupdown_t handle, const char *hostname,
       goto cleanup;
     }
 
-  timeout_len = (timeout_len <= 0 && cd.timeout_len_found > 0) ? 
-    cd.timeout_len : timeout_len;
+  if (timeout_len <= 0)
+    {
+      if (cd.timeout_len_found)
+        timeout_len = cd.timeout_len;
+      else
+        timeout_len = NODEUPDOWN_TIMEOUT_LEN;
+    }
 
   if (nodeupdown_ganglia_get_gmond_data(handle, fd, timeout_len) < 0)
     goto cleanup;
@@ -697,7 +716,7 @@ _is_node(nodeupdown_t handle, const char *node, int up_or_down)
   if ((ret = nodeupdown_ganglia_clusterlist_is_node_discovered(handle, node)) < 0)
     return -1;
 
-  if (ret == 0) 
+  if (!ret) 
     {
       handle->errnum = NODEUPDOWN_ERR_NOTFOUND;
       return -1;

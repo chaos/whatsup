@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_ganglia.h,v 1.1 2005-04-01 21:29:02 achu Exp $
+ *  $Id: nodeupdown_ganglia.h,v 1.2 2005-04-02 01:30:29 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -28,6 +28,8 @@
 #define _NODEUPDOWN_GANGLIA_H
 
 #define NODEUPDOWN_GANGLIA_DEFAULT_PORT  8649
+
+int nodeupdown_ganglia_get_default_port(nodeupdown_t handle);
 
 int nodeupdown_ganglia_get_gmond_data(nodeupdown_t handle, int fd, int timeout_len);
 
