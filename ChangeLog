@@ -31,6 +31,11 @@
 	_load_masterlist_data): Move some code into
 	nodeupdown_masterlist_finish.
 
+	* man/nodeupdown_masterlist.conf.5.in: New file.
+
+	* man/nodeupdown_load_data.3, man/libnodeupdown.3.in: Modified to
+	list new manpage.
+
 	* whatsup.spec.in: Fixed typo.
 
 	* configure.ac: Changed default masterlist file to

@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: nodeupdown_load_data.3.in,v 1.6 2003-11-07 18:28:58 achu Exp $
+\."$Id: nodeupdown_load_data.3.in,v 1.7 2003-11-08 17:41:29 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -140,3 +140,6 @@ An internal system error has occurred.
 libnodeupdown(3), nodeupdown_handle_create(3),
 nodeupdown_handle_destroy(3), nodeupdown_errnum(3),
 nodeupdown_strerror(3), nodeupdown.conf(5)
+.if @WITH_MASTERLIST@ \{
+nodeupdown_masterlist.conf(5)
+\}
