@@ -1,3 +1,32 @@
+2003-03-?? Albert Chu <chu11@llnl.gov>
+	   - updated library to use new genders_testnode() function
+	   - added corner case check for NODEUPDOWN_ERR_NULLPTR 
+	     possibility, and appropriate error handling for it.
+	   - renamed nodeupdown_get_hostlist_alternate_names() and
+	             nodeupdown_get_list_alternate_names() into
+	             nodeupdown_convert_hostlist_to_altnames() and
+	             nodeupdown_convert_list_to_altnames() respectively.
+	   - added len parameter to nodeupdown_convert_list_to_altnames()
+	   - removed library's dependence on hostlist structures
+	     as part of the API interface.  Did so by placing
+	     the following in an NODEUPDOWN_HOSTLIST_API option.
+	     - int nodeupdown_get_up_nodes_hostlist();
+	     - int nodeupdown_get_down_nodes_hostlist();
+	     - int nodeupdown_convert_hostlist_to_altnames();
+           - Added the following new functions
+	     - nodeupdown_get_up_nodes_string()
+	     - nodeupdown_get_down_nodes_string()
+	     - nodeupdown_get_up_nodes_string_altnames()
+	     - nodeupdown_get_down_nodes_string_altnames()
+	     - nodeupdown_get_up_nodes_list_altnames()
+	     - nodeupdown_get_down_nodes_list_altnames()
+	     - nodeupdown_convert_string_to_altnames()
+	   - Added the following functions as option hostlist API 
+	     functions:
+	     - int nodeupdown_get_up_nodes_hostlist_altnames();
+	     - int nodeupdown_get_down_nodes_hostlist_altnames();
+	
+
 2003-03-07 Albert Chu <chu11@llnl.gov>
            - added manpages for libnodeupdown
 	   - fixed errnum output order in libnodeupdown.
