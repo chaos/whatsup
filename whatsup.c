@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.1.1.1 2003-02-19 19:27:33 achu Exp $
+ * $Id: whatsup.c,v 1.2 2003-02-20 01:40:17 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/whatsup.c,v $
  *    
  */
@@ -19,6 +19,11 @@
 #include <sys/param.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+
+#ifdef WHATSUP_DEBUG
+#include <mcheck.h>
+#endif
+
 
 #include "hostlist.h"
 #include "nodeupdown.h"
@@ -170,14 +175,15 @@ static void cleanup_struct_arginfo(struct arginfo *arginfo) {
     free(arginfo->genders_filename);
   }
   if (arginfo->gmond_hostname != NULL) {
-    free(arginfo->genders_filename);
+    free(arginfo->gmond_hostname);
   }
   if (arginfo->gmond_ip != NULL) {
-    free(arginfo->genders_filename);
+    free(arginfo->gmond_ip);
   }
   if (arginfo->nodes != NULL) {
     hostlist_destroy(arginfo->nodes);
   }
+  free(arginfo);
 }
 
 /* cmdline_parse
@@ -532,6 +538,7 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
   }
   memset(debug_buffer_ptr, '\0', debug_buffer_len);
 
+  /* loop until the buffer is large enough */
   while (hostlist_ranged_string(arginfo->nodes, 
 				debug_buffer_len, 
 				debug_buffer_ptr) == -1) {
@@ -697,11 +704,14 @@ int main(int argc, char **argv) {
   hostlist_t nodes = NULL;
   hostlist_t alternate_nodes = NULL;
 
+#ifdef WHATSUP_DEBUG
+  mtrace();
+#endif
+
   if ((arginfo = (struct arginfo *)malloc(sizeof(struct arginfo))) == NULL) {
     output_error("out of memory", NULL);
     goto cleanup;
   }
-  
 
   if (initialize_struct_arginfo(arginfo) != 0) {
     output_error("initialize_struct_arginfo", NULL);

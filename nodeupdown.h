@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown.h,v 1.1.1.1 2003-02-19 19:27:33 achu Exp $
+ *  $Id: nodeupdown.h,v 1.2 2003-02-20 01:40:17 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/nodeupdown.h,v $
  *    
  */
@@ -32,9 +32,14 @@
 #define NODEUPDOWN_ERR_ADDRESS           4 /* network address error */
 #define NODEUPDOWN_ERR_NETWORK           5 /* network error */
 #define NODEUPDOWN_ERR_LOAD              6 /* data not loaded */
-#define NODEUPDOWN_ERR_PARAMETERS        7 /* incorrect parameters passed in */
-#define NODEUPDOWN_ERR_OUTMEM            8 /* out of memory */
-#define NODEUPDOWN_ERR_INTERNAL          9 /* internal system error */
+#define NODEUPDOWN_ERR_OVERFLOW          7 /* overflow on list passed in */
+#define NODEUPDOWN_ERR_PARAMETERS        8 /* incorrect parameters passed in */
+#define NODEUPDOWN_ERR_OUTMEM            9 /* out of memory */
+#define NODEUPDOWN_ERR_NODE_CONFLICT    10 /* conflict between gmond & genders */
+#define NODEUPDOWN_ERR_GENDERS          11 /* internal genders error */
+#define NODEUPDOWN_ERR_GANGLIA          12 /* internal ganglia error */
+#define NODEUPDOWN_ERR_HOSTLIST         13 /* internal hostlist error */
+#define NODEUPDOWN_ERR_INTERNAL         14 /* internal system error */
 
 #define NODEUPDOWN_ERR_MIN               NODEUPDOWN_ERR_SUCCESS
 #define NODEUPDOWN_ERR_MAX               NODEUPDOWN_ERR_INTERNAL
@@ -100,27 +105,31 @@ int nodeupdown_dump(nodeupdown_t handle, FILE *stream);
 
 /* nodeupdown_get_up_nodes_hostlist
  * - retrieve a hostlist of up nodes
+ * - hostlist assumed to be pre-allocated
  * - returns 0 on success, -1 on error
  */
 int nodeupdown_get_up_nodes_hostlist(nodeupdown_t handle, hostlist_t hl);
 
 /* nodeupdown_get_down_nodes_hostlist
  * - retrieve a hostlist of down nodes
+ * - hostlist assumed to be pre-allocated
  * - returns 0 on success, -1 on error
  */
 int nodeupdown_get_down_nodes_hostlist(nodeupdown_t handle, hostlist_t hl);
 
 /* nodeupdown_get_up_nodes_list
  * - retrieve a list of up nodes
+ * - list assumed to be preallocated
  * - returns number of nodes copied on success, -1 on error
  */
-int nodeupdown_get_up_nodes_list(nodeupdown_t handle, char **list);
+int nodeupdown_get_up_nodes_list(nodeupdown_t handle, char **list, int len);
 
 /* nodeupdown_get_down_nodes_list
  * - retrieve a list of down nodes
+ * - list assumed to be preallocated
  * - returns number of nodes copied on success, -1 on error
  */
-int nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list);
+int nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len);
 
 /* nodeupdown_is_node_up
  * - check if a node is up
@@ -136,6 +145,7 @@ int nodeupdown_is_node_down(nodeupdown_t handle, char *node);
 
 /* nodeupdown_get_hostlist_alternate_names
  * - converts the hostlist to alternate names
+ * - hostlists assumed to be preallocated
  * - returns 0 on success, -1 on error
  */
 int nodeupdown_get_hostlist_alternate_names(nodeupdown_t handle, 
@@ -144,6 +154,7 @@ int nodeupdown_get_hostlist_alternate_names(nodeupdown_t handle,
 
 /* nodeupdown_get_list_alternate names
  * - converts the list to alternate names
+ * - lists assumed to be preallocated
  * - returns 0 on success, -1 on error
  */
 int nodeupdown_get_list_alternate_names(nodeupdown_t handle, 
