@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.3 2003-02-26 01:31:27 achu Exp $
+ * $Id: nodeupdown.c,v 1.4 2003-02-26 16:10:21 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -28,7 +28,6 @@
 struct nodeupdown {
   int errnum;
   char *genders_filename;
-  char *gmond_hostname;
   char *gmond_ip;
   int gmond_port;
   hostlist_t gmond_nodes;
