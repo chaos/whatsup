@@ -1,3 +1,8 @@
+2003-08-13  Albert Chu  <chu11@llnl.gov>
+
+	* src/libnodeupdown/nodeupdown.h.in: Remove nodeupdown_dump
+	prototype, which was removed from nodeupdown.c a long time ago.
+
 2003-08-05  Albert Chu  <chu11@llnl.gov>
 
 	* ChangeLog: Reformated to conform to GNU standards
