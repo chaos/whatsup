@@ -1,6 +1,5 @@
 2003-04-29 Albert Chu <chu11@llnl.gov>
-	- fixed release number in manpages
-	- fixed lack of 'const' in manpages as well as other man page typos
+	- fixed variety of minor issues in manpages
 	- fixed potential memory leak in whatsup
 
 2003-04-24 Albert Chu <chu11@llnl.gov>
