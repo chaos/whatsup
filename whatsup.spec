@@ -1,7 +1,7 @@
-# $Id: whatsup.spec,v 1.3 2003-02-25 01:44:37 achu Exp $
+# $Id: whatsup.spec,v 1.4 2003-02-25 02:16:29 achu Exp $
 
 Name:		whatsup
-Version:	0.0
+Version:	1.0
 Release:	1
 
 Summary:	whatsup
