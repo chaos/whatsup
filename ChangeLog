@@ -1,6 +1,9 @@
 2003-02-28 Albert Chu <chu11@llnl.gov>
            - added manpages for libnodeupdown
 	   - fixed errnum output order in libnodeupdown.
+	   - added nodeupdown_errormsg()
+	   - removed unnecessary header files from libnodeupdown
+	   - moved defines from header files to source file
            - tagged whatsup-1-0-2
 
 2003-02-24  Albert Chu  <chu11@llnl.gov>
