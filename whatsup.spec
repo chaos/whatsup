@@ -1,4 +1,4 @@
-# $Id: whatsup.spec,v 1.23 2003-05-20 17:22:40 achu Exp $
+# $Id: whatsup.spec,v 1.24 2003-05-23 22:34:34 achu Exp $
 
 Name:           whatsup
 Version:        1.0
@@ -20,7 +20,7 @@ Requires:       ganglia-monitor-core-lib
 
 %description
 whatsup is a tool that lists which nodes are currently up or down in a
-cluster.  It determines which nodes are up or down bsaed on
+cluster.  It determines which nodes are up or down based on
 information gathered from genders and ganglia.
 
 The nodeupdown library is a C library that allows users to 
