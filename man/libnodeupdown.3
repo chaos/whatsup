@@ -1,0 +1,61 @@
+\."#################################################################
+\."$Id: libnodeupdown.3,v 1.1 2003-02-28 01:59:25 achu Exp $
+\."by Albert Chu <chu11@llnl.gov>
+\."#################################################################
+.\"
+.TH LIBNODEUPDOWN 3 "Release 1.1" "LLNL" "LIBNODEUPDOWN"
+.SH NAME
+libnodeupdown \- a library of functions to determine if a node is up or down
+.SH SYNOPSIS
+.B #include <nodeupdown.h>
+.br
+.B #include <hostlist.h>
+.sp
+.BI "nodeupdown_t nodeupdown_create(void);"
+.sp
+.BI "int nodeupdown_load_data(nodeupdown_t handle, char *genders_filename, char *gmond_hostname, char *gmond_ip, int gmond_port);"
+.sp
+.BI "int nodeupdown_destroy(nodeupdown_t handle);"
+.sp
+.BI "int nodeupdown_errnum(nodeupdown_t handle);"
+.sp
+.BI "char *nodeupdown_strerror(int errnum);"
+.sp
+.BI "void nodeupdown_perror(nodeupdown_t handle, char *msg);"
+.sp
+.BI "int nodeupdown_dump(nodeupdown_t handle, FILE *stream);"
+.sp
+.BI "int nodeupdown_get_up_nodes_hostlist(nodeupdown_t handle, hostlist_t hl);"
+.sp
+.BI "int nodeupdown_get_down_nodes_hostlist(nodeupdown_t handle, hostlist_t hl);"
+.sp
+.BI "int nodeupdown_get_up_nodes_list(nodeupdown_t handle, char **list, int len);"
+.sp
+.BI "int nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len);"
+.sp
+.BI "int nodeupdown_is_node_up(nodeupdown_t handle, char *node);"
+.sp
+.BI "int nodeupdown_is_node_down(nodeupdown_t handle, char *node);"
+.sp
+.BI "int nodeupdown_get_hostlist_alternate_names(nodeupdown_t handle, hostlist_t src, hostlist_t dest);"
+.sp
+.BI "int nodeupdown_get_list_alternate_names(nodeupdown_t handle, char **src, char **dest);"
+.sp
+.BI "int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list);"
+.sp
+.BI "int nodeupdown_nodelist_clear(nodeupdown_t handle, char **list);"
+.sp
+.BI "int nodeupdown_nodelist_destroy(nodeupdown_t handle, char **list);"
+.br
+.SH DESCRIPTION
+The nodeupdown library functions are a set of functions that interacts with
+genders and ganglia to determine if a node is up or down.
+For instructions on each of the functions, please see the comments written
+in /usr/include/nodeupdown.h and /usr/include/hostlist.h.
+.br
+.SH FILES
+/usr/include/nodeupdown.h
+.br
+/usr/include/hostlist.h
+.SH "SEE ALSO"
+libgenders(3)

@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: whatsup.1,v 1.2 2003-02-26 02:06:38 achu Exp $
+\."$Id: whatsup.1,v 1.3 2003-02-28 01:59:25 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -20,13 +20,10 @@ information gathered from genders and ganglia.
 will check on the status of every node in the cluster unless
 specific nodes are listed at the command line.  The nodes can be 
 listed in hostlist format, comma separated lists, or 
-space separated lists.  What information is listed and how it
+space separated lists.  See the section below on HOST RANGES
+for instructions on how to list hosts in hostlist format.
+What information is listed and how it
 is listed is dependent on the options listed below.
-
-As a reminder to the reader, some shells will interpret brackets
-('[' and ']') for pattern matching.  Depending on your shell, it may 
-be necessary to enclose hostlist formatted lists within quotes.  See
-the examples below for details.
 .br
 .SH OPTIONS
 .TP
@@ -68,6 +65,37 @@ List nodes in space separated list
 .TP
 .B \-a, \-\-altnames"
 List nodes by alternate names (default=off)
+.SH "HOST RANGES"
+As noted in sections above,
+.B whatsup
+accepts ranges of hostnames in
+the general form: prefix[n-m,l-k,...], where n < m and l < k, etc.,
+as an alternative to explicit lists of hosts.  This form should not
+be confused with regular expression character classes (also denoted
+by ``[]''). For example, foo[19] does not represent foo1 or foo9, but
+rather represents a degenerate range: foo19.
+
+This range syntax is meant
+only as a convenience on clusters with a prefixNN naming convention and
+specification of ranges should not be considered necessary -- the list
+foo1,foo9 could be specified as such, or by the range foo[1,9].
+
+Some examples of range usage follow:
+
+List all nodes among foo01,foo02,...,foo05 that are up and down 
+    whatsup foo[01-05]
+
+List all nodes among foo7,foo9,foo10 that are up and down
+    whatsup foo[7,9-10]
+
+As a reminder to the reader, some shells will interpret brackets
+('[' and ']') for pattern matching.  Depending on your shell, it may 
+be necessary to enclose hostlist formatted lists within quotes.  For 
+example, the above two examples would be execuated as:
+
+    whatsup "foo[01-05]"
+    whatsup "foo[7,9-10]"
+
 .SH "EXAMPLES"
 .LP
 List all nodes that are up and down.
@@ -77,13 +105,13 @@ List all nodes that are down
      whatsup -d
 .LP
 List all nodes among foo[0-20] that are down
-     whatsup -d "foo[0-20]"
+     whatsup -d foo[0-20]
 .LP
 List all nodes that are up and down by their alternate names
      whatsup -a
 .LP
 List all nodes among foo[5-25] that are up by their alternate names
-     whatsup -u -a "foo[5-25]"
+     whatsup -u -a foo[5-25]
 .LP
 List all nodes that are up in comma separated lists.	
      whatsup -u -c
@@ -92,6 +120,8 @@ List all nodes that are up among the nodes foo2, foo4, and foo8
      whatsup -u foo2, foo4, foo8
 .SH "FILES"
 /usr/bin/whatsup
+.SH "SEE ALSO"
+libgenders(3), libnodeupdown(3)
 .SH "ORIGIN"
 Developed by Albert Chu <chu11@llnl.gov> on LLNL's Linux 
 clusters.  This software is open source and distributed under
