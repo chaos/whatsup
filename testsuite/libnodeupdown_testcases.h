@@ -1,5 +1,5 @@
 /*
- * $Id: libnodeupdown_testcases.h,v 1.5 2003-03-11 20:18:46 achu Exp $
+ * $Id: libnodeupdown_testcases.h,v 1.6 2003-03-11 23:04:54 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/testsuite/libnodeupdown_testcases.h,v $
  *    
  */
@@ -175,7 +175,7 @@ struct {
   {IS_NOT_NULL, IS_NOT_NULL, IS_ZERO,           EXECUTE,        -1, NODEUPDOWN_ERR_PARAMETERS},
   {IS_NOT_NULL, IS_NULL,     IS_POSITIVE_SMALL, EXECUTE,        -1, NODEUPDOWN_ERR_PARAMETERS},
   {IS_NOT_NULL, IS_NOT_NULL, IS_POSITIVE_SMALL, EXECUTE,        -1, NODEUPDOWN_ERR_OVERFLOW  },
-  {-1, -1, -1, -1, -1},
+  {-1, -1, -1, -1, -1, -1},
 };
 
 /* nodeupdown_get_up_nodes_list(), nodeupdown_get_down_nodes_list(),
@@ -214,7 +214,7 @@ struct {
   {IS_NOT_NULL, IS_NOT_NULL, IS_POSITIVE_SMALL, EXECUTE,        -1, NODEUPDOWN_ERR_OVERFLOW  }, 
   {IS_NOT_NULL, IS_NULL,     IS_POSITIVE_LARGE, EXECUTE,        -1, NODEUPDOWN_ERR_PARAMETERS},
   {IS_NOT_NULL, IS_NOT_NULL, IS_POSITIVE_LARGE, EXECUTE,        -1, NODEUPDOWN_ERR_PARAMETERS},
-  {-1, -1, -1, -1, -1},
+  {-1, -1, -1, -1, -1, -1},
 };
 
 #ifdef NODEUPDOWN_HOSTLIST_API
