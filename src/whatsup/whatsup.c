@@ -1,5 +1,5 @@
 /*
- * $Id: whatsup.c,v 1.39 2003-05-16 21:45:56 achu Exp $
+ * $Id: whatsup.c,v 1.40 2003-05-23 01:03:07 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
@@ -8,12 +8,9 @@
 #include <ganglia.h>
 #include <gendersllnl.h>
 #include <getopt.h>
-#include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
 #include <sys/types.h>
 
 #include "hostlist.h"
@@ -27,9 +24,6 @@
 extern char *optarg;
 extern int optind, opterr, optopt;
 
-/* gethostbyname */
-extern int h_errno;
-
 /********************************
  * Definitions                  *
  ********************************/
@@ -41,10 +35,6 @@ extern int h_errno;
 
 #define RANGED_STRING        0
 #define DERANGED_STRING      1
-
-#ifndef MAXHOSTNAMELEN
-#define MAXHOSTNAMELEN 64
-#endif
 
 /* whatsup_output_type
  * - indicates if output should be nodes that are up or down
@@ -63,6 +53,7 @@ enum whatsup_list_type {WHATSUP_HOSTLIST,
 /* struct arginfo
  * - carries information about args passed in from the command line
  * genders_filename - filename of genders file
+ * gmond_hostname - hostname of gmond server
  * gmond_ip - ip address of gmond server
  * gmond_port - port of gmond server
  * output_type - what output should be dumped to screen (up/down)
@@ -72,6 +63,7 @@ enum whatsup_list_type {WHATSUP_HOSTLIST,
  */
 struct arginfo {
   char *genders_filename; 
+  char *gmond_hostname;
   char *gmond_ip;         
   int gmond_port;         
   enum whatsup_output_type output_type;
@@ -164,11 +156,10 @@ static void err_usage(char *msg) {
  * - output error statement
  */
 static void output_error(char *msg, char *errno_msg) {
-  if (msg != NULL && errno_msg != NULL)
-    fprintf(stderr, "whatsup error: %s, %s\n", msg, errno_msg);
-
-  if (msg != NULL && errno_msg == NULL)
+  if (errno_msg == NULL)
     fprintf(stderr, "whatsup error: %s\n", msg);
+
+  fprintf(stderr, "whatsup error: %s, %s\n", msg, errno_msg);
 }
 
 /* initialize_struct_arginfo
@@ -176,6 +167,7 @@ static void output_error(char *msg, char *errno_msg) {
  */
 static int initialize_struct_arginfo(struct arginfo *arginfo) {
   arginfo->genders_filename = NULL;
+  arginfo->gmond_hostname = NULL;
   arginfo->gmond_ip = NULL;
   arginfo->gmond_port = 0;
   arginfo->output_type = WHATSUP_UP_AND_DOWN;
@@ -192,9 +184,7 @@ static void cleanup_struct_arginfo(struct arginfo *arginfo) {
   
   free(arginfo->genders_filename);
   free(arginfo->gmond_ip);
-  
   hostlist_destroy(arginfo->nodes);
-
   free(arginfo);
 }
 
@@ -312,38 +302,17 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
               " --gmond_hostname ('o') or --gmond_ip ('i') options");
   }
   else if (oopt == 1) {
-    /* gmond hostname was provided, must determine IP address */
-
-    struct hostent *hptr;
-
-    if ((hptr = gethostbyname(hostname)) == NULL) {
-      output_error("gethostbyname() error", (char *)hstrerror(h_errno));
-      return -1;
-    }
-
-    if ((arginfo->gmond_ip = (char *)malloc(INET_ADDRSTRLEN+1)) == NULL) {
+    if ((arginfo->gmond_hostname = strdup(hostname)) == NULL) {
       output_error("out of memory", NULL);
-      return -1;
-    }
-    memset(arginfo->gmond_ip, '\0', INET_ADDRSTRLEN+1);
-
-    if (inet_ntop(AF_INET, 
-                  (void *)hptr->h_addr, 
-                  arginfo->gmond_ip, 
-                  INET_ADDRSTRLEN+1) == NULL) {
-      output_error("inet_ntop() error", strerror(errno));
       return -1;
     }
   }
   else if (iopt == 1) {
-    /* gmond ip address was provided, no need to bother with hostname */
-
     if ((arginfo->gmond_ip = strdup(ip)) == NULL) {
       output_error("out of memory", NULL);
       return -1;
     }
   }
-  /* else gmond_ip == NULL, default in nodeupdown is used */
 
   if (popt > 1)
     err_usage("you can only specify --gmond_port ('-p') once");
@@ -500,11 +469,11 @@ static int cmdline_parse(struct arginfo *arginfo, int argc, char **argv) {
  */
 char * get_hostlist_string(hostlist_t hl, int which) {
   char *str = NULL;
-  int ret, str_len;
+  int ret, str_len = 0;
 
   do {
     free(str);
-    str_len = WHATSUP_BUFFERLEN;
+    str_len += WHATSUP_BUFFERLEN;
     if ((str = (char *)malloc(str_len)) == NULL) {
       output_error("out of memory", NULL);
       return NULL;
@@ -710,7 +679,6 @@ int get_up_or_down_nodes(struct arginfo *arginfo,
       goto cleanup;
   }
   else {
-    /* get all up or down nodes */
     if (get_all_up_or_down_nodes(arginfo, 
                                  output_type, 
                                  handle, 
@@ -811,7 +779,7 @@ int main(int argc, char **argv) {
 
   if (nodeupdown_load_data(handle, 
                            arginfo->genders_filename, 
-                           NULL, 
+                           arginfo->gmond_hostname, 
                            arginfo->gmond_ip, 
                            arginfo->gmond_port,
                            0) == -1) {
@@ -875,7 +843,6 @@ int main(int argc, char **argv) {
 
   cleanup_struct_arginfo(arginfo);
   (void)nodeupdown_handle_destroy(handle);
-
   free(up_nodes);
   free(down_nodes);
 
@@ -885,7 +852,6 @@ int main(int argc, char **argv) {
 
   cleanup_struct_arginfo(arginfo);
   (void)nodeupdown_handle_destroy(handle);
-
   free(up_nodes);
   free(down_nodes);
 

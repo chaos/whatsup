@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.50 2003-05-23 00:32:08 achu Exp $
+ * $Id: nodeupdown.c,v 1.51 2003-05-23 01:03:07 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -1051,7 +1051,7 @@ int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list) {
     return -1;
   }
 
-  if ((maxnodelen = genders_getmaxnodlen(handle->genders_handle)) == -1) {
+  if ((maxnodelen = genders_getmaxnodelen(handle->genders_handle)) == -1) {
     handle->errnum = NODEUPDOWN_ERR_GENDERS;
     return -1;
   }
@@ -1090,7 +1090,7 @@ int nodeupdown_nodelist_clear(nodeupdown_t handle, char **list) {
     return -1;
   }
 
-  if ((maxnodelen = genders_getmaxnodlen(handle->genders_handle)) == -1) {
+  if ((maxnodelen = genders_getmaxnodelen(handle->genders_handle)) == -1) {
     handle->errnum = NODEUPDOWN_ERR_GENDERS;
     return -1;
   }
