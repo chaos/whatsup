@@ -1,6 +1,14 @@
 2003-12-09  Albert Chu  <chu11@llnl.gov>
 
 	* man/whatsup.1.in: Cleaned up wording.
+
+	* src/libdotconf/dotconf.h: Added errors count to configfile_t.
+
+	* src/libnodeupdown/nodeupdown.c (_cb_error): New function.
+
+	* src/libnodeupdown/nodeupdown.c (_read_conffile): Added support
+	of new errors count variable and error out if any errors occurred
+	during file parsing.
 	
 2003-12-08  Albert Chu  <chu11@llnl.gov>
 

@@ -145,6 +145,7 @@ struct configfile_t
 	/* ------ some callbacks for interactivity -------------------------------------------------- */
 	dotconf_errorhandler_t 		errorhandler;
 	dotconf_contextchecker_t 	contextchecker;
+	unsigned int                    errors;
 
 	int (*cmp_func)(const char *, const char *, size_t);
 };

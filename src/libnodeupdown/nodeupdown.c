@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.89 2003-12-09 01:37:57 achu Exp $
+ * $Id: nodeupdown.c,v 1.90 2003-12-09 18:38:19 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -155,6 +155,13 @@ int nodeupdown_handle_destroy(nodeupdown_t handle) {
   return 0;
 }  
 
+static int _cb_error(configfile_t *configfile, int type, 
+                     long dc_errno, const char *msg) {
+  configfile->errors++;
+  return -1;            /* the error handler uses != 0 for an error */
+}
+
+
 /* dotconf gmond_hostname(s) callback function */
 static const char *_cb_gmond_hostnames(command_t *cmd, context_t *ctx) {
   struct nodeupdown_confdata *cd = (struct nodeupdown_confdata *)cmd->option->info;
@@ -227,7 +234,7 @@ static int _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd) {
 #endif
     LAST_OPTION
   };
-  int ret = -1;
+  int rv, ret = -1;
 
   /* NODEUPDOWN_CONF_FILE defined in config.h */
 
@@ -240,8 +247,12 @@ static int _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd) {
     goto cleanup;
   }
 
+  /* Setup error handler */
+  cf->errorhandler = (dotconf_errorhandler_t)_cb_error;
+  cf->errors = 0;
 
-  if (dotconf_command_loop_until_error(cf) != NULL) {
+  rv = dotconf_command_loop(cf);
+  if (rv == 0 || cf->errors > 0) {
     handle->errnum = NODEUPDOWN_ERR_CONF;
     goto cleanup;
   }
