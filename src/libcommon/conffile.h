@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.h,v 1.1 2004-01-10 00:35:00 achu Exp $
+ *  $Id: conffile.h,v 1.2 2004-01-12 18:58:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -34,7 +34,7 @@
  * 
  * This library parses configuration files in the form:
  *
- * optionname arg1 arg2 arg3
+ * optionname arg1 arg2 arg3 ...
  *
  * Different option names are listed on different lines.  They are
  * separated from their arguments by whitespace.  Each argument is
@@ -49,28 +49,32 @@
  * '#', '"', and '\' characters can be escaped using the '\'
  * character.
  *
- * The '#' character takes precedence over the '"' character in
- * parsing.  Therefore, the following would be a parse error:
+ * The '#' character takes precedence over the '"' and '\' character in
+ * parsing.  For example, the following would be parse errors:
  *
- * optionname    "#"
+ * optionname1   "#"
+ * optionname2   arg1 # my comment \
+ *               arg2
  *
- * The '#' character takes precendence, thus the second '"' character
- * will be ignored.  A parse error occurs because there is no ending
- * quote.  To fix this, the '#' character must be escaped:
+ * In the first example, the '#' character must be escaped.  Because
+ * it is not escaped, the second quotation mark is ignored, and thus
+ * the parser will error out because it only found one quotation mark.
+ * In the second example, the comment character causes the parser to
+ * ignore the continuation character.  Thus, the parser will error out
+ * because "arg2" is not a valid optionname.
  *
- * optionname    "\#"
- *
- * Continuation characters at the end of a line take precedence over
- * escape characters.  Therefore the following results in a parse
- * error:
+ * A continuation character at the end of a line takes precendence
+ * over escape characters.  For example, the following results in a
+ * parse error:
  *
  * optioname     arg1 arg2 \\
- *
+ *               arg3 arg4
+ * 
  * The last '\' character is assumed to be a continuation character,
- * removed, and the next line is read assuming it is a continuation of
- * the previous line.  When the arguments are parsed, it is a assumed
- * a stray '\' exists in the arguments.  To fix this, there must be
- * three '\' characters
+ * and the next line is read assuming it is a continuation of the
+ * previous line.  When the arguments are parsed, it is assumed a
+ * stray '\' exists in the arguments.  To fix this, there must be
+ * three '\' characters.
  *
  * When a parse error with quotes occurs, a PARSE_QUOTE error code is
  * returned.  When a parse error occurs with a '\' character, a
@@ -92,7 +96,10 @@
  * BOOL - 1 argument, returns 1 or 0 
  *      - the following indicate 1 - "1", "y", "yes", "on", "t", "true"  
  *      - the following indicate 0 - "0", "n", "no" "off", "f", "false"  
- * LIST - up to MAX_ARGS arguments, each a string up to MAX_ARGLEN in length
+ * LIST_INT - up to MAX_ARGS integer args
+ * LIST_DOUBLE - up to MAX_ARGS double args
+ * LIST_STRING - up to MAX_ARGS string args, each string up to 
+ *               MAX_ARGLEN in length
  *
  * If an argument is missing a PARSE_NO_ARG error is returned.  If the
  * incorrect number of arguments is listed, PARSE_NUM_ARGS is
@@ -106,7 +113,9 @@
 #define CONFFILE_OPTION_DOUBLE                 0x03
 #define CONFFILE_OPTION_STRING                 0x04
 #define CONFFILE_OPTION_BOOL                   0x05
-#define CONFFILE_OPTION_LIST                   0x06
+#define CONFFILE_OPTION_LIST_INT               0x06
+#define CONFFILE_OPTION_LIST_DOUBLE            0x07
+#define CONFFILE_OPTION_LIST_STRING            0x08
 
 /* LENGTHS
  *
@@ -127,10 +136,6 @@
  * accessed through conffile_errnum(), conffile_strerror(), and
  * conffile_errmsg().  The error code can be set using
  * conffile_seterrnum().
- *
- * A number of error codes can be ignored during parsing.  To
- * determine if an error code is ignorable, use the IS_IGNORABLE_ERROR
- * macro listed below.
  */
 
 #define CONFFILE_ERR_SUCCESS                   0x00
@@ -190,8 +195,12 @@ struct conffile_data {
     double doubleval;
     char string[CONFFILE_MAX_ARGLEN];
     int bool;
-    char list[CONFFILE_MAX_ARGS][CONFFILE_MAX_ARGLEN];
-    int list_len;
+    int intlist[CONFFILE_MAX_ARGS];
+    int intlist_len;
+    double doublelist[CONFFILE_MAX_ARGS];
+    int doublelist_len;
+    char stringlist[CONFFILE_MAX_ARGS][CONFFILE_MAX_ARGLEN];
+    int stringlist_len;
 };
 
 /* conffile_option_func
@@ -247,10 +256,12 @@ typedef int (*conffile_option_func)(char *optionname,
  *     be listed in the configuration file.  Typically this is 0 for not
  *     required, or identical to 'max_count'.
  * 'count_ptr' points to an integer that will be incremented to the
- *     number of times this option has been listed
+ *     number of times this option has been listed in the configuration
+ *     file.
  * 'option_ptr' is a pointer to data that will be passed to the callback
  *     function.  Typically, a buffer pointer is passed.  This parameter
  *     is optional and can be set to NULL.
+ *
  */
 struct conffile_option {
     char *optionname;

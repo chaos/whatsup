@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.3 2004-01-10 00:53:23 achu Exp $
+ *  $Id: conffile.c,v 1.4 2004-01-12 18:58:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -233,7 +233,7 @@ _remove_trailing_whitespace(conffile_t cf, char *linebuf, int linebuflen)
 static int
 _remove_comments(conffile_t cf, char *linebuf, int linebuflen)
 {
-    int i, newlen, comment_remaining_buf = 0;
+    int i, newlen, previous_is_escape = 0, comment_remaining_buf = 0;
     char *temp;
   
     /* Cannot do check like the following:
@@ -252,22 +252,15 @@ _remove_comments(conffile_t cf, char *linebuf, int linebuflen)
             linebuf[i] = '\0';
             newlen--;
         }
-        else if (linebuf[i] == '#') {
+        else if (linebuf[i] == '\\' && previous_is_escape == 0)
+            previous_is_escape++;
+        else if (linebuf[i] == '#' && previous_is_escape == 0) {
             linebuf[i] = '\0';
             comment_remaining_buf++;
             newlen--;
         }
-        else if (linebuf[i] == '\\') {
-            i++;
-            if (i >= linebuflen)
-                break;
-            if (linebuf[i] != '\\'
-                && linebuf[i] != '#'
-                && linebuf[i] != '"') {
-                cf->errnum = CONFFILE_ERR_PARSE_CONTINUATION;
-                return -1;
-            }
-        }
+        else if (previous_is_escape > 0)
+            previous_is_escape = 0;
         i++;
     }
     
@@ -317,31 +310,33 @@ _readline(conffile_t cf, char *linebuf, int linebuflen)
             continue;
         }
 
+        if ((len = _remove_comments(cf, linebuf, len)) < 0)
+            return -1;
+
+        if (len == 0) {
+            cf->line_num = cf->line_count + 1;
+            continue;
+        }
+
+        /* Need to call a second time, for following case
+         *
+         * optionname arg1 \    # my comment
+         *
+         */
+        len = _remove_trailing_whitespace(cf, linebuf, len);
+        if (len == 0) {
+            cf->line_num = cf->line_count + 1;
+            continue;
+        }
+
         if (linebuf[len-1] == '\\') {
             continuation++;
             linebuf[len-1] = '\0'; 
             len--;
-            
-            if ((len = _remove_comments(cf, linebuf, len)) < 0)
-                return -1;
-
-            if (len == 0) {
-                cf->line_num = cf->line_count + 1;
-                continue;
-            }
-            
             continue;
         }
-        else {
-            if ((len = _remove_comments(cf, linebuf, len)) < 0)
-                return -1;
-
-            if (len == 0) {
-                cf->line_num = cf->line_count + 1;
-                continue;
-            }
+        else
             break;
-        }
     }
 
     return len;
@@ -508,7 +503,9 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
           || option->option_type == CONFFILE_OPTION_DOUBLE
           || option->option_type == CONFFILE_OPTION_STRING
           || option->option_type == CONFFILE_OPTION_BOOL
-          || option->option_type == CONFFILE_OPTION_LIST)
+          || option->option_type == CONFFILE_OPTION_LIST_INT
+          || option->option_type == CONFFILE_OPTION_LIST_DOUBLE
+          || option->option_type == CONFFILE_OPTION_LIST_STRING)
          && numargs == 0)) {
         cf->errnum = CONFFILE_ERR_PARSE_ARG_MISSING;
         return -1;
@@ -562,23 +559,35 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
         else
             data.bool = 0;
     }
-    else if (option->option_type == CONFFILE_OPTION_LIST) {
+    else if (option->option_type == CONFFILE_OPTION_LIST_INT) {
+        int i;
+        for (i = 0; i < numargs; i++)
+            data.intlist[i] = atoi(args[i]);
+        data.intlist_len = numargs;
+    }
+    else if (option->option_type == CONFFILE_OPTION_LIST_DOUBLE) {
+        int i;
+        for (i = 0; i < numargs; i++)
+            data.doublelist[i] = strtod(args[i], NULL);
+        data.doublelist_len = numargs;
+    }
+    else if (option->option_type == CONFFILE_OPTION_LIST_STRING) {
         int i;
         for (i = 0; i < numargs; i++) {
-            strncpy(data.list[i], args[i], CONFFILE_MAX_ARGLEN);
-            data.list[i][CONFFILE_MAX_ARGLEN - 1] = '\0';
+            strncpy(data.stringlist[i], args[i], CONFFILE_MAX_ARGLEN);
+            data.stringlist[i][CONFFILE_MAX_ARGLEN - 1] = '\0';
         }
-        data.list_len = numargs;
+        data.stringlist_len = numargs;
     }
 
-    cf->errnum = 0;
+    cf->errnum = CONFFILE_ERR_SUCCESS;
     rv = (option->callback_func)(option->optionname,
                                  option->option_type,
                                  &data,
                                  option->option_ptr,
                                  cf->app_ptr);
     if (rv < 0) {
-        if (cf->errnum == 0)
+        if (cf->errnum == CONFFILE_ERR_SUCCESS)
             cf->errnum = CONFFILE_ERR_PARSE_CALLBACK;
         return -1;
     }
@@ -596,7 +605,7 @@ conffile_parse(conffile_t cf,
                int flags)
 
 {
-    int i, len, retval = -1;
+    int i, j, len, retval = -1;
     char linebuf[CONFFILE_MAX_LINELEN];
 
     if (cf == NULL || cf->magic != CONFFILE_MAGIC)
@@ -612,7 +621,7 @@ conffile_parse(conffile_t cf,
       if (options[i].optionname == NULL
           || strlen(options[i].optionname) >= CONFFILE_MAX_OPTIONNAMELEN
           || options[i].option_type < CONFFILE_OPTION_IGNORE
-          || options[i].option_type > CONFFILE_OPTION_LIST
+          || options[i].option_type > CONFFILE_OPTION_LIST_STRING
           || (options[i].option_type != CONFFILE_OPTION_IGNORE
               && options[i].callback_func == NULL)
           || options[i].max_count < 0
@@ -621,6 +630,16 @@ conffile_parse(conffile_t cf,
           cf->errnum = CONFFILE_ERR_PARAMETERS;
           return -1;
       }
+    }
+
+    /* count_ptr cannot be identical to any other count_ptr */
+    for (i = 0; i < options_len; i++) {
+        for (j = 0; j < options_len; j++) {
+            if (i != j && options[i].count_ptr == options[j].count_ptr) {
+                cf->errnum = CONFFILE_ERR_PARAMETERS;
+                return -1;
+            }
+        }
     }
 
     if (_setup(cf, filename, options, options_len, app_ptr, flags) < 0)
