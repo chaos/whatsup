@@ -2,6 +2,9 @@
 
 	* src/whatsup.com (cmdline_parse): Fixed declaration bug.
 
+	* src/Libnodeupdown/Makefile.am, src/Libnodeupdown/Makefile.PL:
+	Fixed build problems.
+
 2003-12-03  Albert Chu  <chu11@llnl.gov>
 
 	* Re-worked so types are more explicit

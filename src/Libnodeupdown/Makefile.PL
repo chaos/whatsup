@@ -2,8 +2,9 @@ use ExtUtils::MakeMaker;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
 
-# achu: MakeMaker seems quite limited. This hacked up thing is
-# the best I can do right now.  I'm sure there's a better way.
+# achu: MakeMaker is quite limited, and seems to have some screwy
+# things.  This hacked up thing is the best I can do right now.  I'm
+# sure there's a better way.
 
 WriteMakefile(
     'NAME'		=> 'Libnodeupdown',
@@ -14,8 +15,14 @@ WriteMakefile(
        AUTHOR     => 'Albert Chu <chu11@llnl.gov>') : ()),
     # Will not link any libraries that can't be found
     'LIBS'		=> ['-lgenders -lgendersllnl'],
+    # HAVE_CONFIG_H for config.h
     # Undefine VERSION, it collides with VERSION from config.h
-    'DEFINE'		=> '-DHAVE_CONFIG_H -UVERSION', # for config.h
-    'INC'		=> '-I../../config -I../libcommon -I../libdotconf -I../libexpat -I../libnodeupdown',  # for config.h
-    'OBJECT'		=> 'fd.o list.o hostlist.o dotconf.o readdir.o xmlparse.o xmlrole.o xmltok.o nodeupdown.o nodeupdown_masterlist.o',
+    'DEFINE'		=> '-DHAVE_CONFIG_H -UVERSION',
+    'INC'		=> '-I../../config -I../libcommon -I../libdotconf -I../libexpat -I../libnodeupdown',
+     
+    # If you do hostlist.o nodeupdown.o ... etc.  MakeMaker fails.  I don't
+    # know why.  Its the responsibility of the Makefile.am file to copy only
+    # the C files we must use.
+
+    'OBJECT'		=> '$(O_FILES)',
 );
