@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown.conf.5.in,v 1.6 2003-12-29 19:02:01 achu Exp $
+\."$Id: nodeupdown.conf.5.in,v 1.7 2004-01-13 02:45:48 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -32,25 +32,52 @@ nodeupdown.conf \- specify alternate default values to nodeupdown_load_data(3)
 Through a configuration file, system administrators may override the
 statically configured default values in the 
 .BR nodeupdown_load_data(3)
-API function. 
+API function.  Overriding the statically configured default values
+allows tools such as 
+.BR whatsup(1)
+to work without using the --hostname or --port options on the command line.
 
-The configuration file is stored at @NODEUPDOWN_CONF_FILE@.
+By default, the configuration file is stored at @NODEUPDOWN_CONF_FILE@.
 
-An example configuration file is shown below.
+.SH CONFIGURATION OPTIONS
+The following are a list of configuration options that can be
+specified in the configuration file.  Each configuration option must
+be listed on a separate line.  Arguments for an option are separated
+by any amount of whitespace.  Multiple arguments are also separated by
+whitespace.  Comments can specified by using the pound sign ("#")
+character, and lines can be continued on the next using backslash
+("\\").
 
-\."This stinks, but things don't seem to align properly if you
-\."do it the smart way. I'll learn to use groff for real someday.
+.TP
+.I gmond_hostnames  host1 host2 host3 ...
+Specify the gmond hostname to use.  Multiple hostnames can be listed
+up to a maximum of 8.
+.TP
+.I gmond_port       port
+Specify the gmond port.
+.TP
+.I timeout_len      seconds
+Specify the timeout length in seconds.
+
+.if @WITH_HOSTSFILE@ \{
+.TP
+.I hostsfile        path
+Specify the default hostsfile path.
+\}
+
+.if (@WITH_GENDERS@ : @WITH_GENDERSLLNL@) \{
+.TP
+.I gendersfile      path
+Specify the default genders file path.
+\}
+
+.SH EXAMPLE
+
+\."I know this stinks, but things don't seem to align properly if you
+\."do it the smart way.  Someday I'll learn to use groff for real.
 
 .if @WITH_HOSTSFILE@ \{
 # Nodeupdown configuration
-.br
-# gmond_hostnames     localhost host2 host3
-.br
-# gmond_port          8649 
-.br
-# timeout_len         60
-.br
-# hostsfile           /etc/my_hostsfile
 .br
 gmond_hostnames     mymachine1
 .br
@@ -63,14 +90,6 @@ hostsfile           /etc/hostsfile2
 .if (@WITH_GENDERS@ : @WITH_GENDERSLLNL@) \{
 # Nodeupdown configuration
 .br
-# gmond_hostnames     localhost host2 host3
-.br
-# gmond_port          8649 
-.br
-# timeout_len         60
-.br
-# gendersfile         /etc/my_gendersfile
-.br
 gmond_hostnames     mymachine1
 .br
 gmond_port          8689
@@ -80,22 +99,8 @@ timeout_len         30
 gendersfile         /etc/genders2
 \}
 
-The configuration values may be separated by any amount of whitespace
-after the configuration keyword.  Multiple hosts can be specified
-after the gmond_hostnames configuration keyword, up to a maximum of 8.
-Each host must be separated by whitespace.  The user is not required
-to specify all of the configuration keywords.  Comments can be
-specified with a '#'.
-
-If the configuration file does not exist,
-.BR nodeupdown_load_data (3)
-will instead use the statically defined default values.
-
-If there is a parse error in the configuration file, 
-.BR nodeupdown_load_data (3)
-will fail.
 .br
 .SH FILES
 @NODEUPDOWN_CONF_FILE@
 .SH SEE ALSO
-libnodeupdown(3), nodeupdown_load_data(3)
+whatsup(1), libnodeupdown(3), nodeupdown_load_data(3)
