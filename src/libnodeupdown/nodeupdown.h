@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown.h,v 1.2 2003-02-25 23:33:59 achu Exp $
+ *  $Id: nodeupdown.h,v 1.3 2003-02-26 19:38:37 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h,v $
  *    
  */
@@ -53,7 +53,9 @@
 
 #define NODEUPDOWN_BUFFERLEN             65536
 
+#ifndef GENDERS_ALTNAME_ATTRIBUTE
 #define GENDERS_ALTNAME_ATTRIBUTE        "altname"
+#endif
 
 typedef struct nodeupdown *nodeupdown_t;
 
