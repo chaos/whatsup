@@ -1,0 +1,5 @@
+- fix nodeupdown.c 
+  - a variety of "hacks" exist in the code due to the current
+    incomplete libganglia library.  Once libganglia is patched
+    up, nodeupdown.c hacks can be removed.
+	
