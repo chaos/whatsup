@@ -1,5 +1,5 @@
 /*
- * $Id: libnodeupdown_test.c,v 1.11 2003-03-13 19:52:16 achu Exp $
+ * $Id: libnodeupdown_test.c,v 1.12 2003-03-13 20:51:39 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/testsuite/libnodeupdown_test.c,v $
  *    
  */
@@ -85,6 +85,8 @@ void cleanup_test_env(struct test_env *);
 int compare_nodes_to_string(struct test_env *, char *, int);
 int compare_nodes_to_list_helper(struct test_env *, char **, int, int, int, char *);
 int compare_nodes_to_list(struct test_env *, char **, int, int);
+int compare_nodes_to_hostlist_helper(hostlist_t, int, int, char *); 
+int compare_nodes_to_hostlist(struct test_env *, hostlist_t, int);
 int map_nodes_to_char_ptr(struct test_env *, int, char **);
 int start_gmonds(struct test_env *, int);
 int close_gmonds(struct test_env *, int);
@@ -713,7 +715,8 @@ void get_nodes_string_param_test(struct test_env *test_env,
   if (nodeupdown_handle == IS_NOT_NULL) {
     handle = test_env->handle_not_loaded;
   }
-  else if (nodeupdown_load_data == EXECUTE) {
+  
+  if (nodeupdown_load_data == EXECUTE) {
     handle = test_env->handle_loaded;
   }
 
@@ -759,7 +762,8 @@ void get_nodes_list_param_test(struct test_env *test_env,
   if (nodeupdown_handle == IS_NOT_NULL) {
     handle = test_env->handle_not_loaded;
   }
-  else if (nodeupdown_load_data == EXECUTE) {
+  
+  if (nodeupdown_load_data == EXECUTE) {
     handle = test_env->handle_loaded;
   }
 
@@ -802,7 +806,8 @@ void is_node_param_test(struct test_env *test_env,
   if (nodeupdown_handle == IS_NOT_NULL) {
     handle = test_env->handle_not_loaded;
   }
-  else if (nodeupdown_load_data == EXECUTE) {
+  
+  if (nodeupdown_load_data == EXECUTE) {
     handle = test_env->handle_loaded;
   }
 
@@ -840,7 +845,8 @@ void convert_param_test(struct test_env *test_env,
   if (nodeupdown_handle == IS_NOT_NULL) {
     handle = test_env->handle_not_loaded;
   }
-  else if (nodeupdown_load_data == EXECUTE) {
+  
+  if (nodeupdown_load_data == EXECUTE) {
     handle = test_env->handle_loaded;
   }
 
@@ -898,7 +904,8 @@ void nodelist_param_test(struct test_env *test_env,
   if (nodeupdown_handle == IS_NOT_NULL) {
     handle = test_env->handle_not_loaded;
   }
-  else if (nodeupdown_load_data == EXECUTE) {
+  
+  if (nodeupdown_load_data == EXECUTE) {
     handle = test_env->handle_loaded;
   }
 
@@ -939,7 +946,6 @@ void func_test(struct test_env *test_env,
   char **list;
   char *node;
   int len;
-  char buffer[MAXBUFFERLEN];
 
   if (function & GET_STRING_FUNCTIONS) {
     if ((node = (char *)malloc(MAXBUFFERLEN)) == NULL) {
