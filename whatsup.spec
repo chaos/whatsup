@@ -1,16 +1,16 @@
-# $Id: whatsup.spec,v 1.21 2003-05-16 21:50:54 achu Exp $
+# $Id: whatsup.spec,v 1.22 2003-05-19 17:51:43 achu Exp $
 
-Name:		whatsup
-Version:	1.0
-Release:	5
+Name:           whatsup
+Version:        1.0
+Release:        5
 
-Summary:	whatsup
-Group:		Applications/Communications
-License:	GPL
+Summary:        whatsup
+Group:          Applications/Communications
+License:        GPL
 
-BuildRoot:	%{_tmppath}/%{name}-%{version}
+BuildRoot:      %{_tmppath}/%{name}-%{version}
 
-Source0:	%{name}-%{version}.tgz
+Source0:        %{name}-%{version}.tgz
 
 %description
 whatsup is a tool that lists which nodes are currently up or down in a
