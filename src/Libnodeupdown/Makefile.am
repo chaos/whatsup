@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.10 2004-01-16 17:35:22 achu Exp $
+## $Id: Makefile.am,v 1.10.2.1 2004-11-16 21:30:10 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -18,6 +18,19 @@ Makefile.xs: Makefile.PL Libnodeupdown.xs Libnodeupdown.pm
 	cp -f ../libexpat/xmlrole.c .
 	cp -f ../libexpat/xmltok.c .
 	cp -f ../libnodeupdown/*.c .
+# Hacks to make distcheck work
+	if ! test -a Makefile.PL; then \
+		cp $(srcdir)/Makefile.PL .; \
+	fi
+	if ! test -a typemap; then \
+		cp $(srcdir)/typemap .; \
+	fi
+	if ! test -a Libnodeupdown.pm; then \
+		cp $(srcdir)/Libnodeupdown.pm .; \
+	fi
+	if ! test -a Libnodeupdown.xs; then \
+		cp $(srcdir)/Libnodeupdown.xs .; \
+	fi
 	$(PERL) Makefile.PL PREFIX=$(PERL_INSTALL_PREFIX) MAKEFILE=Makefile.xs FIRST_MAKEFILE=Makefile.xs
 
 test: Makefile.xs 
@@ -33,9 +46,13 @@ install-data-local:
 	$(MAKE) -f Makefile.xs pure_install
 
 clean: 
-	if test -a Makefile.xs; then $(MAKE) -f Makefile.xs clean; fi
+	if test -a Makefile.xs; then \
+		$(MAKE) -f Makefile.xs clean; \
+	fi
 	rm -f *.c
 	rm -f *.h
 	rm -f *.o
 	rm -f Makefile.xs
 	rm -f Makefile.xs.old
+
+EXTRA_DIST = Libnodeupdown.pm Libnodeupdown.xs Makefile.PL typemap

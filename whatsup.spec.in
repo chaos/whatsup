@@ -1,20 +1,11 @@
-# $Id: whatsup.spec.in,v 1.16 2004-02-11 22:31:15 achu Exp $
-
-Name:           @PROJECT@
-Version:        @VERSION@
-Release:        @RELEASE@
-
-Summary:        whatsup
-Group:          Applications/Communications
-License:        GPL
-
-BuildRoot:      %{_tmppath}/%{name}-%{version}
-
-Source0:        %{name}-%{version}.tgz
-
-# By default, we'll compile with gendersllnl if nothing else is specified
-# Most of you don't have this library, pick something at the command line :-)
-%{!?_with_nomasterlist: %{!?_with_hostsfile: %{!?_with_genders: %{!?_with_gendersllnl: %define _with_gendersllnl --with-gendersllnl}}}}
+Name:    @PROJECT@
+Version: @VERSION@
+Release: @RELEASE@
+Summary: whatsup node up/down detection utility
+Group: Applications/Communications
+License: GPL
+Source: %{name}-%{version}-%{release}.tgz
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}
 
 %if %{?_with_genders:1}%{!?_with_genders:0}
 Requires:       genders >= 1.2
@@ -24,19 +15,17 @@ Requires:       gendersllnl
 %endif
 
 %description
-whatsup is a tool that lists which nodes are currently up or down in a
-cluster.  It determines which nodes are up or down based on
-information gathered from genders and ganglia.
-
-The nodeupdown library is a C library that allows users to 
-programmatically determine if a node is up or down.
+whatsup is a cluster node up/down detection utility.  Node up/down
+information is calculated based on information gathered from ganglia
+and a master list of cluster nodes.  A C and perl nodeupdown library
+is also supplied.
 
 %prep
-%setup
+%setup -q -n %{name}-%{version}-%{release}
 
 %build
-./bootstrap
-./configure --prefix=/usr --with-perl-install-prefix="$RPM_BUILD_ROOT/usr" \
+%configure --program-prefix=%{?_program_prefix:%{_program_prefix}} \
+        --with-perl-install-prefix="$RPM_BUILD_ROOT/usr" \
         %{?_with_nomasterlist} \
         %{?_without_nomasterlist} \
         %{?_with_hostsfile} \
@@ -58,15 +47,4 @@ rm -rf "$RPM_BUILD_ROOT"
 %defattr(-,root,root,0755)
 %doc AUTHORS COPYING ChangeLog DISCLAIMER INSTALL NEWS README README.expat 
 %doc README.hostsfile_install README.genders_install README.troubleshooting
-%{_bindir}/*
-%{_includedir}/*
-%{_libdir}/*
-/usr/man/man1/
-/usr/man/man3/
-/usr/man/man5/
-/usr/share/man/
-
-
-
-
-
+/

@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.4 2003-11-10 19:09:29 achu Exp $
+## $Id: Makefile.am,v 1.4.2.1 2004-11-16 21:30:10 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -13,6 +13,13 @@ all: Makefile.pm
 	$(MAKE) -f Makefile.pm
 
 Makefile.pm: Makefile.PL
+	# Hacks to make distcheck work
+	if ! test -a Makefile.PL; then \
+		cp $(srcdir)/Makefile.PL .; \
+	fi
+	if ! test -a Nodeupdown.pm; then \
+		cp $(srcdir)/Nodeupdown.pm .; \
+	fi
 	$(PERL) Makefile.PL PREFIX=$(PERL_INSTALL_PREFIX) MAKEFILE=Makefile.pm FIRST_MAKEFILE=Makefile.pm
 
 install: Makefile.pm
@@ -28,3 +35,5 @@ clean:
 	if test -a Makefile.pm; then $(MAKE) -f Makefile.pm clean; fi
 	rm -f Makefile.pm
 	rm -f Makefile.pm.old
+
+EXTRA_DIST = Makefile.PL Nodeupdown.pm

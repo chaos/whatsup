@@ -18,4 +18,7 @@ see the nodeupdown_hostsfile.conf(5) for details and an example.
 
 3)
 
-You're done!  Begin using whatsup(1) to your heart's content.
+Run whatsup on the same node that a non-deaf ganglia daemon is running
+on.  A remote host may be specified using whatsup's '-o' option or by
+setting a nodeupdown configuration file.  See nodeupdown.conf(5) for
+details.

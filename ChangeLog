@@ -1,3 +1,17 @@
+2004-11-16  Albert Chu  <chu11@llnl.gov>
+
+	* whatsup.spec.in, README, README.genders_install,
+	README.hostsfile_install, config/Make-rpm.mk, Makefile.am,
+	man/Makefile.am, src/libnodeupdown/Makefile.am,
+	src/libcommon/Makefile.am, src/libexpact/Makefile.am,
+	src/whatsup/Makefile.am, src/Libnodeupdown/Makefile.am,
+	src/Nodeupdown/Makefile.am: Backport porting, distcheck, and
+	documentation fixes from higher branch.
+
+	* META: Updated for new release.
+
+	* tagged whatsup-1-3-2
+	
 2004-02-11  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/Makefile.am: Compile with _REENTRANT.
