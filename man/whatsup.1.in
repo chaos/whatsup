@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: whatsup.1.in,v 1.9 2003-11-24 16:13:19 achu Exp $
+\."$Id: whatsup.1.in,v 1.10 2003-12-09 16:52:04 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -29,12 +29,8 @@ dependent on the options listed below.
 is configured to work on non-deaf ganglia nodes or nodes in which a
 nodeupdown configuration file points to a non-deaf ganglia server.
 Generally speaking, non-deaf ganglia servers are only executed on
-management nodes, not login or compute nodes.  In order to execute
-.B whatsup
-on a deaf ganglia node, use the --hostname ('o') option
-to force
-.B whatsup
-to contact a management node's ganglia server.
+management nodes, not login or compute nodes.  The user may also
+select a non-deaf ganglia node using the --hostname ('o') option.
 .br
 .SH OPTIONS
 .TP
