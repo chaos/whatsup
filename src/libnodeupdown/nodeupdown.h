@@ -1,5 +1,5 @@
 /*
- *  $Id: nodeupdown.h,v 1.18 2003-04-25 18:54:05 achu Exp $
+ *  $Id: nodeupdown.h,v 1.19 2003-04-25 23:55:56 achu Exp $
  *  $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.h,v $
  *    
  */
@@ -63,9 +63,9 @@ int nodeupdown_handle_destroy(nodeupdown_t handle);
  * - returns 0 on success, -1 on error
  */
 int nodeupdown_load_data(nodeupdown_t handle, 
-                         char *genders_filename, 
-                         char *gmond_hostname, 
-                         char *gmond_ip, 
+                         const char *genders_filename, 
+                         const char *gmond_hostname, 
+                         const char *gmond_ip, 
                          int gmond_port,
                          int timeout_len);
 
@@ -91,7 +91,7 @@ char *nodeupdown_errormsg(nodeupdown_t handle);
 /* nodeupdown_perror
  * - output a message to standard error 
  */
-void nodeupdown_perror(nodeupdown_t handle, char *msg);
+void nodeupdown_perror(nodeupdown_t handle, const char *msg);
 
 /* nodeupdown_dump
  * - output contents stored in the handle
@@ -140,14 +140,14 @@ int nodeupdown_get_down_nodes_list(nodeupdown_t handle,
  * - node must be shortened name of hostname
  * - returns 1 if up, 0 if down, -1 on error
  */
-int nodeupdown_is_node_up(nodeupdown_t handle, char *node);
+int nodeupdown_is_node_up(nodeupdown_t handle, const char *node);
 
 /* nodeupdown_is_node_down
  * - check if a node is down
  * - node must be shortened name of hostname
  * - returns 1 if down, 0 if up, -1 on error
  */
-int nodeupdown_is_node_down(nodeupdown_t handle, char *node);
+int nodeupdown_is_node_down(nodeupdown_t handle, const char *node);
 
 /* nodeupdown_nodelist_create
  * - allocate an array to store node names in
