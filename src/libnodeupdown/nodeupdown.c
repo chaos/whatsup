@@ -1,5 +1,5 @@
 /*
- * $Id: nodeupdown.c,v 1.20 2003-03-14 18:20:51 achu Exp $
+ * $Id: nodeupdown.c,v 1.21 2003-03-14 20:44:33 achu Exp $
  * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
@@ -525,7 +525,7 @@ int nodeupdown_retrieve_gmond_data(nodeupdown_t handle) {
 	  if (error != 0) {
 	    close(sockfd);
 	    errno = error;
-	    handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+	    handle->errnum = NODEUPDOWN_ERR_CONNECT;
 	    return -1;
 	  }
 	}
