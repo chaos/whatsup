@@ -1,5 +1,5 @@
 \."#################################################################
-\."$Id: whatsup.1,v 1.15 2003-07-24 18:20:26 achu Exp $
+\."$Id: whatsup.1,v 1.16 2003-08-06 15:38:11 achu Exp $
 \."by Albert Chu <chu11@llnl.gov>
 \."#################################################################
 .\"
@@ -26,14 +26,15 @@ of hostnames.  What information is listed and how it is listed is
 dependent on the options listed below.
 
 .B whatsup 
-is configured to work on nodes in which ganglia is not setup to be
-deaf.  Generally speaking, non-deaf ganglia nodes are only executed on
+is configured to work on non-deaf ganglia nodes or nodes in which a
+nodeupdown configuration file points to a non-deaf ganglia server.
+Generally speaking, non-deaf ganglia servers are only executed on
 management nodes, not login or compute nodes.  In order to execute
 .B whatsup
-on a deaf ganglia node, use the --hostname ('o') option to force
+on a deaf ganglia node, use the --hostname ('o') or --ip ('i') options
+to force
 .B whatsup
-to contact a management node's gmond daemon instead of the local gmond
-daemon.
+to contact a management node's ganglia server.
 .br
 .SH OPTIONS
 .TP
@@ -134,7 +135,7 @@ List all nodes that are up among the nodes foo2, foo4, and foo8
 .SH "FILES"
 /usr/bin/whatsup
 .SH "SEE ALSO"
-libnodeupdown(3)
+libnodeupdown(3), nodeupdown.conf(5)
 .SH "ORIGIN"
 Developed by Albert Chu <chu11@llnl.gov> on LLNL's Linux clusters.
 This software is open source and distributed under the terms of the
