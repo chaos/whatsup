@@ -1,6 +1,6 @@
 /*
- * $Id: whatsup.c,v 1.4 2003-02-22 01:14:43 achu Exp $
- * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/whatsup.c,v $
+ * $Id: whatsup.c,v 1.1 2003-02-24 19:30:42 achu Exp $
+ * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/whatsup/whatsup.c,v $
  *    
  */
 
@@ -24,8 +24,6 @@
 #include <mcheck.h>
 #endif
 
-
-#include "hostlist.h"
 #include "nodeupdown.h"
 
 /********************************

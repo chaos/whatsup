@@ -1,6 +1,6 @@
 /*
- * $Id: nodeupdown.c,v 1.4 2003-02-21 18:52:22 achu Exp $
- * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/nodeupdown.c,v $
+ * $Id: nodeupdown.c,v 1.1 2003-02-24 19:30:42 achu Exp $
+ * $Source: /g/g0/achu/temp/whatsup-cvsbackup/whatsup/src/libnodeupdown/nodeupdown.c,v $
  *    
  */
 
