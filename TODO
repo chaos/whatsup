@@ -1,2 +1,4 @@
 Allow multiple servers/IP addresses in conf file
 Remove stupid conf file parsing and replace with "dotconf" library.
+Make --with-genders and --with-gendersllnl options
+Fix up spec file to take parameters for proper masterlist type
