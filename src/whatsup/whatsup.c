@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.84 2004-01-14 20:21:03 achu Exp $
+ *  $Id: whatsup.c,v 1.85 2004-01-15 00:04:31 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -102,22 +102,6 @@ _err_exit(char *fmt, ...)
   va_end(ap);
   exit(1);
 }
-
-/* _log10
- * - a simple log 10 function for ints
- */
-static int 
-_log10(int num) 
-{
-  int count = 0;
-
-  if (num > 0) {
-    while ((num /= 10) > 0)
-      count++;
-  }
-
-  return count;
-} 
 
 static void 
 _usage(void) 
@@ -344,23 +328,23 @@ _check_input_nodes(struct winfo *winfo, int up_or_down, char *buf, int buflen)
                     nodeupdown_errormsg(winfo->handle));
       }
     }
-
+    
     if (ret == 1) {
       if (hostlist_push_host(hl, str) == 0)
         _err_exit("_check_input_nodes: hostlist_push_host()");
     }
     free(str);
   }
-
+  
   hostlist_sort(hl);
-
+  
   if (hostlist_ranged_string(hl, buflen, buf) < 0)
     _err_exit("_check_input_nodes: hostlist_ranged_string()");
-
+  
   hostlist_iterator_destroy(iter);
   hostlist_destroy(hl);
 }
-
+ 
 /* _get_all_nodes
  * - get all up or down nodes
  */
@@ -440,27 +424,27 @@ _get_nodes(struct winfo *winfo, int up_or_down, char *buf, int buflen, int *coun
 }
 
 static void
-_output_nodes(struct winfo *winfo, char *buf) 
+_output_nodes(struct winfo *winfo, char *nodebuf) 
 {
   char *ptr;
-  char tbuf[WHATSUP_BUFFERLEN];
+  char tnodebuf[WHATSUP_BUFFERLEN];
   hostlist_t hl = NULL;
 
   if (winfo->list == WHATSUP_HOSTLIST)
-    fprintf(stdout, "%s\n", buf);
+    fprintf(stdout, "%s\n", nodebuf);
   else {
     /* output nodes separated by some break type */
-    memset(tbuf, '\0', WHATSUP_BUFFERLEN);
+    memset(tnodebuf, '\0', WHATSUP_BUFFERLEN);
     
-    if ((hl = hostlist_create(buf)) == NULL)
+    if ((hl = hostlist_create(nodebuf)) == NULL)
       _err_exit("_output_nodes: hostlist_create() error");
 
-    if (hostlist_deranged_string(hl, WHATSUP_BUFFERLEN, tbuf) < 0)
+    if (hostlist_deranged_string(hl, WHATSUP_BUFFERLEN, tnodebuf) < 0)
       _err_exit("_output_nodes: hostlist_deranged_string() error");
 
     /* convert commas to appropriate break types */
     if (winfo->list != WHATSUP_COMMA) {
-      while ((ptr = strchr(tbuf, ',')) != NULL)
+      while ((ptr = strchr(tnodebuf, ',')) != NULL)
         *ptr = (char)winfo->list;
     }
 
@@ -468,9 +452,32 @@ _output_nodes(struct winfo *winfo, char *buf)
     if (winfo->output == UP_AND_DOWN && winfo->list == WHATSUP_NEWLINE)
       fprintf(stdout, "\n");
 
-    fprintf(stdout,"%s\n", tbuf);
+    fprintf(stdout,"%s\n", tnodebuf);
     hostlist_destroy(hl);
   }
+}
+
+static int 
+_log10(int num) 
+{
+  int count = 0;
+
+  if (num > 0) {
+    while ((num /= 10) > 0)
+      count++;
+  }
+
+  return count;
+} 
+
+static void
+_create_formats(char *upfmt, int upfmt_len, int up_count,
+                char *downfmt, int downfmt_len, int down_count)
+{
+  int max = (up_count > down_count) ? _log10(up_count) : _log10(down_count);
+  max++;
+  snprintf(upfmt,   upfmt_len,   "up:   %%%dd\n", max);
+  snprintf(downfmt, downfmt_len, "down: %%%dd\n", max);
 }
 
 int 
@@ -521,7 +528,7 @@ main(int argc, char *argv[])
 #else
                            NULL
 #endif
-			   ) < 0) {
+                           ) < 0) {
     int errnum = nodeupdown_errnum(winfo.handle);
 
     /* Check for "legit" errors and output appropriate message */
@@ -540,23 +547,19 @@ main(int argc, char *argv[])
     else if (errnum == NODEUPDOWN_ERR_CONF)
       _err_exit("Error reading configuration file");
     else
-        _err_exit("main: nodeupdown_load_data(): %s", 
-                  nodeupdown_errormsg(winfo.handle));
+      _err_exit("main: nodeupdown_load_data(): %s", 
+                nodeupdown_errormsg(winfo.handle));
   }
   
-  /* regardless of options, need all up and down information for exit */
+  /* regardless of options, need all up and down information for exit val */
   _get_nodes(&winfo, UP_NODES, up_nodes, buflen, &up_count);
   _get_nodes(&winfo, DOWN_NODES, down_nodes, buflen, &down_count);
 
   /* only output count */
   if (winfo.count == WHATSUP_TRUE) {
     if (winfo.output == UP_AND_DOWN) {
-      /* hacks to get the numbers to align */
-      max = (up_count > down_count) ? _log10(up_count) : _log10(down_count);
-      max++;
-      snprintf(upfmt,   WHATSUP_FORMATLEN, "up:   %%%dd\n", max);
-      snprintf(downfmt, WHATSUP_FORMATLEN, "down: %%%dd\n", max);
-
+      _create_formats(upfmt, WHATSUP_FORMATLEN, up_count,
+                      downfmt, WHATSUP_FORMATLEN, down_count);
       fprintf(stdout, upfmt, up_count);
       fprintf(stdout, downfmt, down_count);
     }
@@ -567,15 +570,11 @@ main(int argc, char *argv[])
   }
   else {    /* output up, down, or both up and down nodes */
     if (winfo.output == UP_AND_DOWN) {
-      /* hacks to get the numbers to align */
-      if (winfo.list != WHATSUP_NEWLINE) {
-        max = (up_count > down_count) ? _log10(up_count) : _log10(down_count);
-        max++;
-        snprintf(upfmt,   WHATSUP_FORMATLEN, "up:   %%%dd: ", max);
-        snprintf(downfmt, WHATSUP_FORMATLEN, "down: %%%dd: ", max);
-      }
+      if (winfo.list != WHATSUP_NEWLINE)
+        _create_formats(upfmt, WHATSUP_FORMATLEN, up_count,
+                        downfmt, WHATSUP_FORMATLEN, down_count);
       else {
-        /* newline format would have output numbers in a funny way */
+        /* newline output is funny, thus special */
         snprintf(upfmt,   WHATSUP_FORMATLEN, "up %d:");
         snprintf(downfmt, WHATSUP_FORMATLEN, "down %d:");
       }
