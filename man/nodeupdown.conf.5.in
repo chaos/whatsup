@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown.conf.5.in,v 1.7 2004-01-13 02:45:48 achu Exp $
+\."$Id: nodeupdown.conf.5.in,v 1.8 2004-01-13 16:39:52 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -44,7 +44,7 @@ The following are a list of configuration options that can be
 specified in the configuration file.  Each configuration option must
 be listed on a separate line.  Arguments for an option are separated
 by any amount of whitespace.  Multiple arguments are also separated by
-whitespace.  Comments can specified by using the pound sign ("#")
+whitespace.  Comments can be marked by using the pound sign ("#")
 character, and lines can be continued on the next using backslash
 ("\\").
 
