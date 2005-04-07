@@ -1,7 +1,8 @@
 2005-04-07  Albert Chu  <chu11@llnl.gov>
 
-	* Completely re-worked to use dynamically loadable modules for
-	clusterlists, whatsup options, and backend technologies.
+	* Completely re-worked to use dynamically or statically loadable
+	modules for clusterlists, whatsup options, and backend
+	technologies.
 	
 2005-03-21  Albert Chu  <chu11@llnl.gov>
 
