@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.118 2005-04-06 22:24:13 achu Exp $
+ *  $Id: nodeupdown.c,v 1.119 2005-04-07 00:20:46 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -43,25 +43,6 @@
 #include "hostlist.h"
 #include "list.h"
 #include "ltdl.h"
-
-/* 
- * struct nodeupdown_confdata
- *
- * stores configuration file data
- */
-struct nodeupdown_confdata 
-{
-  List hostnames;
-  int hostnames_found;
-  int port;
-  int port_found;
-  int timeout_len;
-  int timeout_len_found;
-  char backend_module[NODEUPDOWN_MAXPATHLEN+1];
-  int backend_module_found;
-  char clusterlist_module[NODEUPDOWN_MAXPATHLEN+1];
-  int clusterlist_module_found;
-};
 
 /* 
  * nodeupdown_errmsg
@@ -234,32 +215,17 @@ _cb_hostnames(conffile_t cf, struct conffile_data *data, char *optionname,
               int option_type, void *option_ptr, int option_data,
               void *app_ptr, int app_data) 
 {
-  List *l = (List *)option_ptr;
-  char *str;
+  char (*hostnames)[NODEUPDOWN_MAXHOSTNAMELEN] = option_ptr;
   int i;
   
   if (data->stringlist_len > NODEUPDOWN_CONF_HOSTNAME_MAX)
     return -1;
 
-  /*  
-   * List is destroyed in nodeupdown_load_data, so no need to cleanup
-   * on error.
-   */
-
-  if (!(*l = list_create((ListDelF)free)))
-    {
-      conffile_seterrnum(cf, CONFFILE_ERR_OUTMEM); 
-      return -1;
-    }
-
   for (i = 0; i < data->stringlist_len; i++) 
     {
       if (strlen(data->stringlist[i]) > NODEUPDOWN_MAXHOSTNAMELEN)
         return -1;
-      if (!(str = strdup(data->stringlist[i])))
-        return -1;
-      if (!list_append(*l, str))
-        return -1;
+      strcpy(hostnames[i], data->stringlist[i]);
     }
   return 0;
 }
@@ -268,11 +234,14 @@ _cb_hostnames(conffile_t cf, struct conffile_data *data, char *optionname,
  * _init_nodeupdown_confdata
  *
  * initialize nodeupdown_confdata structure with defaults
+ *
+ * Return 0 on success, -1 on error
  */
-static void
+static int
 _init_nodeupdown_confdata(nodeupdown_t handle, struct nodeupdown_confdata *cd)
 {
   memset(cd, '\0', sizeof(struct nodeupdown_confdata));
+  return 0;
 }
 
 /*  
@@ -283,8 +252,6 @@ _init_nodeupdown_confdata(nodeupdown_t handle, struct nodeupdown_confdata *cd)
 static void
 _cleanup_nodeupdown_confdata(nodeupdown_t handle, struct nodeupdown_confdata *cd)
 {
-  if (cd->hostnames)
-    list_destroy(cd->hostnames);
 }
 
 /* 
@@ -300,17 +267,17 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd)
   struct conffile_option options[] = 
     {
       {NODEUPDOWN_CONF_HOSTNAME, CONFFILE_OPTION_LIST_STRING, -1, 
-       _cb_hostnames, 1, 0, &(cd->hostnames_found),
-       &(cd->hostnames), 0},
+       _cb_hostnames, 1, 0, &(cd->hostnames_flag),
+       cd->hostnames, 0},
       {NODEUPDOWN_CONF_PORT, CONFFILE_OPTION_INT, 0, 
-       conffile_int, 1, 0, &(cd->port_found), &(cd->port), 0},
+       conffile_int, 1, 0, &(cd->port_flag), &(cd->port), 0},
       {NODEUPDOWN_CONF_TIMEOUT_LEN, CONFFILE_OPTION_INT, 0, 
-       conffile_int, 1, 0, &(cd->timeout_len_found), &(cd->timeout_len), 0},
+       conffile_int, 1, 0, &(cd->timeout_len_flag), &(cd->timeout_len), 0},
       {NODEUPDOWN_CONF_BACKEND_MODULE, CONFFILE_OPTION_STRING, 0,
-       conffile_string, 1, 0, &(cd->backend_module_found), 
+       conffile_string, 1, 0, &(cd->backend_module_flag), 
        cd->backend_module, NODEUPDOWN_MAXPATHLEN},
       {NODEUPDOWN_CONF_CLUSTERLIST_MODULE, CONFFILE_OPTION_STRING, 0,
-       conffile_string, 1, 0, &(cd->clusterlist_module_found), 
+       conffile_string, 1, 0, &(cd->clusterlist_module_flag), 
        cd->clusterlist_module, NODEUPDOWN_MAXPATHLEN},
     };
   conffile_t cf = NULL;
@@ -369,15 +336,20 @@ nodeupdown_load_data(nodeupdown_t handle,
       goto cleanup;
     }
 
-  /* Read configuration before loading a potential clusterlist module.
-   * The configuration file may indicate which module to load.
+  /* Read configuration before loading a potential backend or
+   * clusterlist module to use. The configuration file may indicate
+   * which module to load.
    */
 
   _init_nodeupdown_confdata(handle, &cd);
+
   if (_read_conffile(handle, &cd) < 0)
     goto cleanup;
 
-  if (cd.backend_module_found)
+  /* 
+   * Load backend module
+   */
+  if (cd.backend_module_flag)
     backend_module = cd.backend_module;
   
   if (nodeupdown_backend_load_module(handle, backend_module) < 0)
@@ -386,7 +358,10 @@ nodeupdown_load_data(nodeupdown_t handle,
   if (nodeupdown_backend_init(handle) < 0)
     goto cleanup;
 
-  if (cd.clusterlist_module_found)
+  /* 
+   * Load clusterlist module
+   */
+  if (cd.clusterlist_module_flag)
     clusterlist_module = cd.clusterlist_module;
   
   if (nodeupdown_clusterlist_load_module(handle, clusterlist_module) < 0)
@@ -409,7 +384,7 @@ nodeupdown_load_data(nodeupdown_t handle,
 
   if (port <= 0)
     {
-      if (cd.port_found)
+      if (cd.port_flag)
         port = cd.port;
       else
         port = nodeupdown_backend_default_port(handle);
@@ -417,37 +392,33 @@ nodeupdown_load_data(nodeupdown_t handle,
   
   if (timeout_len <= 0)
     {
-      if (cd.timeout_len_found)
+      if (cd.timeout_len_flag)
         timeout_len = cd.timeout_len;
       else
         timeout_len = nodeupdown_backend_default_timeout_len(handle);
     }
 
-  if (!hostname && cd.hostnames_found)
+  if (!hostname && cd.hostnames_flag)
     {
-      ListIterator itr = NULL;
-      char *hostnamePtr;
+      int i;
       
-      if (!(itr = list_iterator_create(cd.hostnames)))
-        goto cleanup;
-      
-      while ((hostnamePtr = list_next(itr)) != NULL)
+      for (i = 0; i <= NODEUPDOWN_MAXHOSTNAMELEN; i++)
         {
-          if (nodeupdown_backend_get_updown_data(handle, 
-                                                 hostnamePtr,
-                                                 port,
-                                                 timeout_len,
-                                                 reserved) < 0)
-            continue;
-          else
-            break;
+          if (strlen(cd.hostnames[i]) > 0)
+            {
+              if (nodeupdown_backend_get_updown_data(handle, 
+                                                     cd.hostnames[i],
+                                                     port,
+                                                     timeout_len,
+                                                     reserved) < 0)
+                continue;
+              else
+                break;
+            }
         }
 
-      if (!hostnamePtr)
+      if (i > NODEUPDOWN_MAXHOSTNAMELEN)
         goto cleanup;
-
-      if (itr)
-        list_iterator_destroy(itr);
     }
   else 
     {
