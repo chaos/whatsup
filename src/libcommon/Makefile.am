@@ -1,11 +1,29 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.6 2005-04-02 05:51:16 achu Exp $
+## $Id: Makefile.am,v 1.7 2005-04-07 17:16:34 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
 
-noinst_HEADERS = conffile.h error.h fd.h hostlist.h list.h ltdl.h 
+if !WITH_STATIC_MODULES
+LTDL_HEADERS = ltdl.h
+LTDL_SOURCES = ltdl.c
+LTDL_LIBADD = $(LIBADD_DL)
+endif
+
+noinst_HEADERS = conffile.h \
+		 error.h \
+		 fd.h \
+		 hostlist.h \
+		 list.h \
+		 $(LTDL_HEADERS)
+
 noinst_LTLIBRARIES = libcommon.la
-libcommon_la_SOURCES = conffile.c error.c fd.c hostlist.c list.c ltdl.c 
+libcommon_la_SOURCES = conffile.c \
+		       error.c fd.c \
+		       hostlist.c \
+		       list.c \
+		       $(LTDL_SOURCES)
+
 libcommon_la_CFLAGS = -I../../config
-libcommon_la_LIBADD = $(LIBADD_DL)
+
+libcommon_la_LIBADD = $(LTDL_LIBADD)

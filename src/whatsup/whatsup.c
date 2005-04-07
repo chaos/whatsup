@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.97 2005-04-07 06:12:28 achu Exp $
+ *  $Id: whatsup.c,v 1.98 2005-04-07 17:16:35 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -305,6 +305,7 @@ _load_options_modules(struct whatsup_data *w)
   while (whatsup_options_modules[i])
     {
       _load_options_module(w, whatsup_options_modules[i]);
+      i++;
     }
 #else /* !WITH_STATIC_MODULES */
   if (lt_dlinit() != 0)

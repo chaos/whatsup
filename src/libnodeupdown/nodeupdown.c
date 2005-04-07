@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.119 2005-04-07 00:20:46 achu Exp $
+ *  $Id: nodeupdown.c,v 1.120 2005-04-07 17:16:34 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -182,10 +182,12 @@ _free_handle_data(nodeupdown_t handle)
   nodeupdown_backend_unload_module(handle);
   nodeupdown_clusterlist_cleanup(handle);
   nodeupdown_clusterlist_unload_module(handle);
-  lt_dlexit();
   hostlist_destroy(handle->up_nodes);
   hostlist_destroy(handle->down_nodes);
   _initialize_handle(handle);
+#if !WITH_STATIC_MODULES
+  lt_dlexit();
+#endif /* !WITH_STATIC_MODULES */
 }
 
 int 
@@ -330,11 +332,13 @@ nodeupdown_load_data(nodeupdown_t handle,
   if (_unloaded_handle_error_check(handle) < 0)
     goto cleanup;
 
+#if !WITH_STATIC_MODULES
   if (lt_dlinit() != 0)
     {
       handle->errnum = NODEUPDOWN_ERR_INTERNAL;
       goto cleanup;
     }
+#endif /* !WITH_STATIC_MODULES */
 
   /* Read configuration before loading a potential backend or
    * clusterlist module to use. The configuration file may indicate

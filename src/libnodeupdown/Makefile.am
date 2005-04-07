@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.33 2005-04-07 06:12:28 achu Exp $
+## $Id: Makefile.am,v 1.34 2005-04-07 17:16:34 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -37,7 +37,8 @@ STATIC_MODULE_SOURCES     = nodeupdown_backend_ganglia.c \
 			    $(GENDERS_STATIC_SOURCES) \
 			    $(GENDERS_UTIL_STATIC_SOURCES) \
 			    nodeupdown_clusterlist_hostsfile.c \
-			    nodeupdown_clusterlist_none.c
+			    nodeupdown_clusterlist_none.c \
+			    nodeupdown_clusterlist_util.c
 STATIC_MODULE_LIBS        = $(GENDERSLLNL_STATIC_LIBS) $(GENDERS_STATIC_LIBS)
 STATIC_MODULE_LIBEXPAT    = ../libexpat/libexpat.la
 STATIC_MODULE_LIBEXPATDIR = -I$(srcdir)/../libexpat

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist.c,v 1.6 2005-04-07 06:12:28 achu Exp $
+ *  $Id: nodeupdown_clusterlist.c,v 1.7 2005-04-07 17:16:34 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -157,26 +157,26 @@ nodeupdown_clusterlist_load_module(nodeupdown_t handle, char *clusterlist_module
   if (clusterlist_module)
     {
       int i = 0;
-                                                                                                      
+
       while (clusterlist_modules[i])
         {
           if (!clusterlist_modules[i]->clusterlist_module_name)
             continue;
-                                                                                                      
+
           if (!strcmp(clusterlist_modules[i]->clusterlist_module_name, clusterlist_module))
             {
               int rv;
-                                                                                                      
+
               if ((rv = _load_module(handle, clusterlist_modules[i])) < 0)
                 goto cleanup;
-                                                                                                      
+
               if (rv)
                 goto done;
             }
-                                                                                                      
+
           i++;
         }
-                                                                                                      
+
       handle->errnum = NODEUPDOWN_ERR_CONF_INPUT;
       goto cleanup;
     }
@@ -184,21 +184,21 @@ nodeupdown_clusterlist_load_module(nodeupdown_t handle, char *clusterlist_module
     {
       struct nodeupdown_clusterlist_module_info **ptr;
       int i = 0;
-                                                                                                      
+
       ptr = &clusterlist_modules[0];
       while (ptr[i] != NULL)
         {
           int rv;
-                                                                                                      
+
           if (!ptr[i]->clusterlist_module_name)
 	    continue;
-                                                                                                      
+
           if ((rv = _load_module(handle, clusterlist_modules[i])) < 0)
             goto cleanup;
-                                                                                                      
+
           if (rv)
             goto done;
-                                                                                                      
+
           i++;
         }
     }
