@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.96 2005-04-06 21:50:19 achu Exp $
+ *  $Id: whatsup.c,v 1.97 2005-04-07 06:12:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -92,7 +92,9 @@ struct whatsup_data
   int count_output;
   nodeupdown_t handle;
   hostlist_t cmdline_nodes;
+#if !WITH_STATIC_MODULES
   lt_dlhandle module_handles[WHATSUP_MODULES_LEN];
+#endif /* !WITH_STATIC_MODULES */
   struct whatsup_options_module_info *module_info[WHATSUP_MODULES_LEN];
   int module_loaded_count;
 };
@@ -102,11 +104,28 @@ struct whatsup_data
  *
  * list of options modules to search for
  */
+#if WITH_STATIC_MODULES
+
+#if WITH_GENDERSLLNL
+extern struct whatsup_options_module_info gendersllnl_options_module_info;
+#endif /* WITH_GENDERSLLNL */
+
+static struct whatsup_options_module_info *whatsup_options_modules[] =
+  {
+#if WITH_GENDERSLLNL
+    &gendersllnl_options_module_info,
+#endif /* WITH_GENDERSLLNL */
+    NULL
+  };
+
+#else /* !WITH_STATIC_MODULES */
+
 static char *whatsup_options_modules[] = 
   {
     "whatsup_options_gendersllnl.la",
     NULL
   };
+#endif /* !WITH_STATIC_MODULES */
 
 /* 
  * _init_whatsup_data
@@ -116,6 +135,8 @@ static char *whatsup_options_modules[] =
 static void
 _init_whatsup_data(struct whatsup_data *w)
 {
+  assert(w);
+
   memset(w, '\0', sizeof(struct whatsup_data));
 
   w->hostname = NULL;
@@ -141,6 +162,8 @@ _init_whatsup_data(struct whatsup_data *w)
 static void
 _cleanup_whatsup_data(struct whatsup_data *w)
 {
+  assert(w);
+
   (void)nodeupdown_handle_destroy(w->handle);
   hostlist_destroy(w->cmdline_nodes);
 }
@@ -148,17 +171,33 @@ _cleanup_whatsup_data(struct whatsup_data *w)
 /*  
  * _load_options_module
  *
- * dynamically load a whatsup options module
+ * load a whatsup options module
  */
 static void
-_load_options_module(struct whatsup_data *w, char *module_path)
+_load_options_module(struct whatsup_data *w, 
+#if WITH_STATIC_MODULES
+		     struct whatsup_options_module_info *module_info
+#else /* !WITH_STATIC_MODULES */
+		     char *module_path
+#endif /* !WITH_STATIC_MODULES */
+		     )
 {
   int count = w->module_loaded_count;
   int i;
 
+  assert(w);
+#if WITH_STATIC_MODULES
+  assert(module_info);
+#else /* !WITH_STATIC_MODULES */
+  assert(module_path);
+#endif /* !WITH_STATIC_MODULES */
+
   if (count >= WHATSUP_MODULES_LEN)
     return;
 
+#if WITH_STATIC_MODULES
+  w->module_info[count] = module_info;
+#else /* !WITH_STATIC_MODULES */
   if (!(w->module_handles[count] = lt_dlopen(module_path)))
     err_exit("_load_options_module: lt_dlopen: module_path=%s: %s",
 	     module_path, lt_dlerror());
@@ -167,6 +206,7 @@ _load_options_module(struct whatsup_data *w, char *module_path)
 					 "options_module_info")))
     err_exit("_load_options_module: lt_dlsym: module_path=%s: %s",
 	     module_path, lt_dlerror());
+#endif /* !WITH_STATIC_MODULES */
 
   if (!w->module_info[count]->options_module_name
       || !w->module_info[count]->output_usage
@@ -174,7 +214,12 @@ _load_options_module(struct whatsup_data *w, char *module_path)
       || !w->module_info[count]->add_long_option
       || !w->module_info[count]->check_option
       || !w->module_info[count]->convert_nodenames)
-    err_exit("_load_options_module: module_path=%s: invalid module options");
+#if WITH_STATIC_MODULES
+    err_exit("_load_options_module: invalid module options");
+#else /* !WITH_STATIC_MODULES */
+    err_exit("_load_options_module: module_path=%s: invalid module options",
+	     module_path);
+#endif /* !WITH_STATIC_MODULES */
   
   for (i = 0; i < count; i++)
     {
@@ -191,12 +236,15 @@ _load_options_module(struct whatsup_data *w, char *module_path)
   return;
 
  already_loaded:
+#if !WITH_STATIC_MODULES
   lt_dlclose(w->module_handles[count]);
   w->module_handles[count] = NULL;
+#endif /* !WITH_STATIC_MODULES */
   w->module_info[count] = NULL;
   return;
 }
 
+#if !WITH_STATIC_MODULES
 /*  
  * _load_options_modules_in_dir
  *
@@ -208,6 +256,9 @@ _load_options_modules_in_dir(struct whatsup_data *w, char *search_dir)
 {
   DIR *dir;
   int i = 0;
+
+  assert(w);
+  assert(search_dir);
 
   /* Can't open the directory? we assume it doesn't exit, so its not
    * an error.
@@ -236,6 +287,7 @@ _load_options_modules_in_dir(struct whatsup_data *w, char *search_dir)
       i++;
     }
 }
+#endif /* !WITH_STATIC_MODULES */
 
 /*  
  * _load_options_modules
@@ -245,12 +297,23 @@ _load_options_modules_in_dir(struct whatsup_data *w, char *search_dir)
 static void
 _load_options_modules(struct whatsup_data *w)
 {
+  assert(w);
+
+#if WITH_STATIC_MODULES
+  int i = 0;
+
+  while (whatsup_options_modules[i])
+    {
+      _load_options_module(w, whatsup_options_modules[i]);
+    }
+#else /* !WITH_STATIC_MODULES */
   if (lt_dlinit() != 0)
     err_exit("_load_options_modules: lt_dlinit: %s", lt_dlerror());
 
   _load_options_modules_in_dir(w, WHATSUP_MODULE_BUILDDIR);
   _load_options_modules_in_dir(w, WHATSUP_MODULE_DIR);
   _load_options_modules_in_dir(w, ".");
+#endif /* !WITH_STATIC_MODULES */
 }
 
 /*  
@@ -263,13 +326,19 @@ _unload_options_modules(struct whatsup_data *w)
 {
   int i;
 
+  assert(w);
+
   for (i = 0; i < w->module_loaded_count; i++)
     {
       (*w->module_info[i]->cleanup)();
+#if !WITH_STATIC_MODULES
       lt_dlclose(w->module_handles[i]);
+#endif /* !WITH_STATIC_MODULES */
       i++;
     }
+#if !WITH_STATIC_MODULES
   lt_dlexit();
+#endif /* !WITH_STATIC_MODULES */
 }
 
 /* 
@@ -281,6 +350,8 @@ static void
 _usage(struct whatsup_data *w) 
 {
   int i;
+
+  assert(w);
 
   fprintf(stderr,
 	  "Usage: whatsup [OPTIONS]... [NODES]...\n"
@@ -328,6 +399,9 @@ _version(void)
 static void
 _push_nodes_on_hostlist(struct whatsup_data *w, char *nodes) 
 {
+  assert(w);
+  assert(nodes);
+
   /* Error if nodes aren't short hostnames */
   if (strchr(nodes, '.') != NULL)
     err_exit("nodes must be listed in short hostname format");
@@ -347,6 +421,8 @@ _read_nodes_from_stdin(struct whatsup_data *w)
   int n;
   char buf[WHATSUP_BUFFERLEN];
   
+  assert(w);
+
   if ((n = fd_read_n(STDIN_FILENO, buf, WHATSUP_BUFFERLEN)) < 0)
     err_exit("error reading from standard input: %s", strerror(errno));
   
@@ -394,6 +470,9 @@ _cmdline_parse(struct whatsup_data *w, int argc, char **argv)
   };
   int long_options_count = 12;
 #endif /* HAVE_GETOPT_LONG */
+
+  assert(w);
+  assert(argv);
 
   memset(options, '\0', WHATSUP_OPTIONS_LEN+1);
   strncpy(options, "hVo:p:budtqcns", WHATSUP_OPTIONS_LEN);
@@ -559,7 +638,10 @@ _get_cmdline_nodes(struct whatsup_data *w,
   char *node = NULL;
   int ret;
 
+  assert(w);
   assert(up_or_down == WHATSUP_UP_NODES || up_or_down == WHATSUP_DOWN_NODES);
+  assert(buf);
+  assert(buflen > 0);
 
   if (!(hl = hostlist_create(NULL)))
     err_exit("_get_cmdline_nodes: hostlist_create()");
@@ -621,6 +703,11 @@ _get_all_nodes(struct whatsup_data *w,
                char *buf, 
                int buflen) 
 {
+  assert(w);
+  assert(up_or_down == WHATSUP_UP_NODES || up_or_down == WHATSUP_DOWN_NODES);
+  assert(buf);
+  assert(buflen > 0);
+
   if (up_or_down == WHATSUP_UP_NODES) 
     {
       if (nodeupdown_get_up_nodes_string(w->handle, buf, buflen) < 0)
@@ -652,6 +739,12 @@ _get_nodes(struct whatsup_data *w,
   char tempbuf[WHATSUP_BUFFERLEN];
   int i;
   
+  assert(w);
+  assert(up_or_down == WHATSUP_UP_NODES || up_or_down == WHATSUP_DOWN_NODES);
+  assert(buf);
+  assert(buflen > 0);
+  assert(count);
+
   if (hostlist_count(w->cmdline_nodes) > 0)
     _get_cmdline_nodes(w, up_or_down, buf, buflen);
   else
@@ -696,6 +789,9 @@ _get_nodes(struct whatsup_data *w,
 static void
 _output_nodes(struct whatsup_data *w, char *nodebuf) 
 {
+  assert(w);
+  assert(nodebuf);
+
   if (w->list_output == WHATSUP_HOSTLIST)
     fprintf(stdout, "%s\n", nodebuf);
   else 
@@ -761,6 +857,12 @@ _create_formats(char *upfmt, int upfmt_len, int up_count,
                 char *endstr)
 {
   int max;
+
+  assert(upfmt);
+  assert(upfmt_len > 0);
+  assert(downfmt);
+  assert(downfmt_len > 0);
+  assert(endstr);
 
   if (up_count > down_count)
     max = _log10(up_count);

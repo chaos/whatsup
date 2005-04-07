@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_ganglia.c,v 1.2 2005-04-06 21:50:19 achu Exp $
+ *  $Id: nodeupdown_backend_ganglia.c,v 1.3 2005-04-07 06:12:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -281,7 +281,11 @@ ganglia_backend_get_updown_data(nodeupdown_t handle,
   return retval;
 }
 
+#if WITH_STATIC_MODULES
+struct nodeupdown_backend_module_info ganglia_backend_module_info = 
+#else  /* !WITH_STATIC_MODULES */
 struct nodeupdown_backend_module_info backend_module_info = 
+#endif /* !WITH_STATIC_MODULES */
   {
     "ganglia",
     &ganglia_backend_default_hostname,

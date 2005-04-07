@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.32 2005-04-06 21:50:19 achu Exp $
+## $Id: Makefile.am,v 1.33 2005-04-07 06:12:28 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -19,6 +19,32 @@ endif
 # libnodeupdown
 #
 
+if WITH_GENDERSLLNL
+GENDERSLLNL_STATIC_SOURCES  = nodeupdown_clusterlist_gendersllnl.c
+GENDERS_UTIL_STATIC_SOURCES = nodeupdown_clusterlist_genders_util.c
+GENDERSLLNL_STATIC_LIBS     = $(GENDERSLLNL_LIBS)
+endif
+ 
+if WITH_GENDERS
+GENDERS_STATIC_SOURCES      = nodeupdown_clusterlist_genders.c
+GENDERS_UTIL_STATIC_SOURCES = nodeupdown_clusterlist_genders_util.c
+GENDERS_STATIC_LIBS         = $(GENDERS_LIBS)
+endif
+
+if WITH_STATIC_MODULES
+STATIC_MODULE_SOURCES     = nodeupdown_backend_ganglia.c \
+			    $(GENDERSLLNL_STATIC_SOURCES) \
+			    $(GENDERS_STATIC_SOURCES) \
+			    $(GENDERS_UTIL_STATIC_SOURCES) \
+			    nodeupdown_clusterlist_hostsfile.c \
+			    nodeupdown_clusterlist_none.c
+STATIC_MODULE_LIBS        = $(GENDERSLLNL_STATIC_LIBS) $(GENDERS_STATIC_LIBS)
+STATIC_MODULE_LIBEXPAT    = ../libexpat/libexpat.la
+STATIC_MODULE_LIBEXPATDIR = -I$(srcdir)/../libexpat
+else
+MODULE_EXPORT_FLAGS    = -export-dynamic
+endif
+
 nodeupdown_module_builddir=`cd $(top_builddir)/src/libnodeupdown && pwd`
 
 include_HEADERS = nodeupdown.h 
@@ -34,18 +60,22 @@ lib_LTLIBRARIES = libnodeupdown.la
 
 libnodeupdown_la_CFLAGS = -D_REENTRANT -I ../../config \
 			  -DNODEUPDOWN_MODULE_BUILDDIR=\"$(nodeupdown_module_builddir)\" \
-	                  -I $(srcdir)/../libcommon
+	                  -I $(srcdir)/../libcommon \
+			  $(STATIC_MODULE_LIBEXPATDIR)
 
 libnodeupdown_la_SOURCES = nodeupdown.c \
 			   nodeupdown_backend.c \
 			   nodeupdown_clusterlist.c \
-			   nodeupdown_util.c
+			   nodeupdown_util.c \
+			   $(STATIC_MODULE_SOURCES)
 
-libnodeupdown_la_LIBADD = ../libcommon/libcommon.la
+libnodeupdown_la_LIBADD = ../libcommon/libcommon.la \
+			  $(STATIC_MODULE_LIBEXPAT)
 
-libnodeupdown_la_LDFLAGS = -export-dynamic \
-			   -version-info @LIBNODEUPDOWN_VERSION_INFO@ \
-			   $(NODEUPDOWN_OTHER_FLAGS) 
+libnodeupdown_la_LDFLAGS = -version-info @LIBNODEUPDOWN_VERSION_INFO@ \
+			   $(NODEUPDOWN_OTHER_FLAGS) \
+			   $(MODULE_EXPORT_FLAGS) \
+			   $(STATIC_MODULE_LIBEXPATDIR)
 
 EXTRA_DIST = nodeupdown.map
 
@@ -63,6 +93,7 @@ if WITH_GENDERS
 GENDERS_CLUSTERLIST_MODULE     = nodeupdown_clusterlist_genders.la
 endif
 
+if !WITH_STATIC_MODULES
 nodeupdownmodulelibdir = $(NODEUPDOWN_MODULE_DIR)
 nodeupdownmodulelib_LTLIBRARIES = \
 	nodeupdown_backend_ganglia.la \
@@ -70,6 +101,7 @@ nodeupdownmodulelib_LTLIBRARIES = \
 	$(GENDERS_CLUSTERLIST_MODULE) \
 	nodeupdown_clusterlist_hostsfile.la \
 	nodeupdown_clusterlist_none.la
+endif
 
 nodeupdown_backend_ganglia_la_SOURCES = \
 	nodeupdown_backend_ganglia.c

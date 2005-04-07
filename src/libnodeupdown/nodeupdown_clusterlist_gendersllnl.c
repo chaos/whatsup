@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_gendersllnl.c,v 1.2 2005-04-06 21:50:19 achu Exp $
+ *  $Id: nodeupdown_clusterlist_gendersllnl.c,v 1.3 2005-04-07 06:12:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -217,7 +217,11 @@ gendersllnl_clusterlist_increase_max_nodes(nodeupdown_t handle)
   return 0;
 }
 
+#if WITH_STATIC_MODULES
+struct nodeupdown_clusterlist_module_info gendersllnl_clusterlist_module_info =
+#else  /* !WITH_STATIC_MODULES */
 struct nodeupdown_clusterlist_module_info clusterlist_module_info =
+#endif /* !WITH_STATIC_MODULES */
   {
     "gendersllnl",
     &gendersllnl_clusterlist_init,

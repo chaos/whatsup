@@ -1,27 +1,8 @@
-2005-04-06  Albert Chu  <chu11@llnl.gov>
+2005-04-07  Albert Chu  <chu11@llnl.gov>
 
-	* Completed whatsup code cleanup and rework.
+	* Completely re-worked to use dynamically loadable modules for
+	clusterlists, whatsup options, and backend technologies.
 	
-2005-04-05  Albert Chu  <chu11@llnl.gov>
-
-	* Continued rework.
-
-2005-04-04  Albert Chu  <chu11@llnl.gov>
-
-	* Various bug fixes and code cleanup.
-	
-2005-04-01  Albert Chu  <chu11@llnl.gov>
-
-	* Initial clusterlist module re-work completed.
-
-2005-03-31  Albert Chu  <chu11@llnl.gov>
-
-	* Major rework continued.
-
-2005-03-30  Albert Chu  <chu11@llnl.gov>
-
-	* Major rework to support multiple backend technologies for whatsup.
-
 2005-03-21  Albert Chu  <chu11@llnl.gov>
 
 	* src/libcommon/conffile.c (conffile_parse): Remove compiler

@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.22 2005-04-06 21:50:19 achu Exp $
+## $Id: Makefile.am,v 1.23 2005-04-07 06:12:28 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -12,16 +12,29 @@ whatsup_module_builddir=`cd $(top_builddir)/src/whatsup && pwd`
 
 noinst_HEADERS = whatsup_options.h
 
-bin_PROGRAMS = whatsup
+if WITH_GENDERSLLNL
+GENDERSLLNL_STATIC_SOURCES  = whatsup_options_gendersllnl.c
+GENDERSLLNL_STATIC_LIBS     = $(GENDERSLLNL_LIBS)
+endif
 
-whatsup_SOURCES = whatsup.c
+if WITH_STATIC_MODULES
+STATIC_MODULES_SOURCES  = $(GENDERSLLNL_STATIC_SOURCES)
+STATIC_MODULES_LIBS     = $(GENDERSLLNL_STATIC_LIBS)
+endif
 
-whatsup_CFLAGS = -DWHATSUP_MODULE_BUILDDIR=\"$(whatsup_module_builddir)\" \
-		 -I $(srcdir)/../libnodeupdown \
-		 -I $(srcdir)/../libcommon
+bin_PROGRAMS     = whatsup
 
-whatsup_LDADD = ../libcommon/libcommon.la \
-		../libnodeupdown/libnodeupdown.la
+whatsup_SOURCES  = whatsup.c \
+		   $(STATIC_MODULES_SOURCES)
+
+whatsup_CFLAGS   = -DWHATSUP_MODULE_BUILDDIR=\"$(whatsup_module_builddir)\" \
+		   -I $(srcdir)/../libnodeupdown \
+		   -I $(srcdir)/../libcommon
+
+whatsup_LDFLAGS  = $(STATIC_MODULES_LIBS)
+
+whatsup_LDADD    = ../libcommon/libcommon.la \
+		   ../libnodeupdown/libnodeupdown.la
 
 #
 # whatsup modules
@@ -33,8 +46,10 @@ if WITH_GENDERSLLNL
 GENDERSLLNL_OPTIONS_MODULE = whatsup_options_gendersllnl.la
 endif
 
+if !WITH_STATIC_MODULES
 whatsupmodulelibdir = $(WHATSUP_MODULE_DIR)
 whatsupmodulelib_LTLIBRARIES = $(GENDERSLLNL_OPTIONS_MODULE)
+endif
 
 whatsup_options_gendersllnl_la_SOURCES = whatsup_options_gendersllnl.c
 whatsup_options_gendersllnl_la_LDFLAGS = $(MODULE_FLAGS) $(GENDERSLLNL_LIBS)

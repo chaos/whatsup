@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend.c,v 1.5 2005-04-06 22:24:13 achu Exp $
+ *  $Id: nodeupdown_backend.c,v 1.6 2005-04-07 06:12:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -46,6 +46,17 @@
 #include "nodeupdown_util.h"
 #include "ltdl.h"
 
+#if WITH_STATIC_MODULES
+
+extern struct nodeupdown_backend_module_info ganglia_backend_module_info;
+
+static struct nodeupdown_backend_module_info *backend_modules[] =
+  {
+    &ganglia_backend_module_info,
+    NULL
+  };
+
+#else  /* !WITH_STATIC_MODULES */
 static char *backend_modules[] = {
   "nodeupdown_backend_ganglia.la",
   NULL
@@ -53,6 +64,8 @@ static char *backend_modules[] = {
 static int backend_modules_len = 1;
 
 static lt_dlhandle backend_module_dl_handle = NULL;
+#endif /* !WITH_STATIC_MODULES */
+
 static struct nodeupdown_backend_module_info *backend_module_info = NULL;
 
 /* 
@@ -64,10 +77,21 @@ static struct nodeupdown_backend_module_info *backend_module_info = NULL;
  * cannot be found, -1 on fatal error.
  */
 static int
-_load_module(nodeupdown_t handle, char *module_path)
+_load_module(nodeupdown_t handle, 
+#if WITH_STATIC_MODULES
+	     struct nodeupdown_backend_module_info *module_info
+#else  /* !WITH_STATIC_MODULES */
+	     char *module_path
+#endif /* !WITH_STATIC_MODULES */
+	     )
 {
+#if !WITH_STATIC_MODULES
   struct stat buf;
+#endif /* !WITH_STATIC_MODULES */
 
+#if WITH_STATIC_MODULES
+  backend_module_info = module_info;
+#else  /* !WITH_STATIC_MODULES */
   if (stat(module_path, &buf) < 0)
     return 0;
 
@@ -82,6 +106,7 @@ _load_module(nodeupdown_t handle, char *module_path)
       handle->errnum = NODEUPDOWN_ERR_BACKEND_INTERNAL;
       goto cleanup;
     }
+#endif /* !WITH_STATIC_MODULES */
 
   if (!backend_module_info->backend_module_name
       || !backend_module_info->default_hostname
@@ -98,18 +123,68 @@ _load_module(nodeupdown_t handle, char *module_path)
   return 1;
 
  cleanup:
+#if !WITH_STATIC_MODULES
   if (backend_module_dl_handle)
     lt_dlclose(backend_module_dl_handle);
-  backend_module_info = NULL;
   backend_module_dl_handle = NULL;
+#endif /* !WITH_STATIC_MODULES */
+  backend_module_info = NULL;
   return -1;
 }
 
 int 
 nodeupdown_backend_load_module(nodeupdown_t handle, char *backend_module)
 {
-  int rv;
+#if WITH_STATIC_MODULES
+  if (backend_module)
+    {
+      int i = 0;
 
+      while (backend_modules[i])
+	{
+	  if (!backend_modules[i]->backend_module_name)
+	    continue;
+
+	  if (!strcmp(backend_modules[i]->backend_module_name, backend_module))
+	    {
+	      int rv;
+
+	      if ((rv = _load_module(handle, backend_modules[i])) < 0)
+		goto cleanup;
+	      
+	      if (rv)
+		goto done;
+	    }
+
+	  i++;
+	}
+
+      handle->errnum = NODEUPDOWN_ERR_CONF_INPUT;
+      goto cleanup;
+    }
+  else
+    {
+      struct nodeupdown_backend_module_info **ptr;
+      int i = 0;
+ 
+      ptr = &backend_modules[0];
+      while (ptr[i] != NULL)
+        {
+          int rv;
+ 
+          if (!ptr[i]->backend_module_name)
+              continue;
+ 
+	  if ((rv = _load_module(handle, backend_modules[i])) < 0)
+	    goto cleanup;
+	  
+	  if (rv)
+	    goto done;
+
+          i++;
+        }
+    }
+#else  /* !WITH_STATIC_MODULES */
   if (backend_module)
     {
       char filebuf[NODEUPDOWN_MAXPATHLEN+1];
@@ -211,6 +286,7 @@ nodeupdown_backend_load_module(nodeupdown_t handle, char *backend_module)
       handle->errnum = NODEUPDOWN_ERR_BACKEND_INTERNAL;
       goto cleanup;
     }
+#endif /* !WITH_STATIC_MODULES */
 
  done:
   return 0;
@@ -222,11 +298,13 @@ nodeupdown_backend_load_module(nodeupdown_t handle, char *backend_module)
 int
 nodeupdown_backend_unload_module(nodeupdown_t handle)
 {
+#if !WITH_STATIC_MODULES
   /* May have not been loaded, so can't close */
   if (backend_module_dl_handle)
     lt_dlclose(backend_module_dl_handle);
-  backend_module_info = NULL;
   backend_module_dl_handle = NULL;
+#endif /* !WITH_STATIC_MODULES */
+  backend_module_info = NULL;
   return 0;
 }
  
