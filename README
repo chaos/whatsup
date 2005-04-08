@@ -37,10 +37,10 @@ Livermore National Laboratory.
 Genders - Uses a genders database and the genders library to determine
 all nodes in the cluster.
 
-Hostsfile: Uses a file that lists the hostname of every node in the
-cluster.
+Hostsfile - Uses a file that lists the hostname of every node in the
+cluster on a separate line.
 
-None: No database will be used.
+None - No database will be used.
 
 Other backend and clusterlist modules may be implemented in the
 future.  If you are interested in seeing some new mechanism

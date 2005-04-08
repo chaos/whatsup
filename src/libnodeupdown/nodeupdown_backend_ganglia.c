@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_ganglia.c,v 1.3 2005-04-07 06:12:28 achu Exp $
+ *  $Id: nodeupdown_backend_ganglia.c,v 1.4 2005-04-08 01:01:11 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -145,7 +145,7 @@ _xml_parse_start(void *data, const char *e1, const char **attr)
   nodeupdown_t handle = ((struct parse_vars *)data)->handle;
   int timeout_len = ((struct parse_vars *)data)->timeout_len;
   unsigned long localtime = ((struct parse_vars *)data)->localtime;
-  char buffer[NODEUPDOWN_MAXHOSTNAMELEN+1];
+  char buffer[NODEUPDOWN_MAXNODENAMELEN+1];
   unsigned long reported;
   int ret;
 
@@ -165,9 +165,9 @@ _xml_parse_start(void *data, const char *e1, const char **attr)
         return;
       
       if (nodeupdown_clusterlist_get_nodename(handle, 
-                                                      attr[1], 
-                                                      buffer, 
-                                                      NODEUPDOWN_MAXHOSTNAMELEN+1) < 0)
+                                              attr[1], 
+                                              buffer, 
+                                              NODEUPDOWN_MAXNODENAMELEN+1) < 0)
         return;
       
       /* store as up or down */

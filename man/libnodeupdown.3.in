@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: libnodeupdown.3.in,v 1.13 2005-04-08 00:32:52 achu Exp $
+\."$Id: libnodeupdown.3.in,v 1.14 2005-04-08 01:01:11 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -70,36 +70,57 @@ or down
 .SH DESCRIPTION
 The nodeupdown library functions are a set of functions that interacts
 with a particular backend tool and a clusterlist database to determine
-if the nodes of a cluster are up or down.  The currently available
-backend tools are:
+if the nodes of a cluster are up or down.  See below for additional
+information on backend modules and clusterlist modules to learn about
+which backend tool and clusterlist database format is used.
 
-ganglia
-
-The currently available clusterlist database types available are:
-
-.if @MANPAGE_GENDERSLLNL@ \{
-gendersllnl
-   
-\}
-   
-.if @MANPAGE_GENDERS@ \{
-genders
-   
-\}
-   
-hostsfile
-   
-none
-
-See below for additional information on backend modules and
-clusterlists.
-
-For instructions, please see the individual manpages for each
-of the functions above, or read the comments written in
+For API information, please see the individual manpages for each of
+the functions above, or read the comments written in
 /usr/include/nodeupdown.h.  Please see the
 .BR nodeupdown.conf (5)
 manpage for information about the nodeupdown configuration file.
 
+.SH BACKEND MODULES
+
+The nodeupdown library loads a backend module, which uses a particular
+backend tool, to gather up/down info for the nodeupdown library.  The
+backend module typically interacts with a clusterlist module to
+determine which nodes in a cluster are up or down.  By default, the
+following backend tools are searched for by nodeupdown in the
+following order:
+
+ganglia - See http://ganglia.sourceforge.net for more information.
+
+The nodeupdown configuration file can be used to select a specific
+backend tool.
+
+.SH CLUSTERLIST MODULES
+
+The nodeupdown library loads a clusterlist module to obtain a list of
+all cluster nodes.  There are several possible clusterlist formats
+that can be parsed.  By default, the following clusterlist modules are
+searched for by nodeupdown in the following order:
+
+.if @MANPAGE_GENDERSLLNL@ \{
+gendersllnl - For the most part, specifically used by Lawrence
+Livermore National Laboratory.
+   
+\}
+   
+.if @MANPAGE_GENDERS@ \{
+genders - Uses a genders database and the genders library to determine
+all nodes in the cluster.
+   
+\}
+   
+hostsfile - Uses a file that lists the hostname of every node in the
+cluster on a separate line.  The default hostsfile is
+@NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT@.
+   
+none - No database will be used.
+
+The nodeupdown configuration file can be used to select a specific
+clusterlist module.
 .br
 .SH FILES
 /usr/include/nodeupdown.h

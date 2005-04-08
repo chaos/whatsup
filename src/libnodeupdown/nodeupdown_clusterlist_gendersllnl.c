@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_gendersllnl.c,v 1.3 2005-04-07 06:12:28 achu Exp $
+ *  $Id: nodeupdown_clusterlist_gendersllnl.c,v 1.4 2005-04-08 01:01:11 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -111,7 +111,7 @@ int
 gendersllnl_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) 
 {
   int ret;
-  char nodebuf[NODEUPDOWN_MAXHOSTNAMELEN+1];
+  char nodebuf[NODEUPDOWN_MAXNODENAMELEN+1];
   char *nodePtr = NULL;
 
   /* Shorten hostname if necessary */
@@ -119,8 +119,8 @@ gendersllnl_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node
     {
       char *p;
  
-      memset(nodebuf, '\0', NODEUPDOWN_MAXHOSTNAMELEN+1);
-      strncpy(nodebuf, node, NODEUPDOWN_MAXHOSTNAMELEN);
+      memset(nodebuf, '\0', NODEUPDOWN_MAXNODENAMELEN+1);
+      strncpy(nodebuf, node, NODEUPDOWN_MAXNODENAMELEN);
       p = strchr(nodebuf, '.');
       *p = '\0';
       nodePtr = nodebuf;
@@ -145,7 +145,7 @@ int
 gendersllnl_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node) 
 {
   int ret;
-  char nodebuf[NODEUPDOWN_MAXHOSTNAMELEN+1];
+  char nodebuf[NODEUPDOWN_MAXNODENAMELEN+1];
   char *nodePtr = NULL;
 
   /* Shorten hostname if necessary */
@@ -153,8 +153,8 @@ gendersllnl_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node
     {
       char *p;
  
-      memset(nodebuf, '\0', NODEUPDOWN_MAXHOSTNAMELEN+1);
-      strncpy(nodebuf, node, NODEUPDOWN_MAXHOSTNAMELEN);
+      memset(nodebuf, '\0', NODEUPDOWN_MAXNODENAMELEN+1);
+      strncpy(nodebuf, node, NODEUPDOWN_MAXNODENAMELEN);
       p = strchr(nodebuf, '.');
       *p = '\0';
       nodePtr = nodebuf;
@@ -181,7 +181,7 @@ gendersllnl_clusterlist_get_nodename(nodeupdown_t handle,
                                              char *buffer, 
                                              int buflen) 
 {
-  char nodebuf[NODEUPDOWN_MAXHOSTNAMELEN+1];
+  char nodebuf[NODEUPDOWN_MAXNODENAMELEN+1];
   char *nodePtr = NULL;
 
   /* Shorten hostname if necessary */
@@ -189,8 +189,8 @@ gendersllnl_clusterlist_get_nodename(nodeupdown_t handle,
     {
       char *p;
  
-      memset(nodebuf, '\0', NODEUPDOWN_MAXHOSTNAMELEN+1);
-      strncpy(nodebuf, node, NODEUPDOWN_MAXHOSTNAMELEN);
+      memset(nodebuf, '\0', NODEUPDOWN_MAXNODENAMELEN+1);
+      strncpy(nodebuf, node, NODEUPDOWN_MAXNODENAMELEN);
       p = strchr(nodebuf, '.');
       *p = '\0';
       nodePtr = nodebuf;

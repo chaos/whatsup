@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown_load_data.3,v 1.23 2005-04-06 22:24:13 achu Exp $
+\."$Id: nodeupdown_load_data.3,v 1.24 2005-04-08 01:01:11 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -32,9 +32,9 @@ nodeupdown_load_data \- load data from ganglia
 .BI "int nodeupdown_load_data(nodeupdown_t handle, const char *hostname, int port, int timeout_len, char *reserved);"
 .br
 .SH DESCRIPTION
-\fBnodeupdown_load_data()\fR loads data from the backend tool's
-server so that the remaining nodeupdown library functions can properly
-return information about up and down nodes.
+\fBnodeupdown_load_data()\fR loads data from the nodeupdown backend
+tool's server so that the remaining nodeupdown library functions can
+properly return information about up and down nodes.
 
 \fIhandle\fR is a nodeupdown
 handle created by

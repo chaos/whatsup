@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.120 2005-04-07 17:16:34 achu Exp $
+ *  $Id: nodeupdown.c,v 1.121 2005-04-08 01:01:11 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -634,7 +634,7 @@ nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len)
 static int 
 _is_node(nodeupdown_t handle, const char *node, int up_or_down) 
 { 
-  char buffer[NODEUPDOWN_MAXHOSTNAMELEN+1];
+  char buffer[NODEUPDOWN_MAXNODENAMELEN+1];
   int ret, retval = -1;
 
   if (_loaded_handle_error_check(handle) < 0)
@@ -659,7 +659,7 @@ _is_node(nodeupdown_t handle, const char *node, int up_or_down)
   if (nodeupdown_clusterlist_get_nodename(handle, 
                                           node, 
                                           buffer, 
-                                          NODEUPDOWN_MAXHOSTNAMELEN+1) < 0)
+                                          NODEUPDOWN_MAXNODENAMELEN+1) < 0)
     return -1;
 
   if (up_or_down == NODEUPDOWN_UP_NODES)
@@ -747,7 +747,7 @@ nodeupdown_nodelist_create(nodeupdown_t handle, char ***list)
 
   for (i = 0; i < handle->max_nodes; i++) 
     {
-      if (!(nodes[i] = (char *)malloc(NODEUPDOWN_MAXHOSTNAMELEN+1))) 
+      if (!(nodes[i] = (char *)malloc(NODEUPDOWN_MAXNODENAMELEN+1))) 
         {
           for (j = 0; j < i; j++) 
             free(nodes[j]);
@@ -756,7 +756,7 @@ nodeupdown_nodelist_create(nodeupdown_t handle, char ***list)
           handle->errnum = NODEUPDOWN_ERR_OUTMEM;
           return -1;
         }
-      memset(nodes[i], '\0', NODEUPDOWN_MAXHOSTNAMELEN+1);
+      memset(nodes[i], '\0', NODEUPDOWN_MAXNODENAMELEN+1);
     }
 
   *list = nodes;
@@ -786,7 +786,7 @@ nodeupdown_nodelist_clear(nodeupdown_t handle, char **list)
           handle->errnum = NODEUPDOWN_ERR_NULLPTR;
           return -1;
         }
-      memset(list[i], '\0', NODEUPDOWN_MAXHOSTNAMELEN+1);
+      memset(list[i], '\0', NODEUPDOWN_MAXNODENAMELEN+1);
     }
 
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
