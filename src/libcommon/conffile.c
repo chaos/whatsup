@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.17 2005-03-22 07:27:08 achu Exp $
+ *  $Id: conffile.c,v 1.18 2005-04-19 23:15:54 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -216,9 +216,10 @@ _setup(conffile_t cf,
 
     cf->options = options;
     cf->options_len = options_len;
-    for (i = 0; i < options_len; i++)
-        *cf->options[i].count_ptr = 0;
-
+    for (i = 0; i < options_len; i++) {
+        if (cf->options[i].count_ptr)
+            *cf->options[i].count_ptr = 0;
+    }
     cf->app_ptr = app_ptr;
     cf->app_data = app_data;
     cf->flags = flags;
@@ -695,7 +696,8 @@ conffile_parse(conffile_t cf,
                 && ((int)options[i].option_type_arg) == 0)
             || options[i].max_count < 0
             || options[i].required_count < 0
-            || options[i].count_ptr == NULL) {
+            || (options[i].option_type != CONFFILE_OPTION_IGNORE
+                && options[i].count_ptr == NULL)) {
             cf->errnum = CONFFILE_ERR_PARAMETERS;
             return -1;
         }
@@ -704,7 +706,10 @@ conffile_parse(conffile_t cf,
     /* count_ptr cannot be identical to any other count_ptr */
     for (i = 0; i < options_len; i++) {
         for (j = 0; j < options_len; j++) {
-            if (i != j && options[i].count_ptr == options[j].count_ptr) {
+            if (i != j 
+                && options[i].option_type != CONFFILE_OPTION_IGNORE
+                && options[j].option_type != CONFFILE_OPTION_IGNORE
+                && options[i].count_ptr == options[j].count_ptr) {
                 cf->errnum = CONFFILE_ERR_PARAMETERS;
                 return -1;
             }
@@ -727,6 +732,8 @@ conffile_parse(conffile_t cf,
     cf->line_num = 0;
     /* Check required counts */
     for (i = 0; i < cf->options_len; i++) {
+        if (cf->options[i].count_ptr == NULL)
+            continue;
         if ((*cf->options[i].count_ptr) < cf->options[i].required_count) {
             strcpy(cf->optionname, cf->options[i].optionname);
             cf->errnum = CONFFILE_ERR_PARSE_OPTION_TOOFEW;

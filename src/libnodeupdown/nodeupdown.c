@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.121 2005-04-08 01:01:11 achu Exp $
+ *  $Id: nodeupdown.c,v 1.122 2005-04-19 23:15:54 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -220,7 +220,7 @@ _cb_hostnames(conffile_t cf, struct conffile_data *data, char *optionname,
   char (*hostnames)[NODEUPDOWN_MAXHOSTNAMELEN] = option_ptr;
   int i;
   
-  if (data->stringlist_len > NODEUPDOWN_CONF_HOSTNAME_MAX)
+  if (data->stringlist_len > NODEUPDOWN_CONF_HOSTNAMES_MAX)
     return -1;
 
   for (i = 0; i < data->stringlist_len; i++) 
@@ -268,7 +268,7 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd)
 {
   struct conffile_option options[] = 
     {
-      {NODEUPDOWN_CONF_HOSTNAME, CONFFILE_OPTION_LIST_STRING, -1, 
+      {NODEUPDOWN_CONF_HOSTNAMES, CONFFILE_OPTION_LIST_STRING, -1, 
        _cb_hostnames, 1, 0, &(cd->hostnames_flag),
        cd->hostnames, 0},
       {NODEUPDOWN_CONF_PORT, CONFFILE_OPTION_INT, 0, 
@@ -281,6 +281,22 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd)
       {NODEUPDOWN_CONF_CLUSTERLIST_MODULE, CONFFILE_OPTION_STRING, 0,
        conffile_string, 1, 0, &(cd->clusterlist_module_flag), 
        cd->clusterlist_module, NODEUPDOWN_MAXPATHLEN},
+      /* 
+       * Older options to be ignored by conffile library
+       */
+      {NODEUPDOWN_CONF_GMOND_HOSTNAME, CONFFILE_OPTION_IGNORE, 0, 
+       conffile_empty, 0, 0, NULL, NULL, 0},
+      {NODEUPDOWN_CONF_GMOND_HOSTNAMES, CONFFILE_OPTION_IGNORE, 0, 
+       conffile_empty, 0, 0, NULL, NULL, 0},
+      {NODEUPDOWN_CONF_GMOND_IP, CONFFILE_OPTION_IGNORE, 0, 
+       conffile_empty, 0, 0, NULL, NULL, 0},
+      {NODEUPDOWN_CONF_GMOND_PORT, CONFFILE_OPTION_IGNORE, 0, 
+       conffile_empty, 0, 0, NULL, NULL, 0},
+      {NODEUPDOWN_CONF_HOSTSFILE, CONFFILE_OPTION_IGNORE, 0, 
+       conffile_empty, 0, 0, NULL, NULL, 0},
+      {NODEUPDOWN_CONF_GENDERSFILE, CONFFILE_OPTION_IGNORE, 0, 
+       conffile_empty, 0, 0, NULL, NULL, 0},
+
     };
   conffile_t cf = NULL;
   int num, ret = -1;
@@ -304,7 +320,7 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd)
           handle->errnum = NODEUPDOWN_ERR_CONF_READ;
         else if (CONFFILE_IS_PARSE_ERR(errnum))
           handle->errnum = NODEUPDOWN_ERR_CONF_PARSE;
-        else if (CONFFILE_ERR_OUTMEM)
+        else if (errnum == CONFFILE_ERR_OUTMEM)
           handle->errnum = NODEUPDOWN_ERR_OUTMEM;
         else
           handle->errnum = NODEUPDOWN_ERR_CONF_INTERNAL;

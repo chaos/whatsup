@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_common.h,v 1.19 2005-04-07 00:20:46 achu Exp $
+ *  $Id: nodeupdown_common.h,v 1.20 2005-04-19 23:15:54 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -48,8 +48,18 @@
 
 #define NODEUPDOWN_BUFFERLEN             65536
 
-#define NODEUPDOWN_CONF_HOSTNAME                   "hostnames"
-#define NODEUPDOWN_CONF_HOSTNAME_MAX               8
+/* 
+ * Older options to be ignored by conffile library
+ */
+#define NODEUPDOWN_CONF_GMOND_HOSTNAME            "gmond_hostname"
+#define NODEUPDOWN_CONF_GMOND_HOSTNAMES           "gmond_hostnames"
+#define NODEUPDOWN_CONF_GMOND_IP                  "gmond_ip"
+#define NODEUPDOWN_CONF_GMOND_PORT                "gmond_port"
+#define NODEUPDOWN_CONF_HOSTSFILE                 "hostsfile"
+#define NODEUPDOWN_CONF_GENDERSFILE               "gendersfile"
+
+#define NODEUPDOWN_CONF_HOSTNAMES                  "hostnames"
+#define NODEUPDOWN_CONF_HOSTNAMES_MAX              8
 #define NODEUPDOWN_CONF_PORT                       "port"
 #define NODEUPDOWN_CONF_TIMEOUT_LEN                "timeout_len"
 #define NODEUPDOWN_CONF_BACKEND_MODULE             "backend_module"
@@ -76,7 +86,7 @@ struct nodeupdown {
  */
 struct nodeupdown_confdata 
 {
-  char hostnames[NODEUPDOWN_CONF_HOSTNAME_MAX+1][NODEUPDOWN_MAXHOSTNAMELEN+1];
+  char hostnames[NODEUPDOWN_CONF_HOSTNAMES_MAX+1][NODEUPDOWN_MAXHOSTNAMELEN+1];
   int hostnames_flag;
   int port;
   int port_flag;

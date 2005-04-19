@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend.c,v 1.6 2005-04-07 06:12:28 achu Exp $
+ *  $Id: nodeupdown_backend.c,v 1.7 2005-04-19 23:15:54 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -188,6 +188,7 @@ nodeupdown_backend_load_module(nodeupdown_t handle, char *backend_module)
   if (backend_module)
     {
       char filebuf[NODEUPDOWN_MAXPATHLEN+1];
+      int rv;
       
       memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
       snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/%s",
@@ -253,6 +254,8 @@ nodeupdown_backend_load_module(nodeupdown_t handle, char *backend_module)
     }
   else
     {
+      int rv;
+
       if ((rv = nodeupdown_util_search_dir_for_module(handle,
 						      NODEUPDOWN_MODULE_DIR,
 						      backend_modules,

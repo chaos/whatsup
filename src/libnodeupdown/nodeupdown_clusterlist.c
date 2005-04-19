@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist.c,v 1.7 2005-04-07 17:16:34 achu Exp $
+ *  $Id: nodeupdown_clusterlist.c,v 1.8 2005-04-19 23:15:54 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -206,7 +206,8 @@ nodeupdown_clusterlist_load_module(nodeupdown_t handle, char *clusterlist_module
   if (clusterlist_module)
     {
       char filebuf[NODEUPDOWN_MAXPATHLEN+1];
-      
+      int rv;
+
       memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
       snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/%s",
                NODEUPDOWN_MODULE_BUILDDIR, clusterlist_module);
@@ -271,6 +272,8 @@ nodeupdown_clusterlist_load_module(nodeupdown_t handle, char *clusterlist_module
     }
   else
     {
+      int rv;
+
       if ((rv = nodeupdown_util_search_dir_for_module(handle,
 						      NODEUPDOWN_MODULE_DIR,
 						      clusterlist_modules,

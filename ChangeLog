@@ -1,3 +1,10 @@
+2005-04-19  Albert Chu  <chu11@llnl.gov>
+
+	* src/libnodeupdown/nodeupdown.c (_read_conffile): Ignore older
+	options.
+
+	* src/libcommon/conffile.c (conffile_parse, _setup): Fix corner cases.
+	
 2005-04-07  Albert Chu  <chu11@llnl.gov>
 
 	* Completely re-worked to use dynamically or statically loadable
@@ -135,7 +142,7 @@
 
 	* tagged whatsup-1-3-1
 
-2003-01-15  Albert Chu  <chu11@llnl.gov>
+2004-01-15  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown_masterlist.c (_readline): fix
 	corner case.
@@ -143,7 +150,7 @@
 	* src/libnodeupdown/nodeupdown.c: list_create errors are no longer
 	INTERNAL errors, they are OUTMEM errors.
 	
-2003-01-14  Albert Chu  <chu11@llnl.gov>
+2004-01-14  Albert Chu  <chu11@llnl.gov>
 
 	* src/whatsup/whatsup.c (read_stdin, push_nodestring,
 	create_formats): New functions.
@@ -178,7 +185,7 @@
 	src/Libnodeupdown/Libnodeupdown.xs: Update appropriately for
 	changes.
 
-2003-01-12  Albert Chu  <chu11@llnl.gov>
+2004-01-12  Albert Chu  <chu11@llnl.gov>
 
 	* src/libcommon/conffile.h, src/libcommon/conffile.c: Significant
 	rework.
@@ -197,7 +204,7 @@
 	* src/libnodeupdown/nodeupdown.c (_is_node, _xml_parse_start):
 	Fixed function call ordering bug.
 
-2003-01-09  Albert Chu  <chu11@llnl.gov>
+2004-01-09  Albert Chu  <chu11@llnl.gov>
 
 	* src/libcommon/conffile.h, src/libcommon/conffile.c: New files
 
