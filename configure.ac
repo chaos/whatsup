@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.46 2005-04-08 01:01:11 achu Exp $
+## $Id: configure.ac,v 1.47 2005-04-19 23:23:16 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -71,7 +71,7 @@ AC_CHECK_HEADERS( \
 )
 
 #
-# Check for defaults paths
+# Check for default paths
 #
 AC_HOSTSFILE
 AC_NODEUPDOWN_CONF
