@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_genders_util.h,v 1.1 2005-04-22 17:56:02 achu Exp $
+ *  $Id: nodeupdown_genders_util.h,v 1.2 2005-04-22 20:44:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -30,12 +30,12 @@
 #include "nodeupdown.h"
 
 /* 
- * genders_util_init
+ * genders_util_setup
  *
- * common genders clusterlist init function
+ * common genders clusterlist setup function
  */
-int genders_util_init(nodeupdown_t handle,
-                      genders_t *genders_handle);
+int genders_util_setup(nodeupdown_t handle,
+                       genders_t *genders_handle);
 
 /* 
  * genders_util_cleanup

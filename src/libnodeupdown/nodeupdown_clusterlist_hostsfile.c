@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.4 2005-04-22 17:56:02 achu Exp $
+ *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.5 2005-04-22 20:44:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -173,12 +173,12 @@ _move_past_whitespace(char *buf)
 }
 
 /*
- * hostsfile_clusterlist_init
+ * hostsfile_clusterlist_setup
  *
- * hostsfile clusterlist module init function
+ * hostsfile clusterlist module setup function
  */
 int 
-hostsfile_clusterlist_init(nodeupdown_t handle) 
+hostsfile_clusterlist_setup(nodeupdown_t handle) 
 {
   int fd = -1, len;
   char buf[NODEUPDOWN_BUFFERLEN];
@@ -385,7 +385,7 @@ struct nodeupdown_clusterlist_module_info clusterlist_module_info =
 #endif /* !WITH_STATIC_MODULES */
   {
     "hostsfile",
-    &hostsfile_clusterlist_init,
+    &hostsfile_clusterlist_setup,
     &hostsfile_clusterlist_cleanup,
     &hostsfile_clusterlist_compelte_loading,
     &hostsfile_clusterlist_compare_to_clusterlist,

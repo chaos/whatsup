@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_config.h,v 1.1 2005-04-22 17:56:02 achu Exp $
+ *  $Id: nodeupdown_config.h,v 1.2 2005-04-22 20:44:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -31,13 +31,13 @@
 #include "nodeupdown_common.h"
 
 /*
- * Nodeupdown_config_init
+ * Nodeupdown_config_setup
  *
- * Initialize the config module
+ * Setup the config module
  *
  * Return 0 on success, -1 on error
  */
-typedef int (*Nodeupdown_config_init)(nodeupdown_t);
+typedef int (*Nodeupdown_config_setup)(nodeupdown_t);
 
 /*
  * Nodeupdown_config_cleanup
@@ -66,7 +66,7 @@ typedef int (*Nodeupdown_config_load_default)(nodeupdown_t, struct nodeupdown_co
 struct nodeupdown_config_module_info
 {
   char *config_module_name;
-  Nodeupdown_config_init init;
+  Nodeupdown_config_setup setup;
   Nodeupdown_config_cleanup cleanup;
   Nodeupdown_config_load_default load_default;
 };
@@ -90,11 +90,11 @@ int nodeupdown_config_load_module(nodeupdown_t handle);
 int nodeupdown_config_unload_module(nodeupdown_t handle);
 
 /* 
- * nodeupdown_config_init
+ * nodeupdown_config_setup
  *
- * call config module init function
+ * call config module setup function
  */
-int nodeupdown_config_init(nodeupdown_t handle);
+int nodeupdown_config_setup(nodeupdown_t handle);
 
 /* 
  * nodeupdown_config_cleanup

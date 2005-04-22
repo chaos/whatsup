@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_genders.c,v 1.6 2005-04-22 18:10:10 achu Exp $
+ *  $Id: nodeupdown_clusterlist_genders.c,v 1.7 2005-04-22 20:44:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -45,16 +45,16 @@
 static genders_t genders_handle = NULL;
 
 /*
- * genders_clusterlist_init
+ * genders_clusterlist_setup
  *
- * genders clusterlist module init function
+ * genders clusterlist module setup function
  */
 int 
-genders_clusterlist_init(nodeupdown_t handle) 
+genders_clusterlist_setup(nodeupdown_t handle) 
 {
   int rv;
 
-  rv = genders_util_init(handle, &genders_handle);
+  rv = genders_util_setup(handle, &genders_handle);
   if (rv < 0)
     {
       if (handle->errnum == NODEUPDOWN_ERR_INTERNAL)
@@ -213,7 +213,7 @@ struct nodeupdown_clusterlist_module_info clusterlist_module_info =
 #endif /* !WITH_STATIC_MODULES */
   {
     "genders",
-    &genders_clusterlist_init,
+    &genders_clusterlist_setup,
     &genders_clusterlist_cleanup,
     &genders_clusterlist_complete_loading,
     &genders_clusterlist_compare_to_clusterlist,

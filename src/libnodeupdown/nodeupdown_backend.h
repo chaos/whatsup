@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend.h,v 1.4 2005-04-06 21:50:19 achu Exp $
+ *  $Id: nodeupdown_backend.h,v 1.5 2005-04-22 20:44:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -51,13 +51,13 @@ typedef int (*Nodeupdown_backend_default_port)(nodeupdown_t);
 typedef int (*Nodeupdown_backend_default_timeout_len)(nodeupdown_t);
 
 /*
- * Nodeupdown_backend_init
+ * Nodeupdown_backend_setup
  *
- * Initialize the backend module
+ * Setup the backend module
  *
  * Return 0 on success, -1 on error
  */
-typedef int (*Nodeupdown_backend_init)(nodeupdown_t);
+typedef int (*Nodeupdown_backend_setup)(nodeupdown_t);
 
 /*
  * Nodeupdown_backend_cleanup
@@ -89,7 +89,7 @@ struct nodeupdown_backend_module_info
   Nodeupdown_backend_default_hostname default_hostname;
   Nodeupdown_backend_default_port default_port;
   Nodeupdown_backend_default_timeout_len default_timeout_len;
-  Nodeupdown_backend_init init;
+  Nodeupdown_backend_setup setup;
   Nodeupdown_backend_cleanup cleanup;
   Nodeupdown_backend_get_updown_data get_updown_data;
 };
@@ -134,11 +134,11 @@ int nodeupdown_backend_default_port(nodeupdown_t handle);
 int nodeupdown_backend_default_timeout_len(nodeupdown_t handle);
 
 /* 
- * nodeupdown_backend_init
+ * nodeupdown_backend_setup
  *
- * call backend module init function
+ * call backend module setup function
  */
-int nodeupdown_backend_init(nodeupdown_t handle);
+int nodeupdown_backend_setup(nodeupdown_t handle);
 
 /* 
  * nodeupdown_backend_cleanup

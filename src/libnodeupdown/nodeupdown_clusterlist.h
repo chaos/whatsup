@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist.h,v 1.2 2005-04-06 21:50:19 achu Exp $
+ *  $Id: nodeupdown_clusterlist.h,v 1.3 2005-04-22 20:44:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -30,13 +30,13 @@
 #include "nodeupdown.h"
 
 /*
- * Nodeupdown_clusterlist_init
+ * Nodeupdown_clusterlist_setup
  *
- * Initialize the clusterlist module
+ * Setup the clusterlist module
  *
  * Return 0 on success, -1 on error
  */
-typedef int (*Nodeupdown_clusterlist_init)(nodeupdown_t);
+typedef int (*Nodeupdown_clusterlist_setup)(nodeupdown_t);
 
 /*
  * Nodeupdown_clusterlist_cleanup
@@ -120,7 +120,7 @@ typedef int (*Nodeupdown_clusterlist_increase_max_nodes)(nodeupdown_t);
 struct nodeupdown_clusterlist_module_info
 {
   char *clusterlist_module_name;
-  Nodeupdown_clusterlist_init init;
+  Nodeupdown_clusterlist_setup setup;
   Nodeupdown_clusterlist_cleanup cleanup;
   Nodeupdown_clusterlist_complete_loading complete_loading;
   Nodeupdown_clusterlist_compare_to_clusterlist compare_to_clusterlist;
@@ -150,16 +150,16 @@ int nodeupdown_clusterlist_load_module(nodeupdown_t handle, char *clusterlist_mo
 int nodeupdown_clusterlist_unload_module(nodeupdown_t handle);
 
 /* 
- * nodeupdown_clusterlist_init
+ * nodeupdown_clusterlist_setup
  *
- * call clusterlist module init function
+ * call clusterlist module setup function
  */
-int nodeupdown_clusterlist_init(nodeupdown_t handle);
+int nodeupdown_clusterlist_setup(nodeupdown_t handle);
 
 /* 
  * nodeupdown_clusterlist_cleanup
  *
- * call clusterlist module init function
+ * call clusterlist module cleanup function
  */
 int nodeupdown_clusterlist_cleanup(nodeupdown_t handle);
 

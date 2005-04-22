@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup_options.h,v 1.5 2005-04-06 21:50:19 achu Exp $
+ *  $Id: whatsup_options.h,v 1.6 2005-04-22 20:44:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -37,13 +37,13 @@
 #endif /* HAVE_GETOPT_H */
 
 /*
- * Whatsup_options_init
+ * Whatsup_options_setup
  *
- * Initialize options module
+ * Setup options module
  *
  * Return 0 on success, -1 on error.
  */
-typedef int (*Whatsup_options_init)(void);
+typedef int (*Whatsup_options_setup)(void);
 
 /*
  * Whatsup_options_cleanup
@@ -125,7 +125,7 @@ typedef int (*Whatsup_options_convert_nodenames)(char *nodes, char *buf, int buf
 struct whatsup_options_module_info
 {
   char *options_module_name;
-  Whatsup_options_init init;
+  Whatsup_options_setup setup;
   Whatsup_options_cleanup cleanup;
   Whatsup_options_output_usage output_usage;
   Whatsup_options_options_string options_string;

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_none.c,v 1.3 2005-04-07 06:12:28 achu Exp $
+ *  $Id: nodeupdown_clusterlist_none.c,v 1.4 2005-04-22 20:44:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -41,12 +41,12 @@
 #include "hostlist.h"
 
 /*
- * none_clusterlist_init
+ * none_clusterlist_setup
  *
- * none clusterlist module init function
+ * none clusterlist module setup function
  */
 int 
-none_clusterlist_init(nodeupdown_t handle) 
+none_clusterlist_setup(nodeupdown_t handle) 
 {
   return 0;
 }
@@ -145,7 +145,7 @@ struct nodeupdown_clusterlist_module_info clusterlist_module_info =
 #endif /* !WITH_STATIC_MODULES */
   {
     "none",
-    &none_clusterlist_init,
+    &none_clusterlist_setup,
     &none_clusterlist_cleanup,
     &none_clusterlist_complete_loading,
     &none_clusterlist_compare_to_clusterlist,

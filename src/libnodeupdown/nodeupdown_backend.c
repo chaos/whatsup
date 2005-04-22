@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend.c,v 1.8 2005-04-22 17:56:02 achu Exp $
+ *  $Id: nodeupdown_backend.c,v 1.9 2005-04-22 20:44:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -112,7 +112,7 @@ _load_module(nodeupdown_t handle,
       || !backend_module_info->default_hostname
       || !backend_module_info->default_port
       || !backend_module_info->default_timeout_len
-      || !backend_module_info->init
+      || !backend_module_info->setup
       || !backend_module_info->cleanup
       || !backend_module_info->get_updown_data)
     {
@@ -301,9 +301,9 @@ nodeupdown_backend_default_timeout_len(nodeupdown_t handle)
 }
 
 int 
-nodeupdown_backend_init(nodeupdown_t handle)
+nodeupdown_backend_setup(nodeupdown_t handle)
 {
-  return (*backend_module_info->init)(handle);
+  return (*backend_module_info->setup)(handle);
 }
 
 int 

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_config.c,v 1.1 2005-04-22 17:56:02 achu Exp $
+ *  $Id: nodeupdown_config.c,v 1.2 2005-04-22 20:44:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -109,7 +109,7 @@ _load_module(nodeupdown_t handle,
 #endif /* !WITH_STATIC_MODULES */
 
   if (!config_module_info->config_module_name
-      || !config_module_info->init
+      || !config_module_info->setup
       || !config_module_info->cleanup
       || !config_module_info->load_default)
     {
@@ -200,9 +200,9 @@ nodeupdown_config_unload_module(nodeupdown_t handle)
 }
  
 int 
-nodeupdown_config_init(nodeupdown_t handle)
+nodeupdown_config_setup(nodeupdown_t handle)
 {
-  return (*config_module_info->init)(handle);
+  return (*config_module_info->setup)(handle);
 }
 
 int 

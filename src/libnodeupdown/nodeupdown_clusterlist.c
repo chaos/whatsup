@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist.c,v 1.9 2005-04-22 17:56:02 achu Exp $
+ *  $Id: nodeupdown_clusterlist.c,v 1.10 2005-04-22 20:44:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -125,7 +125,7 @@ _load_module(nodeupdown_t handle,
 #endif /* !WITH_STATIC_MODULES */
 
   if (!clusterlist_module_info->clusterlist_module_name
-      || !clusterlist_module_info->init
+      || !clusterlist_module_info->setup
       || !clusterlist_module_info->complete_loading
       || !clusterlist_module_info->cleanup
       || !clusterlist_module_info->compare_to_clusterlist
@@ -301,9 +301,9 @@ nodeupdown_clusterlist_unload_module(nodeupdown_t handle)
 }
  
 int 
-nodeupdown_clusterlist_init(nodeupdown_t handle)
+nodeupdown_clusterlist_setup(nodeupdown_t handle)
 {
-  return (*clusterlist_module_info->init)(handle);
+  return (*clusterlist_module_info->setup)(handle);
 }
  
 int 

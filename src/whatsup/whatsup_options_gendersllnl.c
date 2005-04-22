@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup_options_gendersllnl.c,v 1.8 2005-04-07 06:12:28 achu Exp $
+ *  $Id: whatsup_options_gendersllnl.c,v 1.9 2005-04-22 20:44:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -51,12 +51,12 @@ static int gendersllnl_option_a_registered = 0;
 static int gendersllnl_list_altnames_flag = 0;
 
 /* 
- * gendersllnl_options_init
+ * gendersllnl_options_setup
  * 
- * gendersllnl init func
+ * gendersllnl setup func
  */
 int 
-gendersllnl_options_init(void)
+gendersllnl_options_setup(void)
 {
   return 0;
 }
@@ -188,7 +188,7 @@ struct whatsup_options_module_info options_module_info =
 #endif /* !WITH_STATIC_MODULES */
   {
     "gendersllnl",
-    &gendersllnl_options_init,
+    &gendersllnl_options_setup,
     &gendersllnl_options_cleanup,
     &gendersllnl_options_output_usage,
     &gendersllnl_options_options_string,

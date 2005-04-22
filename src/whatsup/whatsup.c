@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.98 2005-04-07 17:16:35 achu Exp $
+ *  $Id: whatsup.c,v 1.99 2005-04-22 20:44:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -228,8 +228,8 @@ _load_options_module(struct whatsup_data *w,
 	goto already_loaded;
     }
 
-  if ((*w->module_info[i]->init)() < 0)
-    err_exit("_load_options_module:: %s init error", 
+  if ((*w->module_info[i]->setup)() < 0)
+    err_exit("_load_options_module:: %s setup error", 
              w->module_info[i]->options_module_name);
 
   w->module_loaded_count++;

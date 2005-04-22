@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.123 2005-04-22 17:56:02 achu Exp $
+ *  $Id: nodeupdown.c,v 1.124 2005-04-22 20:44:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -369,7 +369,7 @@ nodeupdown_load_data(nodeupdown_t handle,
   if (nodeupdown_backend_load_module(handle, backend_module) < 0)
     goto cleanup;
 
-  if (nodeupdown_backend_init(handle) < 0)
+  if (nodeupdown_backend_setup(handle) < 0)
     goto cleanup;
 
   /* 
@@ -381,7 +381,7 @@ nodeupdown_load_data(nodeupdown_t handle,
   if (nodeupdown_clusterlist_load_module(handle, clusterlist_module) < 0)
     goto cleanup;
 
-  if (nodeupdown_clusterlist_init(handle) < 0)
+  if (nodeupdown_clusterlist_setup(handle) < 0)
     goto cleanup;
 
   /* 
@@ -390,7 +390,7 @@ nodeupdown_load_data(nodeupdown_t handle,
   if (nodeupdown_config_load_module(handle) < 0)
     goto cleanup;
 
-  if (nodeupdown_config_init(handle) < 0)
+  if (nodeupdown_config_setup(handle) < 0)
     goto cleanup;
 
   _init_nodeupdown_confdata(handle, &module_confdata);
