@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown.conf.5.in,v 1.13 2005-04-08 01:01:11 achu Exp $
+\."$Id: nodeupdown.conf.5.in,v 1.14 2005-04-22 17:56:02 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -69,9 +69,8 @@ Specify the timeout length in seconds.
 
 Specify the backend module to use.  
 .if !@MANPAGE_STATIC_MODULES@ \{
-Backend modules are first searched for in the nodeupdown package
-library, @NODEUPDOWN_MODULE_DIR@.  They are then searched for in the
-current directory.
+Backend modules are searched for in the nodeupdown package library,
+@NODEUPDOWN_MODULE_DIR@.
 \}
 
 The following backend modules are available by default:
@@ -89,9 +88,8 @@ ganglia
 Specify the clusterlist module to use.  
 
 .if !@MANPAGE_STATIC_MODULES@ \{
-Clusterlist modules are first searched for in the nodeupdown package
-library, @NODEUPDOWN_MODULE_DIR@.  They are then searched for in the
-current directory.
+Clusterlist modules are searched for in the nodeupdown package
+library, @NODEUPDOWN_MODULE_DIR@.
 \}
 
 The following clusterlist modules are available by default:

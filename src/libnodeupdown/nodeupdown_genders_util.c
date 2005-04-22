@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_genders_util.h,v 1.3 2005-04-22 17:56:02 achu Exp $
+ *  $Id: nodeupdown_genders_util.c,v 1.1 2005-04-22 17:56:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -24,25 +24,50 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
 \*****************************************************************************/
 
-#ifndef _NODEUPDOWN_CLUSTERLIST_GENDERS_UTIL_H
-#define _NODEUPDOWN_CLUSTERLIST_GENDERS_UTIL_H
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif /* HAVE_CONFIG_H */
+
+#include <stdio.h>
+#include <stdlib.h>
+#if STDC_HEADERS
+#include <string.h>
+#endif /* STDC_HEADERS */
+#include <genders.h>
 
 #include "nodeupdown.h"
+#include "nodeupdown_common.h"
+#include "nodeupdown_genders_util.h"
 
-/* 
- * genders_util_clusterlist_complete_loading
- *
- * common genders clusterlist complete_loading function
- */
-int genders_util_clusterlist_complete_loading(nodeupdown_t handle, 
-                                              genders_t genders_handle); 
+int 
+genders_util_init(nodeupdown_t handle,
+                  genders_t *genders_handle)
+{
+  if (!(*genders_handle = genders_handle_create()))
+    {
+      handle->errnum = NODEUPDOWN_ERR_OUTMEM;
+      goto cleanup;
+    }
 
-/* 
- * genders_util_clusterlist_compare_to_clusterlist
- *
- * common genders clusterlist compare_to_clusterlist function
- */
-int genders_util_clusterlist_compare_to_clusterlist(nodeupdown_t handle,
-                                                    genders_t genders_handle) ;
+  if (genders_load_data(*genders_handle, NULL) < 0)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      goto cleanup;
+    }
 
-#endif /* _NODEUPDOWN_CLUSTERLIST_GENDERS_UTIL_H */
+  return 0;
+
+ cleanup:
+  genders_handle_destroy(*genders_handle);
+  *genders_handle = NULL;
+  return -1;
+}
+
+int 
+genders_util_cleanup(nodeupdown_t handle,
+                     genders_t *genders_handle) 
+{
+  genders_handle_destroy(*genders_handle);
+  *genders_handle = NULL;
+  return 0;
+}

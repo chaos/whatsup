@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.h,v 1.34 2005-04-06 22:24:13 achu Exp $
+ *  $Id: nodeupdown.h,v 1.35 2005-04-22 17:56:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -47,21 +47,22 @@
 #define NODEUPDOWN_ERR_NULLPTR              11
 #define NODEUPDOWN_ERR_OUTMEM               12
 #define NODEUPDOWN_ERR_NOTFOUND             13
-#define NODEUPDOWN_ERR_BACKEND_INTERNAL     14
-#define NODEUPDOWN_ERR_CLUSTERLIST_OPEN     15
-#define NODEUPDOWN_ERR_CLUSTERLIST_READ     16
-#define NODEUPDOWN_ERR_CLUSTERLIST_PARSE    17
-#define NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL 18
-#define NODEUPDOWN_ERR_CONF_OPEN            19
-#define NODEUPDOWN_ERR_CONF_READ            20
-#define NODEUPDOWN_ERR_CONF_PARSE           21
-#define NODEUPDOWN_ERR_CONF_INPUT           22
-#define NODEUPDOWN_ERR_CONF_INTERNAL        23
-#define NODEUPDOWN_ERR_XML                  24
-#define NODEUPDOWN_ERR_HOSTLIST             25
-#define NODEUPDOWN_ERR_MAGIC                26
-#define NODEUPDOWN_ERR_INTERNAL             27
-#define NODEUPDOWN_ERR_ERRNUMRANGE          28
+#define NODEUPDOWN_ERR_CLUSTERLIST_OPEN     14
+#define NODEUPDOWN_ERR_CLUSTERLIST_READ     15
+#define NODEUPDOWN_ERR_CLUSTERLIST_PARSE    16
+#define NODEUPDOWN_ERR_CLUSTERLIST_MODULE   17
+#define NODEUPDOWN_ERR_BACKEND_MODULE       18
+#define NODEUPDOWN_ERR_CONFIG_MODULE        19
+#define NODEUPDOWN_ERR_CONF_OPEN            20
+#define NODEUPDOWN_ERR_CONF_READ            21
+#define NODEUPDOWN_ERR_CONF_PARSE           22
+#define NODEUPDOWN_ERR_CONF_INPUT           23
+#define NODEUPDOWN_ERR_CONF_INTERNAL        24
+#define NODEUPDOWN_ERR_XML                  25
+#define NODEUPDOWN_ERR_HOSTLIST             26
+#define NODEUPDOWN_ERR_MAGIC                27
+#define NODEUPDOWN_ERR_INTERNAL             28
+#define NODEUPDOWN_ERR_ERRNUMRANGE          29
 
 typedef struct nodeupdown *nodeupdown_t;
 

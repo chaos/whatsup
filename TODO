@@ -1,1 +1,3 @@
 - repackage for multilib
+- export funcs/API/etc. for people to write their own config/backend/clusterlist modules
+- combine clusterlist and config??

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.122 2005-04-19 23:15:54 achu Exp $
+ *  $Id: nodeupdown.c,v 1.123 2005-04-22 17:56:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -38,6 +38,7 @@
 #include "nodeupdown_common.h"
 #include "nodeupdown_backend.h"
 #include "nodeupdown_clusterlist.h"
+#include "nodeupdown_config.h"
 #include "nodeupdown_util.h"
 #include "conffile.h"
 #include "hostlist.h"
@@ -65,11 +66,12 @@ static char * nodeupdown_errmsg[] =
     "null pointer reached in list",
     "out of memory",
     "node not found",
-    "internal backend module error",
     "open clusterlist database error",
     "read clusterlist database error",
     "parse clusterlist database error",
     "internal clusterlist module error",
+    "internal backend module error",
+    "internal config module error",
     "open config file error",
     "read config file error",
     "parse config file error",
@@ -182,6 +184,8 @@ _free_handle_data(nodeupdown_t handle)
   nodeupdown_backend_unload_module(handle);
   nodeupdown_clusterlist_cleanup(handle);
   nodeupdown_clusterlist_unload_module(handle);
+  nodeupdown_config_cleanup(handle);
+  nodeupdown_config_unload_module(handle);
   hostlist_destroy(handle->up_nodes);
   hostlist_destroy(handle->down_nodes);
   _initialize_handle(handle);
@@ -217,7 +221,7 @@ _cb_hostnames(conffile_t cf, struct conffile_data *data, char *optionname,
               int option_type, void *option_ptr, int option_data,
               void *app_ptr, int app_data) 
 {
-  char (*hostnames)[NODEUPDOWN_MAXHOSTNAMELEN] = option_ptr;
+  char (*hostnames)[NODEUPDOWN_MAXHOSTNAMELEN+1] = option_ptr;
   int i;
   
   if (data->stringlist_len > NODEUPDOWN_CONF_HOSTNAMES_MAX)
@@ -244,16 +248,6 @@ _init_nodeupdown_confdata(nodeupdown_t handle, struct nodeupdown_confdata *cd)
 {
   memset(cd, '\0', sizeof(struct nodeupdown_confdata));
   return 0;
-}
-
-/*  
- * _cleanup_nodeupdown_confdata
- *
- * cleanup nodeupdown_confdata structure data
- */
-static void
-_cleanup_nodeupdown_confdata(nodeupdown_t handle, struct nodeupdown_confdata *cd)
-{
 }
 
 /* 
@@ -341,7 +335,8 @@ nodeupdown_load_data(nodeupdown_t handle,
                      int timeout_len, 
                      char *reserved)
 {
-  struct nodeupdown_confdata cd;
+  struct nodeupdown_confdata conffile_confdata;
+  struct nodeupdown_confdata module_confdata;
   char *backend_module = NULL;
   char *clusterlist_module = NULL;
 
@@ -361,16 +356,15 @@ nodeupdown_load_data(nodeupdown_t handle,
    * which module to load.
    */
 
-  _init_nodeupdown_confdata(handle, &cd);
-
-  if (_read_conffile(handle, &cd) < 0)
+  _init_nodeupdown_confdata(handle, &conffile_confdata);
+  if (_read_conffile(handle, &conffile_confdata) < 0)
     goto cleanup;
 
   /* 
    * Load backend module
    */
-  if (cd.backend_module_flag)
-    backend_module = cd.backend_module;
+  if (conffile_confdata.backend_module_flag)
+    backend_module = conffile_confdata.backend_module;
   
   if (nodeupdown_backend_load_module(handle, backend_module) < 0)
     goto cleanup;
@@ -381,13 +375,26 @@ nodeupdown_load_data(nodeupdown_t handle,
   /* 
    * Load clusterlist module
    */
-  if (cd.clusterlist_module_flag)
-    clusterlist_module = cd.clusterlist_module;
+  if (conffile_confdata.clusterlist_module_flag)
+    clusterlist_module = conffile_confdata.clusterlist_module;
   
   if (nodeupdown_clusterlist_load_module(handle, clusterlist_module) < 0)
     goto cleanup;
 
   if (nodeupdown_clusterlist_init(handle) < 0)
+    goto cleanup;
+
+  /* 
+   * Load config module
+   */
+  if (nodeupdown_config_load_module(handle) < 0)
+    goto cleanup;
+
+  if (nodeupdown_config_init(handle) < 0)
+    goto cleanup;
+
+  _init_nodeupdown_confdata(handle, &module_confdata);
+  if (nodeupdown_config_load_default(handle, &module_confdata) < 0)
     goto cleanup;
 
   if (!(handle->up_nodes = hostlist_create(NULL))) 
@@ -404,30 +411,50 @@ nodeupdown_load_data(nodeupdown_t handle,
 
   if (port <= 0)
     {
-      if (cd.port_flag)
-        port = cd.port;
+      if (conffile_confdata.port_flag)
+        port = conffile_confdata.port;
+      else if (module_confdata.port_flag)
+        port = module_confdata.port;
       else
         port = nodeupdown_backend_default_port(handle);
     }
   
   if (timeout_len <= 0)
     {
-      if (cd.timeout_len_flag)
-        timeout_len = cd.timeout_len;
+      if (conffile_confdata.timeout_len_flag)
+        timeout_len = conffile_confdata.timeout_len;
+      else if (module_confdata.timeout_len_flag)
+        timeout_len = module_confdata.timeout_len;
       else
         timeout_len = nodeupdown_backend_default_timeout_len(handle);
     }
 
-  if (!hostname && cd.hostnames_flag)
+  if (hostname)
     {
+      if (nodeupdown_backend_get_updown_data(handle, 
+                                             hostname,
+                                             port, 
+                                             timeout_len,
+                                             reserved) < 0)
+        goto cleanup;
+    }
+  else if (conffile_confdata.hostnames_flag 
+           || module_confdata.hostnames_flag)
+    {
+      char (*hostnames)[NODEUPDOWN_MAXHOSTNAMELEN+1];
       int i;
+      
+      if (conffile_confdata.hostnames_flag)
+        hostnames = conffile_confdata.hostnames;
+      else
+        hostnames = module_confdata.hostnames;
       
       for (i = 0; i <= NODEUPDOWN_MAXHOSTNAMELEN; i++)
         {
-          if (strlen(cd.hostnames[i]) > 0)
+          if (strlen(hostnames[i]) > 0)
             {
               if (nodeupdown_backend_get_updown_data(handle, 
-                                                     cd.hostnames[i],
+                                                     hostnames[i],
                                                      port,
                                                      timeout_len,
                                                      reserved) < 0)
@@ -436,21 +463,19 @@ nodeupdown_load_data(nodeupdown_t handle,
                 break;
             }
         }
-
+      
       if (i > NODEUPDOWN_MAXHOSTNAMELEN)
-        goto cleanup;
+        {
+          handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+          goto cleanup;
+        }
     }
-  else 
+  else
     {
       char *hostnamePtr;
 
-      if (!hostname)
-        {
-          if (!(hostnamePtr = nodeupdown_backend_default_hostname(handle)))
-            goto cleanup;
-        }
-      else
-        hostnamePtr = (char *)hostname;
+      if (!(hostnamePtr = nodeupdown_backend_default_hostname(handle)))
+        goto cleanup;
 
       if (nodeupdown_backend_get_updown_data(handle, 
                                              hostnamePtr,
@@ -466,12 +491,10 @@ nodeupdown_load_data(nodeupdown_t handle,
   /* loading complete */
   handle->is_loaded++;
 
-  _cleanup_nodeupdown_confdata(handle, &cd);
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return 0;
 
  cleanup:
-  _cleanup_nodeupdown_confdata(handle, &cd);
   _free_handle_data(handle);
   return -1;
 }

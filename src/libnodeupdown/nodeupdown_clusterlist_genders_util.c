@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_genders_util.c,v 1.2 2005-04-06 21:50:19 achu Exp $
+ *  $Id: nodeupdown_clusterlist_genders_util.c,v 1.3 2005-04-22 17:56:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -41,39 +41,6 @@
 #include "hostlist.h"
 
 int 
-genders_util_clusterlist_init(nodeupdown_t handle,
-                              genders_t *genders_handle)
-{
-  if (!(*genders_handle = genders_handle_create()))
-    {
-      handle->errnum = NODEUPDOWN_ERR_OUTMEM;
-      goto cleanup;
-    }
-
-  if (genders_load_data(*genders_handle, NULL) < 0)
-    {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_OPEN;
-      goto cleanup;
-    }
-
-  return 0;
-
- cleanup:
-  genders_handle_destroy(*genders_handle);
-  *genders_handle = NULL;
-  return -1;
-}
-
-int 
-genders_util_clusterlist_cleanup(nodeupdown_t handle,
-                                 genders_t *genders_handle) 
-{
-  genders_handle_destroy(*genders_handle);
-  *genders_handle = NULL;
-  return 0;
-}
-
-int 
 genders_util_clusterlist_complete_loading(nodeupdown_t handle, 
                                           genders_t genders_handle) 
 {
@@ -91,13 +58,13 @@ genders_util_clusterlist_compare_to_clusterlist(nodeupdown_t handle,
   /* get all genders nodes */
   if ((num = genders_nodelist_create(genders_handle, &nlist)) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
       goto cleanup;
     }
    
   if (genders_getnodes(genders_handle, nlist, num, NULL, NULL) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
       goto cleanup;
     }
    
@@ -117,7 +84,7 @@ genders_util_clusterlist_compare_to_clusterlist(nodeupdown_t handle,
  
   if (genders_nodelist_destroy(genders_handle, nlist) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
       goto cleanup;
     }
  

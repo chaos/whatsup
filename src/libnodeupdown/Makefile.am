@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.34 2005-04-07 17:16:34 achu Exp $
+## $Id: Makefile.am,v 1.35 2005-04-22 17:56:02 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -13,6 +13,9 @@ NODEUPDOWN_BACKEND_OTHER_FLAGS = -Wl,--version-script=$(NODEUPDOWN_BACKEND_VERSI
 
 NODEUPDOWN_CLUSTERLIST_VERSION_SCRIPT = $(srcdir)/nodeupdown_clusterlist.map
 NODEUPDOWN_CLUSTERLIST_OTHER_FLAGS = -Wl,--version-script=$(NODEUPDOWN_CLUSTERLIST_VERSION_SCRIPT)
+
+NODEUPDOWN_CONFIG_VERSION_SCRIPT = $(srcdir)/nodeupdown_config.map
+NODEUPDOWN_CONFIG_OTHER_FLAGS = -Wl,--version-script=$(NODEUPDOWN_CONFIG_VERSION_SCRIPT)
 endif
 
 #
@@ -20,14 +23,17 @@ endif
 #
 
 if WITH_GENDERSLLNL
-GENDERSLLNL_STATIC_SOURCES  = nodeupdown_clusterlist_gendersllnl.c
-GENDERS_UTIL_STATIC_SOURCES = nodeupdown_clusterlist_genders_util.c
+GENDERSLLNL_STATIC_SOURCES  = nodeupdown_clusterlist_gendersllnl.c \
+			      nodeupdown_config_gendersllnl.c
+GENDERS_UTIL_STATIC_SOURCES = nodeupdown_clusterlist_genders_util.c \
+			      nodeupdown_genders_util.c
 GENDERSLLNL_STATIC_LIBS     = $(GENDERSLLNL_LIBS)
 endif
  
 if WITH_GENDERS
 GENDERS_STATIC_SOURCES      = nodeupdown_clusterlist_genders.c
-GENDERS_UTIL_STATIC_SOURCES = nodeupdown_clusterlist_genders_util.c
+GENDERS_UTIL_STATIC_SOURCES = nodeupdown_clusterlist_genders_util.c \
+			      nodeupdown_genders_util.c
 GENDERS_STATIC_LIBS         = $(GENDERS_LIBS)
 endif
 
@@ -55,6 +61,8 @@ noinst_HEADERS  = nodeupdown_backend.h \
 		  nodeupdown_clusterlist.h \
 		  nodeupdown_clusterlist_util.h \
 		  nodeupdown_clusterlist_genders_util.h \
+		  nodeupdown_config.h \
+		  nodeupdown_genders_util.h \
 		  nodeupdown_util.h
 
 lib_LTLIBRARIES = libnodeupdown.la
@@ -67,6 +75,7 @@ libnodeupdown_la_CFLAGS = -D_REENTRANT -I ../../config \
 libnodeupdown_la_SOURCES = nodeupdown.c \
 			   nodeupdown_backend.c \
 			   nodeupdown_clusterlist.c \
+			   nodeupdown_config.h \
 			   nodeupdown_util.c \
 			   $(STATIC_MODULE_SOURCES)
 
@@ -88,6 +97,7 @@ MODULE_FLAGS = -module -avoid-version
 
 if WITH_GENDERSLLNL
 GENDERSLLNL_CLUSTERLIST_MODULE = nodeupdown_clusterlist_gendersllnl.la
+GENDERSLLNL_CONFIG_MODULE      = nodeupdown_config_gendersllnl.la
 endif
  
 if WITH_GENDERS
@@ -101,7 +111,8 @@ nodeupdownmodulelib_LTLIBRARIES = \
 	$(GENDERSLLNL_CLUSTERLIST_MODULE) \
 	$(GENDERS_CLUSTERLIST_MODULE) \
 	nodeupdown_clusterlist_hostsfile.la \
-	nodeupdown_clusterlist_none.la
+	nodeupdown_clusterlist_none.la \
+	$(GENDERSLLNL_CONFIG_MODULE)
 endif
 
 nodeupdown_backend_ganglia_la_SOURCES = \
@@ -119,6 +130,7 @@ nodeupdown_backend_ganglia_la_LIBADD = \
 nodeupdown_clusterlist_gendersllnl_la_SOURCES = \
 	nodeupdown_clusterlist_gendersllnl.c \
 	nodeupdown_clusterlist_genders_util.c \
+	nodeupdown_genders_util.c \
 	nodeupdown_clusterlist_util.c
 nodeupdown_clusterlist_gendersllnl_la_LDFLAGS = \
 	$(MODULE_FLAGS) \
@@ -132,6 +144,7 @@ nodeupdown_clusterlist_gendersllnl_la_LIBADD = \
 nodeupdown_clusterlist_genders_la_SOURCES = \
 	nodeupdown_clusterlist_genders.c \
 	nodeupdown_clusterlist_genders_util.c \
+	nodeupdown_genders_util.c \
 	nodeupdown_clusterlist_util.c
 nodeupdown_clusterlist_genders_la_LDFLAGS = \
 	$(MODULE_FLAGS) \
@@ -161,6 +174,16 @@ nodeupdown_clusterlist_none_la_LDFLAGS = \
 	$(NODEUPDOWN_CLUSTERLIST_OTHER_FLAGS) 
 nodeupdown_clusterlist_none_la_CFLAGS  = \
         -I$(srcdir)/../libcommon
+
+nodeupdown_config_gendersllnl_la_SOURCES = \
+	nodeupdown_config_gendersllnl.c \
+	nodeupdown_genders_util.c
+nodeupdown_config_gendersllnl_la_LDFLAGS = \
+	$(MODULE_FLAGS) \
+	$(GENDERSLLNL_LIBS) \
+	$(NODEUPDOWN_CONFIG_OTHER_FLAGS)
+nodeupdown_config_gendersllnl_la_CFLAGS  = \
+	-I$(srcdir)/../libcommon
 
 ../libcommon/libcommon.la: force-dependency-check
 	@cd `dirname $@` && make `basename $@`

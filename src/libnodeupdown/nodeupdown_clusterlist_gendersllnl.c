@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_gendersllnl.c,v 1.4 2005-04-08 01:01:11 achu Exp $
+ *  $Id: nodeupdown_clusterlist_gendersllnl.c,v 1.5 2005-04-22 17:56:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -40,6 +40,7 @@
 #include "nodeupdown_clusterlist.h"
 #include "nodeupdown_clusterlist_util.h"
 #include "nodeupdown_clusterlist_genders_util.h"
+#include "nodeupdown_genders_util.h"
 
 static genders_t gendersllnl_handle = NULL;
 
@@ -65,6 +66,12 @@ gendersllnl_clusterlist_init(nodeupdown_t handle)
       genders_index_attrvals(gendersllnl_handle, GENDERS_ALTNAME_ATTRIBUTE);
     }
 #endif /* HAVE_GENDERS_INDEX_ATTRVALS */
+
+  if (rv < 0)
+    {
+      if (handle->errnum == NODEUPDOWN_ERR_INTERNAL)
+        handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_OPEN;
+    }
 
   return rv;
 }
@@ -130,7 +137,7 @@ gendersllnl_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node
 
   if ((ret = genders_isnode_or_altnode(gendersllnl_handle, nodePtr)) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
       return -1;
     }
   return ret;
@@ -164,7 +171,7 @@ gendersllnl_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node
 
   if ((ret = genders_isnode_or_altnode(gendersllnl_handle, nodePtr)) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
       return -1;
     }
   return ret;
@@ -200,7 +207,7 @@ gendersllnl_clusterlist_get_nodename(nodeupdown_t handle,
 
   if (genders_to_gendname(gendersllnl_handle, nodePtr, buffer, buflen) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
       return -1;
     }
   return 0;

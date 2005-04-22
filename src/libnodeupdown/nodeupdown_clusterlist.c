@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist.c,v 1.8 2005-04-19 23:15:54 achu Exp $
+ *  $Id: nodeupdown_clusterlist.c,v 1.9 2005-04-22 17:56:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -113,13 +113,13 @@ _load_module(nodeupdown_t handle,
 
   if (!(clusterlist_module_dl_handle = lt_dlopen(module_path)))
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
       goto cleanup;
     }
 
   if (!(clusterlist_module_info = (struct nodeupdown_clusterlist_module_info *)lt_dlsym(clusterlist_module_dl_handle, "clusterlist_module_info")))
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
       goto cleanup;
     }
 #endif /* !WITH_STATIC_MODULES */
@@ -134,7 +134,7 @@ _load_module(nodeupdown_t handle,
       || !clusterlist_module_info->get_nodename
       || !clusterlist_module_info->increase_max_nodes)
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
       goto cleanup;
     }
 
@@ -248,51 +248,12 @@ nodeupdown_clusterlist_load_module(nodeupdown_t handle, char *clusterlist_module
       if (rv)
         goto done;
 
-      memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
-      snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "./nodeupdown_clusterlist_%s.la",
-               clusterlist_module);
-
-      if ((rv = _load_module(handle, filebuf)) < 0)
-        goto cleanup;
-      
-      if (rv)
-        goto done;
-
-      memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
-      snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "./%s", clusterlist_module);
-
-      if ((rv = _load_module(handle, filebuf)) < 0)
-        goto cleanup;
-
-      if (rv)
-        goto done;
-
       handle->errnum = NODEUPDOWN_ERR_CONF_INPUT;
       goto cleanup;
     }
   else
     {
       int rv;
-
-      if ((rv = nodeupdown_util_search_dir_for_module(handle,
-						      NODEUPDOWN_MODULE_DIR,
-						      clusterlist_modules,
-						      clusterlist_modules_len,
-						      _load_module)) < 0)
-        goto cleanup;
-                     
-      if (rv)
-        goto done;
-                                                                          
-      if ((rv = nodeupdown_util_search_dir_for_module(handle,
-						      ".",
-						      clusterlist_modules,
-						      clusterlist_modules_len,
-						      _load_module)) < 0)
-        goto cleanup;
-
-      if (rv)
-        goto done;
 
       if ((rv = nodeupdown_util_search_dir_for_module(handle,
 						      NODEUPDOWN_MODULE_BUILDDIR,
@@ -304,7 +265,17 @@ nodeupdown_clusterlist_load_module(nodeupdown_t handle, char *clusterlist_module
       if (rv)
         goto done;
 
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
+      if ((rv = nodeupdown_util_search_dir_for_module(handle,
+						      NODEUPDOWN_MODULE_DIR,
+						      clusterlist_modules,
+						      clusterlist_modules_len,
+						      _load_module)) < 0)
+        goto cleanup;
+                     
+      if (rv)
+        goto done;
+                                                                          
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
       goto cleanup;
     }
 #endif /* !WITH_STATIC_MODULES */

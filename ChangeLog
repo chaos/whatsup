@@ -1,3 +1,10 @@
+2005-04-22  Albert Chu  <chu11@llnl.gov>
+
+	* Added support for nodeupdown configuration modules.  Re-worked
+	various libraries to add this support.
+
+	* Re-worked error code names.
+	
 2005-04-19  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown.c (_read_conffile): Ignore older

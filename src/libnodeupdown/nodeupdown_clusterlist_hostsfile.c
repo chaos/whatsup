@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.3 2005-04-07 06:12:28 achu Exp $
+ *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.4 2005-04-22 17:56:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -232,7 +232,7 @@ hostsfile_clusterlist_init(nodeupdown_t handle)
 
       if (!list_append(hosts, str))
         {
-          handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
+          handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
           goto cleanup;
         }
     }
@@ -284,7 +284,7 @@ hostsfile_clusterlist_compare_to_clusterlist(nodeupdown_t handle)
                                                                                      
   if (!(itr = list_iterator_create(hosts))) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
       return -1;
     }
                                                                                      

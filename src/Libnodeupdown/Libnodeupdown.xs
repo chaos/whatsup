@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: Libnodeupdown.xs,v 1.14 2005-04-06 22:24:13 achu Exp $
+ *  $Id: Libnodeupdown.xs,v 1.15 2005-04-22 17:56:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -149,14 +149,6 @@ NODEUPDOWN_ERR_NOTFOUND (sv=&PL_sv_undef)
         RETVAL    
 
 int
-NODEUPDOWN_ERR_BACKEND_INTERNAL (sv=&PL_sv_undef)
-    SV *sv    
-    CODE:
-        RETVAL = NODEUPDOWN_ERR_BACKEND_INTERNAL;
-    OUTPUT:
-        RETVAL    
-
-int
 NODEUPDOWN_ERR_CLUSTERLIST_OPEN (sv=&PL_sv_undef)
     SV *sv    
     CODE:
@@ -181,10 +173,26 @@ NODEUPDOWN_ERR_CLUSTERLIST_PARSE (sv=&PL_sv_undef)
         RETVAL    
 
 int
-NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL (sv=&PL_sv_undef)
+NODEUPDOWN_ERR_CLUSTERLIST_MODULE (sv=&PL_sv_undef)
     SV *sv    
     CODE:
-        RETVAL = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
+        RETVAL = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
+    OUTPUT:
+        RETVAL    
+
+int
+NODEUPDOWN_ERR_BACKEND_MODULE (sv=&PL_sv_undef)
+    SV *sv    
+    CODE:
+        RETVAL = NODEUPDOWN_ERR_BACKEND_MODULE;
+    OUTPUT:
+        RETVAL    
+
+int
+NODEUPDOWN_ERR_CONFIG_MODULE (sv=&PL_sv_undef)
+    SV *sv    
+    CODE:
+        RETVAL = NODEUPDOWN_ERR_CONFIG_MODULE;
     OUTPUT:
         RETVAL    
 

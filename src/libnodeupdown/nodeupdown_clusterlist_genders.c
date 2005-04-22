@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_genders.c,v 1.4 2005-04-08 01:01:11 achu Exp $
+ *  $Id: nodeupdown_clusterlist_genders.c,v 1.5 2005-04-22 17:56:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -40,6 +40,7 @@
 #include "nodeupdown_clusterlist.h"
 #include "nodeupdown_clusterlist_util.h"
 #include "nodeupdown_clusterlist_genders_util.h"
+#include "nodeupdown_genders_util.h"
 
 static genders_t genders_handle = NULL;
 
@@ -51,7 +52,15 @@ static genders_t genders_handle = NULL;
 int 
 genders_clusterlist_init(nodeupdown_t handle) 
 {
-  return genders_util_clusterlist_init(handle, &genders_handle);
+  int rv;
+
+  rv = genders_util_init(handle, &genders_handle);
+  if (rv < 0)
+    {
+      if (handle->errnum == NODEUPDOWN_ERR_INTERNAL)
+        handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_OPEN;
+    }
+  return rv;
 }
 
 /*
@@ -115,7 +124,7 @@ genders_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node)
 
   if ((ret = genders_isnode(genders_handle, nodePtr)) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
       return -1;
     }
   return ret;
@@ -149,7 +158,7 @@ genders_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node)
 
   if ((ret = genders_isnode(genders_handle, nodePtr)) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL;
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
       return -1;
     }
   return ret;
