@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_genders.c,v 1.5 2005-04-22 17:56:02 achu Exp $
+ *  $Id: nodeupdown_clusterlist_genders.c,v 1.6 2005-04-22 18:10:10 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -71,7 +71,7 @@ genders_clusterlist_init(nodeupdown_t handle)
 int 
 genders_clusterlist_cleanup(nodeupdown_t handle) 
 {
-  return genders_util_clusterlist_cleanup(handle, &genders_handle);
+  return genders_util_cleanup(handle, &genders_handle);
 }
 
 /*
