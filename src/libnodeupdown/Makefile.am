@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.36 2005-04-22 18:10:10 achu Exp $
+## $Id: Makefile.am,v 1.37 2005-04-22 22:04:33 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -86,8 +86,6 @@ libnodeupdown_la_LDFLAGS = -version-info @LIBNODEUPDOWN_VERSION_INFO@ \
 			   $(NODEUPDOWN_OTHER_FLAGS) \
 			   $(MODULE_EXPORT_FLAGS) \
 			   $(STATIC_MODULE_LIBEXPATDIR)
-
-EXTRA_DIST = nodeupdown.map
 
 #
 # libnodeupdown modules
@@ -192,3 +190,8 @@ nodeupdown_config_gendersllnl_la_CFLAGS  = \
 	@cd `dirname $@` && make `basename $@`
 
 force-dependency-check:
+
+EXTRA_DIST = nodeupdown.map \
+	     nodeupdown_backend.map \
+	     nodeupdown_clusterlist.map \
+	     nodeupdown_config.map
