@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.47 2005-04-19 23:23:16 achu Exp $
+## $Id: configure.ac,v 1.48 2005-04-22 22:25:09 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -66,8 +66,8 @@ AC_HEADER_TIME
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS( \
   fcntl.h \
-  getopt.h \
   unistd.h \
+  getopt.h \
 )
 
 #
