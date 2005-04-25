@@ -1,3 +1,7 @@
+2005-04-25  Albert Chu  <chu11@llnl.gov>
+
+	* Added IGNORE_UNKNOWN option to conffile lib.
+	
 2005-04-22  Albert Chu  <chu11@llnl.gov>
 
 	* Added support for nodeupdown configuration modules.  Re-worked

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.19 2005-04-22 22:25:09 achu Exp $
+ *  $Id: conffile.c,v 1.20 2005-04-25 14:36:03 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -506,6 +506,8 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
     }
 
     if (option == NULL) {
+        if (cf->flags & CONFFILE_FLAG_OPTION_IGNORE_UNKNOWN)
+	    return 0;
         cf->errnum = CONFFILE_ERR_PARSE_OPTION_UNKNOWN;
         return -1;
     }

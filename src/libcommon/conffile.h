@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.h,v 1.13 2004-03-19 18:16:18 achu Exp $
+ *  $Id: conffile.h,v 1.14 2005-04-25 14:36:03 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -188,9 +188,14 @@
  *                        insensitive.  This flag informs the parser
  *                        to make option names case sensitive
  * 
+ * OPTION_IGNORE_UNKNOWN - Instead of returning a
+ *                         CONFFILE_ERR_PARSE_OPTION_UNKNOWN error
+ *                         when a unknown configuration file option
+ *                         is found, just ignore it and move on.
  */
  
 #define CONFFILE_FLAG_OPTION_CASESENSITIVE      0x00000001
+#define CONFFILE_FLAG_OPTION_IGNORE_UNKNOWN     0x00000002
 
 /* DATA TYPES */
 
