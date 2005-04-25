@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist.c,v 1.11 2005-04-25 16:40:19 achu Exp $
+ *  $Id: nodeupdown_clusterlist.c,v 1.12 2005-04-25 17:17:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -272,6 +272,12 @@ nodeupdown_clusterlist_load_module(nodeupdown_t handle, char *clusterlist_module
 					      _load_module)) < 0)
         goto cleanup;
                      
+      if ((rv = nodeupdown_util_search_for_module(handle,
+                                                  NODEUPDOWN_MODULE_DIR,
+                                                  "nodeupdown_clusterlist_",
+                                                  _load_module)) < 0)
+        goto cleanup;
+
       if (rv)
         goto done;
                                                                           

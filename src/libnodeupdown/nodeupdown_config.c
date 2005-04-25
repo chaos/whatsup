@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_config.c,v 1.3 2005-04-25 16:40:19 achu Exp $
+ *  $Id: nodeupdown_config.c,v 1.4 2005-04-25 17:17:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -172,6 +172,13 @@ nodeupdown_config_load_module(nodeupdown_t handle)
 					  _load_module)) < 0)
     goto cleanup;
   
+  
+  if ((rv = nodeupdown_util_search_for_module(handle,
+                                              NODEUPDOWN_MODULE_DIR,
+                                              "nodeupdown_config_",
+                                              _load_module)) < 0)
+    goto cleanup;
+
   if (rv)
     goto done;
   
