@@ -1,9 +1,13 @@
-Name:    @PROJECT@
-Version: @VERSION@
+%define name    @PROJECT@
+%define version @VERSION@
+%define release @RELEASE@
+
+Name:    %{name}
+Version: %{version}
 %if %{?_with_llnl:1}%{!?_with_llnl:0}
-Release: @RELEASE@chaos
+Release: %{release}chaos
 %else
-Release: @RELEASE@
+Release: %{release}
 %endif
 Summary: whatsup node up/down detection utility
 Group: Applications/Communications
