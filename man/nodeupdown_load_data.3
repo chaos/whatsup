@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown_load_data.3,v 1.25 2005-04-25 19:32:47 achu Exp $
+\."$Id: nodeupdown_load_data.3,v 1.26 2005-04-25 19:50:05 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -56,8 +56,13 @@ or equal to 0, nodeupdown assumes the backend tool's default timeout.
 compatability with older libraries.
 
 The default values used in \fBnodeupdown_load_data()\fR can
-overwritten using the nodeupdown configuration file.  See
-.BR nodeupdown.conf (5).
+overwritten if a nodeupdown configuration module is found or
+if the nodeupdown configuration file is used.  See
+.BR libnodeupdown (3)
+and
+.BR nodeupdown.conf (5)
+for information.  The nodeupdown configuration file has precedence
+over the configuration module.
 .br
 .SH RETURN VALUES
 On success, 0 is returned.  On error, -1 is returned, and an error
