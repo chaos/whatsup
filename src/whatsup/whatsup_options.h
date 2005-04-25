@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup_options.h,v 1.6 2005-04-22 20:44:02 achu Exp $
+ *  $Id: whatsup_options.h,v 1.7 2005-04-25 16:44:29 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -97,14 +97,14 @@ typedef int (*Whatsup_options_register_option)(char c, char *options);
 typedef int (*Whatsup_options_add_long_option)(char c, struct option *long_option);
 
 /*  
- * Whatsup_options_check_option
+ * Whatsup_options_handle_option
  *
  * Handle the option 'c' and possibly the option argument
  * appropriately for a particular module.
  *
  * Returns 0 on success, -1 on error
  */
-typedef int (*Whatsup_options_check_option)(char c, char *optarg);
+typedef int (*Whatsup_options_handle_option)(char c, char *optarg);
 
 /* 
  * Whatsup_options_convert_nodenames
@@ -131,7 +131,7 @@ struct whatsup_options_module_info
   Whatsup_options_options_string options_string;
   Whatsup_options_register_option register_option;
   Whatsup_options_add_long_option add_long_option;
-  Whatsup_options_check_option check_option;
+  Whatsup_options_handle_option handle_option;
   Whatsup_options_convert_nodenames convert_nodenames;
 };
 

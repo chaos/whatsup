@@ -3,7 +3,12 @@
 	* Added IGNORE_UNKNOWN option and flags checking to conffile lib.
 
 	* Added ability to search for any module, not just ones known to
-	nodeupdown.
+	nodeupdown and whatsup.
+
+	* Reworked whatsup loading of modules to more intelligently call
+	modules after an option is found.
+
+	* Minor code cleanup and bug fixes throughout.
 	
 2005-04-22  Albert Chu  <chu11@llnl.gov>
 

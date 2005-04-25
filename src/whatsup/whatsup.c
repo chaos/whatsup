@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.100 2005-04-25 16:40:19 achu Exp $
+ *  $Id: whatsup.c,v 1.101 2005-04-25 16:44:29 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -203,7 +203,7 @@ _load_options_module(struct whatsup_data *w,
       || !w->module_info[count]->output_usage
       || !w->module_info[count]->register_option
       || !w->module_info[count]->add_long_option
-      || !w->module_info[count]->check_option
+      || !w->module_info[count]->handle_option
       || !w->module_info[count]->convert_nodenames)
     goto cleanup;
   
@@ -572,8 +572,8 @@ _cmdline_parse(struct whatsup_data *w, int argc, char **argv)
 	    
 	    if (strchr(w->module_options[i], c))
 	      {
-		if ((rv = (*w->module_info[i]->check_option)(c, optarg)) < 0)
-		  err_exit("check_option error: %s", strerror(errno));
+		if ((rv = (*w->module_info[i]->handle_option)(c, optarg)) < 0)
+		  err_exit("handle_option error: %s", strerror(errno));
 		
 		if (rv)
 		  {
