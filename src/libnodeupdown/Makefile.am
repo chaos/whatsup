@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.37 2005-04-22 22:04:33 achu Exp $
+## $Id: Makefile.am,v 1.38 2005-04-25 17:49:18 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -56,12 +56,15 @@ nodeupdown_module_builddir=`cd $(top_builddir)/src/libnodeupdown && pwd`
 
 include_HEADERS = nodeupdown.h 
 
-noinst_HEADERS  = nodeupdown_backend.h \
-		  nodeupdown_common.h \
-		  nodeupdown_clusterlist.h \
+moduleheadersdir = $(includedir)/nodeupdown
+
+moduleheaders = nodeupdown_backend.h \
+		nodeupdown_clusterlist.h \
+		nodeupdown_config.h
+
+noinst_HEADERS  = nodeupdown_common.h \
 		  nodeupdown_clusterlist_util.h \
 		  nodeupdown_clusterlist_genders_util.h \
-		  nodeupdown_config.h \
 		  nodeupdown_genders_util.h \
 		  nodeupdown_util.h
 
