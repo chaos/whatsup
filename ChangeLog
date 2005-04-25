@@ -13,6 +13,8 @@
 	* Build and dist fixes throughout.
 
 	* Export module header files to allow others to build modules.
+
+	* Various documentation fixes.
 	
 2005-04-22  Albert Chu  <chu11@llnl.gov>
 

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist.h,v 1.4 2005-04-25 19:30:10 achu Exp $
+ *  $Id: nodeupdown_config_module.h,v 1.1 2005-04-25 19:30:10 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -24,42 +24,48 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
 \*****************************************************************************/
 
-#ifndef _NODEUPDOWN_CLUSTERLIST_H
-#define _NODEUPDOWN_CLUSTERLIST_H
-
-#include "nodeupdown.h"
+#ifndef _NODEUPDOWN_CONFIG_MODULE_H
+#define _NODEUPDOWN_CONFIG_MODULE_H
 
 /*
- * nodeupdown_clusterlist_load_module
+ * Nodeupdown_config_setup
  *
- * Find and load the nodeupdown clusterlist module
+ * Setup the config module
+ *
+ * Return 0 on success, -1 on error
+ */
+typedef int (*Nodeupdown_config_setup)(nodeupdown_t);
+
+/*
+ * Nodeupdown_config_cleanup
+ *
+ * Cleanup config module allocations
+ *
+ * Return 0 on success, -1 on error
+ */
+typedef int (*Nodeupdown_config_cleanup)(nodeupdown_t);
+
+/*
+ * Nodeupdown_config_load_default
+ *
+ * change default configuration values
  *
  * Returns 0 on success, -1 on error
  */
-int nodeupdown_clusterlist_load_module(nodeupdown_t handle, char *clusterlist_module);
-
-/*  
- * nodeupdown_clusterlist_unload_module
+typedef int (*Nodeupdown_config_load_default)(nodeupdown_t, struct nodeupdown_confdata *);
+ 
+/*
+ * struct nodeupdown_config_module_info
  *
- * unload the nodeupdown clusterlist module
- *
- * Returns 0 on success, -1 on error
-
+ * contains config module information and operations.  Required to be
+ * defined in each config module.
  */
-int nodeupdown_clusterlist_unload_module(nodeupdown_t handle);
+struct nodeupdown_config_module_info
+{
+  char *config_module_name;
+  Nodeupdown_config_setup setup;
+  Nodeupdown_config_cleanup cleanup;
+  Nodeupdown_config_load_default load_default;
+};
 
-/* 
- * nodeupdown_clusterlist_setup
- *
- * call clusterlist module setup function
- */
-int nodeupdown_clusterlist_setup(nodeupdown_t handle);
-
-/* 
- * nodeupdown_clusterlist_cleanup
- *
- * call clusterlist module cleanup function
- */
-int nodeupdown_clusterlist_cleanup(nodeupdown_t handle);
-
-#endif /* _NODEUPDOWN_CLUSTERLIST_H */
+#endif /* _NODEUPDOWN_CONFIG_MODULE_H  */

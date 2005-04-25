@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_config.h,v 1.2 2005-04-22 20:44:02 achu Exp $
+ *  $Id: nodeupdown_config.h,v 1.3 2005-04-25 19:30:10 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -28,48 +28,6 @@
 #define _NODEUPDOWN_CONFIG_H
 
 #include "nodeupdown.h"
-#include "nodeupdown_common.h"
-
-/*
- * Nodeupdown_config_setup
- *
- * Setup the config module
- *
- * Return 0 on success, -1 on error
- */
-typedef int (*Nodeupdown_config_setup)(nodeupdown_t);
-
-/*
- * Nodeupdown_config_cleanup
- *
- * Cleanup config module allocations
- *
- * Return 0 on success, -1 on error
- */
-typedef int (*Nodeupdown_config_cleanup)(nodeupdown_t);
-
-/*
- * Nodeupdown_config_load_default
- *
- * change default configuration values
- *
- * Returns 0 on success, -1 on error
- */
-typedef int (*Nodeupdown_config_load_default)(nodeupdown_t, struct nodeupdown_confdata *);
- 
-/*
- * struct nodeupdown_config_module_info
- *
- * contains config module information and operations.  Required to be
- * defined in each config module.
- */
-struct nodeupdown_config_module_info
-{
-  char *config_module_name;
-  Nodeupdown_config_setup setup;
-  Nodeupdown_config_cleanup cleanup;
-  Nodeupdown_config_load_default load_default;
-};
 
 /* 
  * nodeupdown_config_load_module

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend.c,v 1.10 2005-04-25 16:40:19 achu Exp $
+ *  $Id: nodeupdown_backend.c,v 1.11 2005-04-25 19:30:10 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -43,6 +43,7 @@
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
 #include "nodeupdown_backend.h"
+#include "nodeupdown_backend_module.h"
 #include "nodeupdown_util.h"
 #include "ltdl.h"
 

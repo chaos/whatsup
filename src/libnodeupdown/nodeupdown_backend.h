@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend.h,v 1.5 2005-04-22 20:44:02 achu Exp $
+ *  $Id: nodeupdown_backend.h,v 1.6 2005-04-25 19:30:10 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -28,71 +28,6 @@
 #define _NODEUPDOWN_BACKEND_H
 
 #include "nodeupdown.h"
-
-/*
- * Nodeupdown_backend_default_hostname
- *
- * Return pointer to default backend hostname
- */
-typedef char *(*Nodeupdown_backend_default_hostname)(nodeupdown_t);
-
-/*
- * Nodeupdown_backend_default_port
- *
- * Return default port of backend tool
- */
-typedef int (*Nodeupdown_backend_default_port)(nodeupdown_t);
-
-/*
- * Nodeupdown_backend_default_timeout_len
- *
- * Return default timeout_len of backend tool
- */
-typedef int (*Nodeupdown_backend_default_timeout_len)(nodeupdown_t);
-
-/*
- * Nodeupdown_backend_setup
- *
- * Setup the backend module
- *
- * Return 0 on success, -1 on error
- */
-typedef int (*Nodeupdown_backend_setup)(nodeupdown_t);
-
-/*
- * Nodeupdown_backend_cleanup
- *
- * Cleanup backend module allocations
- *
- * Return 0 on success, -1 on error
- */
-typedef int (*Nodeupdown_backend_cleanup)(nodeupdown_t);
-
-/* 
- * Nodeupdown_backend_get_updown_data
- *
- * Get all updown data and store in the nodeupdown handle
- *
- * Returns 0 on success, -1 on error
- */
-typedef int (*Nodeupdown_backend_get_updown_data)(nodeupdown_t, const char *, int, int, char *);
-
-/*
- * struct nodeupdown_backend_module_info
- *
- * contains backend module information and operations.  Required to be
- * defined in each backend module.
- */
-struct nodeupdown_backend_module_info
-{
-  char *backend_module_name;
-  Nodeupdown_backend_default_hostname default_hostname;
-  Nodeupdown_backend_default_port default_port;
-  Nodeupdown_backend_default_timeout_len default_timeout_len;
-  Nodeupdown_backend_setup setup;
-  Nodeupdown_backend_cleanup cleanup;
-  Nodeupdown_backend_get_updown_data get_updown_data;
-};
 
 /* 
  * nodeupdown_backend_load_module
