@@ -9,7 +9,7 @@ Summary: whatsup node up/down detection utility
 Group: Applications/Communications
 License: GPL
 Source: @PROJECT@-@VERSION@-@RELEASE@.tgz
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}
+BuildRoot: %{_tmppath}/@PROJECT@-@VERSION@-@RELEASE@
 
 %description
 Whatsup is a cluster node up/down detection utility.
