@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_common.h,v 1.20 2005-04-19 23:15:54 achu Exp $
+ *  $Id: nodeupdown_common.h,v 1.21 2005-04-25 23:32:36 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -71,12 +71,12 @@
  * nodeupdown handle used throughout the nodeupdown library
  */
 struct nodeupdown {
-  int magic;                  /* magic number */
-  int errnum;                 /* error code */
-  int is_loaded;              /* nodeupdown data loaded? */
-  hostlist_t up_nodes;        /* up nodes */
-  hostlist_t down_nodes;      /* down nodes */
-  int max_nodes;              /* max nodes in genders file */
+  int magic;
+  int errnum;
+  int is_loaded;
+  hostlist_t up_nodes;
+  hostlist_t down_nodes;
+  int max_nodes;
 };
 
 /* 
