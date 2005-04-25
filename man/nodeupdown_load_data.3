@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown_load_data.3,v 1.24 2005-04-08 01:01:11 achu Exp $
+\."$Id: nodeupdown_load_data.3,v 1.25 2005-04-25 19:32:47 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -103,9 +103,6 @@ An incorrect parameter has been passed in.
 .BR malloc (3)
 has failed internally.
 .TP
-.B NODEUPDOWN_ERR_BACKEND_INTERNAL
-Internal error with the backend nodeupdown tool.
-.TP
 .B NODEUPDOWN_ERR_CLUSTERLIST_OPEN
 Error opening the cluster list of nodes database.
 .TP
@@ -115,8 +112,14 @@ Error reading the cluster list of nodes database.
 .B NODEUPDOWN_ERR_CLUSTERLIST_PARSE
 Error parsing the cluster list of nodes database.
 .TP
-.B NODEUPDOWN_ERR_CLUSTERLIST_INTERNAL
-Internal error with the cluster list of nodes database.
+.B NODEUPDOWN_ERR_CLUSTERLIST_MODULE
+Internal error with the clusterlist module
+.TP
+.B NODEUPDOWN_ERR_BACKEND_MODULE
+Internal error with the backend module
+.TP
+.B NODEUPDOWN_ERR_CONFIG_MODULE
+Internal error with the config module
 .TP
 .B NODEUPDOWN_ERR_XML
 XML parsing error.
