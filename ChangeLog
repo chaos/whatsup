@@ -9,6 +9,10 @@
 	modules after an option is found.
 
 	* Minor code cleanup and bug fixes throughout.
+
+	* Build and dist fixes throughout.
+
+	* Export module header files to allow others to build modules.
 	
 2005-04-22  Albert Chu  <chu11@llnl.gov>
 
