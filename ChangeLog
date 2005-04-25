@@ -1,6 +1,9 @@
 2005-04-25  Albert Chu  <chu11@llnl.gov>
 
 	* Added IGNORE_UNKNOWN option and flags checking to conffile lib.
+
+	* Added ability to search for any module, not just ones known to
+	nodeupdown.
 	
 2005-04-22  Albert Chu  <chu11@llnl.gov>
 

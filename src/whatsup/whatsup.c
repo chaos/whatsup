@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.99 2005-04-22 20:44:02 achu Exp $
+ *  $Id: whatsup.c,v 1.100 2005-04-25 16:40:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -96,15 +96,16 @@ struct whatsup_data
   lt_dlhandle module_handles[WHATSUP_MODULES_LEN];
 #endif /* !WITH_STATIC_MODULES */
   struct whatsup_options_module_info *module_info[WHATSUP_MODULES_LEN];
+  char module_options[WHATSUP_MODULES_LEN][WHATSUP_OPTIONS_LEN+1];
   int module_loaded_count;
 };
 
+#if WITH_STATIC_MODULES
 /*  
  * whatsup_options_modules
  *
  * list of options modules to search for
  */
-#if WITH_STATIC_MODULES
 
 #if WITH_GENDERSLLNL
 extern struct whatsup_options_module_info gendersllnl_options_module_info;
@@ -117,15 +118,7 @@ static struct whatsup_options_module_info *whatsup_options_modules[] =
 #endif /* WITH_GENDERSLLNL */
     NULL
   };
-
-#else /* !WITH_STATIC_MODULES */
-
-static char *whatsup_options_modules[] = 
-  {
-    "whatsup_options_gendersllnl.la",
-    NULL
-  };
-#endif /* !WITH_STATIC_MODULES */
+#endif /* WITH_STATIC_MODULES */
 
 /* 
  * _init_whatsup_data
@@ -199,13 +192,11 @@ _load_options_module(struct whatsup_data *w,
   w->module_info[count] = module_info;
 #else /* !WITH_STATIC_MODULES */
   if (!(w->module_handles[count] = lt_dlopen(module_path)))
-    err_exit("_load_options_module: lt_dlopen: module_path=%s: %s",
-	     module_path, lt_dlerror());
+    goto cleanup;
 
   if (!(w->module_info[count] = lt_dlsym(w->module_handles[count],
 					 "options_module_info")))
-    err_exit("_load_options_module: lt_dlsym: module_path=%s: %s",
-	     module_path, lt_dlerror());
+    goto cleanup;
 #endif /* !WITH_STATIC_MODULES */
 
   if (!w->module_info[count]->options_module_name
@@ -214,28 +205,22 @@ _load_options_module(struct whatsup_data *w,
       || !w->module_info[count]->add_long_option
       || !w->module_info[count]->check_option
       || !w->module_info[count]->convert_nodenames)
-#if WITH_STATIC_MODULES
-    err_exit("_load_options_module: invalid module options");
-#else /* !WITH_STATIC_MODULES */
-    err_exit("_load_options_module: module_path=%s: invalid module options",
-	     module_path);
-#endif /* !WITH_STATIC_MODULES */
+    goto cleanup;
   
   for (i = 0; i < count; i++)
     {
       if (!strcmp(w->module_info[i]->options_module_name,
 		  w->module_info[count]->options_module_name))
-	goto already_loaded;
+	goto cleanup;		/* already loaded */
     }
 
   if ((*w->module_info[i]->setup)() < 0)
-    err_exit("_load_options_module:: %s setup error", 
-             w->module_info[i]->options_module_name);
-
+    goto cleanup;
+    
   w->module_loaded_count++;
   return;
 
- already_loaded:
+ cleanup:
 #if !WITH_STATIC_MODULES
   lt_dlclose(w->module_handles[count]);
   w->module_handles[count] = NULL;
@@ -255,7 +240,7 @@ static void
 _load_options_modules_in_dir(struct whatsup_data *w, char *search_dir)
 {
   DIR *dir;
-  int i = 0;
+  struct dirent *dirent;
 
   assert(w);
   assert(search_dir);
@@ -266,25 +251,28 @@ _load_options_modules_in_dir(struct whatsup_data *w, char *search_dir)
   if (!(dir = opendir(search_dir)))
     return;
 
-  while (whatsup_options_modules[i])
+  while ((dirent = readdir(dir)))
     {
-      struct dirent *dirent;
-
-      while ((dirent = readdir(dir)))
+      char *ptr = strstr(dirent->d_name, "whatsup_options_");
+ 
+      if (ptr && ptr == &dirent->d_name[0])
         {
-          if (!strcmp(dirent->d_name, whatsup_options_modules[i]))
-            {
-              char filebuf[WHATSUP_MAXPATHLEN+1];
-
-              memset(filebuf, '\0', WHATSUP_MAXPATHLEN+1);
-              snprintf(filebuf, WHATSUP_MAXPATHLEN, "%s/%s",
-                       search_dir, whatsup_options_modules[i]);
-
-              _load_options_module(w, filebuf);
-            }
+          char filebuf[WHATSUP_MAXPATHLEN+1];
+  
+          /*
+           * Don't bother trying to load this file unless its a shared
+           * object file or libtool file.
+           */
+          ptr = strchr(dirent->d_name, '.');
+          if (!ptr || !(!strcmp(ptr, ".la") || !strcmp(ptr, ".so")))
+            continue;
+  
+          memset(filebuf, '\0', WHATSUP_MAXPATHLEN+1);
+          snprintf(filebuf, WHATSUP_MAXPATHLEN, "%s/%s",
+                   search_dir, dirent->d_name);
+            
+	  _load_options_module(w, filebuf);
         }
-      rewinddir(dir);
-      i++;
     }
 }
 #endif /* !WITH_STATIC_MODULES */
@@ -313,7 +301,6 @@ _load_options_modules(struct whatsup_data *w)
 
   _load_options_modules_in_dir(w, WHATSUP_MODULE_BUILDDIR);
   _load_options_modules_in_dir(w, WHATSUP_MODULE_DIR);
-  _load_options_modules_in_dir(w, ".");
 #endif /* !WITH_STATIC_MODULES */
 }
 
@@ -506,20 +493,20 @@ _cmdline_parse(struct whatsup_data *w, int argc, char **argv)
 	    err_exit("_cmdline_parse: %s add_long_options failure",
 		     w->module_info[i]->options_module_name);
 
+	  if (strlen(w->module_options[i]) < WHATSUP_OPTIONS_LEN)
+	    strncat(w->module_options[i], c, 1); /* cheat with strncat */
+
 	  long_options_count++;
 	  long_options[long_options_count].name = NULL;
 	  long_options[long_options_count].has_arg = 0;
 	  long_options[long_options_count].flag = NULL;
 	  long_options[long_options_count].val = 0;
 
-          /* If we're out of space for more options, this is
-           * all the user gets.
-           */
-
-          /* We take into account the -1 b/c the module may want the
-           * option to take an argument.  In other words, the next
-           * register_option call may copy in two chars rather than
-           * one.
+          /* If we're out of space for more options, this is all the
+           * user gets. The -1 is b/c the module may want the option
+           * to take an argument.  In other words, the next
+           * register_option call may copy in two chars (i.e. "a:")
+           * rather than one.
            */
 	  if (strlen(options) >= (WHATSUP_OPTIONS_LEN - 1))
 	    break;
@@ -583,13 +570,16 @@ _cmdline_parse(struct whatsup_data *w, int argc, char **argv)
 	  {
 	    int rv;
 	    
-	    if ((rv = (*w->module_info[i]->check_option)(c, optarg)) < 0)
-	      continue;
-	    
-	    if (rv)
+	    if (strchr(w->module_options[i], c))
 	      {
-		used_option = 1;
-		break;
+		if ((rv = (*w->module_info[i]->check_option)(c, optarg)) < 0)
+		  err_exit("check_option error: %s", strerror(errno));
+		
+		if (rv)
+		  {
+		    used_option = 1;
+		    break;
+		  }
 	      }
 	  }
 

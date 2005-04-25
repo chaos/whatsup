@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_util.c,v 1.2 2005-04-06 04:24:16 achu Exp $
+ *  $Id: nodeupdown_util.c,v 1.3 2005-04-25 16:40:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -189,14 +189,14 @@ nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
 }
 
 int
-nodeupdown_util_search_dir_for_module(nodeupdown_t handle, 
-				      char *search_dir,
-				      char **modules_list,
-				      int modules_list_len,
-				      Nodeupdown_util_load_module load_module)
+nodeupdown_util_lookup_module(nodeupdown_t handle, 
+			      char *search_dir,
+			      char **modules_list,
+			      int modules_list_len,
+			      Nodeupdown_util_load_module load_module)
 {
   DIR *dir;
-  int i = 0, found = 0;
+  int i = 0, found = 0, rv = -1;
  
   /* Can't open the directory? we assume it doesn't exit, so its not
    * an error.
@@ -233,10 +233,60 @@ nodeupdown_util_search_dir_for_module(nodeupdown_t handle,
     }
 
  done:
-  closedir(dir);
-
-  return (found) ? 1 : 0;
-
+  rv = (found) ? 1 : 0;
  cleanup:
-  return -1;
+  closedir(dir);
+  return rv;
+}
+
+int
+nodeupdown_util_search_for_module(nodeupdown_t handle,
+				  char *search_dir,
+				  char *signature,
+				  Nodeupdown_util_load_module load_module)
+{
+  DIR *dir;
+  struct dirent *dirent;
+  int rv = -1, found = 0;
+ 
+  if (!(dir = opendir(search_dir)))
+    return 0;
+ 
+  while ((dirent = readdir(dir)))
+    {
+      char *ptr = strstr(dirent->d_name, signature);
+
+      if (ptr && ptr == &dirent->d_name[0])
+        {
+          char filebuf[NODEUPDOWN_MAXPATHLEN+1];
+          int ret;
+ 
+          /*
+           * Don't bother trying to load this file unless its a shared
+           * object file or libtool file.
+           */
+          ptr = strchr(dirent->d_name, '.');
+          if (!ptr || !(!strcmp(ptr, ".la") || !strcmp(ptr, ".so")))
+            continue;
+ 
+          memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
+          snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/%s",
+                   search_dir, dirent->d_name);
+           
+          if ((ret = load_module(handle, filebuf)) < 0)
+	    goto cleanup;
+ 
+          if (ret)
+            {
+              found++;
+              goto done;
+            }
+        }
+    }
+   
+ done:
+  rv = (found) ? 1 : 0;
+ cleanup:
+  closedir(dir);
+  return rv;
 }

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend.c,v 1.9 2005-04-22 20:44:02 achu Exp $
+ *  $Id: nodeupdown_backend.c,v 1.10 2005-04-25 16:40:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -237,21 +237,27 @@ nodeupdown_backend_load_module(nodeupdown_t handle, char *backend_module)
     {
       int rv;
 
-      if ((rv = nodeupdown_util_search_dir_for_module(handle,
-						      NODEUPDOWN_MODULE_BUILDDIR,
-						      backend_modules,
-						      backend_modules_len,
-						      _load_module)) < 0)
+      if ((rv = nodeupdown_util_lookup_module(handle,
+					      NODEUPDOWN_MODULE_BUILDDIR,
+					      backend_modules,
+					      backend_modules_len,
+					      _load_module)) < 0)
         goto cleanup;
 
       if (rv)
         goto done;
 
-      if ((rv = nodeupdown_util_search_dir_for_module(handle,
-						      NODEUPDOWN_MODULE_DIR,
-						      backend_modules,
-						      backend_modules_len,
-						      _load_module)) < 0)
+      if ((rv = nodeupdown_util_lookup_module(handle,
+					      NODEUPDOWN_MODULE_DIR,
+					      backend_modules,
+					      backend_modules_len,
+					      _load_module)) < 0)
+        goto cleanup;
+
+      if ((rv = nodeupdown_util_search_for_module(handle,
+						  NODEUPDOWN_MODULE_DIR,
+						  "nodeupdown_backend_",
+						  _load_module)) < 0)
         goto cleanup;
                      
       if (rv)

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_util.h,v 1.3 2005-04-06 21:50:19 achu Exp $
+ *  $Id: nodeupdown_util.h,v 1.4 2005-04-25 16:40:19 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -33,7 +33,7 @@
  * Nodeupdown_util_load_module
  *
  * Define a load module function to be passed to
- * nodeupdown_util_search_dir_for_module().
+ * nodeupdown_util_lookup_module().
  *
  * Returns 1 if module is found and loaded successfully, 0 if module
  * cannot be found, -1 on fatal error.
@@ -54,7 +54,7 @@ int nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
                                         int connect_timeout); 
 
 /* 
- * nodeupdown_util_search_dir_for_module
+ * nodeupdown_util_lookup_module
  *
  * Search the directory 'search_dir' for any one of the modules listed
  * in 'modules_list'.  Call 'load_module' on any discovered module.
@@ -62,10 +62,23 @@ int nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
  * Returns 1 if a module is found and loaded, 0 if a module is not
  * found, -1 on fatal error.
  */
-int nodeupdown_util_search_dir_for_module(nodeupdown_t handle, 
-					  char *search_dir,
-					  char **modules_list,
-					  int modules_list_len,
-					  Nodeupdown_util_load_module load_module);
+int nodeupdown_util_lookup_module(nodeupdown_t handle, 
+				  char *search_dir,
+				  char **modules_list,
+				  int modules_list_len,
+				  Nodeupdown_util_load_module load_module);
+
+/*
+ * cerebrod_search_for_module
+ *
+ * Search the directory 'search_dir' for any module with the given signature.
+ *
+ * Returns 1 when a module is found, 0 when one is not, -1 on fatal error
+ */
+int nodeupdown_util_search_for_module(nodeupdown_t handle,
+				      char *search_dir,
+				      char *signature,
+				      Nodeupdown_util_load_module load_module);
+
 
 #endif /* _NODEUPDOWN_UTIL_H */
