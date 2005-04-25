@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: whatsup.1.in,v 1.15 2005-04-06 22:24:13 achu Exp $
+\."$Id: whatsup.1.in,v 1.16 2005-04-25 17:43:26 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -99,7 +99,8 @@ List nodes in space separated list
 .if @MANPAGE_GENDERSLLNL@ \{
 .TP
 .B \-a, \-\-altnames
-List nodes by alternate names (default=off)
+List nodes by alternate names (default=off).  Only available if the
+gendersllnl whatsup module has been installed.
 \}
 .LP
 .SH "HOST RANGES"

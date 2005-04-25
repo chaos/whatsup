@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: libnodeupdown.3.in,v 1.14 2005-04-08 01:01:11 achu Exp $
+\."$Id: libnodeupdown.3.in,v 1.15 2005-04-25 17:43:26 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -91,6 +91,9 @@ following order:
 
 ganglia - See http://ganglia.sourceforge.net for more information.
 
+If none of the above are found, the nodeupdown library will search for
+a backend module in @NODEUPDOWN_MODULE_DIR@ until one is found.
+
 The nodeupdown configuration file can be used to select a specific
 backend tool.
 
@@ -119,9 +122,36 @@ cluster on a separate line.  The default hostsfile is
    
 none - No database will be used.
 
+If none of the above are found, the nodeupdown library will search for
+a clusterlist module in @NODEUPDOWN_MODULE_DIR@ until one is found.
+
 The nodeupdown configuration file can be used to select a specific
 clusterlist module.
-.br
+
+.SH CONFIG MODULES
+
+The nodeupdown library optionally loads a configuration module, which
+can be used to define the default values used in 
+.B nodeupdown_load_data(3).
+The configuration module is primarily used for ease of configuring a
+large cluster of nodes, rather than writing and distributing multiple
+configuration files throughout a cluster.  By default, the following
+configuration modules are searched for by nodeupdown in the following
+order:
+
+.if @MANPAGE_GENDERSLLNL@ \{
+gendersllnl - For the most part, specifically used by Lawrence
+Livermore National Laboratory.
+   
+\}
+
+If none of the above are found, the nodeupdown library will search for
+a config module in @NODEUPDOWN_MODULE_DIR@ until one is found.
+
+The nodeupdown configuration file takes precedence over the
+configuration module.  When neither are in use, defaults are supplied
+by the backend tool.
+
 .SH FILES
 /usr/include/nodeupdown.h
 .SH "SEE ALSO"
