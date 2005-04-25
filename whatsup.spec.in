@@ -1,6 +1,6 @@
 Name:    @PROJECT@
 Version: @VERSION@
-%if %{?_with_llnl:1}%{!?_with_llnl:0}
+%if %{?_with_chaos:1}%{!?_with_chaos:0}
 Release: @RELEASE@chaos
 %else
 Release: @RELEASE@
@@ -67,7 +67,7 @@ rm -rf "$RPM_BUILD_ROOT"
 %define _perldir %(perl -e 'use Config; $T=$Config{installsitearch}; $T=~/(.*)\\/site_perl.*/; print $1;')
 %{_bindir}/*
 %{_includedir}/*
-%if %{?_with_llnl:1}%{!?_with_llnl:0}
+%if %{?_with_chaos:1}%{!?_with_chaos:0}
 %{_libdir}/nodeupdown/*
 %{_libdir}/whatsup/*
 %else
@@ -77,7 +77,7 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_perldir}/*
 %{_mandir}/*
 
-%if %{?_with_llnl:0}%{!?_with_llnl:1}
+%if %{?_with_chaos:0}%{!?_with_chaos:1}
 
 %if %{?_with_gendersllnl:1}%{!?_with_gendersllnl:0}
 %files gendersllnl
