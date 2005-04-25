@@ -1,18 +1,14 @@
-%define name    @PROJECT@
-%define version @VERSION@
-%define release @RELEASE@
-
-Name:    %{name}
-Version: %{version}
+Name:    @PROJECT@
+Version: @VERSION@
 %if %{?_with_llnl:1}%{!?_with_llnl:0}
-Release: %{release}chaos
+Release: @RELEASE@chaos
 %else
-Release: %{release}
+Release: @RELEASE@
 %endif
 Summary: whatsup node up/down detection utility
 Group: Applications/Communications
 License: GPL
-Source: %{name}-%{version}-%{release}.tgz
+Source: @PROJECT@-@VERSION@-@RELEASE@.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}
 
 %description
