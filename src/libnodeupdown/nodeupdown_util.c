@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_util.c,v 1.3 2005-04-25 16:40:19 achu Exp $
+ *  $Id: nodeupdown_util.c,v 1.4 2005-04-27 23:13:58 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -41,7 +41,6 @@
 #endif /* HAVE_FCNTL_H */
 #include <netinet/in.h>
 #include <netdb.h>
-#include <arpa/inet.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/select.h>
@@ -61,7 +60,6 @@ nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
 {
   int ret, old_flags, fd = -1;
   struct sockaddr_in servaddr;
-  char ipbuf[INET_ADDRSTRLEN+1];
   struct hostent *hptr;
 
   /* valgrind will report a mem-leak in gethostbyname() */
@@ -71,12 +69,6 @@ nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
       return -1;
     }
       
-  if (!inet_ntop(AF_INET, (void *)hptr->h_addr, ipbuf, INET_ADDRSTRLEN)) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      return -1;
-    }
-
   /* Alot of this code is from Unix Network Programming, by Stevens */
 
   if ((fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
@@ -88,18 +80,7 @@ nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
   bzero(&servaddr, sizeof(servaddr));
   servaddr.sin_family = AF_INET;
   servaddr.sin_port = htons(port);
-
-  if ((ret = inet_pton(AF_INET, ipbuf, (void *)&servaddr.sin_addr)) < 0) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      goto cleanup;
-    }
-
-  if (!ret) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_ADDRESS;
-      goto cleanup;
-    }
+  servaddr.sin_addr = *((struct in_addr *)hptr->h_addr);
 
   if ((old_flags = fcntl(fd, F_GETFL, 0)) < 0) 
     {
