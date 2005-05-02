@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend.c,v 1.11 2005-04-25 19:30:10 achu Exp $
+ *  $Id: nodeupdown_backend.c,v 1.12 2005-05-02 23:00:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -134,139 +134,60 @@ _load_module(nodeupdown_t handle,
 }
 
 int 
-nodeupdown_backend_load_module(nodeupdown_t handle, char *backend_module)
+nodeupdown_backend_load_module(nodeupdown_t handle)
 {
 #if WITH_STATIC_MODULES
-  if (backend_module)
+  struct nodeupdown_backend_module_info **ptr;
+  int i = 0;
+  
+  ptr = &backend_modules[0];
+  while (ptr[i] != NULL)
     {
-      int i = 0;
-
-      while (backend_modules[i])
-	{
-	  if (!backend_modules[i]->backend_module_name)
-	    continue;
-
-	  if (!strcmp(backend_modules[i]->backend_module_name, backend_module))
-	    {
-	      int rv;
-
-	      if ((rv = _load_module(handle, backend_modules[i])) < 0)
-		goto cleanup;
-	      
-	      if (rv)
-		goto done;
-	    }
-
-	  i++;
-	}
-
-      handle->errnum = NODEUPDOWN_ERR_CONF_INPUT;
-      goto cleanup;
-    }
-  else
-    {
-      struct nodeupdown_backend_module_info **ptr;
-      int i = 0;
- 
-      ptr = &backend_modules[0];
-      while (ptr[i] != NULL)
-        {
-          int rv;
- 
-          if (!ptr[i]->backend_module_name)
-              continue;
- 
-	  if ((rv = _load_module(handle, backend_modules[i])) < 0)
-	    goto cleanup;
-	  
-	  if (rv)
-	    goto done;
-
-          i++;
-        }
+      int rv;
+      
+      if (!ptr[i]->backend_module_name)
+	continue;
+      
+      if ((rv = _load_module(handle, backend_modules[i])) < 0)
+	goto cleanup;
+      
+      if (rv)
+	goto done;
+      
+      i++;
     }
 #else  /* !WITH_STATIC_MODULES */
-  if (backend_module)
-    {
-      char filebuf[NODEUPDOWN_MAXPATHLEN+1];
-      int rv;
-      
-      memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
-      snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/%s",
-               NODEUPDOWN_MODULE_BUILDDIR, backend_module);
-
-      if ((rv = _load_module(handle, filebuf)) < 0)
-        goto cleanup;
-      
-      if (rv)
-        goto done;
-
-      memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
-      snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/nodeupdown_backend_%s.la",
-               NODEUPDOWN_MODULE_BUILDDIR, backend_module);
-
-      if ((rv = _load_module(handle, filebuf)) < 0)
-        goto cleanup;
-      
-      if (rv)
-        goto done;
-
-      memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
-      snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/%s",
-               NODEUPDOWN_MODULE_DIR, backend_module);
-
-      if ((rv = _load_module(handle, filebuf)) < 0)
-        goto cleanup;
-
-      if (rv)
-        goto done;
-
-      memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
-      snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/nodeupdown_backend_%s.la",
-               NODEUPDOWN_MODULE_DIR, backend_module);
-
-      if ((rv = _load_module(handle, filebuf)) < 0)
-        goto cleanup;
-
-      if (rv)
-        goto done;
-
-      handle->errnum = NODEUPDOWN_ERR_CONF_INPUT;
-      goto cleanup;
-    }
-  else
-    {
-      int rv;
-
-      if ((rv = nodeupdown_util_lookup_module(handle,
-					      NODEUPDOWN_MODULE_BUILDDIR,
-					      backend_modules,
-					      backend_modules_len,
-					      _load_module)) < 0)
-        goto cleanup;
-
-      if (rv)
-        goto done;
-
-      if ((rv = nodeupdown_util_lookup_module(handle,
+  int rv;
+  
+  if ((rv = nodeupdown_util_lookup_module(handle,
+					  NODEUPDOWN_MODULE_BUILDDIR,
+					  backend_modules,
+					  backend_modules_len,
+					  _load_module)) < 0)
+    goto cleanup;
+  
+  if (rv)
+    goto done;
+  
+  if ((rv = nodeupdown_util_lookup_module(handle,
+					  NODEUPDOWN_MODULE_DIR,
+					  backend_modules,
+					  backend_modules_len,
+					  _load_module)) < 0)
+    goto cleanup;
+  
+  if ((rv = nodeupdown_util_search_for_module(handle,
 					      NODEUPDOWN_MODULE_DIR,
-					      backend_modules,
-					      backend_modules_len,
+					      "nodeupdown_backend_",
 					      _load_module)) < 0)
-        goto cleanup;
-
-      if ((rv = nodeupdown_util_search_for_module(handle,
-						  NODEUPDOWN_MODULE_DIR,
-						  "nodeupdown_backend_",
-						  _load_module)) < 0)
-        goto cleanup;
-                     
-      if (rv)
-        goto done;
+    goto cleanup;
+  
+  if (rv)
+    goto done;
                                                                           
-      handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
-      goto cleanup;
-    }
+  handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
+  goto cleanup;
+
 #endif /* !WITH_STATIC_MODULES */
 
  done:

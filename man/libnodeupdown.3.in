@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: libnodeupdown.3.in,v 1.15 2005-04-25 17:43:26 achu Exp $
+\."$Id: libnodeupdown.3.in,v 1.16 2005-05-02 23:00:28 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -94,9 +94,6 @@ ganglia - See http://ganglia.sourceforge.net for more information.
 If none of the above are found, the nodeupdown library will search for
 a backend module in @NODEUPDOWN_MODULE_DIR@ until one is found.
 
-The nodeupdown configuration file can be used to select a specific
-backend tool.
-
 .SH CLUSTERLIST MODULES
 
 The nodeupdown library loads a clusterlist module to obtain a list of
@@ -119,14 +116,10 @@ all nodes in the cluster.
 hostsfile - Uses a file that lists the hostname of every node in the
 cluster on a separate line.  The default hostsfile is
 @NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT@.
-   
-none - No database will be used.
 
 If none of the above are found, the nodeupdown library will search for
-a clusterlist module in @NODEUPDOWN_MODULE_DIR@ until one is found.
-
-The nodeupdown configuration file can be used to select a specific
-clusterlist module.
+a clusterlist module in @NODEUPDOWN_MODULE_DIR@.  If none are found, a
+default behavior will be implemented by the nodeupdown library.
 
 .SH CONFIG MODULES
 
@@ -146,11 +139,9 @@ Livermore National Laboratory.
 \}
 
 If none of the above are found, the nodeupdown library will search for
-a config module in @NODEUPDOWN_MODULE_DIR@ until one is found.
-
-The nodeupdown configuration file takes precedence over the
-configuration module.  When neither are in use, defaults are supplied
-by the backend tool.
+a config module in @NODEUPDOWN_MODULE_DIR@.  The nodeupdown
+configuration file takes precedence over the configuration module.
+When neither are in use, defaults are supplied by the backend tool.
 
 .SH FILES
 /usr/include/nodeupdown.h

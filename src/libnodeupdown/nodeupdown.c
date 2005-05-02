@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.125 2005-04-25 19:30:10 achu Exp $
+ *  $Id: nodeupdown.c,v 1.126 2005-05-02 23:00:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -272,12 +272,6 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd)
        conffile_int, 1, 0, &(cd->port_flag), &(cd->port), 0},
       {NODEUPDOWN_CONF_TIMEOUT_LEN, CONFFILE_OPTION_INT, 0, 
        conffile_int, 1, 0, &(cd->timeout_len_flag), &(cd->timeout_len), 0},
-      {NODEUPDOWN_CONF_BACKEND_MODULE, CONFFILE_OPTION_STRING, 0,
-       conffile_string, 1, 0, &(cd->backend_module_flag), 
-       cd->backend_module, NODEUPDOWN_MAXPATHLEN},
-      {NODEUPDOWN_CONF_CLUSTERLIST_MODULE, CONFFILE_OPTION_STRING, 0,
-       conffile_string, 1, 0, &(cd->clusterlist_module_flag), 
-       cd->clusterlist_module, NODEUPDOWN_MAXPATHLEN},
       /* 
        * Older options to be ignored by conffile library
        */
@@ -340,8 +334,6 @@ nodeupdown_load_data(nodeupdown_t handle,
 {
   struct nodeupdown_confdata conffile_confdata;
   struct nodeupdown_confdata module_confdata;
-  char *backend_module = NULL;
-  char *clusterlist_module = NULL;
 
   if (_unloaded_handle_error_check(handle) < 0)
     goto cleanup;
@@ -366,10 +358,7 @@ nodeupdown_load_data(nodeupdown_t handle,
   /* 
    * Load backend module
    */
-  if (conffile_confdata.backend_module_flag)
-    backend_module = conffile_confdata.backend_module;
-  
-  if (nodeupdown_backend_load_module(handle, backend_module) < 0)
+  if (nodeupdown_backend_load_module(handle) < 0)
     goto cleanup;
 
   if (nodeupdown_backend_setup(handle) < 0)
@@ -378,10 +367,7 @@ nodeupdown_load_data(nodeupdown_t handle,
   /* 
    * Load clusterlist module
    */
-  if (conffile_confdata.clusterlist_module_flag)
-    clusterlist_module = conffile_confdata.clusterlist_module;
-  
-  if (nodeupdown_clusterlist_load_module(handle, clusterlist_module) < 0)
+  if (nodeupdown_clusterlist_load_module(handle) < 0)
     goto cleanup;
 
   if (nodeupdown_clusterlist_setup(handle) < 0)
@@ -415,21 +401,63 @@ nodeupdown_load_data(nodeupdown_t handle,
   if (port <= 0)
     {
       if (conffile_confdata.port_flag)
-        port = conffile_confdata.port;
+	{
+	  if (conffile_confdata.port <= 0)
+	    {
+	      handle->errnum = NODEUPDOWN_ERR_CONF_INPUT;
+	      goto cleanup;
+	    }
+	  port = conffile_confdata.port;
+	}
       else if (module_confdata.port_flag)
-        port = module_confdata.port;
+	{
+	  if (module_confdata.port <= 0)
+	    {
+	      handle->errnum = NODEUPDOWN_ERR_CONFIG_MODULE;
+	      goto cleanup;
+	    }
+	  port = module_confdata.port;
+	}
       else
-        port = nodeupdown_backend_default_port(handle);
+	{
+	  if (nodeupdown_backend_default_port(handle) <= 0)
+	    {
+	      handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
+	      goto cleanup;
+	    }
+	  port = nodeupdown_backend_default_port(handle);
+	}
     }
   
   if (timeout_len <= 0)
     {
       if (conffile_confdata.timeout_len_flag)
-        timeout_len = conffile_confdata.timeout_len;
+	{
+	  if (conffile_confdata.timeout_len <= 0)
+	    {
+	      handle->errnum = NODEUPDOWN_ERR_CONF_INPUT;
+	      goto cleanup;
+	    }
+	  timeout_len = conffile_confdata.timeout_len;
+	}
       else if (module_confdata.timeout_len_flag)
-        timeout_len = module_confdata.timeout_len;
+	{
+	  if (module_confdata.timeout_len <= 0)
+	    {
+	      handle->errnum = NODEUPDOWN_ERR_CONFIG_MODULE;
+	      goto cleanup;
+	    }
+	  timeout_len = module_confdata.timeout_len;
+	}
       else
-        timeout_len = nodeupdown_backend_default_timeout_len(handle);
+	{
+	  if (nodeupdown_backend_default_timeout_len(handle) <= 0)
+	    {
+	      handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
+	      goto cleanup;
+	    }
+	  timeout_len = nodeupdown_backend_default_timeout_len(handle);
+	}
     }
 
   if (hostname)

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend.h,v 1.6 2005-04-25 19:30:10 achu Exp $
+ *  $Id: nodeupdown_backend.h,v 1.7 2005-05-02 23:00:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -36,7 +36,7 @@
  *
  * Returns 0 on success, -1 on error
  */
-int nodeupdown_backend_load_module(nodeupdown_t handle, char *backend_module);
+int nodeupdown_backend_load_module(nodeupdown_t handle);
 
 /* 
  * nodeupdown_backend_unload_module

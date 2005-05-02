@@ -2,6 +2,14 @@
 
 	* src/libcommon/conffile.h, src/libcommon/conffile.c
 	(conffile_parse): filename parameter is now const char *.
+
+	* Re-worked so none module is not built and potentially
+	dynamically loaded.  It is compiled in as the default behavior
+	when a clusterlist module cannot be found.
+
+	* Removed configurability of dynamically loaded modules.
+
+	* Cleaned up manpages.
 	
 2005-04-28  Albert Chu  <chu11@llnl.gov>
 

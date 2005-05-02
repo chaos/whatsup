@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.40 2005-04-25 19:30:10 achu Exp $
+## $Id: Makefile.am,v 1.41 2005-05-02 23:00:28 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -23,18 +23,22 @@ endif
 #
 
 if WITH_GENDERSLLNL
-GENDERSLLNL_STATIC_SOURCES  = nodeupdown_clusterlist_gendersllnl.c \
-			      nodeupdown_config_gendersllnl.c
-GENDERS_UTIL_STATIC_SOURCES = nodeupdown_clusterlist_genders_util.c \
-			      nodeupdown_genders_util.c
-GENDERSLLNL_STATIC_LIBS     = $(GENDERSLLNL_LIBS)
+GENDERSLLNL_STATIC_SOURCES    = nodeupdown_clusterlist_gendersllnl.c \
+			        nodeupdown_config_gendersllnl.c
+GENDERS_UTIL_STATIC_SOURCES   = nodeupdown_clusterlist_genders_util.c \
+			        nodeupdown_genders_util.c
+GENDERSLLNL_STATIC_LIBS       = $(GENDERSLLNL_LIBS)
 endif
  
 if WITH_GENDERS
-GENDERS_STATIC_SOURCES      = nodeupdown_clusterlist_genders.c
-GENDERS_UTIL_STATIC_SOURCES = nodeupdown_clusterlist_genders_util.c \
-			      nodeupdown_genders_util.c
-GENDERS_STATIC_LIBS         = $(GENDERS_LIBS)
+GENDERS_STATIC_SOURCES        = nodeupdown_clusterlist_genders.c
+GENDERS_UTIL_STATIC_SOURCES   = nodeupdown_clusterlist_genders_util.c \
+			        nodeupdown_genders_util.c
+GENDERS_STATIC_LIBS           = $(GENDERS_LIBS)
+endif
+
+if WITH_HOSTSFILE
+HOSTSFILE_STATIC_SOURCES      = nodeupdown_clusterlist_hostsfile.c
 endif
 
 if WITH_STATIC_MODULES
@@ -42,14 +46,12 @@ STATIC_MODULE_SOURCES     = nodeupdown_backend_ganglia.c \
 			    $(GENDERSLLNL_STATIC_SOURCES) \
 			    $(GENDERS_STATIC_SOURCES) \
 			    $(GENDERS_UTIL_STATIC_SOURCES) \
-			    nodeupdown_clusterlist_hostsfile.c \
-			    nodeupdown_clusterlist_none.c \
-			    nodeupdown_clusterlist_util.c
+			    $(HOSTSFILE_STATIC_SOURCES)
 STATIC_MODULE_LIBS        = $(GENDERSLLNL_STATIC_LIBS) $(GENDERS_STATIC_LIBS)
 STATIC_MODULE_LIBEXPAT    = ../libexpat/libexpat.la
 STATIC_MODULE_LIBEXPATDIR = -I$(srcdir)/../libexpat
 else
-MODULE_EXPORT_FLAGS    = -export-dynamic
+MODULE_EXPORT_FLAGS       = -export-dynamic
 endif
 
 nodeupdown_module_builddir=`cd $(top_builddir)/src/libnodeupdown && pwd`
@@ -81,6 +83,8 @@ libnodeupdown_la_CFLAGS = -D_REENTRANT -I ../../config \
 libnodeupdown_la_SOURCES = nodeupdown.c \
 			   nodeupdown_backend.c \
 			   nodeupdown_clusterlist.c \
+	 		   nodeupdown_clusterlist_default.c \
+			   nodeupdown_clusterlist_util.c \
 			   nodeupdown_config.c \
 			   nodeupdown_util.c \
 			   $(STATIC_MODULE_SOURCES)
@@ -108,14 +112,16 @@ if WITH_GENDERS
 GENDERS_CLUSTERLIST_MODULE     = nodeupdown_clusterlist_genders.la
 endif
 
+if WITH_HOSTSFILE
+HOSTSFILE_CLUSTERLIST_MODULE   = nodeupdown_clusterlist_hostsfile.la
+endif
 if !WITH_STATIC_MODULES
 nodeupdownmodulelibdir = $(NODEUPDOWN_MODULE_DIR)
 nodeupdownmodulelib_LTLIBRARIES = \
 	nodeupdown_backend_ganglia.la \
 	$(GENDERSLLNL_CLUSTERLIST_MODULE) \
 	$(GENDERS_CLUSTERLIST_MODULE) \
-	nodeupdown_clusterlist_hostsfile.la \
-	nodeupdown_clusterlist_none.la \
+	$(HOSTSFILE_CLUSTERLIST_MODULE) \
 	$(GENDERSLLNL_CONFIG_MODULE)
 endif
 
@@ -134,8 +140,7 @@ nodeupdown_backend_ganglia_la_LIBADD = \
 nodeupdown_clusterlist_gendersllnl_la_SOURCES = \
 	nodeupdown_clusterlist_gendersllnl.c \
 	nodeupdown_clusterlist_genders_util.c \
-	nodeupdown_genders_util.c \
-	nodeupdown_clusterlist_util.c
+	nodeupdown_genders_util.c
 nodeupdown_clusterlist_gendersllnl_la_LDFLAGS = \
 	$(MODULE_FLAGS) \
 	$(GENDERSLLNL_LIBS) \
@@ -170,15 +175,6 @@ nodeupdown_clusterlist_hostsfile_la_CFLAGS  = \
 nodeupdown_clusterlist_hostsfile_la_LIBADD = \
 	../libcommon/libcommon.la
  
-nodeupdown_clusterlist_none_la_SOURCES = \
-	nodeupdown_clusterlist_none.c \
-	nodeupdown_clusterlist_util.c
-nodeupdown_clusterlist_none_la_LDFLAGS = \
-	$(MODULE_FLAGS) \
-	$(NODEUPDOWN_CLUSTERLIST_OTHER_FLAGS) 
-nodeupdown_clusterlist_none_la_CFLAGS  = \
-        -I$(srcdir)/../libcommon
-
 nodeupdown_config_gendersllnl_la_SOURCES = \
 	nodeupdown_config_gendersllnl.c \
 	nodeupdown_genders_util.c

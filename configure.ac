@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.49 2005-04-25 17:46:28 achu Exp $
+## $Id: configure.ac,v 1.50 2005-05-02 23:00:28 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -73,7 +73,6 @@ AC_CHECK_HEADERS( \
 #
 # Check for default paths
 #
-AC_HOSTSFILE
 AC_NODEUPDOWN_CONF
 AC_NODEUPDOWN_MODULE_DIR
 AC_WHATSUP_MODULE_DIR
@@ -90,24 +89,23 @@ AM_CONDITIONAL(WITH_STATIC_MODULES, [test "$ac_with_static_modules" = "yes"])
 AC_PERL_INSTALL_DESTDIR
 
 #
-# Check for genders
-#
-AC_GENDERS
-AM_CONDITIONAL(WITH_GENDERS, [test "$ac_with_genders" = "yes"])
- 
-#
 # Check for gendersllnl
 #
 AC_GENDERSLLNL
 AM_CONDITIONAL(WITH_GENDERSLLNL, [test "$ac_with_gendersllnl" = "yes"])
 
-if test "$ac_with_gendersllnl" = "yes"; then
-   AC_CHECK_LIB(genders,
-                genders_index_attrvals,
-                AC_DEFINE(HAVE_GENDERS_INDEX_ATTRVALS, [1],
-                          [define genders_index_attrvals exists]),
-                [])
-fi
+#
+# Check for genders
+#
+AC_GENDERS
+AM_CONDITIONAL(WITH_GENDERS, [test "$ac_with_genders" = "yes"])
+
+#
+# Check for hostsfile 
+#
+AC_HOSTSFILE
+AC_HOSTSFILE_PATH
+AM_CONDITIONAL(WITH_HOSTSFILE, [test "$ac_with_hostsfile" = "yes"])
 
 ##
 # Checks for typedefs, structures, and compiler characteristics.

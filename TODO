@@ -1,3 +1,3 @@
 - repackage for multilib
 - doc for writing modules
-- remove none module similar to cerebro
+- test default module

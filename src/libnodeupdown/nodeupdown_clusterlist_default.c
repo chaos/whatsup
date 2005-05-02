@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_none.c,v 1.5 2005-04-25 19:30:10 achu Exp $
+ *  $Id: nodeupdown_clusterlist_default.c,v 1.1 2005-05-02 23:00:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -42,68 +42,68 @@
 #include "hostlist.h"
 
 /*
- * none_clusterlist_setup
+ * default_clusterlist_setup
  *
- * none clusterlist module setup function
+ * default clusterlist module setup function
  */
 int 
-none_clusterlist_setup(nodeupdown_t handle) 
+default_clusterlist_setup(nodeupdown_t handle) 
 {
   return 0;
 }
 
 /*
- * none_clusterlist_cleanup
+ * default_clusterlist_cleanup
  *
- * none clusterlist module cleanup function
+ * default clusterlist module cleanup function
  */
 int 
-none_clusterlist_cleanup(nodeupdown_t handle) 
+default_clusterlist_cleanup(nodeupdown_t handle) 
 {
   return 0;
 }
 
 /*
- * none_clusterlist_complete_loading
+ * default_clusterlist_complete_loading
  *
- * none clusterlist module complete_loading function
+ * default clusterlist module complete_loading function
  */
 int 
-none_clusterlist_complete_loading(nodeupdown_t handle) 
+default_clusterlist_complete_loading(nodeupdown_t handle) 
 {
   return 0;
 }
 
 /*
- * none_clusterlist_compare_to_clusterlist
+ * default_clusterlist_compare_to_clusterlist
  *
- * none clusterlist module compare_to_clusterlist function
+ * default clusterlist module compare_to_clusterlist function
  */
 int 
-none_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
+default_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
 {
   return 0;
 }
 
 /*
- * none_clusterlist_is_node_in_cluster
+ * default_clusterlist_is_node_in_cluster
  *
- * none clusterlist module is_node_in_cluster function
+ * default clusterlist module is_node_in_cluster function
  */
 int 
-none_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) 
+default_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) 
 {
   /* Have to assume it is */
   return 1;
 }
 
 /*
- * none_clusterlist_is_node_discovered
+ * default_clusterlist_is_node_discovered
  *
- * none clusterlist module is_node_discovered function
+ * default clusterlist module is_node_discovered function
  */
 int 
-none_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node) 
+default_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node) 
 {
   /* Without a clusterlist_ of some sort, this is the best we can do */
   if (hostlist_find(handle->up_nodes, node) == -1 
@@ -114,44 +114,40 @@ none_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node)
 }
 
 /*
- * none_clusterlist_get_nodename
+ * default_clusterlist_get_nodename
  *
- * none clusterlist module get_nodename function
+ * default clusterlist module get_nodename function
  */
 int 
-none_clusterlist_get_nodename(nodeupdown_t handle, 
-                              const char *node, 
-                              char *buffer, 
-                              int buflen) 
+default_clusterlist_get_nodename(nodeupdown_t handle, 
+				 const char *node, 
+				 char *buffer, 
+				 int buflen) 
 {
   return nodeupdown_clusterlist_copy_nodename(handle, node, buffer, buflen);
 }
     
 /*
- * none_clusterlist_increase_max_nodes
+ * default_clusterlist_increase_max_nodes
  *
- * none clusterlist module increase_max_nodes function
+ * default clusterlist module increase_max_nodes function
  */
 int 
-none_clusterlist_increase_max_nodes(nodeupdown_t handle) 
+default_clusterlist_increase_max_nodes(nodeupdown_t handle) 
 {
   handle->max_nodes++;
   return 0;
 }
 
-#if WITH_STATIC_MODULES
-struct nodeupdown_clusterlist_module_info none_clusterlist_module_info =
-#else  /* !WITH_STATIC_MODULES */
-struct nodeupdown_clusterlist_module_info clusterlist_module_info =
-#endif /* !WITH_STATIC_MODULES */
+struct nodeupdown_clusterlist_module_info default_clusterlist_module_info =
   {
-    "none",
-    &none_clusterlist_setup,
-    &none_clusterlist_cleanup,
-    &none_clusterlist_complete_loading,
-    &none_clusterlist_compare_to_clusterlist,
-    &none_clusterlist_is_node_in_cluster,
-    &none_clusterlist_is_node_discovered,
-    &none_clusterlist_get_nodename,
-    &none_clusterlist_increase_max_nodes,
+    "default",
+    &default_clusterlist_setup,
+    &default_clusterlist_cleanup,
+    &default_clusterlist_complete_loading,
+    &default_clusterlist_compare_to_clusterlist,
+    &default_clusterlist_is_node_in_cluster,
+    &default_clusterlist_is_node_discovered,
+    &default_clusterlist_get_nodename,
+    &default_clusterlist_increase_max_nodes,
   };

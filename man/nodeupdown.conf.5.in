@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown.conf.5.in,v 1.15 2005-04-25 19:50:05 achu Exp $
+\."$Id: nodeupdown.conf.5.in,v 1.16 2005-05-02 23:00:28 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -61,56 +61,6 @@ Specify the port.
 .I timeout_len seconds
 
 Specify the timeout length in seconds.
-.TP
-.ie @MANPAGE_STATIC_MODULES@ \{
-.I backend_module name
-\}
-.el \{
-.I backend_module ( name | filename | path)
-\}
-
-Specify the backend module to use.  
-.if !@MANPAGE_STATIC_MODULES@ \{
-Backend modules are searched for in the nodeupdown package library,
-@NODEUPDOWN_MODULE_DIR@.
-\}
-
-The following backend modules are available by default:
-
-ganglia
-
-.TP
-.ie @MANPAGE_STATIC_MODULES@ \{
-.I clusterlist_module name
-\}
-.el \{
-.I clusterlist_module ( name | filename | path)
-\}
-
-Specify the clusterlist module to use.  
-
-.if !@MANPAGE_STATIC_MODULES@ \{
-Clusterlist modules are searched for in the nodeupdown package
-library, @NODEUPDOWN_MODULE_DIR@.
-\}
-
-The following clusterlist modules are available by default:
-
-.if @MANPAGE_GENDERSLLNL@ \{
-gendersllnl
-  
-\}
-  
-.if @MANPAGE_GENDERS@ \{
-genders
-  
-\}
-  
-hostsfile
-  
-none
-
-.br
 .SH FILES
 @NODEUPDOWN_CONF_FILE@
 .SH SEE ALSO
