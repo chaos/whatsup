@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.21 2005-04-25 14:41:27 achu Exp $
+ *  $Id: conffile.c,v 1.22 2005-05-02 17:42:54 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -201,7 +201,7 @@ conffile_seterrnum(conffile_t cf, int errnum)
 
 static int
 _setup(conffile_t cf,
-       char *filename,
+       const char *filename,
        struct conffile_option *options,
        int options_len,
        void *app_ptr,
@@ -671,7 +671,7 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
 
 int
 conffile_parse(conffile_t cf,
-               char *filename,
+               const char *filename,
                struct conffile_option *options,
                int options_len,
                void *app_ptr,

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.h,v 1.14 2005-04-25 14:36:03 achu Exp $
+ *  $Id: conffile.h,v 1.15 2005-05-02 17:42:54 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -366,7 +366,7 @@ int conffile_seterrnum(conffile_t cf, int errnum);
  * Parse a configuration file.  
  * Returns 0 on success, -1 on error.
  */
-int conffile_parse(conffile_t cf, char *filename,
+int conffile_parse(conffile_t cf, const char *filename,
                    struct conffile_option *options,
                    int options_len, void *app_ptr, int app_data,
                    int flags);

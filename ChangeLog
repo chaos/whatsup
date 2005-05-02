@@ -1,3 +1,8 @@
+2005-05-02  Albert Chu  <chu11@llnl.gov>
+
+	* src/libcommon/conffile.h, src/libcommon/conffile.c
+	(conffile_parse): filename parameter is now const char *.
+	
 2005-04-28  Albert Chu  <chu11@llnl.gov>
 
 	* Support shortened hostnames in hostsfile clusterlist module.
