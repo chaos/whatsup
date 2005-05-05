@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.43 2005-05-05 18:30:10 achu Exp $
+## $Id: Makefile.am,v 1.44 2005-05-05 21:08:04 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -63,13 +63,11 @@ nobase_include_HEADERS = nodeupdown/nodeupdown_constants.h \
 			 nodeupdown/nodeupdown_clusterlist_module.h \
 			 nodeupdown/nodeupdown_config_module.h
 
-noinst_HEADERS  = nodeupdown_backend.h \
-		  nodeupdown_common.h \
-		  nodeupdown_clusterlist.h \
+noinst_HEADERS  = nodeupdown_common.h \
 		  nodeupdown_clusterlist_util.h \
 		  nodeupdown_clusterlist_genders_util.h \
-		  nodeupdown_config.h \
 		  nodeupdown_genders_util.h \
+		  nodeupdown_module.h \
 		  nodeupdown_util.h
 
 lib_LTLIBRARIES = libnodeupdown.la
@@ -80,11 +78,9 @@ libnodeupdown_la_CFLAGS = -D_REENTRANT -I ../../config \
 			  $(STATIC_MODULE_LIBEXPATDIR)
 
 libnodeupdown_la_SOURCES = nodeupdown.c \
-			   nodeupdown_backend.c \
-			   nodeupdown_clusterlist.c \
 	 		   nodeupdown_clusterlist_default.c \
 			   nodeupdown_clusterlist_util.c \
-			   nodeupdown_config.c \
+			   nodeupdown_module.c \
 			   nodeupdown_util.c \
 			   $(STATIC_MODULE_SOURCES)
 

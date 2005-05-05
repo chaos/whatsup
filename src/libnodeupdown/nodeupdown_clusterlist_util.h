@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_util.h,v 1.2 2005-04-06 21:50:19 achu Exp $
+ *  $Id: nodeupdown_clusterlist_util.h,v 1.3 2005-05-05 21:08:04 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -28,8 +28,15 @@
 #define _NODEUPDOWN_CLUSTERLIST_UTIL_H
 
 #include "nodeupdown.h"
-#include "nodeupdown_clusterlist.h"
 
+/* 
+ * nodeupdown_clusterlist_copy_nodename
+ *
+ * Common function that checks buffer lengths then copies
+ * the node into buffer.
+ *
+ * Returns 0 on success, -1 on error
+ */
 int nodeupdown_clusterlist_copy_nodename(nodeupdown_t handle, 
                                          const char *node, 
                                          char *buf, 

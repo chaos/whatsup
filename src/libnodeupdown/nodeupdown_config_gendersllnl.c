@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_config_gendersllnl.c,v 1.7 2005-05-05 18:30:10 achu Exp $
+ *  $Id: nodeupdown_config_gendersllnl.c,v 1.8 2005-05-05 21:08:04 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -37,9 +37,9 @@
 
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
-#include "nodeupdown_config.h"
 #include "nodeupdown_genders_util.h"
 #include "nodeupdown/nodeupdown_constants.h"
+#include "nodeupdown/nodeupdown_config.h"
 #include "nodeupdown/nodeupdown_config_module.h"
 
 static genders_t gendersllnl_handle = NULL;
@@ -131,7 +131,7 @@ gendersllnl_config_load_default(nodeupdown_t handle,
         {
           int i;
 
-          if (numnodes > NODEUPDOWN_CONF_HOSTNAMES_MAX)
+          if (numnodes > NODEUPDOWN_CONFIG_HOSTNAMES_MAX)
             {
               (void)genders_nodelist_destroy(gendersllnl_handle, nodelist);
               handle->errnum = NODEUPDOWN_ERR_CONFIG_MODULE;

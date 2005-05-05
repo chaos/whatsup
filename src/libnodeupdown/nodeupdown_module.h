@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend.h,v 1.7 2005-05-02 23:00:28 achu Exp $
+ *  $Id: nodeupdown_module.h,v 1.1 2005-05-05 21:08:04 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -24,12 +24,12 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
 \*****************************************************************************/
 
-#ifndef _NODEUPDOWN_BACKEND_H
-#define _NODEUPDOWN_BACKEND_H
+#ifndef _NODEUPDOWN_MODULE_H
+#define _NODEUPDOWN_MODULE_H
 
 #include "nodeupdown.h"
 
-/* 
+/*
  * nodeupdown_backend_load_module
  *
  * Find and load the nodeupdown backend module
@@ -37,8 +37,8 @@
  * Returns 0 on success, -1 on error
  */
 int nodeupdown_backend_load_module(nodeupdown_t handle);
-
-/* 
+ 
+/*
  * nodeupdown_backend_unload_module
  *
  * unload the nodeupdown backend module
@@ -47,50 +47,40 @@ int nodeupdown_backend_load_module(nodeupdown_t handle);
  */
 int nodeupdown_backend_unload_module(nodeupdown_t handle);
 
-/* 
- * nodeupdown_backend_default_hostname
+/*
+ * nodeupdown_clusterlist_load_module
  *
- * call backend module default_hostname function
- */
-char *nodeupdown_backend_default_hostname(nodeupdown_t handle);
-
-/* 
- * nodeupdown_backend_default_port
+ * Find and load the nodeupdown clusterlist module
  *
- * call backend module default_port function
+ * Returns 0 on success, -1 on error
  */
-int nodeupdown_backend_default_port(nodeupdown_t handle);
-
-/* 
- * nodeupdown_backend_default_timeout_len
+int nodeupdown_clusterlist_load_module(nodeupdown_t handle);
+ 
+/*
+ * nodeupdown_clusterlist_unload_module
  *
- * call backend module default_timeout_len function
- */
-int nodeupdown_backend_default_timeout_len(nodeupdown_t handle);
-
-/* 
- * nodeupdown_backend_setup
+ * unload the nodeupdown clusterlist module
  *
- * call backend module setup function
+ * Returns 0 on success, -1 on error
  */
-int nodeupdown_backend_setup(nodeupdown_t handle);
+int nodeupdown_clusterlist_unload_module(nodeupdown_t handle);
 
-/* 
- * nodeupdown_backend_cleanup
+/*
+ * nodeupdown_config_load_module
  *
- * call backend module cleanup function
- */
-int nodeupdown_backend_cleanup(nodeupdown_t handle);
-
-/* 
- * nodeupdown_backend_get_updown_data
+ * Find and load the nodeupdown config module
  *
- * call backend module get_updown_data function
+ * Returns 0 on success, -1 on error
  */
-int nodeupdown_backend_get_updown_data(nodeupdown_t handle, 
-                                       const char *hostname,
-                                       int port,
-                                       int timeout_len,
-                                       char *reserved);
+int nodeupdown_config_load_module(nodeupdown_t handle);
+ 
+/*
+ * nodeupdown_config_unload_module
+ *
+ * unload the nodeupdown config module
+ *
+ * Returns 0 on success, -1 on error
+ */
+int nodeupdown_config_unload_module(nodeupdown_t handle);
 
-#endif /* _NODEUPDOWN_BACKEND_H  */
+#endif /* _NODEUPDOWN_MODULE_H */

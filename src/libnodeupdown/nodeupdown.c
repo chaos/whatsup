@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.131 2005-05-05 18:30:10 achu Exp $
+ *  $Id: nodeupdown.c,v 1.132 2005-05-05 21:08:04 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -36,11 +36,10 @@
 
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
-#include "nodeupdown_backend.h"
-#include "nodeupdown_clusterlist.h"
-#include "nodeupdown_config.h"
+#include "nodeupdown_module.h"
 #include "nodeupdown_util.h"
 #include "nodeupdown/nodeupdown_constants.h"
+#include "nodeupdown/nodeupdown_config.h"
 #include "nodeupdown/nodeupdown_backend_module.h"
 #include "nodeupdown/nodeupdown_clusterlist_module.h"
 #include "nodeupdown/nodeupdown_config_module.h"
@@ -234,7 +233,7 @@ _cb_hostnames(conffile_t cf, struct conffile_data *data, char *optionname,
       return -1;
     }
   
-  if (data->stringlist_len > NODEUPDOWN_CONF_HOSTNAMES_MAX)
+  if (data->stringlist_len > NODEUPDOWN_CONFIG_HOSTNAMES_MAX)
     return -1;
 
   for (i = 0; i < data->stringlist_len; i++) 

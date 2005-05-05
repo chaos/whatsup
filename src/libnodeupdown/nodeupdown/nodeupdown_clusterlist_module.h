@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_module.h,v 1.1 2005-05-05 18:20:41 achu Exp $
+ *  $Id: nodeupdown_clusterlist_module.h,v 1.2 2005-05-05 21:08:04 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -115,6 +115,20 @@ struct nodeupdown_clusterlist_module_info
   Nodeupdown_clusterlist_get_nodename get_nodename;
   Nodeupdown_clusterlist_compare_to_clusterlist compare_to_clusterlist;
 };
+
+/* 
+ * nodeupdown_clusterlist_setup
+ *
+ * call clusterlist module setup function
+ */
+int nodeupdown_clusterlist_setup(nodeupdown_t handle);
+
+/* 
+ * nodeupdown_clusterlist_cleanup
+ *
+ * call clusterlist module cleanup function
+ */
+int nodeupdown_clusterlist_cleanup(nodeupdown_t handle);
 
 /* 
  * nodeupdown_clusterlist_get_numnodes

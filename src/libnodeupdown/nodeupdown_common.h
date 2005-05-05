@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_common.h,v 1.25 2005-05-05 18:30:10 achu Exp $
+ *  $Id: nodeupdown_common.h,v 1.26 2005-05-05 21:08:04 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -51,7 +51,6 @@
 #define NODEUPDOWN_CONF_GENDERSFILE               "gendersfile"
 
 #define NODEUPDOWN_CONF_HOSTNAMES                  "hostnames"
-#define NODEUPDOWN_CONF_HOSTNAMES_MAX              8
 #define NODEUPDOWN_CONF_PORT                       "port"
 #define NODEUPDOWN_CONF_TIMEOUT_LEN                "timeout_len"
 
@@ -67,22 +66,6 @@ struct nodeupdown {
   hostlist_t up_nodes;
   hostlist_t down_nodes;
   int max_nodes;
-};
-
-/* 
- * struct nodeupdown_config
- *
- * stores configuration file data
- */
-struct nodeupdown_config 
-{
-  char hostnames[NODEUPDOWN_CONF_HOSTNAMES_MAX+1][NODEUPDOWN_MAXHOSTNAMELEN+1];
-  int hostnames_len;
-  int hostnames_flag;
-  int port;
-  int port_flag;
-  int timeout_len;
-  int timeout_len_flag;
 };
 
 #endif /* _NODEUPDOWN_COMMON_H */

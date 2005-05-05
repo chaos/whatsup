@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_config.h,v 1.4 2005-05-05 18:09:56 achu Exp $
+ *  $Id: nodeupdown_config.h,v 1.1 2005-05-05 21:08:04 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -27,46 +27,46 @@
 #ifndef _NODEUPDOWN_CONFIG_H
 #define _NODEUPDOWN_CONFIG_H
 
-#include "nodeupdown.h"
+#include <nodeupdown/nodeupdown_constants.h>
+
+#define NODEUPDOWN_CONFIG_HOSTNAMES_MAX 8
 
 /* 
- * nodeupdown_config_load_module
+ * struct nodeupdown_config
  *
- * Find and load the nodeupdown config module
- *
- * Returns 0 on success, -1 on error
+ * stores configuration file data
  */
-int nodeupdown_config_load_module(nodeupdown_t handle);
+struct nodeupdown_config 
+{
+  char hostnames[NODEUPDOWN_CONFIG_HOSTNAMES_MAX+1][NODEUPDOWN_MAXHOSTNAMELEN+1];
+  int hostnames_len;
+  int hostnames_flag;
+  int port;
+  int port_flag;
+  int timeout_len;
+  int timeout_len_flag;
+};
 
-/* 
- * nodeupdown_config_unload_module
- *
- * unload the nodeupdown config module
- *
- * Returns 0 on success, -1 on error
- */
-int nodeupdown_config_unload_module(nodeupdown_t handle);
-
-/* 
+/*
  * nodeupdown_config_setup
  *
  * call config module setup function
  */
 int nodeupdown_config_setup(nodeupdown_t handle);
-
-/* 
+ 
+/*
  * nodeupdown_config_cleanup
  *
  * call config module cleanup function
  */
 int nodeupdown_config_cleanup(nodeupdown_t handle);
-
-/* 
+ 
+/*
  * nodeupdown_config_load_default
  *
  * call config module load_default function
  */
-int nodeupdown_config_load_default(nodeupdown_t handle, 
-                                   struct nodeupdown_config *conf);
+int nodeupdown_config_load_default(nodeupdown_t handle,
+				   struct nodeupdown_config *conf);
 
-#endif /* _NODEUPDOWN_CONFIG_H  */
+#endif /* _NODEUPDOWN_CONFIG_H */
