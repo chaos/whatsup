@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_config_gendersllnl.c,v 1.3 2005-04-25 19:30:10 achu Exp $
+ *  $Id: nodeupdown_config_gendersllnl.c,v 1.4 2005-05-05 17:54:44 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -147,6 +147,7 @@ gendersllnl_config_load_default(nodeupdown_t handle,
                 }
               strcpy(conf->hostnames[i], nodelist[i]);
             }
+	  conf->hostnames_len = numnodes;
           conf->hostnames_flag++;
         }
 

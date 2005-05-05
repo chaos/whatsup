@@ -1,6 +1,5 @@
 - repackage for multilib
 - doc for writing modules
 - test default module
-- hostnames len
 - config confdata in right .h file
 - rework include files into right hierarchy

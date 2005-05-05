@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.127 2005-05-05 16:51:05 achu Exp $
+ *  $Id: nodeupdown.c,v 1.128 2005-05-05 17:54:44 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -224,8 +224,14 @@ _cb_hostnames(conffile_t cf, struct conffile_data *data, char *optionname,
               int option_type, void *option_ptr, int option_data,
               void *app_ptr, int app_data) 
 {
-  char (*hostnames)[NODEUPDOWN_MAXHOSTNAMELEN+1] = option_ptr;
+  struct nodeupdown_confdata *cd = option_ptr;
   int i;
+
+  if (!option_ptr)
+    {
+      conffile_seterrnum(cf, CONFFILE_ERR_PARAMETERS);
+      return -1;
+    }
   
   if (data->stringlist_len > NODEUPDOWN_CONF_HOSTNAMES_MAX)
     return -1;
@@ -234,8 +240,9 @@ _cb_hostnames(conffile_t cf, struct conffile_data *data, char *optionname,
     {
       if (strlen(data->stringlist[i]) > NODEUPDOWN_MAXHOSTNAMELEN)
         return -1;
-      strcpy(hostnames[i], data->stringlist[i]);
+      strcpy(cd->hostnames[i], data->stringlist[i]);
     }
+  cd->hostnames_len = data->stringlist_len;
   return 0;
 }
 
@@ -267,7 +274,7 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd)
     {
       {NODEUPDOWN_CONF_HOSTNAMES, CONFFILE_OPTION_LIST_STRING, -1, 
        _cb_hostnames, 1, 0, &(cd->hostnames_flag),
-       cd->hostnames, 0},
+       cd, 0},
       {NODEUPDOWN_CONF_PORT, CONFFILE_OPTION_INT, 0, 
        conffile_int, 1, 0, &(cd->port_flag), &(cd->port), 0},
       {NODEUPDOWN_CONF_TIMEOUT_LEN, CONFFILE_OPTION_INT, 0, 
@@ -473,14 +480,20 @@ nodeupdown_load_data(nodeupdown_t handle,
            || module_confdata.hostnames_flag)
     {
       char (*hostnames)[NODEUPDOWN_MAXHOSTNAMELEN+1];
-      int i;
+      int i, hostnames_len;
       
       if (conffile_confdata.hostnames_flag)
-        hostnames = conffile_confdata.hostnames;
+	{
+	  hostnames = conffile_confdata.hostnames;
+	  hostnames_len = conffile_confdata.hostnames_len;
+	}
       else
-        hostnames = module_confdata.hostnames;
+	{
+	  hostnames = module_confdata.hostnames;
+	  hostnames_len = module_confdata.hostnames_len;
+	}
       
-      for (i = 0; i <= NODEUPDOWN_MAXHOSTNAMELEN; i++)
+      for (i = 0; i < hostnames_len; i++)
         {
           if (strlen(hostnames[i]) > 0)
             {
@@ -495,9 +508,9 @@ nodeupdown_load_data(nodeupdown_t handle,
             }
         }
       
-      if (i > NODEUPDOWN_MAXHOSTNAMELEN)
+      if (i > hostnames_len)
         {
-          handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+          handle->errnum = NODEUPDOWN_ERR_CONNECT;
           goto cleanup;
         }
     }

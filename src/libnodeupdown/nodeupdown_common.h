@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_common.h,v 1.22 2005-05-02 23:00:28 achu Exp $
+ *  $Id: nodeupdown_common.h,v 1.23 2005-05-05 17:54:44 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -85,6 +85,7 @@ struct nodeupdown {
 struct nodeupdown_confdata 
 {
   char hostnames[NODEUPDOWN_CONF_HOSTNAMES_MAX+1][NODEUPDOWN_MAXHOSTNAMELEN+1];
+  int hostnames_len;
   int hostnames_flag;
   int port;
   int port_flag;
