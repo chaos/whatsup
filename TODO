@@ -2,4 +2,3 @@
 - doc for writing modules
 - test default module
 - config confdata in right .h file
-- rework include files into right hierarchy
