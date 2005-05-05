@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.12 2005-05-05 21:23:51 achu Exp $
+ *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.13 2005-05-05 21:36:34 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -42,9 +42,9 @@
 
 #include "nodeupdown.h"
 #include "nodeupdown_api.h"
+#include "nodeupdown_clusterlist_module.h"
 #include "nodeupdown_clusterlist_util.h"
-#include "nodeupdown/nodeupdown_constants.h"
-#include "nodeupdown/nodeupdown_clusterlist_module.h"
+#include "nodeupdown_constants.h"
 #include "hostlist.h"
 #include "fd.h"
 #include "list.h"

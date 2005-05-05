@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_util.c,v 1.5 2005-05-05 21:23:51 achu Exp $
+ *  $Id: nodeupdown_util.c,v 1.6 2005-05-05 21:36:34 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -49,8 +49,8 @@
 
 #include "nodeupdown.h"
 #include "nodeupdown_api.h"
+#include "nodeupdown_constants.h"
 #include "nodeupdown_util.h"
-#include "nodeupdown/nodeupdown_constants.h"
 #include "ltdl.h"
 
 int

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_module.h,v 1.2 2005-05-05 21:08:04 achu Exp $
+ *  $Id: nodeupdown_backend_module.h,v 1.3 2005-05-05 21:36:34 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -91,52 +91,5 @@ struct nodeupdown_backend_module_info
   Nodeupdown_backend_cleanup cleanup;
   Nodeupdown_backend_get_updown_data get_updown_data;
 };
-
-/* 
- * nodeupdown_backend_default_hostname
- *
- * call backend module default_hostname function
- */
-char *nodeupdown_backend_default_hostname(nodeupdown_t handle);
-
-/* 
- * nodeupdown_backend_default_port
- *
- * call backend module default_port function
- */
-int nodeupdown_backend_default_port(nodeupdown_t handle);
-
-/* 
- * nodeupdown_backend_default_timeout_len
- *
- * call backend module default_timeout_len function
- */
-int nodeupdown_backend_default_timeout_len(nodeupdown_t handle);
-
-/* 
- * nodeupdown_backend_setup
- *
- * call backend module setup function
- */
-int nodeupdown_backend_setup(nodeupdown_t handle);
-
-/* 
- * nodeupdown_backend_cleanup
- *
- * call backend module cleanup function
- */
-int nodeupdown_backend_cleanup(nodeupdown_t handle);
-
-/* 
- * nodeupdown_backend_get_updown_data
- *
- * call backend module get_updown_data function
- */
-int nodeupdown_backend_get_updown_data(nodeupdown_t handle, 
-                                       const char *hostname,
-                                       int port,
-                                       int timeout_len,
-                                       char *reserved);
-
 
 #endif /* _NODEUPDOWN_BACKEND_MODULE_H  */

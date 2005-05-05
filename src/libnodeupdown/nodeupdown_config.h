@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_config.h,v 1.1 2005-05-05 21:08:04 achu Exp $
+ *  $Id: nodeupdown_config.h,v 1.6 2005-05-05 21:36:34 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -27,7 +27,7 @@
 #ifndef _NODEUPDOWN_CONFIG_H
 #define _NODEUPDOWN_CONFIG_H
 
-#include <nodeupdown/nodeupdown_constants.h>
+#include "nodeupdown_constants.h"
 
 #define NODEUPDOWN_CONFIG_HOSTNAMES_MAX 8
 
@@ -46,27 +46,5 @@ struct nodeupdown_config
   int timeout_len;
   int timeout_len_flag;
 };
-
-/*
- * nodeupdown_config_setup
- *
- * call config module setup function
- */
-int nodeupdown_config_setup(nodeupdown_t handle);
- 
-/*
- * nodeupdown_config_cleanup
- *
- * call config module cleanup function
- */
-int nodeupdown_config_cleanup(nodeupdown_t handle);
- 
-/*
- * nodeupdown_config_load_default
- *
- * call config module load_default function
- */
-int nodeupdown_config_load_default(nodeupdown_t handle,
-				   struct nodeupdown_config *conf);
 
 #endif /* _NODEUPDOWN_CONFIG_H */

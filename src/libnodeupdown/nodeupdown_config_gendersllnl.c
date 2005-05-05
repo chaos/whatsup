@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_config_gendersllnl.c,v 1.9 2005-05-05 21:23:51 achu Exp $
+ *  $Id: nodeupdown_config_gendersllnl.c,v 1.10 2005-05-05 21:36:34 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -37,10 +37,10 @@
 
 #include "nodeupdown.h"
 #include "nodeupdown_api.h"
+#include "nodeupdown_config.h"
+#include "nodeupdown_config_module.h"
+#include "nodeupdown_constants.h"
 #include "nodeupdown_genders_util.h"
-#include "nodeupdown/nodeupdown_constants.h"
-#include "nodeupdown/nodeupdown_config.h"
-#include "nodeupdown/nodeupdown_config_module.h"
 
 static genders_t gendersllnl_handle = NULL;
 
