@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_gendersllnl.c,v 1.10 2005-05-05 16:51:05 achu Exp $
+ *  $Id: nodeupdown_clusterlist_gendersllnl.c,v 1.11 2005-05-05 17:17:52 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -223,8 +223,8 @@ struct nodeupdown_clusterlist_module_info clusterlist_module_info =
     &gendersllnl_clusterlist_setup,
     &gendersllnl_clusterlist_cleanup,
     &gendersllnl_clusterlist_get_numnodes,
-    &gendersllnl_clusterlist_compare_to_clusterlist,
     &gendersllnl_clusterlist_is_node_in_cluster,
     &gendersllnl_clusterlist_is_node_discovered,
     &gendersllnl_clusterlist_get_nodename,
+    &gendersllnl_clusterlist_compare_to_clusterlist,
   };
