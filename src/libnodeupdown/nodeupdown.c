@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.128 2005-05-05 17:54:44 achu Exp $
+ *  $Id: nodeupdown.c,v 1.129 2005-05-05 18:09:56 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -224,7 +224,7 @@ _cb_hostnames(conffile_t cf, struct conffile_data *data, char *optionname,
               int option_type, void *option_ptr, int option_data,
               void *app_ptr, int app_data) 
 {
-  struct nodeupdown_confdata *cd = option_ptr;
+  struct nodeupdown_config *conf = option_ptr;
   int i;
 
   if (!option_ptr)
@@ -240,23 +240,23 @@ _cb_hostnames(conffile_t cf, struct conffile_data *data, char *optionname,
     {
       if (strlen(data->stringlist[i]) > NODEUPDOWN_MAXHOSTNAMELEN)
         return -1;
-      strcpy(cd->hostnames[i], data->stringlist[i]);
+      strcpy(conf->hostnames[i], data->stringlist[i]);
     }
-  cd->hostnames_len = data->stringlist_len;
+  conf->hostnames_len = data->stringlist_len;
   return 0;
 }
 
 /*  
- * _init_nodeupdown_confdata
+ * _init_nodeupdown_config
  *
- * initialize nodeupdown_confdata structure with defaults
+ * initialize nodeupdown_config structure with defaults
  *
  * Return 0 on success, -1 on error
  */
 static int
-_init_nodeupdown_confdata(nodeupdown_t handle, struct nodeupdown_confdata *cd)
+_init_nodeupdown_config(nodeupdown_t handle, struct nodeupdown_config *conf)
 {
-  memset(cd, '\0', sizeof(struct nodeupdown_confdata));
+  memset(conf, '\0', sizeof(struct nodeupdown_config));
   return 0;
 }
 
@@ -268,17 +268,17 @@ _init_nodeupdown_confdata(nodeupdown_t handle, struct nodeupdown_confdata *cd)
  * Returns 0 on success, -1 on error
  */
 static int 
-_read_conffile(nodeupdown_t handle, struct nodeupdown_confdata *cd) 
+_read_conffile(nodeupdown_t handle, struct nodeupdown_config *conf) 
 {
   struct conffile_option options[] = 
     {
       {NODEUPDOWN_CONF_HOSTNAMES, CONFFILE_OPTION_LIST_STRING, -1, 
-       _cb_hostnames, 1, 0, &(cd->hostnames_flag),
-       cd, 0},
+       _cb_hostnames, 1, 0, &(conf->hostnames_flag),
+       conf, 0},
       {NODEUPDOWN_CONF_PORT, CONFFILE_OPTION_INT, 0, 
-       conffile_int, 1, 0, &(cd->port_flag), &(cd->port), 0},
+       conffile_int, 1, 0, &(conf->port_flag), &(conf->port), 0},
       {NODEUPDOWN_CONF_TIMEOUT_LEN, CONFFILE_OPTION_INT, 0, 
-       conffile_int, 1, 0, &(cd->timeout_len_flag), &(cd->timeout_len), 0},
+       conffile_int, 1, 0, &(conf->timeout_len_flag), &(conf->timeout_len), 0},
       /* 
        * Older options to be ignored by conffile library
        */
@@ -339,8 +339,8 @@ nodeupdown_load_data(nodeupdown_t handle,
                      int timeout_len, 
                      char *reserved)
 {
-  struct nodeupdown_confdata conffile_confdata;
-  struct nodeupdown_confdata module_confdata;
+  struct nodeupdown_config conffile_config;
+  struct nodeupdown_config module_config;
 
   if (_unloaded_handle_error_check(handle) < 0)
     goto cleanup;
@@ -358,8 +358,8 @@ nodeupdown_load_data(nodeupdown_t handle,
    * which module to load.
    */
 
-  _init_nodeupdown_confdata(handle, &conffile_confdata);
-  if (_read_conffile(handle, &conffile_confdata) < 0)
+  _init_nodeupdown_config(handle, &conffile_config);
+  if (_read_conffile(handle, &conffile_config) < 0)
     goto cleanup;
 
   /* 
@@ -389,8 +389,8 @@ nodeupdown_load_data(nodeupdown_t handle,
   if (nodeupdown_config_setup(handle) < 0)
     goto cleanup;
 
-  _init_nodeupdown_confdata(handle, &module_confdata);
-  if (nodeupdown_config_load_default(handle, &module_confdata) < 0)
+  _init_nodeupdown_config(handle, &module_config);
+  if (nodeupdown_config_load_default(handle, &module_config) < 0)
     goto cleanup;
 
   if (!(handle->up_nodes = hostlist_create(NULL))) 
@@ -407,23 +407,23 @@ nodeupdown_load_data(nodeupdown_t handle,
 
   if (port <= 0)
     {
-      if (conffile_confdata.port_flag)
+      if (conffile_config.port_flag)
 	{
-	  if (conffile_confdata.port <= 0)
+	  if (conffile_config.port <= 0)
 	    {
 	      handle->errnum = NODEUPDOWN_ERR_CONF_INPUT;
 	      goto cleanup;
 	    }
-	  port = conffile_confdata.port;
+	  port = conffile_config.port;
 	}
-      else if (module_confdata.port_flag)
+      else if (module_config.port_flag)
 	{
-	  if (module_confdata.port <= 0)
+	  if (module_config.port <= 0)
 	    {
 	      handle->errnum = NODEUPDOWN_ERR_CONFIG_MODULE;
 	      goto cleanup;
 	    }
-	  port = module_confdata.port;
+	  port = module_config.port;
 	}
       else
 	{
@@ -438,23 +438,23 @@ nodeupdown_load_data(nodeupdown_t handle,
   
   if (timeout_len <= 0)
     {
-      if (conffile_confdata.timeout_len_flag)
+      if (conffile_config.timeout_len_flag)
 	{
-	  if (conffile_confdata.timeout_len <= 0)
+	  if (conffile_config.timeout_len <= 0)
 	    {
 	      handle->errnum = NODEUPDOWN_ERR_CONF_INPUT;
 	      goto cleanup;
 	    }
-	  timeout_len = conffile_confdata.timeout_len;
+	  timeout_len = conffile_config.timeout_len;
 	}
-      else if (module_confdata.timeout_len_flag)
+      else if (module_config.timeout_len_flag)
 	{
-	  if (module_confdata.timeout_len <= 0)
+	  if (module_config.timeout_len <= 0)
 	    {
 	      handle->errnum = NODEUPDOWN_ERR_CONFIG_MODULE;
 	      goto cleanup;
 	    }
-	  timeout_len = module_confdata.timeout_len;
+	  timeout_len = module_config.timeout_len;
 	}
       else
 	{
@@ -476,21 +476,21 @@ nodeupdown_load_data(nodeupdown_t handle,
                                              reserved) < 0)
         goto cleanup;
     }
-  else if (conffile_confdata.hostnames_flag 
-           || module_confdata.hostnames_flag)
+  else if (conffile_config.hostnames_flag 
+           || module_config.hostnames_flag)
     {
       char (*hostnames)[NODEUPDOWN_MAXHOSTNAMELEN+1];
       int i, hostnames_len;
       
-      if (conffile_confdata.hostnames_flag)
+      if (conffile_config.hostnames_flag)
 	{
-	  hostnames = conffile_confdata.hostnames;
-	  hostnames_len = conffile_confdata.hostnames_len;
+	  hostnames = conffile_config.hostnames;
+	  hostnames_len = conffile_config.hostnames_len;
 	}
       else
 	{
-	  hostnames = module_confdata.hostnames;
-	  hostnames_len = module_confdata.hostnames_len;
+	  hostnames = module_config.hostnames;
+	  hostnames_len = module_config.hostnames_len;
 	}
       
       for (i = 0; i < hostnames_len; i++)

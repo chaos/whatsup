@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_common.h,v 1.23 2005-05-05 17:54:44 achu Exp $
+ *  $Id: nodeupdown_common.h,v 1.24 2005-05-05 18:09:56 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -78,11 +78,11 @@ struct nodeupdown {
 };
 
 /* 
- * struct nodeupdown_confdata
+ * struct nodeupdown_config
  *
  * stores configuration file data
  */
-struct nodeupdown_confdata 
+struct nodeupdown_config 
 {
   char hostnames[NODEUPDOWN_CONF_HOSTNAMES_MAX+1][NODEUPDOWN_MAXHOSTNAMELEN+1];
   int hostnames_len;

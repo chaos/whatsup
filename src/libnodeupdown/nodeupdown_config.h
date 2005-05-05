@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_config.h,v 1.3 2005-04-25 19:30:10 achu Exp $
+ *  $Id: nodeupdown_config.h,v 1.4 2005-05-05 18:09:56 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -67,6 +67,6 @@ int nodeupdown_config_cleanup(nodeupdown_t handle);
  * call config module load_default function
  */
 int nodeupdown_config_load_default(nodeupdown_t handle, 
-                                   struct nodeupdown_confdata *conf);
+                                   struct nodeupdown_config *conf);
 
 #endif /* _NODEUPDOWN_CONFIG_H  */
