@@ -1,4 +1,4 @@
 - repackage for multilib
 - doc for writing modules
 - test default module
-- config confdata in right .h file
+- generalize so that anyone can make config/options/clusterlist/backend module?
