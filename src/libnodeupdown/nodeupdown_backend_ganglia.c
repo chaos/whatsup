@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_ganglia.c,v 1.6 2005-04-25 19:30:10 achu Exp $
+ *  $Id: nodeupdown_backend_ganglia.c,v 1.7 2005-05-05 16:51:05 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -149,7 +149,6 @@ _xml_parse_start(void *data, const char *e1, const char **attr)
   unsigned long localtime = ((struct parse_vars *)data)->localtime;
   char buffer[NODEUPDOWN_MAXNODENAMELEN+1];
   unsigned long reported;
-  int ret;
 
   if (strcmp("HOST", e1) == 0) 
     {
@@ -175,15 +174,9 @@ _xml_parse_start(void *data, const char *e1, const char **attr)
       /* store as up or down */
       reported = atol(attr[5]);
       if (abs(localtime - reported) < timeout_len)
-        ret = hostlist_push(handle->up_nodes, buffer);
+        hostlist_push(handle->up_nodes, buffer);
       else
-        ret = hostlist_push(handle->down_nodes, buffer);
-      
-      if (ret == 0)
-        return;
-      
-      if (nodeupdown_clusterlist_increase_max_nodes(handle) < 0)
-        return;
+        hostlist_push(handle->down_nodes, buffer);
     }
 }
 
@@ -269,9 +262,6 @@ ganglia_backend_get_updown_data(nodeupdown_t handle,
     }
   
   if (nodeupdown_clusterlist_compare_to_clusterlist(handle) < 0)
-    goto cleanup;
-
-  if (nodeupdown_clusterlist_complete_loading(handle) < 0)
     goto cleanup;
 
   retval = 0;

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_default.c,v 1.1 2005-05-02 23:00:28 achu Exp $
+ *  $Id: nodeupdown_clusterlist_default.c,v 1.2 2005-05-05 16:51:05 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -64,24 +64,19 @@ default_clusterlist_cleanup(nodeupdown_t handle)
 }
 
 /*
- * default_clusterlist_complete_loading
+ * default_clusterlist_get_numnodes
  *
- * default clusterlist module complete_loading function
+ * default clusterlist module get_numnodes function
  */
 int 
-default_clusterlist_complete_loading(nodeupdown_t handle) 
+default_clusterlist_get_numnodes(nodeupdown_t handle) 
 {
-  return 0;
-}
+  int count = 0;
+  
+  count += hostlist_count(handle->up_nodes);
+  count += hostlist_count(handle->down_nodes);
 
-/*
- * default_clusterlist_compare_to_clusterlist
- *
- * default clusterlist module compare_to_clusterlist function
- */
-int 
-default_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
-{
+  handle->max_nodes = count;
   return 0;
 }
 
@@ -126,16 +121,15 @@ default_clusterlist_get_nodename(nodeupdown_t handle,
 {
   return nodeupdown_clusterlist_copy_nodename(handle, node, buffer, buflen);
 }
-    
+
 /*
- * default_clusterlist_increase_max_nodes
+ * default_clusterlist_compare_to_clusterlist
  *
- * default clusterlist module increase_max_nodes function
+ * default clusterlist module compare_to_clusterlist function
  */
 int 
-default_clusterlist_increase_max_nodes(nodeupdown_t handle) 
+default_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
 {
-  handle->max_nodes++;
   return 0;
 }
 
@@ -144,10 +138,9 @@ struct nodeupdown_clusterlist_module_info default_clusterlist_module_info =
     "default",
     &default_clusterlist_setup,
     &default_clusterlist_cleanup,
-    &default_clusterlist_complete_loading,
-    &default_clusterlist_compare_to_clusterlist,
+    &default_clusterlist_get_numnodes,
     &default_clusterlist_is_node_in_cluster,
     &default_clusterlist_is_node_discovered,
     &default_clusterlist_get_nodename,
-    &default_clusterlist_increase_max_nodes,
+    &default_clusterlist_compare_to_clusterlist,
   };

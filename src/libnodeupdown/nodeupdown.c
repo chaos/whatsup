@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.126 2005-05-02 23:00:28 achu Exp $
+ *  $Id: nodeupdown.c,v 1.127 2005-05-05 16:51:05 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -518,6 +518,9 @@ nodeupdown_load_data(nodeupdown_t handle,
 
   hostlist_sort(handle->up_nodes);
   hostlist_sort(handle->down_nodes);
+
+  if ((handle->max_nodes = nodeupdown_clusterlist_get_numnodes(handle)) < 0)
+    goto cleanup;
 
   /* loading complete */
   handle->is_loaded++;

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist.c,v 1.14 2005-05-02 23:00:28 achu Exp $
+ *  $Id: nodeupdown_clusterlist.c,v 1.15 2005-05-05 16:51:05 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -129,13 +129,12 @@ _load_module(nodeupdown_t handle,
 
   if (!clusterlist_module_info->clusterlist_module_name
       || !clusterlist_module_info->setup
-      || !clusterlist_module_info->complete_loading
+      || !clusterlist_module_info->get_numnodes
       || !clusterlist_module_info->cleanup
-      || !clusterlist_module_info->compare_to_clusterlist
       || !clusterlist_module_info->is_node_in_cluster
       || !clusterlist_module_info->is_node_discovered
       || !clusterlist_module_info->get_nodename
-      || !clusterlist_module_info->increase_max_nodes)
+      || !clusterlist_module_info->compare_to_clusterlist)
     {
       handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
       goto cleanup;
@@ -250,9 +249,9 @@ nodeupdown_clusterlist_cleanup(nodeupdown_t handle)
 }
  
 int 
-nodeupdown_clusterlist_complete_loading(nodeupdown_t handle)
+nodeupdown_clusterlist_get_numnodes(nodeupdown_t handle)
 {
-  return (*clusterlist_module_info->complete_loading)(handle);
+  return (*clusterlist_module_info->get_numnodes)(handle);
 }
 
 int 
@@ -288,11 +287,3 @@ nodeupdown_clusterlist_get_nodename(nodeupdown_t handle,
                                                   buffer, 
                                                   buflen);
 }
- 
-int 
-nodeupdown_clusterlist_increase_max_nodes(nodeupdown_t handle)
-{
-  return (*clusterlist_module_info->increase_max_nodes)(handle);
-}
-
-

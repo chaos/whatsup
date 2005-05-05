@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_genders_util.c,v 1.3 2005-04-22 17:56:02 achu Exp $
+ *  $Id: nodeupdown_clusterlist_genders_util.c,v 1.4 2005-05-05 16:51:05 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -41,11 +41,18 @@
 #include "hostlist.h"
 
 int 
-genders_util_clusterlist_complete_loading(nodeupdown_t handle, 
-                                          genders_t genders_handle) 
+genders_util_clusterlist_get_numnodes(nodeupdown_t handle, 
+				      genders_t genders_handle) 
 {
-  handle->max_nodes = genders_getnumnodes(genders_handle);
-  return 0;
+  int count;
+
+  if ((count = genders_getnumnodes(genders_handle)) < 0)
+    {
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
+      return -1;
+    }
+
+  return count;
 }
 
 int 

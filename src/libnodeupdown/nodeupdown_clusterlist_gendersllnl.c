@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_gendersllnl.c,v 1.9 2005-05-02 23:00:28 achu Exp $
+ *  $Id: nodeupdown_clusterlist_gendersllnl.c,v 1.10 2005-05-05 16:51:05 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -88,25 +88,14 @@ gendersllnl_clusterlist_cleanup(nodeupdown_t handle)
 }
 
 /* 
- * gendersllnl_clusterlist_complete_loading
+ * gendersllnl_clusterlist_get_numnodes
  *
- * gendersllnl clusterlist module complete_loading function
+ * gendersllnl clusterlist module get_numnodes function
  */
 int 
-gendersllnl_clusterlist_complete_loading(nodeupdown_t handle) 
+gendersllnl_clusterlist_get_numnodes(nodeupdown_t handle) 
 {
-  return genders_util_clusterlist_complete_loading(handle, gendersllnl_handle);
-}
-
-/* 
- * gendersllnl_clusterlist_compare_to_clusterlist
- *
- * gendersllnl clusterlist module compare_to_clusterlist function
- */
-int 
-gendersllnl_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
-{
-  return genders_util_clusterlist_compare_to_clusterlist(handle, gendersllnl_handle);
+  return genders_util_clusterlist_get_numnodes(handle, gendersllnl_handle);
 }
 
 /* 
@@ -214,14 +203,14 @@ gendersllnl_clusterlist_get_nodename(nodeupdown_t handle,
 }
     
 /* 
- * gendersllnl_clusterlist_increase_max_nodes
+ * gendersllnl_clusterlist_compare_to_clusterlist
  *
- * gendersllnl clusterlist module increase_max_nodes function
+ * gendersllnl clusterlist module compare_to_clusterlist function
  */
 int 
-gendersllnl_clusterlist_increase_max_nodes(nodeupdown_t handle) 
+gendersllnl_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
 {
-  return 0;
+  return genders_util_clusterlist_compare_to_clusterlist(handle, gendersllnl_handle);
 }
 
 #if WITH_STATIC_MODULES
@@ -233,10 +222,9 @@ struct nodeupdown_clusterlist_module_info clusterlist_module_info =
     "gendersllnl",
     &gendersllnl_clusterlist_setup,
     &gendersllnl_clusterlist_cleanup,
-    &gendersllnl_clusterlist_complete_loading,
+    &gendersllnl_clusterlist_get_numnodes,
     &gendersllnl_clusterlist_compare_to_clusterlist,
     &gendersllnl_clusterlist_is_node_in_cluster,
     &gendersllnl_clusterlist_is_node_discovered,
     &gendersllnl_clusterlist_get_nodename,
-    &gendersllnl_clusterlist_increase_max_nodes,
   };

@@ -1,3 +1,12 @@
+2005-05-05  Albert Chu  <chu11@llnl.gov>
+
+	* Remove increase_max_nodes clusterlist function.  Re-worked
+	default module and backend ganglia to not need it.
+
+	* Complete_loading clusterlist function is now reworked into
+	get_numnodes clusterlist function.  Nodeupdown library reworked
+	appropriately.
+	
 2005-05-02  Albert Chu  <chu11@llnl.gov>
 
 	* src/libcommon/conffile.h, src/libcommon/conffile.c

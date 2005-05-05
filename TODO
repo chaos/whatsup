@@ -1,6 +1,3 @@
 - repackage for multilib
 - doc for writing modules
 - test default module
-- remove increase max nodes?
-  - just make numnodes do hostlist_count and make sure its
-    called after load_data func

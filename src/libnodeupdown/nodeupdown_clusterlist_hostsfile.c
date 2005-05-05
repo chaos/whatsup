@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.7 2005-04-28 18:46:00 achu Exp $
+ *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.8 2005-05-05 16:51:05 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -266,55 +266,14 @@ hostsfile_clusterlist_cleanup(nodeupdown_t handle)
 }
 
 /*
- * hostsfile_clusterlist_complete_loading
+ * hostsfile_clusterlist_get_numnodes
  *
- * hostsfile clusterlist module complete_loading function
+ * hostsfile clusterlist module get_numnodes function
  */
 int 
-hostsfile_clusterlist_compelte_loading(nodeupdown_t handle) 
+hostsfile_clusterlist_get_numnodes(nodeupdown_t handle) 
 {
-  handle->max_nodes = list_count(hosts);
-  return 0;
-}
-
-/*
- * hostsfile_clusterlist_compare_to_clusterlist
- *
- * hostsfile clusterlist module compare_to_clusterlist function
- */
-int 
-hostsfile_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
-{
-  ListIterator itr = NULL;
-  char *nodename;
-                                                                                     
-  if (!(itr = list_iterator_create(hosts))) 
-    {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
-      return -1;
-    }
-                                                                                     
-  while ((nodename = list_next(itr)))
-    {
-      if ((hostlist_find(handle->up_nodes, nodename) == -1)
-          && (hostlist_find(handle->down_nodes, nodename) == -1)) 
-        {
-          /* This node must also be down */
-          if (hostlist_push_host(handle->down_nodes, nodename) == 0) 
-            {
-              handle->errnum = NODEUPDOWN_ERR_HOSTLIST;
-              goto cleanup;
-            }
-        }
-    }
-  
-  list_iterator_destroy(itr);
-  hostlist_sort(handle->down_nodes);
-  return 0;
-  
- cleanup:
-  list_iterator_destroy(itr);
-  return -1;
+  return list_count(hosts);
 }
 
 static int
@@ -423,14 +382,43 @@ hostsfile_clusterlist_get_nodename(nodeupdown_t handle,
 }
     
 /*
- * hostsfile_clusterlist_increase_max_nodes
+ * hostsfile_clusterlist_compare_to_clusterlist
  *
- * hostsfile clusterlist module increase_max_nodes function
+ * hostsfile clusterlist module compare_to_clusterlist function
  */
 int 
-hostsfile_clusterlist_increase_max_nodes(nodeupdown_t handle) 
+hostsfile_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
 {
+  ListIterator itr = NULL;
+  char *nodename;
+                                                                                     
+  if (!(itr = list_iterator_create(hosts))) 
+    {
+      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
+      return -1;
+    }
+                                                                                     
+  while ((nodename = list_next(itr)))
+    {
+      if ((hostlist_find(handle->up_nodes, nodename) == -1)
+          && (hostlist_find(handle->down_nodes, nodename) == -1)) 
+        {
+          /* This node must also be down */
+          if (hostlist_push_host(handle->down_nodes, nodename) == 0) 
+            {
+              handle->errnum = NODEUPDOWN_ERR_HOSTLIST;
+              goto cleanup;
+            }
+        }
+    }
+  
+  list_iterator_destroy(itr);
+  hostlist_sort(handle->down_nodes);
   return 0;
+  
+ cleanup:
+  list_iterator_destroy(itr);
+  return -1;
 }
 
 #if WITH_STATIC_MODULES
@@ -442,10 +430,9 @@ struct nodeupdown_clusterlist_module_info clusterlist_module_info =
     "hostsfile",
     &hostsfile_clusterlist_setup,
     &hostsfile_clusterlist_cleanup,
-    &hostsfile_clusterlist_compelte_loading,
-    &hostsfile_clusterlist_compare_to_clusterlist,
+    &hostsfile_clusterlist_get_numnodes,
     &hostsfile_clusterlist_is_node_in_cluster,
     &hostsfile_clusterlist_is_node_discovered,
     &hostsfile_clusterlist_get_nodename,
-    &hostsfile_clusterlist_increase_max_nodes,
+    &hostsfile_clusterlist_compare_to_clusterlist,
   };

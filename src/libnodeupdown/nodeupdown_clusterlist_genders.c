@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_genders.c,v 1.8 2005-04-25 19:30:10 achu Exp $
+ *  $Id: nodeupdown_clusterlist_genders.c,v 1.9 2005-05-05 16:51:05 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -76,25 +76,14 @@ genders_clusterlist_cleanup(nodeupdown_t handle)
 }
 
 /*
- * genders_clusterlist_complete_loading
+ * genders_clusterlist_get_numnodes
  *
- * genders clusterlist module complete_loading function
+ * genders clusterlist module get_numnodes function
  */
 int 
-genders_clusterlist_complete_loading(nodeupdown_t handle) 
+genders_clusterlist_get_numnodes(nodeupdown_t handle) 
 {
-  return genders_util_clusterlist_complete_loading(handle, genders_handle);
-}
-
-/*
- * genders_clusterlist_compare_to_clusterlist
- *
- * genders clusterlist module compare_to_clusterlist function
- */
-int 
-genders_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
-{
-  return genders_util_clusterlist_compare_to_clusterlist(handle, genders_handle);
+  return genders_util_clusterlist_get_numnodes(handle, genders_handle);
 }
 
 /*
@@ -197,14 +186,14 @@ genders_clusterlist_get_nodename(nodeupdown_t handle,
 }
     
 /*
- * genders_clusterlist_increase_max_nodes
+ * genders_clusterlist_compare_to_clusterlist
  *
- * genders clusterlist module increase_max_nodes function
+ * genders clusterlist module compare_to_clusterlist function
  */
 int 
-genders_clusterlist_increase_max_nodes(nodeupdown_t handle) 
+genders_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
 {
-  return 0;
+  return genders_util_clusterlist_compare_to_clusterlist(handle, genders_handle);
 }
 
 #if WITH_STATIC_MODULES
@@ -216,10 +205,9 @@ struct nodeupdown_clusterlist_module_info clusterlist_module_info =
     "genders",
     &genders_clusterlist_setup,
     &genders_clusterlist_cleanup,
-    &genders_clusterlist_complete_loading,
-    &genders_clusterlist_compare_to_clusterlist,
+    &genders_clusterlist_get_numnodes,
     &genders_clusterlist_is_node_in_cluster,
     &genders_clusterlist_is_node_discovered,
     &genders_clusterlist_get_nodename,
-    &genders_clusterlist_increase_max_nodes,
+    &genders_clusterlist_compare_to_clusterlist,
   };

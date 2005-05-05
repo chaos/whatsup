@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_module.h,v 1.1 2005-04-25 19:30:10 achu Exp $
+ *  $Id: nodeupdown_clusterlist_module.h,v 1.2 2005-05-05 16:51:05 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -46,24 +46,14 @@ typedef int (*Nodeupdown_clusterlist_setup)(nodeupdown_t);
 typedef int (*Nodeupdown_clusterlist_cleanup)(nodeupdown_t);
 
 /*
- * Nodeupdown_clusterlist_complete_loading
+ * Nodeupdown_clusterlist_get_numnodes
  *
- * Complete loading process after backend get_updown_data function has
- * been done.
- *
- * Returns 0 on success, -1 on error
- */
-typedef int (*Nodeupdown_clusterlist_complete_loading)(nodeupdown_t);
-
-/*
- * Nodeupdown_clusterlist_compare_to_clusterlist
- *
- * Compare nodes currently discovered to clusterlist database to
- * determine if additional nodes are down.
+ * Retrieve the number of nodes.  Should only be called after
+ * backed get_updown_data function has been called.
  *
  * Returns 0 on success, -1 on error
  */
-typedef int (*Nodeupdown_clusterlist_compare_to_clusterlist)(nodeupdown_t);
+typedef int (*Nodeupdown_clusterlist_get_numnodes)(nodeupdown_t);
 
 /*
  * Nodeupdown_clusterlist_is_node_in_cluster
@@ -99,15 +89,14 @@ typedef int (*Nodeupdown_clusterlist_is_node_discovered)(nodeupdown_t, const cha
 typedef int (*Nodeupdown_clusterlist_get_nodename)(nodeupdown_t, const char *, char *, int);
 
 /*
- * Nodeupdown_clusterlist_increase_max_nodes
+ * Nodeupdown_clusterlist_compare_to_clusterlist
  *
- * Increase the maximum number of nodes discovered thus far.  Some
- * modules may not need to do this, and thus this function does
- * nothing.
+ * Compare nodes currently discovered to clusterlist database to
+ * determine if additional nodes are down.
  *
- * Returns 0 on success, -1 on error.
+ * Returns 0 on success, -1 on error
  */
-typedef int (*Nodeupdown_clusterlist_increase_max_nodes)(nodeupdown_t);
+typedef int (*Nodeupdown_clusterlist_compare_to_clusterlist)(nodeupdown_t);
 
 /*
  * struct nodeupdown_clusterlist_module_info
@@ -120,27 +109,19 @@ struct nodeupdown_clusterlist_module_info
   char *clusterlist_module_name;
   Nodeupdown_clusterlist_setup setup;
   Nodeupdown_clusterlist_cleanup cleanup;
-  Nodeupdown_clusterlist_complete_loading complete_loading;
-  Nodeupdown_clusterlist_compare_to_clusterlist compare_to_clusterlist;
+  Nodeupdown_clusterlist_get_numnodes get_numnodes;
   Nodeupdown_clusterlist_is_node_in_cluster is_node_in_cluster;
   Nodeupdown_clusterlist_is_node_discovered is_node_discovered;
   Nodeupdown_clusterlist_get_nodename get_nodename;
-  Nodeupdown_clusterlist_increase_max_nodes increase_max_nodes;
+  Nodeupdown_clusterlist_compare_to_clusterlist compare_to_clusterlist;
 };
 
 /* 
- * nodeupdown_clusterlist_complete_loading
+ * nodeupdown_clusterlist_get_numnodes
  *
- * call clusterlist module complete_loading function
+ * call clusterlist module get_numnodes function
  */
-int nodeupdown_clusterlist_complete_loading(nodeupdown_t handle);
-
-/* 
- * nodeupdown_clusterlist_compare_to_clusterlist
- *
- * call clusterlist module compare_to_clusterlist function
- */
-int nodeupdown_clusterlist_compare_to_clusterlist(nodeupdown_t handle);
+int nodeupdown_clusterlist_get_numnodes(nodeupdown_t handle);
 
 /* 
  * nodeupdown_clusterlist_is_node_in_cluster
@@ -164,10 +145,10 @@ int nodeupdown_clusterlist_is_node_discovered(nodeupdown_t handle, const char *n
 int nodeupdown_clusterlist_get_nodename(nodeupdown_t handle, const char *node, char *buffer, int buflen);
 
 /* 
- * nodeupdown_clusterlist_increase_max_nodes
+ * nodeupdown_clusterlist_compare_to_clusterlist
  *
- * call clusterlist module increase_max_nodes function
+ * call clusterlist module compare_to_clusterlist function
  */
-int nodeupdown_clusterlist_increase_max_nodes(nodeupdown_t handle);
+int nodeupdown_clusterlist_compare_to_clusterlist(nodeupdown_t handle);
 
 #endif /* _NODEUPDOWN_CLUSTERLIST_MODULE_H */
