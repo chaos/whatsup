@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_gendersllnl.c,v 1.11 2005-05-05 17:17:52 achu Exp $
+ *  $Id: nodeupdown_clusterlist_gendersllnl.c,v 1.12 2005-05-05 18:20:41 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -38,9 +38,9 @@
 #include "nodeupdown.h"
 #include "nodeupdown_common.h"
 #include "nodeupdown_clusterlist.h"
-#include "nodeupdown_clusterlist_module.h"
 #include "nodeupdown_clusterlist_genders_util.h"
 #include "nodeupdown_genders_util.h"
+#include "nodeupdown/nodeupdown_clusterlist_module.h"
 
 static genders_t gendersllnl_handle = NULL;
 

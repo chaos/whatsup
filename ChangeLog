@@ -7,7 +7,9 @@
 	get_numnodes clusterlist function.  Nodeupdown library reworked
 	appropriately.
 
-	* Add hostnames_len to confdata structure.
+	* Added hostnames_len to confdata structure.
+
+	* Nodeupdown header files reorg.
 	
 2005-05-02  Albert Chu  <chu11@llnl.gov>
 
