@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_genders_util.c,v 1.2 2005-04-22 20:44:02 achu Exp $
+ *  $Id: nodeupdown_genders_util.c,v 1.3 2005-05-05 21:23:51 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -36,7 +36,7 @@
 #include <genders.h>
 
 #include "nodeupdown.h"
-#include "nodeupdown_common.h"
+#include "nodeupdown_api.h"
 #include "nodeupdown_genders_util.h"
 
 int 

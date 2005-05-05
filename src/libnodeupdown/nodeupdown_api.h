@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_common.h,v 1.26 2005-05-05 21:08:04 achu Exp $
+ *  $Id: nodeupdown_api.h,v 1.1 2005-05-05 21:23:51 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -24,35 +24,15 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
 \*****************************************************************************/
 
-#ifndef _NODEUPDOWN_COMMON_H
-#define _NODEUPDOWN_COMMON_H
+#ifndef _NODEUPDOWN_API_H
+#define _NODEUPDOWN_API_H
 
 #include "nodeupdown.h"
-#include "nodeupdown/nodeupdown_constants.h"
 #include "hostlist.h"
-
-#define NODEUPDOWN_MAXPATHLEN            256
-
-#define NODEUPDOWN_UP_NODES              1
-#define NODEUPDOWN_DOWN_NODES            0
 
 #define NODEUPDOWN_MAGIC_NUM             0xfeedbeef
 
 #define NODEUPDOWN_BUFFERLEN             65536
-
-/* 
- * Older options to be ignored by conffile library
- */
-#define NODEUPDOWN_CONF_GMOND_HOSTNAME            "gmond_hostname"
-#define NODEUPDOWN_CONF_GMOND_HOSTNAMES           "gmond_hostnames"
-#define NODEUPDOWN_CONF_GMOND_IP                  "gmond_ip"
-#define NODEUPDOWN_CONF_GMOND_PORT                "gmond_port"
-#define NODEUPDOWN_CONF_HOSTSFILE                 "hostsfile"
-#define NODEUPDOWN_CONF_GENDERSFILE               "gendersfile"
-
-#define NODEUPDOWN_CONF_HOSTNAMES                  "hostnames"
-#define NODEUPDOWN_CONF_PORT                       "port"
-#define NODEUPDOWN_CONF_TIMEOUT_LEN                "timeout_len"
 
 /* 
  * struct nodeupdown
@@ -68,4 +48,4 @@ struct nodeupdown {
   int max_nodes;
 };
 
-#endif /* _NODEUPDOWN_COMMON_H */
+#endif /* _NODEUPDOWN_API_H */

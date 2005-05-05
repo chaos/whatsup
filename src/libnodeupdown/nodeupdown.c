@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.132 2005-05-05 21:08:04 achu Exp $
+ *  $Id: nodeupdown.c,v 1.133 2005-05-05 21:23:51 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -35,7 +35,7 @@
 #endif /* STDC_HEADERS */
 
 #include "nodeupdown.h"
-#include "nodeupdown_common.h"
+#include "nodeupdown_api.h"
 #include "nodeupdown_module.h"
 #include "nodeupdown_util.h"
 #include "nodeupdown/nodeupdown_constants.h"
@@ -47,6 +47,9 @@
 #include "hostlist.h"
 #include "list.h"
 #include "ltdl.h"
+
+#define NODEUPDOWN_UP_NODES   1
+#define NODEUPDOWN_DOWN_NODES 0
 
 /* 
  * nodeupdown_errmsg
@@ -272,27 +275,30 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_config *conf)
 {
   struct conffile_option options[] = 
     {
-      {NODEUPDOWN_CONF_HOSTNAMES, CONFFILE_OPTION_LIST_STRING, -1, 
+      /* 
+       * Current configuration options
+       */
+      {"hostnames", CONFFILE_OPTION_LIST_STRING, -1, 
        _cb_hostnames, 1, 0, &(conf->hostnames_flag),
        conf, 0},
-      {NODEUPDOWN_CONF_PORT, CONFFILE_OPTION_INT, 0, 
+      {"port", CONFFILE_OPTION_INT, 0, 
        conffile_int, 1, 0, &(conf->port_flag), &(conf->port), 0},
-      {NODEUPDOWN_CONF_TIMEOUT_LEN, CONFFILE_OPTION_INT, 0, 
+      {"timeout_len", CONFFILE_OPTION_INT, 0, 
        conffile_int, 1, 0, &(conf->timeout_len_flag), &(conf->timeout_len), 0},
       /* 
        * Older options to be ignored by conffile library
        */
-      {NODEUPDOWN_CONF_GMOND_HOSTNAME, CONFFILE_OPTION_IGNORE, 0, 
+      {"gmond_hostname", CONFFILE_OPTION_IGNORE, 0, 
        conffile_empty, 0, 0, NULL, NULL, 0},
-      {NODEUPDOWN_CONF_GMOND_HOSTNAMES, CONFFILE_OPTION_IGNORE, 0, 
+      {"gmond_hostnames", CONFFILE_OPTION_IGNORE, 0, 
        conffile_empty, 0, 0, NULL, NULL, 0},
-      {NODEUPDOWN_CONF_GMOND_IP, CONFFILE_OPTION_IGNORE, 0, 
+      {"gmond_ip", CONFFILE_OPTION_IGNORE, 0, 
        conffile_empty, 0, 0, NULL, NULL, 0},
-      {NODEUPDOWN_CONF_GMOND_PORT, CONFFILE_OPTION_IGNORE, 0, 
+      {"gmond_port", CONFFILE_OPTION_IGNORE, 0, 
        conffile_empty, 0, 0, NULL, NULL, 0},
-      {NODEUPDOWN_CONF_HOSTSFILE, CONFFILE_OPTION_IGNORE, 0, 
+      {"hostsfile", CONFFILE_OPTION_IGNORE, 0, 
        conffile_empty, 0, 0, NULL, NULL, 0},
-      {NODEUPDOWN_CONF_GENDERSFILE, CONFFILE_OPTION_IGNORE, 0, 
+      {"gendersfile", CONFFILE_OPTION_IGNORE, 0, 
        conffile_empty, 0, 0, NULL, NULL, 0},
 
     };
