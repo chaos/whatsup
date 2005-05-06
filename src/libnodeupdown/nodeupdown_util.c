@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_util.c,v 1.6 2005-05-05 21:36:34 achu Exp $
+ *  $Id: nodeupdown_util.c,v 1.7 2005-05-06 17:15:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -59,7 +59,7 @@ nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
                                     int port,
                                     int connect_timeout)
 {
-  int ret, old_flags, fd = -1;
+  int rv, old_flags, fd = -1;
   struct sockaddr_in servaddr;
   struct hostent *hptr;
 
@@ -95,15 +95,15 @@ nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
       goto cleanup;
     }
   
-  ret = connect(fd, 
-                (struct sockaddr *)&servaddr, 
-                sizeof(struct sockaddr_in));
-  if (ret < 0 && errno != EINPROGRESS) 
+  rv = connect(fd, 
+               (struct sockaddr *)&servaddr, 
+               sizeof(struct sockaddr_in));
+  if (rv < 0 && errno != EINPROGRESS) 
     {
       handle->errnum = NODEUPDOWN_ERR_CONNECT;
       goto cleanup;
     }
-  else if (ret < 0 && errno == EINPROGRESS) 
+  else if (rv < 0 && errno == EINPROGRESS) 
     {
       fd_set rset, wset;
       struct timeval tval;
@@ -115,13 +115,13 @@ nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
       tval.tv_sec = connect_timeout;
       tval.tv_usec = 0;
       
-      if ((ret = select(fd+1, &rset, &wset, NULL, &tval)) < 0) 
+      if ((rv = select(fd+1, &rset, &wset, NULL, &tval)) < 0) 
         {
           handle->errnum = NODEUPDOWN_ERR_INTERNAL;
           goto cleanup;
         }
 
-      if (!ret) 
+      if (!rv) 
         {
           handle->errnum = NODEUPDOWN_ERR_TIMEOUT;
           goto cleanup;
@@ -195,16 +195,16 @@ nodeupdown_util_lookup_module(nodeupdown_t handle,
           if (!strcmp(dirent->d_name, modules_list[i]))
             {
               char filebuf[NODEUPDOWN_MAXPATHLEN+1];
-              int ret;
+              int flag;
 
               memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
               snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/%s",
                        search_dir, modules_list[i]);
 
-              if ((ret = load_module(handle, filebuf)) < 0)
+              if ((flag = load_module(handle, filebuf)) < 0)
                   goto cleanup;
 
-              if (ret)
+              if (flag)
                 {
                   found++;
                   goto done;
@@ -241,7 +241,7 @@ nodeupdown_util_search_for_module(nodeupdown_t handle,
       if (ptr && ptr == &dirent->d_name[0])
         {
           char filebuf[NODEUPDOWN_MAXPATHLEN+1];
-          int ret;
+          int flag;
  
           /*
            * Don't bother trying to load this file unless its a shared
@@ -255,10 +255,10 @@ nodeupdown_util_search_for_module(nodeupdown_t handle,
           snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/%s",
                    search_dir, dirent->d_name);
            
-          if ((ret = load_module(handle, filebuf)) < 0)
+          if ((flag = load_module(handle, filebuf)) < 0)
 	    goto cleanup;
  
-          if (ret)
+          if (flag)
             {
               found++;
               goto done;

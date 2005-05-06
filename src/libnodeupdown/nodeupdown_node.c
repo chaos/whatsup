@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_node.c,v 1.2 2005-05-06 16:52:11 achu Exp $
+ *  $Id: nodeupdown_node.c,v 1.3 2005-05-06 17:15:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -62,7 +62,8 @@ _add_node(nodeupdown_t handle, const char *node, int up_or_down)
       return -1;
     }
 
-  if ((rv = nodeupdown_clusterlist_module_is_node_in_cluster(handle, node)) < 0)
+  if ((rv = nodeupdown_clusterlist_module_is_node_in_cluster(handle, 
+							     node)) < 0)
     goto cleanup;
   
   if (!rv)
@@ -142,7 +143,8 @@ _add_nodes(nodeupdown_t handle, const char *nodes, int up_or_down)
       char buffer[NODEUPDOWN_MAXNODENAMELEN+1];
       int rv;
       
-      if ((rv = nodeupdown_clusterlist_module_is_node_in_cluster(handle, nodename)) < 0)
+      if ((rv = nodeupdown_clusterlist_module_is_node_in_cluster(handle, 
+								 nodename)) < 0)
 	goto cleanup;
 
       if (!rv)

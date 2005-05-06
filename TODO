@@ -4,8 +4,3 @@
 - generalize so that anyone can make config/options/clusterlist/backend module?
 - install appropriate .h files
 - cleanup err codes, some are pointless and non-general
-
-code cleanup
- - null 
- - 80 columns
- - ret vs rv

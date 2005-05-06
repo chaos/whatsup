@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.16 2005-05-06 16:52:11 achu Exp $
+ *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.17 2005-05-06 17:15:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -58,7 +58,8 @@ static List hosts = NULL;
 /*
  * _readline
  *
- * read a line from the hostsfile.  Buffer guaranteed to be null terminated.
+ * read a line from the hostsfile.  Buffer guaranteed to be null
+ * terminated.
  *
  * - fd - file descriptor to read from
  * - buf - buffer pointer
@@ -69,22 +70,22 @@ static List hosts = NULL;
 static int
 _readline(nodeupdown_t handle, int fd, char *buf, int buflen)
 {
-  int ret;
+  int len;
                                                                                      
-  if ((ret = fd_read_line(fd, buf, buflen)) < 0) 
+  if ((len = fd_read_line(fd, buf, buflen)) < 0) 
     {
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_READ);
       return -1;
     }
                                                                                      
   /* buflen - 1 b/c fd_read_line guarantees null termination */
-  if (ret >= (buflen-1)) 
+  if (len >= (buflen-1)) 
     {
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_PARSE);
       return -1;
     }
                                                                                      
-  return ret;
+  return len;
 }
 
 /*

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.h,v 1.4 2005-05-06 16:52:11 achu Exp $
+ *  $Id: nodeupdown_module.h,v 1.5 2005-05-06 17:15:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -97,8 +97,8 @@ int nodeupdown_backend_module_cleanup(nodeupdown_t handle);
  */
 int nodeupdown_backend_module_get_updown_data(nodeupdown_t handle, 
 					      const char *hostname,
-					      int port,
-					      int timeout_len,
+					      unsigned int port,
+					      unsigned int timeout_len,
 					      char *reserved);
 
 /*

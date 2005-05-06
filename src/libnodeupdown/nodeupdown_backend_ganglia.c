@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_ganglia.c,v 1.14 2005-05-06 01:05:59 achu Exp $
+ *  $Id: nodeupdown_backend_ganglia.c,v 1.15 2005-05-06 17:15:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -188,8 +188,8 @@ _xml_parse_end(void *data, const char *e1)
 int 
 ganglia_backend_get_updown_data(nodeupdown_t handle, 
                                 const char *hostname,
-                                int port,
-                                int timeout_len,
+                                unsigned int port,
+                                unsigned int timeout_len,
                                 char *reserved) 
 {
   XML_Parser xml_parser = NULL;

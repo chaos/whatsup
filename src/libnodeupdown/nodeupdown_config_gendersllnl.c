@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_config_gendersllnl.c,v 1.12 2005-05-06 01:05:59 achu Exp $
+ *  $Id: nodeupdown_config_gendersllnl.c,v 1.13 2005-05-06 17:15:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -95,15 +95,15 @@ int
 gendersllnl_config_load_default(nodeupdown_t handle, 
                                 struct nodeupdown_config *conf)
 {
-  int ret;
+  int flag;
 
-  if ((ret = genders_testattr(gendersllnl_handle, NULL, "mgmt", NULL, 0)) < 0)
+  if ((flag = genders_testattr(gendersllnl_handle, NULL, "mgmt", NULL, 0)) < 0)
     {
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONFIG_MODULE);
       return -1;
     }
 
-  if (!ret)
+  if (!flag)
     {
       char **nodelist;
       int nodelistlen, numnodes;

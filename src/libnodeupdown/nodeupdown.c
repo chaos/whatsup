@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.136 2005-05-06 16:52:11 achu Exp $
+ *  $Id: nodeupdown.c,v 1.137 2005-05-06 17:15:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -280,9 +280,11 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_config *conf)
        _cb_hostnames, 1, 0, &(conf->hostnames_flag),
        conf, 0},
       {"port", CONFFILE_OPTION_INT, 0, 
-       conffile_int, 1, 0, &(conf->port_flag), &(conf->port), 0},
+       conffile_int, 1, 0, &(conf->port_flag), 
+       &(conf->port), 0},
       {"timeout_len", CONFFILE_OPTION_INT, 0, 
-       conffile_int, 1, 0, &(conf->timeout_len_flag), &(conf->timeout_len), 0},
+       conffile_int, 1, 0, &(conf->timeout_len_flag), 
+       &(conf->timeout_len), 0},
       /* 
        * Older options to be ignored by conffile library
        */
@@ -301,7 +303,7 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_config *conf)
 
     };
   conffile_t cf = NULL;
-  int num, ret = -1;
+  int num, rv = -1;
   
   if (!(cf = conffile_handle_create())) 
     {
@@ -330,10 +332,10 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_config *conf)
       }
     }
 
-   ret = 0;
+   rv = 0;
  cleanup:
   (void)conffile_handle_destroy(cf);
-  return ret;
+  return rv;
 }
 
 int 
@@ -733,7 +735,7 @@ static int
 _is_node(nodeupdown_t handle, const char *node, int up_or_down) 
 { 
   char buffer[NODEUPDOWN_MAXNODENAMELEN+1];
-  int ret, retval = -1;
+  int temp, rv = -1;
 
   if (_loaded_handle_error_check(handle) < 0)
     return -1;
@@ -746,11 +748,11 @@ _is_node(nodeupdown_t handle, const char *node, int up_or_down)
 
   if (nodeupdown_clusterlist_module_found(handle))
     {
-      if ((ret = nodeupdown_clusterlist_module_is_node_in_cluster(handle, 
-								  node)) < 0)
+      if ((rv = nodeupdown_clusterlist_module_is_node_in_cluster(handle, 
+								 node)) < 0)
 	return -1;
 
-      if (!ret) 
+      if (!rv) 
 	{
 	  handle->errnum = NODEUPDOWN_ERR_NOTFOUND;
 	  return -1;
@@ -767,20 +769,26 @@ _is_node(nodeupdown_t handle, const char *node, int up_or_down)
       /* Special case: We can do better when the default module is
        * loaded.
        */
+      if (hostlist_find(handle->up_nodes, node) < 0
+	  && hostlist_find(handle->down_nodes, node) < 0)
+	{
+	  handle->errnum = NODEUPDOWN_ERR_NOTFOUND;
+	  return -1;
+	}
     }
 
   if (up_or_down == NODEUPDOWN_UP_NODES)
-    ret = hostlist_find(handle->up_nodes, buffer);
+    temp = hostlist_find(handle->up_nodes, buffer);
   else
-    ret = hostlist_find(handle->down_nodes, buffer);
+    temp = hostlist_find(handle->down_nodes, buffer);
 
-  if (ret != -1)
-    retval = 1;
+  if (temp != -1)
+    rv = 1;
   else
-    retval = 0;
+    rv = 0;
   
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
-  return retval;
+  return rv;
 }
 
 int 
@@ -805,18 +813,18 @@ nodeupdown_is_node_down(nodeupdown_t handle, const char *node)
 static int 
 _node_count(nodeupdown_t handle, int up_or_down) 
 {
-  int ret;
+  int rv;
 
   if (_loaded_handle_error_check(handle) < 0)
     return -1;
 
   if (up_or_down == NODEUPDOWN_UP_NODES)
-    ret = hostlist_count(handle->up_nodes);
+    rv = hostlist_count(handle->up_nodes);
   else
-    ret = hostlist_count(handle->down_nodes);
+    rv = hostlist_count(handle->down_nodes);
 
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
-  return ret;
+  return rv;
 }
 
 int 

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_module.h,v 1.3 2005-05-05 21:36:34 achu Exp $
+ *  $Id: nodeupdown_backend_module.h,v 1.4 2005-05-06 17:15:28 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -73,7 +73,11 @@ typedef int (*Nodeupdown_backend_cleanup)(nodeupdown_t);
  *
  * Returns 0 on success, -1 on error
  */
-typedef int (*Nodeupdown_backend_get_updown_data)(nodeupdown_t, const char *, int, int, char *);
+typedef int (*Nodeupdown_backend_get_updown_data)(nodeupdown_t, 
+						  const char *, 
+						  unsigned int, 
+						  unsigned int, 
+						  char *);
 
 /*
  * struct nodeupdown_backend_module_info
