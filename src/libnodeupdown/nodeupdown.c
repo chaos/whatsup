@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.139 2005-05-06 20:52:22 achu Exp $
+ *  $Id: nodeupdown.c,v 1.140 2005-05-06 20:57:09 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -69,8 +69,8 @@ static char * nodeupdown_errmsg[] =
     "null pointer reached in list",
     "out of memory",
     "node not found",
-    "internal clusterlist module error",
     "internal backend module error",
+    "internal clusterlist module error",
     "internal config module error",
     "parse config file error",
     "invalid config file input",

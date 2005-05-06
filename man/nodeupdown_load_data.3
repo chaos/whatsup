@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown_load_data.3,v 1.26 2005-04-25 19:50:05 achu Exp $
+\."$Id: nodeupdown_load_data.3,v 1.27 2005-05-06 20:57:09 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -108,32 +108,14 @@ An incorrect parameter has been passed in.
 .BR malloc (3)
 has failed internally.
 .TP
-.B NODEUPDOWN_ERR_CLUSTERLIST_OPEN
-Error opening the cluster list of nodes database.
-.TP
-.B NODEUPDOWN_ERR_CLUSTERLIST_READ
-Error reading the cluster list of nodes database.
-.TP
-.B NODEUPDOWN_ERR_CLUSTERLIST_PARSE
-Error parsing the cluster list of nodes database.
+.B NODEUPDOWN_ERR_BACKEND_MODULE
+Internal error with the backend module
 .TP
 .B NODEUPDOWN_ERR_CLUSTERLIST_MODULE
 Internal error with the clusterlist module
 .TP
-.B NODEUPDOWN_ERR_BACKEND_MODULE
-Internal error with the backend module
-.TP
 .B NODEUPDOWN_ERR_CONFIG_MODULE
 Internal error with the config module
-.TP
-.B NODEUPDOWN_ERR_XML
-XML parsing error.
-.TP
-.B NODEUPDOWN_ERR_CONF_OPEN
-Error opening the nodeupdown conf file.
-.TP
-.B NODEUPDOWN_ERR_CONF_READ
-Error reading the nodeupdown conf file.
 .TP
 .B NODEUPDOWN_ERR_CONF_PARSE
 Error parsing the nodeupdown conf file.
@@ -143,9 +125,6 @@ Error with input in the nodeupdown conf file.
 .TP
 .B NODEUPDOWN_ERR_CONF_INTERNAL
 Internal error with the nodeupdown configuration file.
-.TP
-.B NODEUPDOWN_ERR_HOSTLIST
-Hostlist API has failed internally.
 .TP
 .B NODEUPDOWN_ERR_MAGIC 
 \fIhandle\fR has an incorrect magic number.  \fIhandle\fR does not

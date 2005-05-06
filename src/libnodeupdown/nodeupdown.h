@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.h,v 1.36 2005-05-06 18:27:46 achu Exp $
+ *  $Id: nodeupdown.h,v 1.37 2005-05-06 20:57:09 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -46,8 +46,8 @@
 #define NODEUPDOWN_ERR_NULLPTR              10
 #define NODEUPDOWN_ERR_OUTMEM               11
 #define NODEUPDOWN_ERR_NOTFOUND             12
-#define NODEUPDOWN_ERR_CLUSTERLIST_MODULE   13
-#define NODEUPDOWN_ERR_BACKEND_MODULE       14
+#define NODEUPDOWN_ERR_BACKEND_MODULE       13
+#define NODEUPDOWN_ERR_CLUSTERLIST_MODULE   14
 #define NODEUPDOWN_ERR_CONFIG_MODULE        15
 #define NODEUPDOWN_ERR_CONF_PARSE           16
 #define NODEUPDOWN_ERR_CONF_INPUT           17
