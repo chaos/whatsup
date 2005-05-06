@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_api.h,v 1.2 2005-05-06 01:01:02 achu Exp $
+ *  $Id: nodeupdown_api.h,v 1.3 2005-05-06 01:05:59 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -31,8 +31,6 @@
 #include "hostlist.h"
 
 #define NODEUPDOWN_MAGIC_NUM   0xfeedbeef
-
-#define NODEUPDOWN_BUFFERLEN   65536
 
 #define NODEUPDOWN_UP_NODES    1
 #define NODEUPDOWN_DOWN_NODES  0

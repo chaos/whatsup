@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_util.c,v 1.4 2005-05-06 01:01:02 achu Exp $
+ *  $Id: nodeupdown_clusterlist_util.c,v 1.5 2005-05-06 01:05:59 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -35,7 +35,6 @@
 #endif /* STDC_HEADERS */
 
 #include "nodeupdown.h"
-#include "nodeupdown_api.h"
 #include "nodeupdown_clusterlist_util.h"
 
 int 

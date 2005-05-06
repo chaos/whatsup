@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_constants.h,v 1.1 2005-05-05 21:36:34 achu Exp $
+ *  $Id: nodeupdown_constants.h,v 1.2 2005-05-06 01:05:59 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -27,10 +27,12 @@
 #ifndef _NODEUPDOWN_CONSTANTS_H
 #define _NODEUPDOWN_CONSTANTS_H
 
-#define NODEUPDOWN_MAXHOSTNAMELEN        64
+#define NODEUPDOWN_MAXHOSTNAMELEN   64
 
-#define NODEUPDOWN_MAXNODENAMELEN        NODEUPDOWN_MAXHOSTNAMELEN
+#define NODEUPDOWN_MAXNODENAMELEN   NODEUPDOWN_MAXHOSTNAMELEN
 
-#define NODEUPDOWN_MAXPATHLEN            256
+#define NODEUPDOWN_MAXPATHLEN       256
+
+#define NODEUPDOWN_BUFFERLEN        65536
 
 #endif /* _NODEUPDOWN_CONSTANTS_H */

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.14 2005-05-06 01:01:02 achu Exp $
+ *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.15 2005-05-06 01:05:59 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -41,7 +41,6 @@
 #endif /* HAVE_FCNTL_H */
 
 #include "nodeupdown.h"
-#include "nodeupdown_api.h"
 #include "nodeupdown_clusterlist_module.h"
 #include "nodeupdown_clusterlist_util.h"
 #include "nodeupdown_constants.h"
@@ -49,6 +48,11 @@
 #include "fd.h"
 #include "list.h"
 
+/* 
+ * hosts
+ *
+ * Stores list of all hostnames
+ */
 static List hosts = NULL;
 
 /*
@@ -413,7 +417,6 @@ hostsfile_clusterlist_compare_to_clusterlist(nodeupdown_t handle)
     }
   
   list_iterator_destroy(itr);
-  hostlist_sort(handle->down_nodes);
   return 0;
   
  cleanup:
