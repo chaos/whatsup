@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.17 2005-05-06 17:15:28 achu Exp $
+ *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.18 2005-05-06 18:27:46 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -41,10 +41,10 @@
 #endif /* HAVE_FCNTL_H */
 
 #include "nodeupdown.h"
-#include "nodeupdown_clusterlist_module.h"
 #include "nodeupdown_clusterlist_util.h"
-#include "nodeupdown_constants.h"
-#include "nodeupdown_node.h"
+#include "nodeupdown/nodeupdown_clusterlist_module.h"
+#include "nodeupdown/nodeupdown_constants.h"
+#include "nodeupdown/nodeupdown_devel.h"
 #include "fd.h"
 #include "list.h"
 
@@ -74,14 +74,14 @@ _readline(nodeupdown_t handle, int fd, char *buf, int buflen)
                                                                                      
   if ((len = fd_read_line(fd, buf, buflen)) < 0) 
     {
-      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_READ);
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       return -1;
     }
                                                                                      
   /* buflen - 1 b/c fd_read_line guarantees null termination */
   if (len >= (buflen-1)) 
     {
-      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_PARSE);
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       return -1;
     }
                                                                                      
@@ -198,7 +198,7 @@ hostsfile_clusterlist_setup(nodeupdown_t handle)
                                                                                     
   if ((fd = open(NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT, O_RDONLY)) < 0)
     {
-      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_OPEN);
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       goto cleanup;
     }
                                                                                      
@@ -221,13 +221,13 @@ hostsfile_clusterlist_setup(nodeupdown_t handle)
                                                                                      
       if (strchr(hostPtr, ' ') || strchr(hostPtr, '\t'))
         {
-	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_PARSE);
+	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
           goto cleanup;
         }
                                                                                      
       if (strlen(hostPtr) > NODEUPDOWN_MAXHOSTNAMELEN)
         {
-	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_PARSE);
+	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
           goto cleanup;
         }
           
@@ -331,7 +331,7 @@ int
 hostsfile_clusterlist_get_nodename(nodeupdown_t handle, 
                                    const char *node, 
                                    char *buffer, 
-                                   int buflen) 
+                                   unsigned int buflen) 
 {
   char nodebuf[NODEUPDOWN_MAXNODENAMELEN+1];
   char *nodePtr = NULL;

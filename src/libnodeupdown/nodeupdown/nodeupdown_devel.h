@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_config_module.h,v 1.5 2005-05-06 17:15:28 achu Exp $
+ *  $Id: nodeupdown_devel.h,v 1.1 2005-05-06 18:27:46 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -24,51 +24,62 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
 \*****************************************************************************/
 
-#ifndef _NODEUPDOWN_CONFIG_MODULE_H
-#define _NODEUPDOWN_CONFIG_MODULE_H
+#ifndef _NODEUPDOWN_DEVEL_H
+#define _NODEUPDOWN_DEVEL_H
 
-#include "nodeupdown_config.h"
-
-/*
- * Nodeupdown_config_setup
- *
- * Setup the config module
- *
- * Return 0 on success, -1 on error
- */
-typedef int (*Nodeupdown_config_setup)(nodeupdown_t);
+#include <nodeupdown.h>
 
 /*
- * Nodeupdown_config_cleanup
+ * nodeupdown_add_up_node
  *
- * Cleanup config module allocations
- *
- * Return 0 on success, -1 on error
- */
-typedef int (*Nodeupdown_config_cleanup)(nodeupdown_t);
-
-/*
- * Nodeupdown_config_load_default
- *
- * change default configuration values
+ * Add up node into the handle
  *
  * Returns 0 on success, -1 on error
  */
-typedef int (*Nodeupdown_config_load_default)(nodeupdown_t, 
-					      struct nodeupdown_config *);
- 
-/*
- * struct nodeupdown_config_module_info
- *
- * contains config module information and operations.  Required to be
- * defined in each config module.
- */
-struct nodeupdown_config_module_info
-{
-  char *config_module_name;
-  Nodeupdown_config_setup setup;
-  Nodeupdown_config_cleanup cleanup;
-  Nodeupdown_config_load_default load_default;
-};
+int nodeupdown_add_up_node(nodeupdown_t handle, const char *node);
 
-#endif /* _NODEUPDOWN_CONFIG_MODULE_H  */
+/*
+ * nodeupdown_add_down_node
+ *
+ * Add down node into the handle
+ *
+ * Returns 0 on success, -1 on error
+ */
+int nodeupdown_add_down_node(nodeupdown_t handle, const char *node);
+
+/*
+ * nodeupdown_add_up_nodes
+ *
+ * Add up nodes into the handle
+ *
+ * Returns 0 on success, -1 on error
+ */
+int nodeupdown_add_up_nodes(nodeupdown_t handle, const char *nodes);
+
+/*
+ * nodeupdown_add_down_nodes
+ *
+ * Add down nodes into the handle
+ *
+ * Returns 0 on success, -1 on error
+ */
+int nodeupdown_add_down_nodes(nodeupdown_t handle, const char *nodes);
+
+/*
+ * nodeupdown_not_discovered_check
+ *
+ * Determines if a node has already been added into the handle.  If it
+ * has not, add the node to the down nodes.
+ *
+ * Returns 0 on success, -1 on error
+ */
+int nodeupdown_not_discovered_check(nodeupdown_t handle, const char *node);
+
+/* 
+ * nodeupdown_set_errnum
+ * 
+ * Set the errnum for a nodeupdown handle.
+ */      
+void nodeupdown_set_errnum(nodeupdown_t handle, int errnum);
+
+#endif /* _NODEUPDOWN_DEVEL_H */

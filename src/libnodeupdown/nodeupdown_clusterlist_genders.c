@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_genders.c,v 1.18 2005-05-06 17:15:28 achu Exp $
+ *  $Id: nodeupdown_clusterlist_genders.c,v 1.19 2005-05-06 18:27:46 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -36,11 +36,12 @@
 #include <genders.h>
 
 #include "nodeupdown.h"
-#include "nodeupdown_clusterlist_module.h"
 #include "nodeupdown_clusterlist_util.h"
 #include "nodeupdown_clusterlist_genders_util.h"
-#include "nodeupdown_constants.h"
 #include "nodeupdown_genders_util.h"
+#include "nodeupdown/nodeupdown_clusterlist_module.h"
+#include "nodeupdown/nodeupdown_constants.h"
+#include "nodeupdown/nodeupdown_devel.h"
 
 static genders_t genders_handle = NULL;
 
@@ -56,10 +57,7 @@ genders_clusterlist_setup(nodeupdown_t handle)
 
   rv = genders_util_setup(handle, &genders_handle);
   if (rv < 0)
-    {
-      if (nodeupdown_errnum(handle) == NODEUPDOWN_ERR_INTERNAL)
-        nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_OPEN);
-    }
+    nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
   return rv;
 }
 

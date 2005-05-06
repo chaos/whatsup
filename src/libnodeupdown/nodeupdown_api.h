@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_api.h,v 1.3 2005-05-06 01:05:59 achu Exp $
+ *  $Id: nodeupdown_api.h,v 1.4 2005-05-06 18:27:46 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -30,11 +30,14 @@
 #include "nodeupdown.h"
 #include "hostlist.h"
 
-#define NODEUPDOWN_MAGIC_NUM   0xfeedbeef
+#define NODEUPDOWN_MAGIC_NUM           0xfeedbeef
 
-#define NODEUPDOWN_UP_NODES    1
-#define NODEUPDOWN_DOWN_NODES  0
+#define NODEUPDOWN_UP_NODES            1
+#define NODEUPDOWN_DOWN_NODES          0
 
+#define NODEUPDOWN_LOAD_STATE_UNLOADED 0
+#define NODEUPDOWN_LOAD_STATE_SETUP    1
+#define NODEUPDOWN_LOAD_STATE_LOADED   2
 /* 
  * struct nodeupdown
  *
@@ -43,7 +46,7 @@
 struct nodeupdown {
   int magic;
   int errnum;
-  int is_loaded;
+  int load_state;
   hostlist_t up_nodes;
   hostlist_t down_nodes;
   int numnodes;

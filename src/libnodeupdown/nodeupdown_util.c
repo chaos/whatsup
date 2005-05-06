@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_util.c,v 1.7 2005-05-06 17:15:28 achu Exp $
+ *  $Id: nodeupdown_util.c,v 1.8 2005-05-06 18:27:46 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -49,9 +49,25 @@
 
 #include "nodeupdown.h"
 #include "nodeupdown_api.h"
-#include "nodeupdown_constants.h"
 #include "nodeupdown_util.h"
+#include "nodeupdown/nodeupdown_constants.h"
 #include "ltdl.h"
+
+/* 
+ * nodeupdown_handle_error_check
+ * 
+ * standard handle error checker
+ *
+ * Returns -1 on error, 0 on success
+ */
+int 
+nodeupdown_handle_error_check(nodeupdown_t handle) 
+{
+  if (!handle || handle->magic != NODEUPDOWN_MAGIC_NUM)
+    return -1;
+
+  return 0;
+}
 
 int
 nodeupdown_util_low_timeout_connect(nodeupdown_t handle,

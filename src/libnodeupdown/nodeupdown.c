@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.137 2005-05-06 17:15:28 achu Exp $
+ *  $Id: nodeupdown.c,v 1.138 2005-05-06 18:27:46 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -36,13 +36,13 @@
 
 #include "nodeupdown.h"
 #include "nodeupdown_api.h"
-#include "nodeupdown_backend_module.h"
-#include "nodeupdown_clusterlist_module.h"
-#include "nodeupdown_config.h"
-#include "nodeupdown_config_module.h"
-#include "nodeupdown_constants.h"
 #include "nodeupdown_module.h"
 #include "nodeupdown_util.h"
+#include "nodeupdown/nodeupdown_backend_module.h"
+#include "nodeupdown/nodeupdown_clusterlist_module.h"
+#include "nodeupdown/nodeupdown_config.h"
+#include "nodeupdown/nodeupdown_config_module.h"
+#include "nodeupdown/nodeupdown_constants.h"
 
 #include "conffile.h"
 #include "hostlist.h"
@@ -62,7 +62,6 @@ static char * nodeupdown_errmsg[] =
     "connection to server timeout",
     "improper hostname error",
     "improper address error",
-    "network error",
     "data already loaded",
     "data not loaded",
     "array or string not large enough to store result",
@@ -70,39 +69,16 @@ static char * nodeupdown_errmsg[] =
     "null pointer reached in list",
     "out of memory",
     "node not found",
-    "open clusterlist database error",
-    "read clusterlist database error",
-    "parse clusterlist database error",
     "internal clusterlist module error",
     "internal backend module error",
     "internal config module error",
-    "open config file error",
-    "read config file error",
     "parse config file error",
-    "invalid config file input error",
+    "invalid config file input",
     "internal config file error",
-    "internal XML parse error",
-    "internal hostlist error",
     "illegal nodeupdown handle",
     "internal system error",
     "error number out of range",
   };
-
-/* 
- * _handle_error_check
- * 
- * standard handle error checker
- *
- * Returns -1 on error, 0 on success
- */
-static int 
-_handle_error_check(nodeupdown_t handle) 
-{
-  if (!handle || handle->magic != NODEUPDOWN_MAGIC_NUM)
-    return -1;
-
-  return 0;
-}
 
 /* 
  * _unloaded_handle_error_check
@@ -114,12 +90,18 @@ _handle_error_check(nodeupdown_t handle)
 static int 
 _unloaded_handle_error_check(nodeupdown_t handle) 
 {
-  if (_handle_error_check(handle) < 0)
+  if (nodeupdown_handle_error_check(handle) < 0)
     return -1;
 
-  if (handle->is_loaded) 
+  if (handle->load_state == NODEUPDOWN_LOAD_STATE_LOADED) 
     {
       handle->errnum = NODEUPDOWN_ERR_ISLOADED;
+      return -1;
+    }
+
+  if (handle->load_state != NODEUPDOWN_LOAD_STATE_UNLOADED)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
       return -1;
     }
 
@@ -136,12 +118,18 @@ _unloaded_handle_error_check(nodeupdown_t handle)
 static int 
 _loaded_handle_error_check(nodeupdown_t handle) 
 {
-  if (_handle_error_check(handle) < 0)
+  if (nodeupdown_handle_error_check(handle) < 0)
     return -1;
 
-  if (!handle->is_loaded) 
+  if (handle->load_state == NODEUPDOWN_LOAD_STATE_UNLOADED) 
     {
       handle->errnum = NODEUPDOWN_ERR_NOTLOADED;
+      return -1;
+    }
+
+  if (handle->load_state != NODEUPDOWN_LOAD_STATE_LOADED)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
       return -1;
     }
 
@@ -157,7 +145,7 @@ static void
 _initialize_handle(nodeupdown_t handle) 
 {
   handle->magic = NODEUPDOWN_MAGIC_NUM;
-  handle->is_loaded = 0;
+  handle->load_state = NODEUPDOWN_LOAD_STATE_UNLOADED;
   handle->up_nodes = NULL;
   handle->down_nodes = NULL;
   handle->numnodes = 0;
@@ -201,7 +189,7 @@ _free_handle_data(nodeupdown_t handle)
 int 
 nodeupdown_handle_destroy(nodeupdown_t handle) 
 {
-  if (_handle_error_check(handle) < 0)
+  if (nodeupdown_handle_error_check(handle) < 0)
     return -1;
 
   _free_handle_data(handle);
@@ -318,11 +306,7 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_config *conf)
       /* Not an error if the configuration file does not exist */
       if (conffile_errnum(cf) != CONFFILE_ERR_EXIST) {
         int errnum = conffile_errnum(cf);
-        if (errnum == CONFFILE_ERR_OPEN)
-          handle->errnum = NODEUPDOWN_ERR_CONF_OPEN;
-        else if (errnum == CONFFILE_ERR_READ)
-          handle->errnum = NODEUPDOWN_ERR_CONF_READ;
-        else if (CONFFILE_IS_PARSE_ERR(errnum))
+        if (CONFFILE_IS_PARSE_ERR(errnum))
           handle->errnum = NODEUPDOWN_ERR_CONF_PARSE;
         else if (errnum == CONFFILE_ERR_OUTMEM)
           handle->errnum = NODEUPDOWN_ERR_OUTMEM;
@@ -415,6 +399,8 @@ nodeupdown_load_data(nodeupdown_t handle,
       handle->errnum = NODEUPDOWN_ERR_OUTMEM;
       goto cleanup;
     }
+
+  handle->load_state = NODEUPDOWN_LOAD_STATE_SETUP;
 
   if (port <= 0)
     {
@@ -550,7 +536,7 @@ nodeupdown_load_data(nodeupdown_t handle,
     goto cleanup;
 
   /* loading complete */
-  handle->is_loaded++;
+  handle->load_state = NODEUPDOWN_LOAD_STATE_LOADED;
 
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return 0;
@@ -678,7 +664,7 @@ _get_nodes_list(nodeupdown_t handle, char **list, int len, int up_or_down)
 
   if (!(itr = hostlist_iterator_create(hl))) 
     {
-      handle->errnum = NODEUPDOWN_ERR_HOSTLIST;
+      handle->errnum = NODEUPDOWN_ERR_OUTMEM;
       return -1;
     }
 
@@ -928,16 +914,4 @@ nodeupdown_nodelist_destroy(nodeupdown_t handle, char **list)
 
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return 0;
-}
-
-void 
-nodeupdown_set_errnum(nodeupdown_t handle, int errnum) 
-{
-  if (_handle_error_check(handle) < 0)
-    return;
-
-  if (errnum >= NODEUPDOWN_ERR_SUCCESS && errnum <= NODEUPDOWN_ERR_ERRNUMRANGE) 
-    handle->errnum = errnum;
-  else
-    handle->errnum = NODEUPDOWN_ERR_INTERNAL;
 }

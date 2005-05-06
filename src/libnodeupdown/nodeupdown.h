@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.h,v 1.35 2005-04-22 17:56:02 achu Exp $
+ *  $Id: nodeupdown.h,v 1.36 2005-05-06 18:27:46 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -39,30 +39,22 @@
 #define NODEUPDOWN_ERR_TIMEOUT               3
 #define NODEUPDOWN_ERR_HOSTNAME              4
 #define NODEUPDOWN_ERR_ADDRESS               5
-#define NODEUPDOWN_ERR_NETWORK               6
-#define NODEUPDOWN_ERR_ISLOADED              7
-#define NODEUPDOWN_ERR_NOTLOADED             8
-#define NODEUPDOWN_ERR_OVERFLOW              9
-#define NODEUPDOWN_ERR_PARAMETERS           10
-#define NODEUPDOWN_ERR_NULLPTR              11
-#define NODEUPDOWN_ERR_OUTMEM               12
-#define NODEUPDOWN_ERR_NOTFOUND             13
-#define NODEUPDOWN_ERR_CLUSTERLIST_OPEN     14
-#define NODEUPDOWN_ERR_CLUSTERLIST_READ     15
-#define NODEUPDOWN_ERR_CLUSTERLIST_PARSE    16
-#define NODEUPDOWN_ERR_CLUSTERLIST_MODULE   17
-#define NODEUPDOWN_ERR_BACKEND_MODULE       18
-#define NODEUPDOWN_ERR_CONFIG_MODULE        19
-#define NODEUPDOWN_ERR_CONF_OPEN            20
-#define NODEUPDOWN_ERR_CONF_READ            21
-#define NODEUPDOWN_ERR_CONF_PARSE           22
-#define NODEUPDOWN_ERR_CONF_INPUT           23
-#define NODEUPDOWN_ERR_CONF_INTERNAL        24
-#define NODEUPDOWN_ERR_XML                  25
-#define NODEUPDOWN_ERR_HOSTLIST             26
-#define NODEUPDOWN_ERR_MAGIC                27
-#define NODEUPDOWN_ERR_INTERNAL             28
-#define NODEUPDOWN_ERR_ERRNUMRANGE          29
+#define NODEUPDOWN_ERR_ISLOADED              6
+#define NODEUPDOWN_ERR_NOTLOADED             7
+#define NODEUPDOWN_ERR_OVERFLOW              8
+#define NODEUPDOWN_ERR_PARAMETERS            9
+#define NODEUPDOWN_ERR_NULLPTR              10
+#define NODEUPDOWN_ERR_OUTMEM               11
+#define NODEUPDOWN_ERR_NOTFOUND             12
+#define NODEUPDOWN_ERR_CLUSTERLIST_MODULE   13
+#define NODEUPDOWN_ERR_BACKEND_MODULE       14
+#define NODEUPDOWN_ERR_CONFIG_MODULE        15
+#define NODEUPDOWN_ERR_CONF_PARSE           16
+#define NODEUPDOWN_ERR_CONF_INPUT           17
+#define NODEUPDOWN_ERR_CONF_INTERNAL        18
+#define NODEUPDOWN_ERR_MAGIC                19
+#define NODEUPDOWN_ERR_INTERNAL             20
+#define NODEUPDOWN_ERR_ERRNUMRANGE          21
 
 typedef struct nodeupdown *nodeupdown_t;
 
@@ -232,13 +224,5 @@ int nodeupdown_nodelist_clear(nodeupdown_t handle, char **list);
  * Returns 0 on success, -1 on error
  */
 int nodeupdown_nodelist_destroy(nodeupdown_t handle, char **list);
-
-/* 
- * nodeupdown_set_errnum
- * 
- * Set the errnum for a nodeupdown handle.  Used predominantly for
- * development of locally used libraries.
- */      
-void nodeupdown_set_errnum(nodeupdown_t handle, int errnum);
 
 #endif /* _NODEUPDOWN_H */

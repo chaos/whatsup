@@ -1,6 +1,4 @@
 - repackage for multilib
 - doc for writing modules
 - test default module
-- generalize so that anyone can make config/options/clusterlist/backend module?
-- install appropriate .h files
-- cleanup err codes, some are pointless and non-general
+- can actually build modules?

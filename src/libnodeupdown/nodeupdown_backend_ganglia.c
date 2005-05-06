@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_ganglia.c,v 1.15 2005-05-06 17:15:28 achu Exp $
+ *  $Id: nodeupdown_backend_ganglia.c,v 1.16 2005-05-06 18:27:46 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -49,11 +49,11 @@
 #include <errno.h>
 
 #include "nodeupdown.h"
-#include "nodeupdown_backend_module.h"
-#include "nodeupdown_constants.h"
 #include "nodeupdown_module.h"
-#include "nodeupdown_node.h"
 #include "nodeupdown_util.h"
+#include "nodeupdown/nodeupdown_backend_module.h"
+#include "nodeupdown/nodeupdown_constants.h"
+#include "nodeupdown/nodeupdown_devel.h"
 
 #include "xmlparse.h"
 
@@ -236,13 +236,13 @@ ganglia_backend_get_updown_data(nodeupdown_t handle,
 
       if ((bytes_read = read(fd, buff, BUFSIZ)) < 0) 
         {
-	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_NETWORK);
+	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
           goto cleanup;
         }
 
       if (!XML_ParseBuffer(xml_parser, bytes_read, bytes_read == 0)) 
         {
-	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_XML);
+	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
           goto cleanup;
         }
       

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_util.h,v 1.4 2005-04-25 16:40:19 achu Exp $
+ *  $Id: nodeupdown_util.h,v 1.5 2005-05-06 18:27:46 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -28,6 +28,15 @@
 #define _NODEUPDOWN_UTIL_H
 
 #include "nodeupdown.h"
+
+/* 
+ * nodeupdown_handle_error_check
+ * 
+ * standard handle error checker
+ *
+ * Returns 0 on success, -1 one error
+ */
+int nodeupdown_handle_error_check(nodeupdown_t handle); 
 
 /* 
  * Nodeupdown_util_load_module

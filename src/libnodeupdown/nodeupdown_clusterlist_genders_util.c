@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_genders_util.c,v 1.8 2005-05-06 16:52:11 achu Exp $
+ *  $Id: nodeupdown_clusterlist_genders_util.c,v 1.9 2005-05-06 18:27:46 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -37,7 +37,7 @@
 
 #include "nodeupdown.h"
 #include "nodeupdown_clusterlist_genders_util.h"
-#include "nodeupdown_node.h"
+#include "nodeupdown/nodeupdown_devel.h"
 
 int 
 genders_util_clusterlist_get_numnodes(nodeupdown_t handle, 

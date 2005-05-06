@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_config_gendersllnl.c,v 1.13 2005-05-06 17:15:28 achu Exp $
+ *  $Id: nodeupdown_config_gendersllnl.c,v 1.14 2005-05-06 18:27:46 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -36,10 +36,11 @@
 #include <gendersllnl.h>
 
 #include "nodeupdown.h"
-#include "nodeupdown_config.h"
-#include "nodeupdown_config_module.h"
-#include "nodeupdown_constants.h"
 #include "nodeupdown_genders_util.h"
+#include "nodeupdown/nodeupdown_config.h"
+#include "nodeupdown/nodeupdown_config_module.h"
+#include "nodeupdown/nodeupdown_constants.h"
+#include "nodeupdown/nodeupdown_devel.h"
 
 static genders_t gendersllnl_handle = NULL;
 
@@ -67,10 +68,7 @@ gendersllnl_config_setup(nodeupdown_t handle)
 #endif /* HAVE_GENDERS_INDEX_ATTRVALS */
 
   if (rv < 0)
-    {
-      if (nodeupdown_errnum(handle) == NODEUPDOWN_ERR_INTERNAL)
-	nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONFIG_MODULE);
-    }
+    nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONFIG_MODULE);
 
   return rv;
 }

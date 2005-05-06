@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.47 2005-05-06 01:01:02 achu Exp $
+## $Id: Makefile.am,v 1.48 2005-05-06 18:27:46 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -58,16 +58,17 @@ nodeupdown_module_builddir=`cd $(top_builddir)/src/libnodeupdown && pwd`
 
 include_HEADERS = nodeupdown.h 
 
+nobase_include_HEADERS = nodeupdown/nodeupdown_backend_module.h \
+			 nodeupdown/nodeupdown_clusterlist_module.h \
+			 nodeupdown/nodeupdown_config.h \
+			 nodeupdown/nodeupdown_config_module.h \
+			 nodeupdown/nodeupdown_constants.h \
+			 nodeupdown/nodeupdown_devel.h
 noinst_HEADERS  = nodeupdown_api.h \
-		  nodeupdown_backend_module.h \
-		  nodeupdown_clusterlist_module.h \
 		  nodeupdown_clusterlist_util.h \
 		  nodeupdown_clusterlist_genders_util.h \
-		  nodeupdown_config_module.h
-		  nodeupdown_constants.h \
 		  nodeupdown_genders_util.h \
 		  nodeupdown_module.h \
-		  nodeupdown_node.h \
 		  nodeupdown_util.h
 
 lib_LTLIBRARIES = libnodeupdown.la

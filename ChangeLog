@@ -3,6 +3,8 @@
 	* Manpage cleanup.
 
 	* Various code cleanup.
+
+	* Header file reorg.
 	
 2005-05-05  Albert Chu  <chu11@llnl.gov>
 

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_node.c,v 1.3 2005-05-06 17:15:28 achu Exp $
+ *  $Id: nodeupdown_node.c,v 1.4 2005-05-06 18:27:46 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -37,10 +37,33 @@
 
 #include "nodeupdown.h"
 #include "nodeupdown_api.h"
-#include "nodeupdown_constants.h"
 #include "nodeupdown_module.h"
-#include "nodeupdown_node.h"
+#include "nodeupdown_util.h"
+#include "nodeupdown/nodeupdown_constants.h"
+#include "nodeupdown/nodeupdown_devel.h"
 #include "hostlist.h"
+
+/*
+ * _setup_handle_error_check
+ *
+ * standard setup handle error checker
+ *
+ * Returns -1 on error, 0 on success
+ */
+static int
+_setup_handle_error_check(nodeupdown_t handle)
+{
+  if (nodeupdown_handle_error_check(handle) < 0)
+    return -1;
+
+  if (handle->load_state != NODEUPDOWN_LOAD_STATE_SETUP)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
+
+  return 0;
+}
 
 /* 
  * _add_node
@@ -56,6 +79,9 @@ _add_node(nodeupdown_t handle, const char *node, int up_or_down)
   char buffer[NODEUPDOWN_MAXNODENAMELEN+1];
   int rv;
       
+  if (_setup_handle_error_check(handle) < 0)
+    return -1;
+
   if (!node)
     {
       handle->errnum = NODEUPDOWN_ERR_INTERNAL;
@@ -82,7 +108,7 @@ _add_node(nodeupdown_t handle, const char *node, int up_or_down)
       
   if (!rv)
     {
-      handle->errnum = NODEUPDOWN_ERR_HOSTLIST;
+      handle->errnum = NODEUPDOWN_ERR_OUTMEM;
       goto cleanup;
     }
 
@@ -118,6 +144,9 @@ _add_nodes(nodeupdown_t handle, const char *nodes, int up_or_down)
   hostlist_t hl = NULL;
   hostlist_iterator_t itr = NULL;
   char *nodename = NULL;
+
+  if (_setup_handle_error_check(handle) < 0)
+    return -1;
 
   if (!nodes)
     {
@@ -163,7 +192,7 @@ _add_nodes(nodeupdown_t handle, const char *nodes, int up_or_down)
       
       if (!rv)
 	{
-	  handle->errnum = NODEUPDOWN_ERR_HOSTLIST;
+	  handle->errnum = NODEUPDOWN_ERR_OUTMEM;
 	  goto cleanup;
 	}
 
@@ -198,6 +227,9 @@ nodeupdown_add_down_nodes(nodeupdown_t handle, const char *nodes)
 int
 nodeupdown_not_discovered_check(nodeupdown_t handle, const char *node)
 {
+  if (_setup_handle_error_check(handle) < 0)
+    return -1;
+
   if (!node)
     {
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
@@ -209,4 +241,17 @@ nodeupdown_not_discovered_check(nodeupdown_t handle, const char *node)
     return 0;
 
   return nodeupdown_add_down_node(handle, node);
+}
+
+void 
+nodeupdown_set_errnum(nodeupdown_t handle, int errnum) 
+{
+  /* Does not need to be setup or loaded */
+  if (nodeupdown_handle_error_check(handle) < 0)
+    return;
+
+  if (errnum >= NODEUPDOWN_ERR_SUCCESS && errnum <= NODEUPDOWN_ERR_ERRNUMRANGE) 
+    handle->errnum = errnum;
+  else
+    handle->errnum = NODEUPDOWN_ERR_INTERNAL;
 }

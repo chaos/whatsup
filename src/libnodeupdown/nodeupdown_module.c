@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.c,v 1.5 2005-05-06 17:15:28 achu Exp $
+ *  $Id: nodeupdown_module.c,v 1.6 2005-05-06 18:27:46 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -42,13 +42,13 @@
 
 #include "nodeupdown.h"
 #include "nodeupdown_api.h"
-#include "nodeupdown_backend_module.h"
-#include "nodeupdown_clusterlist_module.h"
-#include "nodeupdown_config.h"
-#include "nodeupdown_config_module.h"
-#include "nodeupdown_constants.h"
 #include "nodeupdown_module.h"
 #include "nodeupdown_util.h"
+#include "nodeupdown/nodeupdown_backend_module.h"
+#include "nodeupdown/nodeupdown_clusterlist_module.h"
+#include "nodeupdown/nodeupdown_config.h"
+#include "nodeupdown/nodeupdown_config_module.h"
+#include "nodeupdown/nodeupdown_constants.h"
 #include "ltdl.h"
 
 #if WITH_STATIC_MODULES

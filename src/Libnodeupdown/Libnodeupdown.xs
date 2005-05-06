@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: Libnodeupdown.xs,v 1.15 2005-04-22 17:56:02 achu Exp $
+ *  $Id: Libnodeupdown.xs,v 1.16 2005-05-06 18:27:46 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -29,6 +29,7 @@
 #include "XSUB.h"
 
 #include "nodeupdown.h"
+#include "nodeupdown/nodeupdown_devel.h"
 
 #define LIBNODEUPDOWN_BUFLEN 4096
  
@@ -81,14 +82,6 @@ NODEUPDOWN_ERR_ADDRESS (sv=&PL_sv_undef)
     SV *sv    
     CODE:
         RETVAL = NODEUPDOWN_ERR_ADDRESS;
-    OUTPUT:
-        RETVAL    
-
-int
-NODEUPDOWN_ERR_NETWORK (sv=&PL_sv_undef)
-    SV *sv    
-    CODE:
-        RETVAL = NODEUPDOWN_ERR_NETWORK;
     OUTPUT:
         RETVAL    
 
@@ -149,30 +142,6 @@ NODEUPDOWN_ERR_NOTFOUND (sv=&PL_sv_undef)
         RETVAL    
 
 int
-NODEUPDOWN_ERR_CLUSTERLIST_OPEN (sv=&PL_sv_undef)
-    SV *sv    
-    CODE:
-        RETVAL = NODEUPDOWN_ERR_CLUSTERLIST_OPEN;
-    OUTPUT:
-        RETVAL    
-
-int
-NODEUPDOWN_ERR_CLUSTERLIST_READ (sv=&PL_sv_undef)
-    SV *sv    
-    CODE:
-        RETVAL = NODEUPDOWN_ERR_CLUSTERLIST_READ;
-    OUTPUT:
-        RETVAL    
-
-int
-NODEUPDOWN_ERR_CLUSTERLIST_PARSE (sv=&PL_sv_undef)
-    SV *sv    
-    CODE:
-        RETVAL = NODEUPDOWN_ERR_CLUSTERLIST_PARSE;
-    OUTPUT:
-        RETVAL    
-
-int
 NODEUPDOWN_ERR_CLUSTERLIST_MODULE (sv=&PL_sv_undef)
     SV *sv    
     CODE:
@@ -197,22 +166,6 @@ NODEUPDOWN_ERR_CONFIG_MODULE (sv=&PL_sv_undef)
         RETVAL    
 
 int
-NODEUPDOWN_ERR_CONF_OPEN (sv=&PL_sv_undef)
-    SV *sv    
-    CODE:
-        RETVAL = NODEUPDOWN_ERR_CONF_OPEN;
-    OUTPUT:
-        RETVAL    
-
-int
-NODEUPDOWN_ERR_CONF_READ (sv=&PL_sv_undef)
-    SV *sv    
-    CODE:
-        RETVAL = NODEUPDOWN_ERR_CONF_READ;
-    OUTPUT:
-        RETVAL    
-
-int
 NODEUPDOWN_ERR_CONF_PARSE (sv=&PL_sv_undef)
     SV *sv    
     CODE:
@@ -233,22 +186,6 @@ NODEUPDOWN_ERR_CONF_INTERNAL (sv=&PL_sv_undef)
     SV *sv    
     CODE:
         RETVAL = NODEUPDOWN_ERR_CONF_INTERNAL;
-    OUTPUT:
-        RETVAL    
-
-int
-NODEUPDOWN_ERR_XML (sv=&PL_sv_undef)
-    SV *sv    
-    CODE:
-        RETVAL = NODEUPDOWN_ERR_XML;
-    OUTPUT:
-        RETVAL    
-
-int
-NODEUPDOWN_ERR_HOSTLIST (sv=&PL_sv_undef)
-    SV *sv    
-    CODE:
-        RETVAL = NODEUPDOWN_ERR_HOSTLIST;
     OUTPUT:
         RETVAL    
 

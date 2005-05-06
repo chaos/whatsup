@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.101 2005-04-25 16:44:29 achu Exp $
+ *  $Id: whatsup.c,v 1.102 2005-05-06 18:27:46 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -898,17 +898,7 @@ main(int argc, char *argv[])
       int errnum = nodeupdown_errnum(w.handle);
       
       /* Check for "legit" errors and output appropriate message */
-      if (errnum == NODEUPDOWN_ERR_CLUSTERLIST_OPEN)
-        err_exit("Cannot open clusterlist file");
-      else if (errnum == NODEUPDOWN_ERR_CLUSTERLIST_READ)
-        err_exit("Cannot read clusterlist file");
-      else if (errnum == NODEUPDOWN_ERR_CLUSTERLIST_PARSE)
-        err_exit("Parse error in clusterlist file");
-      else if (errnum == NODEUPDOWN_ERR_CONF_OPEN)
-        err_exit("Cannot open conf file");
-      else if (errnum == NODEUPDOWN_ERR_CONF_READ)
-        err_exit("Cannot read conf file");
-      else if (errnum == NODEUPDOWN_ERR_CONF_PARSE)
+      if (errnum == NODEUPDOWN_ERR_CONF_PARSE)
         err_exit("Parse error in conf file");
       else if (errnum == NODEUPDOWN_ERR_CONNECT) 
         err_exit("Cannot connect to server");
