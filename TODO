@@ -4,10 +4,6 @@
 - generalize so that anyone can make config/options/clusterlist/backend module?
 - install appropriate .h files
 - cleanup err codes, some are pointless and non-general
-- max_nodes - even necessary???
-- need some warpper api around hostlist_t stuff
-- get to point to remove nodeupdown_api.h from all module dot c files
-- additional handle checks?
 
 code cleanup
  - null 

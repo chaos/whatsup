@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.15 2005-05-06 01:05:59 achu Exp $
+ *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.16 2005-05-06 16:52:11 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -322,39 +322,6 @@ hostsfile_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node)
 }
 
 /*
- * hostsfile_clusterlist_is_node_discovered
- *
- * hostsfile clusterlist module is_node_discovered function
- */
-int 
-hostsfile_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node) 
-{
-  char nodebuf[NODEUPDOWN_MAXNODENAMELEN+1];
-  char *nodePtr = NULL;
-  void *ptr;
-
-  /* Shorten hostname if necessary */
-  if (strchr(node, '.'))
-    {
-      char *p;
- 
-      memset(nodebuf, '\0', NODEUPDOWN_MAXNODENAMELEN+1);
-      strncpy(nodebuf, node, NODEUPDOWN_MAXNODENAMELEN);
-      p = strchr(nodebuf, '.');
-      *p = '\0';
-      nodePtr = nodebuf;
-    }
-  else
-    nodePtr = (char *)node;
-
-  ptr = list_find_first(hosts, _find_str, (void *)nodePtr);
-  if (ptr != NULL)
-    return 1;
-  else
-    return 0;
-}
-
-/*
  * hostsfile_clusterlist_get_nodename
  *
  * hostsfile clusterlist module get_nodename function
@@ -404,16 +371,8 @@ hostsfile_clusterlist_compare_to_clusterlist(nodeupdown_t handle)
                                                                                      
   while ((nodename = list_next(itr)))
     {
-      int rv;
-      
-      if ((rv = nodeupdown_is_added(handle, nodename)) < 0)
+      if (nodeupdown_not_discovered_check(handle, nodename) < 0)
 	goto cleanup;
-
-      if (!rv)
-	{
-	  if (nodeupdown_add_down_node(handle, nodename) < 0)
-	    goto cleanup;
-	}
     }
   
   list_iterator_destroy(itr);
@@ -435,7 +394,6 @@ struct nodeupdown_clusterlist_module_info clusterlist_module_info =
     &hostsfile_clusterlist_cleanup,
     &hostsfile_clusterlist_get_numnodes,
     &hostsfile_clusterlist_is_node_in_cluster,
-    &hostsfile_clusterlist_is_node_discovered,
     &hostsfile_clusterlist_get_nodename,
     &hostsfile_clusterlist_compare_to_clusterlist,
   };

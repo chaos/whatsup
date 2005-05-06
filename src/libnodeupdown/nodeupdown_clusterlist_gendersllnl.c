@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_gendersllnl.c,v 1.18 2005-05-06 01:05:59 achu Exp $
+ *  $Id: nodeupdown_clusterlist_gendersllnl.c,v 1.19 2005-05-06 16:52:11 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -132,49 +132,15 @@ gendersllnl_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node
 }
 
 /* 
- * gendersllnl_clusterlist_is_node_discovered
- *
- * gendersllnl clusterlist module is_node_discovered function
- */
-int 
-gendersllnl_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node) 
-{
-  int ret;
-  char nodebuf[NODEUPDOWN_MAXNODENAMELEN+1];
-  char *nodePtr = NULL;
-
-  /* Shorten hostname if necessary */
-  if (strchr(node, '.'))
-    {
-      char *p;
- 
-      memset(nodebuf, '\0', NODEUPDOWN_MAXNODENAMELEN+1);
-      strncpy(nodebuf, node, NODEUPDOWN_MAXNODENAMELEN);
-      p = strchr(nodebuf, '.');
-      *p = '\0';
-      nodePtr = nodebuf;
-    }
-  else
-    nodePtr = (char *)node;
-
-  if ((ret = genders_isnode_or_altnode(gendersllnl_handle, nodePtr)) < 0) 
-    {
-      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
-      return -1;
-    }
-  return ret;
-}
-
-/* 
  * gendersllnl_clusterlist_get_nodename
  *
  * gendersllnl clusterlist module get_nodename function
  */
 int 
 gendersllnl_clusterlist_get_nodename(nodeupdown_t handle, 
-                                             const char *node, 
-                                             char *buffer, 
-                                             int buflen) 
+				     const char *node, 
+				     char *buffer, 
+				     unsigned int buflen) 
 {
   char nodebuf[NODEUPDOWN_MAXNODENAMELEN+1];
   char *nodePtr = NULL;
@@ -223,7 +189,6 @@ struct nodeupdown_clusterlist_module_info clusterlist_module_info =
     &gendersllnl_clusterlist_cleanup,
     &gendersllnl_clusterlist_get_numnodes,
     &gendersllnl_clusterlist_is_node_in_cluster,
-    &gendersllnl_clusterlist_is_node_discovered,
     &gendersllnl_clusterlist_get_nodename,
     &gendersllnl_clusterlist_compare_to_clusterlist,
   };

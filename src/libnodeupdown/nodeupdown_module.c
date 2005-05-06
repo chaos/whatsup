@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.c,v 1.3 2005-05-05 21:36:34 achu Exp $
+ *  $Id: nodeupdown_module.c,v 1.4 2005-05-06 16:52:11 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -126,8 +126,12 @@ static struct nodeupdown_config_module_info *config_module_info = NULL;
 
 extern struct nodeupdown_clusterlist_module_info default_clusterlist_module_info;
 
+static int clusterlist_module_found = 0;
+
+static int config_module_found = 0;
+
 /* 
- * _backend_load_module
+ * _backend_module_load
  *
  * Load the specified backend module
  * 
@@ -135,7 +139,7 @@ extern struct nodeupdown_clusterlist_module_info default_clusterlist_module_info
  * cannot be found, -1 on fatal error.
  */
 static int
-_backend_load_module(nodeupdown_t handle, 
+_backend_module_load(nodeupdown_t handle, 
 #if WITH_STATIC_MODULES
 	     struct nodeupdown_backend_module_info *module_info
 #else  /* !WITH_STATIC_MODULES */
@@ -191,7 +195,7 @@ _backend_load_module(nodeupdown_t handle,
 }
 
 int 
-nodeupdown_backend_load_module(nodeupdown_t handle)
+nodeupdown_backend_module_load(nodeupdown_t handle)
 {
 #if WITH_STATIC_MODULES
   struct nodeupdown_backend_module_info **ptr;
@@ -205,11 +209,11 @@ nodeupdown_backend_load_module(nodeupdown_t handle)
       if (!ptr[i]->backend_module_name)
 	continue;
       
-      if ((rv = _backend_load_module(handle, backend_modules[i])) < 0)
+      if ((rv = _backend_module_load(handle, backend_modules[i])) < 0)
 	goto cleanup;
       
       if (rv)
-	goto done;
+	goto found;
       
       i++;
     }
@@ -220,34 +224,34 @@ nodeupdown_backend_load_module(nodeupdown_t handle)
 					  NODEUPDOWN_MODULE_BUILDDIR,
 					  backend_modules,
 					  backend_modules_len,
-					  _backend_load_module)) < 0)
+					  _backend_module_load)) < 0)
     goto cleanup;
   
   if (rv)
-    goto done;
+    goto found;
   
   if ((rv = nodeupdown_util_lookup_module(handle,
 					  NODEUPDOWN_MODULE_DIR,
 					  backend_modules,
 					  backend_modules_len,
-					  _backend_load_module)) < 0)
+					  _backend_module_load)) < 0)
     goto cleanup;
   
   if ((rv = nodeupdown_util_search_for_module(handle,
 					      NODEUPDOWN_MODULE_DIR,
 					      "nodeupdown_backend_",
-					      _backend_load_module)) < 0)
+					      _backend_module_load)) < 0)
     goto cleanup;
   
   if (rv)
-    goto done;
+    goto found;
                                                                           
   handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
   goto cleanup;
 
 #endif /* !WITH_STATIC_MODULES */
 
- done:
+ found:
   return 0;
 
  cleanup:
@@ -255,7 +259,7 @@ nodeupdown_backend_load_module(nodeupdown_t handle)
 }
 
 int
-nodeupdown_backend_unload_module(nodeupdown_t handle)
+nodeupdown_backend_module_unload(nodeupdown_t handle)
 {
 #if !WITH_STATIC_MODULES
   /* May have not been loaded, so can't close */
@@ -268,31 +272,62 @@ nodeupdown_backend_unload_module(nodeupdown_t handle)
 }
  
 char *
-nodeupdown_backend_default_hostname(nodeupdown_t handle)
+nodeupdown_backend_module_name(nodeupdown_t handle)
 {
+  if (!backend_module_info)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return NULL;
+    }
+  return backend_module_info->backend_module_name;
+}
+
+char *
+nodeupdown_backend_module_default_hostname(nodeupdown_t handle)
+{
+  if (!backend_module_info)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return NULL;
+    }
   return (*backend_module_info->default_hostname)(handle);
 }
 
 int
-nodeupdown_backend_default_port(nodeupdown_t handle)
+nodeupdown_backend_module_default_port(nodeupdown_t handle)
 {
+  if (!backend_module_info)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
   return (*backend_module_info->default_port)(handle);
 }
 
 int
-nodeupdown_backend_default_timeout_len(nodeupdown_t handle)
+nodeupdown_backend_module_default_timeout_len(nodeupdown_t handle)
 {
+  if (!backend_module_info)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
   return (*backend_module_info->default_timeout_len)(handle);
 }
 
 int 
-nodeupdown_backend_setup(nodeupdown_t handle)
+nodeupdown_backend_module_setup(nodeupdown_t handle)
 {
+  if (!backend_module_info)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
   return (*backend_module_info->setup)(handle);
 }
 
 int 
-nodeupdown_backend_cleanup(nodeupdown_t handle)
+nodeupdown_backend_module_cleanup(nodeupdown_t handle)
 {
   /* May have not been loaded, so can't cleanup */
   if (!backend_module_info)
@@ -302,12 +337,18 @@ nodeupdown_backend_cleanup(nodeupdown_t handle)
 }
  
 int 
-nodeupdown_backend_get_updown_data(nodeupdown_t handle, 
-                                   const char *hostname, 
-                                   int port,
-                                   int timeout_len,
-                                   char *reserved)
+nodeupdown_backend_module_get_updown_data(nodeupdown_t handle, 
+					  const char *hostname, 
+					  int port,
+					  int timeout_len,
+					  char *reserved)
 {
+  if (!backend_module_info)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
+
   return (*backend_module_info->get_updown_data)(handle, 
                                                  hostname,
                                                  port,
@@ -316,7 +357,7 @@ nodeupdown_backend_get_updown_data(nodeupdown_t handle,
 }
 
 /*
- * _clusterlist_load_module
+ * _clusterlist_module_load
  *
  * Load the specified clusterlist module
  *
@@ -324,7 +365,7 @@ nodeupdown_backend_get_updown_data(nodeupdown_t handle,
  * cannot be found, -1 on fatal error.
  */
 static int
-_clusterlist_load_module(nodeupdown_t handle,
+_clusterlist_module_load(nodeupdown_t handle,
 #if WITH_STATIC_MODULES
              struct nodeupdown_clusterlist_module_info *module_info
 #else  /* !WITH_STATIC_MODULES */
@@ -360,7 +401,6 @@ _clusterlist_load_module(nodeupdown_t handle,
       || !clusterlist_module_info->get_numnodes
       || !clusterlist_module_info->cleanup
       || !clusterlist_module_info->is_node_in_cluster
-      || !clusterlist_module_info->is_node_discovered
       || !clusterlist_module_info->get_nodename
       || !clusterlist_module_info->compare_to_clusterlist)
     {
@@ -381,7 +421,7 @@ _clusterlist_load_module(nodeupdown_t handle,
 }
 
 int
-nodeupdown_clusterlist_load_module(nodeupdown_t handle)
+nodeupdown_clusterlist_module_load(nodeupdown_t handle)
 {
 #if WITH_STATIC_MODULES
   struct nodeupdown_clusterlist_module_info **ptr;
@@ -395,11 +435,11 @@ nodeupdown_clusterlist_load_module(nodeupdown_t handle)
       if (!ptr[i]->clusterlist_module_name)
         continue;
 
-      if ((rv = _clusterlist_load_module(handle, clusterlist_modules[i])) < 0)
+      if ((rv = _clusterlist_module_load(handle, clusterlist_modules[i])) < 0)
         goto cleanup;
 
       if (rv)
-        goto done;
+        goto found;
 
       i++;
     }
@@ -414,33 +454,36 @@ nodeupdown_clusterlist_load_module(nodeupdown_t handle)
                                           NODEUPDOWN_MODULE_BUILDDIR,
                                           clusterlist_modules,
                                           clusterlist_modules_len,
-                                          _clusterlist_load_module)) < 0)
+                                          _clusterlist_module_load)) < 0)
     goto cleanup;
 
   if (rv)
-    goto done;
+    goto found;
 
   if ((rv = nodeupdown_util_lookup_module(handle,
                                           NODEUPDOWN_MODULE_DIR,
                                           clusterlist_modules,
                                           clusterlist_modules_len,
-                                          _clusterlist_load_module)) < 0)
+                                          _clusterlist_module_load)) < 0)
     goto cleanup;
                       
   if ((rv = nodeupdown_util_search_for_module(handle,
                                               NODEUPDOWN_MODULE_DIR,
                                               "nodeupdown_clusterlist_",
-                                              _clusterlist_load_module)) < 0)
+                                              _clusterlist_module_load)) < 0)
     goto cleanup;
 
   if (rv)
-    goto done;
+    goto found;
 
   clusterlist_module_info = &default_clusterlist_module_info;
 
 #endif /* !WITH_STATIC_MODULES */
 
- done:
+  return 0;
+  
+ found:
+  clusterlist_module_found++;
   return 0;
 
  cleanup:
@@ -448,7 +491,7 @@ nodeupdown_clusterlist_load_module(nodeupdown_t handle)
 }
 
 int
-nodeupdown_clusterlist_unload_module(nodeupdown_t handle)
+nodeupdown_clusterlist_module_unload(nodeupdown_t handle)
 {
 #if !WITH_STATIC_MODULES
   /* May have not been loaded, so can't close */
@@ -457,17 +500,42 @@ nodeupdown_clusterlist_unload_module(nodeupdown_t handle)
   clusterlist_module_dl_handle = NULL;
 #endif /* !WITH_STATIC_MODULES */
   clusterlist_module_info = NULL;
+  clusterlist_module_found = 0;
   return 0;
 }
 
-int
-nodeupdown_clusterlist_setup(nodeupdown_t handle)
+int 
+nodeupdown_clusterlist_module_found(nodeupdown_t handle)
 {
+  return (clusterlist_module_found) ? 1 : 0;
+}
+
+char *
+nodeupdown_clusterlist_module_name(nodeupdown_t handle)
+{
+  if (!clusterlist_module_info)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return NULL;
+    }
+
+  return clusterlist_module_info->clusterlist_module_name;
+}
+
+int
+nodeupdown_clusterlist_module_setup(nodeupdown_t handle)
+{
+  if (!clusterlist_module_info)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
+
   return (*clusterlist_module_info->setup)(handle);
 }
 
 int
-nodeupdown_clusterlist_cleanup(nodeupdown_t handle)
+nodeupdown_clusterlist_module_cleanup(nodeupdown_t handle)
 {
   /* May have not been loaded, so can't cleanup */
   if (!clusterlist_module_info)
@@ -477,39 +545,55 @@ nodeupdown_clusterlist_cleanup(nodeupdown_t handle)
 }
 
 int
-nodeupdown_clusterlist_get_numnodes(nodeupdown_t handle)
+nodeupdown_clusterlist_module_get_numnodes(nodeupdown_t handle)
 {
+  if (!clusterlist_module_info)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
+
   return (*clusterlist_module_info->get_numnodes)(handle);
 }
 
 int
-nodeupdown_clusterlist_compare_to_clusterlist(nodeupdown_t handle)
+nodeupdown_clusterlist_module_compare_to_clusterlist(nodeupdown_t handle)
 {
+  if (!clusterlist_module_info)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
+
   return (*clusterlist_module_info->compare_to_clusterlist)(handle);
 }
 
 int
-nodeupdown_clusterlist_is_node_in_cluster(nodeupdown_t handle,
+nodeupdown_clusterlist_module_is_node_in_cluster(nodeupdown_t handle,
                                           const char *node)
 {
+  if (!clusterlist_module_info)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
+
   return (*clusterlist_module_info->is_node_in_cluster)(handle,
                                                         node);
 }
 
 int
-nodeupdown_clusterlist_is_node_discovered(nodeupdown_t handle,
-                                          const char *node)
+nodeupdown_clusterlist_module_get_nodename(nodeupdown_t handle,
+					   const char *node,
+					   char *buffer,
+					   unsigned int buflen)
 {
-  return (*clusterlist_module_info->is_node_discovered)(handle,
-                                                        node);
-}
+  if (!clusterlist_module_info)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
 
-int
-nodeupdown_clusterlist_get_nodename(nodeupdown_t handle,
-                                    const char *node,
-                                    char *buffer,
-                                    int buflen)
-{
   return (*clusterlist_module_info->get_nodename)(handle,
                                                   node,
                                                   buffer,
@@ -517,7 +601,7 @@ nodeupdown_clusterlist_get_nodename(nodeupdown_t handle,
 }
 
 /*
- * _config_load_module
+ * _config_module_load
  *
  * Load the specified config module
  *
@@ -525,7 +609,7 @@ nodeupdown_clusterlist_get_nodename(nodeupdown_t handle,
  * cannot be found, -1 on fatal error.
  */
 static int
-_config_load_module(nodeupdown_t handle,
+_config_module_load(nodeupdown_t handle,
 #if WITH_STATIC_MODULES
              struct nodeupdown_config_module_info *module_info
 #else  /* !WITH_STATIC_MODULES */
@@ -578,7 +662,7 @@ _config_load_module(nodeupdown_t handle,
 }
  
 int
-nodeupdown_config_load_module(nodeupdown_t handle)
+nodeupdown_config_module_load(nodeupdown_t handle)
 {
 #if WITH_STATIC_MODULES
   struct nodeupdown_config_module_info **ptr;
@@ -592,11 +676,11 @@ nodeupdown_config_load_module(nodeupdown_t handle)
       if (!ptr[i]->config_module_name)
         continue;
        
-      if ((rv = _config_load_module(handle, config_modules[i])) < 0)
+      if ((rv = _config_module_load(handle, config_modules[i])) < 0)
         goto cleanup;
        
       if (rv)
-        goto done;
+        goto found;
        
       i++;
     }
@@ -607,42 +691,45 @@ nodeupdown_config_load_module(nodeupdown_t handle)
                                           NODEUPDOWN_MODULE_BUILDDIR,
                                           config_modules,
                                           config_modules_len,
-                                          _config_load_module)) < 0)
+                                          _config_module_load)) < 0)
     goto cleanup;
    
   if (rv)
-    goto done;
+    goto found;
    
   if ((rv = nodeupdown_util_lookup_module(handle,
                                           NODEUPDOWN_MODULE_DIR,
                                           config_modules,
                                           config_modules_len,
-                                          _config_load_module)) < 0)
+                                          _config_module_load)) < 0)
     goto cleanup;
    
+  if (rv)
+    goto found;
    
   if ((rv = nodeupdown_util_search_for_module(handle,
                                               NODEUPDOWN_MODULE_DIR,
                                               "nodeupdown_config_",
-                                              _config_load_module)) < 0)
+                                              _config_module_load)) < 0)
     goto cleanup;
  
   if (rv)
-    goto done;
+    goto found;
    
-  handle->errnum = NODEUPDOWN_ERR_CONFIG_MODULE;
-  goto cleanup;
 #endif /* !WITH_STATIC_MODULES */
  
- done:
   return 0;
+
+ found:
+  config_module_found++;
+  return 1;
  
  cleanup:
   return -1;
 }
  
 int
-nodeupdown_config_unload_module(nodeupdown_t handle)
+nodeupdown_config_module_unload(nodeupdown_t handle)
 {
 #if !WITH_STATIC_MODULES
   /* May have not been loaded, so can't close */
@@ -651,17 +738,42 @@ nodeupdown_config_unload_module(nodeupdown_t handle)
   config_module_dl_handle = NULL;
 #endif /* !WITH_STATIC_MODULES */
   config_module_info = NULL;
+  config_module_found = 0;
   return 0;
 }
-  
-int
-nodeupdown_config_setup(nodeupdown_t handle)
+ 
+int 
+nodeupdown_config_module_found(nodeupdown_t handle)
 {
+  return (config_module_found) ? 1 : 0;
+}
+ 
+char *
+nodeupdown_config_module_name(nodeupdown_t handle)
+{
+  if (!config_module_info)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return NULL;
+    }
+
+  return config_module_info->config_module_name;
+}
+
+int
+nodeupdown_config_module_setup(nodeupdown_t handle)
+{
+  if (!config_module_info)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
+
   return (*config_module_info->setup)(handle);
 }
  
 int
-nodeupdown_config_cleanup(nodeupdown_t handle)
+nodeupdown_config_module_cleanup(nodeupdown_t handle)
 {
   /* May have not been loaded, so can't cleanup */
   if (!config_module_info)
@@ -671,8 +783,14 @@ nodeupdown_config_cleanup(nodeupdown_t handle)
 }
   
 int
-nodeupdown_config_load_default(nodeupdown_t handle,
-                               struct nodeupdown_config *conf)
+nodeupdown_config_module_load_default(nodeupdown_t handle,
+				      struct nodeupdown_config *conf)
 {
+  if (!config_module_info)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
+
   return (*config_module_info->load_default)(handle, conf);
 }

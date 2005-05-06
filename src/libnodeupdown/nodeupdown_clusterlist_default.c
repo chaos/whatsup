@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_default.c,v 1.7 2005-05-06 01:01:02 achu Exp $
+ *  $Id: nodeupdown_clusterlist_default.c,v 1.8 2005-05-06 16:52:11 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -91,22 +91,6 @@ default_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node)
 }
 
 /*
- * default_clusterlist_is_node_discovered
- *
- * default clusterlist module is_node_discovered function
- */
-int 
-default_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node) 
-{
-  /* Without a clusterlist_ of some sort, this is the best we can do */
-  if (hostlist_find(handle->up_nodes, node) == -1 
-      && hostlist_find(handle->down_nodes, node) == -1)
-    return 0;
-  else
-    return 1;
-}
-
-/*
  * default_clusterlist_get_nodename
  *
  * default clusterlist module get_nodename function
@@ -115,7 +99,7 @@ int
 default_clusterlist_get_nodename(nodeupdown_t handle, 
 				 const char *node, 
 				 char *buffer, 
-				 int buflen) 
+				 unsigned int buflen) 
 {
   return nodeupdown_clusterlist_copy_nodename(handle, node, buffer, buflen);
 }
@@ -138,7 +122,6 @@ struct nodeupdown_clusterlist_module_info default_clusterlist_module_info =
     &default_clusterlist_cleanup,
     &default_clusterlist_get_numnodes,
     &default_clusterlist_is_node_in_cluster,
-    &default_clusterlist_is_node_discovered,
     &default_clusterlist_get_nodename,
     &default_clusterlist_compare_to_clusterlist,
   };

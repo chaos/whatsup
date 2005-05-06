@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_module.h,v 1.4 2005-05-05 21:36:34 achu Exp $
+ *  $Id: nodeupdown_clusterlist_module.h,v 1.5 2005-05-06 16:52:11 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -62,19 +62,8 @@ typedef int (*Nodeupdown_clusterlist_get_numnodes)(nodeupdown_t);
  *
  * Returns 1 is node is in the cluster, 0 if not, -1 on error
  */
-typedef int (*Nodeupdown_clusterlist_is_node_in_cluster)(nodeupdown_t, const char *);
-
-/*
- * Nodeupdown_clusterlist_is_node_discovered
- *
- * Determines if a node has been discovered.  Generally identical to
- * is_node_in_cluster, although some clusterlist modules act
- * differently.
- *
- * Returns 1 is node has been discovered, 0 if not, -1 on error
- *
- */
-typedef int (*Nodeupdown_clusterlist_is_node_discovered)(nodeupdown_t, const char *);
+typedef int (*Nodeupdown_clusterlist_is_node_in_cluster)(nodeupdown_t, 
+							 const char *);
 
 /*
  * Nodeupdown_clusterlist_get_nodename
@@ -86,7 +75,10 @@ typedef int (*Nodeupdown_clusterlist_is_node_discovered)(nodeupdown_t, const cha
  *
  * Returns nodename in buffer, 0 on success, -1 on error
  */
-typedef int (*Nodeupdown_clusterlist_get_nodename)(nodeupdown_t, const char *, char *, int);
+typedef int (*Nodeupdown_clusterlist_get_nodename)(nodeupdown_t, 
+						   const char *, 
+						   char *, 
+						   unsigned int);
 
 /*
  * Nodeupdown_clusterlist_compare_to_clusterlist
@@ -111,7 +103,6 @@ struct nodeupdown_clusterlist_module_info
   Nodeupdown_clusterlist_cleanup cleanup;
   Nodeupdown_clusterlist_get_numnodes get_numnodes;
   Nodeupdown_clusterlist_is_node_in_cluster is_node_in_cluster;
-  Nodeupdown_clusterlist_is_node_discovered is_node_discovered;
   Nodeupdown_clusterlist_get_nodename get_nodename;
   Nodeupdown_clusterlist_compare_to_clusterlist compare_to_clusterlist;
 };

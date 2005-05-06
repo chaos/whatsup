@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_node.h,v 1.1 2005-05-06 01:01:02 achu Exp $
+ *  $Id: nodeupdown_node.h,v 1.2 2005-05-06 16:52:11 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -66,12 +66,13 @@ int nodeupdown_add_up_nodes(nodeupdown_t handle, const char *nodes);
 int nodeupdown_add_down_nodes(nodeupdown_t handle, const char *nodes);
 
 /*
- * nodeupdown_is_added
+ * nodeupdown_not_discovered_check
  *
- * Determines if a node has already been added into the handle
+ * Determines if a node has already been added into the handle.  If it
+ * has not, add the node to the down nodes.
  *
- * Returns 1 if it has been pushed, 0 if not, -1 on error
+ * Returns 0 on success, -1 on error
  */
-int nodeupdown_is_added(nodeupdown_t handle, const char *node);
+int nodeupdown_not_discovered_check(nodeupdown_t handle, const char *node);
 
 #endif /* _NODEUPDOWN_NODE_H */

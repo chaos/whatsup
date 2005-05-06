@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.h,v 1.3 2005-05-05 21:38:40 achu Exp $
+ *  $Id: nodeupdown_module.h,v 1.4 2005-05-06 16:52:11 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -31,174 +31,207 @@
 #include "nodeupdown_config.h"
 
 /*
- * nodeupdown_backend_load_module
+ * nodeupdown_backend_module_load
  *
  * Find and load the nodeupdown backend module
  *
  * Returns 0 on success, -1 on error
  */
-int nodeupdown_backend_load_module(nodeupdown_t handle);
+int nodeupdown_backend_module_load(nodeupdown_t handle);
  
 /*
- * nodeupdown_backend_unload_module
+ * nodeupdown_backend_module_unload
  *
  * unload the nodeupdown backend module
  *
  * Returns 0 on success, -1 on error
  */
-int nodeupdown_backend_unload_module(nodeupdown_t handle);
+int nodeupdown_backend_module_unload(nodeupdown_t handle);
 
 /* 
- * nodeupdown_backend_default_hostname
+ * nodeupdown_backend_module_name
+ *
+ * Return pointer to backend module name
+ */
+char *nodeupdown_backend_module_name(nodeupdown_t handle);
+
+/* 
+ * nodeupdown_backend_module_default_hostname
  *
  * call backend module default_hostname function
  */
-char *nodeupdown_backend_default_hostname(nodeupdown_t handle);
+char *nodeupdown_backend_module_default_hostname(nodeupdown_t handle);
 
 /* 
- * nodeupdown_backend_default_port
+ * nodeupdown_backend_module_default_port
  *
  * call backend module default_port function
  */
-int nodeupdown_backend_default_port(nodeupdown_t handle);
+int nodeupdown_backend_module_default_port(nodeupdown_t handle);
 
 /* 
- * nodeupdown_backend_default_timeout_len
+ * nodeupdown_backend_module_default_timeout_len
  *
  * call backend module default_timeout_len function
  */
-int nodeupdown_backend_default_timeout_len(nodeupdown_t handle);
+int nodeupdown_backend_module_default_timeout_len(nodeupdown_t handle);
 
 /* 
- * nodeupdown_backend_setup
+ * nodeupdown_backend_module_setup
  *
  * call backend module setup function
  */
-int nodeupdown_backend_setup(nodeupdown_t handle);
+int nodeupdown_backend_module_setup(nodeupdown_t handle);
 
 /* 
- * nodeupdown_backend_cleanup
+ * nodeupdown_backend_module_cleanup
  *
  * call backend module cleanup function
  */
-int nodeupdown_backend_cleanup(nodeupdown_t handle);
+int nodeupdown_backend_module_cleanup(nodeupdown_t handle);
 
 /* 
- * nodeupdown_backend_get_updown_data
+ * nodeupdown_backend_module_get_updown_data
  *
  * call backend module get_updown_data function
  */
-int nodeupdown_backend_get_updown_data(nodeupdown_t handle, 
-                                       const char *hostname,
-                                       int port,
-                                       int timeout_len,
-                                       char *reserved);
+int nodeupdown_backend_module_get_updown_data(nodeupdown_t handle, 
+					      const char *hostname,
+					      int port,
+					      int timeout_len,
+					      char *reserved);
 
 /*
- * nodeupdown_clusterlist_load_module
+ * nodeupdown_clusterlist_module_load
  *
- * Find and load the nodeupdown clusterlist module
+ * Find and load the nodeupdown clusterlist module.  If none is
+ * found a default one will still be loaded.
  *
  * Returns 0 on success, -1 on error
  */
-int nodeupdown_clusterlist_load_module(nodeupdown_t handle);
+int nodeupdown_clusterlist_module_load(nodeupdown_t handle);
  
 /*
- * nodeupdown_clusterlist_unload_module
+ * nodeupdown_clusterlist_module_unload
  *
  * unload the nodeupdown clusterlist module
  *
  * Returns 0 on success, -1 on error
  */
-int nodeupdown_clusterlist_unload_module(nodeupdown_t handle);
+int nodeupdown_clusterlist_module_unload(nodeupdown_t handle);
 
 /* 
- * nodeupdown_clusterlist_setup
+ * nodeupdown_clusterlist_module_found
+ *
+ * Returns 1 if a clusterlist module was found, 0 if not
+ */
+int nodeupdown_clusterlist_module_found(nodeupdown_t handle);
+
+/* 
+ * nodeupdown_clusterlist_module_name
+ *
+ * Return pointer to clusterlist module name
+ */
+char *nodeupdown_clusterlist_module_name(nodeupdown_t handle);
+
+/* 
+ * nodeupdown_clusterlist_module_setup
  *
  * call clusterlist module setup function
  */
-int nodeupdown_clusterlist_setup(nodeupdown_t handle);
+int nodeupdown_clusterlist_module_setup(nodeupdown_t handle);
 
 /* 
- * nodeupdown_clusterlist_cleanup
+ * nodeupdown_clusterlist_module_cleanup
  *
  * call clusterlist module cleanup function
  */
-int nodeupdown_clusterlist_cleanup(nodeupdown_t handle);
+int nodeupdown_clusterlist_module_cleanup(nodeupdown_t handle);
 
 /* 
- * nodeupdown_clusterlist_get_numnodes
+ * nodeupdown_clusterlist_module_get_numnodes
  *
  * call clusterlist module get_numnodes function
  */
-int nodeupdown_clusterlist_get_numnodes(nodeupdown_t handle);
+int nodeupdown_clusterlist_module_get_numnodes(nodeupdown_t handle);
 
 /* 
- * nodeupdown_clusterlist_is_node_in_cluster
+ * nodeupdown_clusterlist_module_is_node_in_cluster
  *
  * call clusterlist module is_node_in_cluster function
  */
-int nodeupdown_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node);
+int nodeupdown_clusterlist_module_is_node_in_cluster(nodeupdown_t handle, 
+						     const char *node);
 
 /* 
- * nodeupdown_clusterlist_is_node_discovered
- *
- * call clusterlist module is_node_discovered function
- */
-int nodeupdown_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node);
-
-/* 
- * nodeupdown_clusterlist_get_nodename
+ * nodeupdown_clusterlist_module_get_nodename
  *
  * call clusterlist module get_nodename function
  */
-int nodeupdown_clusterlist_get_nodename(nodeupdown_t handle, const char *node, char *buffer, int buflen);
+int nodeupdown_clusterlist_module_get_nodename(nodeupdown_t handle, 
+					       const char *node, 
+					       char *buffer, 
+					       unsigned int buflen);
 
 /* 
- * nodeupdown_clusterlist_compare_to_clusterlist
+ * nodeupdown_clusterlist_module_compare_to_clusterlist
  *
  * call clusterlist module compare_to_clusterlist function
  */
-int nodeupdown_clusterlist_compare_to_clusterlist(nodeupdown_t handle);
+int nodeupdown_clusterlist_module_compare_to_clusterlist(nodeupdown_t handle);
 
 /*
- * nodeupdown_config_load_module
+ * nodeupdown_config_module_load
  *
  * Find and load the nodeupdown config module
  *
- * Returns 0 on success, -1 on error
+ * Returns 1 if module loaded, 0 if not, -1 on error
  */
-int nodeupdown_config_load_module(nodeupdown_t handle);
+int nodeupdown_config_module_load(nodeupdown_t handle);
  
 /*
- * nodeupdown_config_unload_module
+ * nodeupdown_config_module_unload
  *
  * unload the nodeupdown config module
  *
  * Returns 0 on success, -1 on error
  */
-int nodeupdown_config_unload_module(nodeupdown_t handle);
+int nodeupdown_config_module_unload(nodeupdown_t handle);
+
+/* 
+ * nodeupdown_config_module_found
+ *
+ * Returns 1 if a config module was found, 0 if not
+ */
+int nodeupdown_config_module_found(nodeupdown_t handle);
+
+/* 
+ * nodeupdown_config_module_name
+ *
+ * Return pointer to config module name
+ */
+char *nodeupdown_config_module_name(nodeupdown_t handle);
 
 /*
- * nodeupdown_config_setup
+ * nodeupdown_config_module_setup
  *
  * call config module setup function
  */
-int nodeupdown_config_setup(nodeupdown_t handle);
+int nodeupdown_config_module_setup(nodeupdown_t handle);
  
 /*
- * nodeupdown_config_cleanup
+ * nodeupdown_config_module_cleanup
  *
  * call config module cleanup function
  */
-int nodeupdown_config_cleanup(nodeupdown_t handle);
+int nodeupdown_config_module_cleanup(nodeupdown_t handle);
  
 /*
- * nodeupdown_config_load_default
+ * nodeupdown_config_module_load_default
  *
  * call config module load_default function
  */
-int nodeupdown_config_load_default(nodeupdown_t handle,
-				   struct nodeupdown_config *conf);
+int nodeupdown_config_module_load_default(nodeupdown_t handle,
+					  struct nodeupdown_config *conf);
 
 #endif /* _NODEUPDOWN_MODULE_H */
