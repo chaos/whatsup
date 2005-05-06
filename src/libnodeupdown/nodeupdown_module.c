@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.c,v 1.7 2005-05-06 20:52:22 achu Exp $
+ *  $Id: nodeupdown_module.c,v 1.8 2005-05-06 20:54:01 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -87,7 +87,9 @@ static struct nodeupdown_clusterlist_module_info *clusterlist_modules[] =
 
 static struct nodeupdown_config_module_info *config_modules[] =
   {
+#if WITH_GENDERSLLNL
     &gendersllnl_config_module_info,
+#endif /* WITH_GENDERSLLNL */
     NULL
   };
 
