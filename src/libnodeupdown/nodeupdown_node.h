@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_genders_util.c,v 1.4 2005-05-06 01:01:02 achu Exp $
+ *  $Id: nodeupdown_node.h,v 1.1 2005-05-06 01:01:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -24,50 +24,54 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
 \*****************************************************************************/
 
-#if HAVE_CONFIG_H
-#include "config.h"
-#endif /* HAVE_CONFIG_H */
-
-#include <stdio.h>
-#include <stdlib.h>
-#if STDC_HEADERS
-#include <string.h>
-#endif /* STDC_HEADERS */
-#include <genders.h>
+#ifndef _NODEUPDOWN_NODE_H
+#define _NODEUPDOWN_NODE_H
 
 #include "nodeupdown.h"
-#include "nodeupdown_api.h"
-#include "nodeupdown_genders_util.h"
 
-int 
-genders_util_setup(nodeupdown_t handle,
-                   genders_t *genders_handle)
-{
-  if (!(*genders_handle = genders_handle_create()))
-    {
-      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_OUTMEM);
-      goto cleanup;
-    }
+/*
+ * nodeupdown_add_up_node
+ *
+ * Add up node into the handle
+ *
+ * Returns 0 on success, -1 on error
+ */
+int nodeupdown_add_up_node(nodeupdown_t handle, const char *node);
 
-  if (genders_load_data(*genders_handle, NULL) < 0)
-    {
-      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
-      goto cleanup;
-    }
+/*
+ * nodeupdown_add_down_node
+ *
+ * Add down node into the handle
+ *
+ * Returns 0 on success, -1 on error
+ */
+int nodeupdown_add_down_node(nodeupdown_t handle, const char *node);
 
-  return 0;
+/*
+ * nodeupdown_add_up_nodes
+ *
+ * Add up nodes into the handle
+ *
+ * Returns 0 on success, -1 on error
+ */
+int nodeupdown_add_up_nodes(nodeupdown_t handle, const char *nodes);
 
- cleanup:
-  genders_handle_destroy(*genders_handle);
-  *genders_handle = NULL;
-  return -1;
-}
+/*
+ * nodeupdown_add_down_nodes
+ *
+ * Add down nodes into the handle
+ *
+ * Returns 0 on success, -1 on error
+ */
+int nodeupdown_add_down_nodes(nodeupdown_t handle, const char *nodes);
 
-int 
-genders_util_cleanup(nodeupdown_t handle,
-                     genders_t *genders_handle) 
-{
-  genders_handle_destroy(*genders_handle);
-  *genders_handle = NULL;
-  return 0;
-}
+/*
+ * nodeupdown_is_added
+ *
+ * Determines if a node has already been added into the handle
+ *
+ * Returns 1 if it has been pushed, 0 if not, -1 on error
+ */
+int nodeupdown_is_added(nodeupdown_t handle, const char *node);
+
+#endif /* _NODEUPDOWN_NODE_H */

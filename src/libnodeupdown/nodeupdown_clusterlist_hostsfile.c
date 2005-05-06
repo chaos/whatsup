@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.13 2005-05-05 21:36:34 achu Exp $
+ *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.14 2005-05-06 01:01:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -45,7 +45,7 @@
 #include "nodeupdown_clusterlist_module.h"
 #include "nodeupdown_clusterlist_util.h"
 #include "nodeupdown_constants.h"
-#include "hostlist.h"
+#include "nodeupdown_node.h"
 #include "fd.h"
 #include "list.h"
 
@@ -69,14 +69,14 @@ _readline(nodeupdown_t handle, int fd, char *buf, int buflen)
                                                                                      
   if ((ret = fd_read_line(fd, buf, buflen)) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_READ;
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_READ);
       return -1;
     }
                                                                                      
   /* buflen - 1 b/c fd_read_line guarantees null termination */
   if (ret >= (buflen-1)) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_PARSE;
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_PARSE);
       return -1;
     }
                                                                                      
@@ -187,13 +187,13 @@ hostsfile_clusterlist_setup(nodeupdown_t handle)
 
   if (!(hosts = list_create((ListDelF)free)))
     {
-      handle->errnum = NODEUPDOWN_ERR_OUTMEM;
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_OUTMEM);
       goto cleanup;
     }
                                                                                     
   if ((fd = open(NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT, O_RDONLY)) < 0)
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_OPEN;
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_OPEN);
       goto cleanup;
     }
                                                                                      
@@ -216,13 +216,13 @@ hostsfile_clusterlist_setup(nodeupdown_t handle)
                                                                                      
       if (strchr(hostPtr, ' ') || strchr(hostPtr, '\t'))
         {
-          handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_PARSE;
+	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_PARSE);
           goto cleanup;
         }
                                                                                      
       if (strlen(hostPtr) > NODEUPDOWN_MAXHOSTNAMELEN)
         {
-          handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_PARSE;
+	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_PARSE);
           goto cleanup;
         }
           
@@ -232,13 +232,13 @@ hostsfile_clusterlist_setup(nodeupdown_t handle)
       
       if (!(str = strdup(hostPtr)))
         {
-          handle->errnum = NODEUPDOWN_ERR_OUTMEM;
+	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_OUTMEM);
           goto cleanup;
         }
 
       if (!list_append(hosts, str))
         {
-          handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
+	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
           goto cleanup;
         }
     }
@@ -394,22 +394,22 @@ hostsfile_clusterlist_compare_to_clusterlist(nodeupdown_t handle)
                                                                                      
   if (!(itr = list_iterator_create(hosts))) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       return -1;
     }
                                                                                      
   while ((nodename = list_next(itr)))
     {
-      if ((hostlist_find(handle->up_nodes, nodename) == -1)
-          && (hostlist_find(handle->down_nodes, nodename) == -1)) 
-        {
-          /* This node must also be down */
-          if (hostlist_push_host(handle->down_nodes, nodename) == 0) 
-            {
-              handle->errnum = NODEUPDOWN_ERR_HOSTLIST;
-              goto cleanup;
-            }
-        }
+      int rv;
+      
+      if ((rv = nodeupdown_is_added(handle, nodename)) < 0)
+	goto cleanup;
+
+      if (!rv)
+	{
+	  if (nodeupdown_add_down_node(handle, nodename) < 0)
+	    goto cleanup;
+	}
     }
   
   list_iterator_destroy(itr);

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_default.c,v 1.6 2005-05-05 21:36:34 achu Exp $
+ *  $Id: nodeupdown_clusterlist_default.c,v 1.7 2005-05-06 01:01:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -75,8 +75,7 @@ default_clusterlist_get_numnodes(nodeupdown_t handle)
   count += hostlist_count(handle->up_nodes);
   count += hostlist_count(handle->down_nodes);
 
-  handle->max_nodes = count;
-  return 0;
+  return count;
 }
 
 /*

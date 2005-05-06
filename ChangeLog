@@ -10,6 +10,9 @@
 	* Added hostnames_len to confdata structure.
 
 	* Major nodeupdown header files reorg and code reorg.
+
+	* Begin re-work so modules never need to have knowledge of
+	contents in nodeupdown_t handle.
 	
 2005-05-02  Albert Chu  <chu11@llnl.gov>
 

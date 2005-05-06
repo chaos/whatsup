@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_genders_util.c,v 1.5 2005-05-05 21:23:51 achu Exp $
+ *  $Id: nodeupdown_clusterlist_genders_util.c,v 1.6 2005-05-06 01:01:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -38,7 +38,7 @@
 #include "nodeupdown.h"
 #include "nodeupdown_api.h"
 #include "nodeupdown_clusterlist_genders_util.h"
-#include "hostlist.h"
+#include "nodeupdown_node.h"
 
 int 
 genders_util_clusterlist_get_numnodes(nodeupdown_t handle, 
@@ -48,7 +48,7 @@ genders_util_clusterlist_get_numnodes(nodeupdown_t handle,
 
   if ((count = genders_getnumnodes(genders_handle)) < 0)
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       return -1;
     }
 
@@ -65,33 +65,33 @@ genders_util_clusterlist_compare_to_clusterlist(nodeupdown_t handle,
   /* get all genders nodes */
   if ((num = genders_nodelist_create(genders_handle, &nlist)) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       goto cleanup;
     }
    
   if (genders_getnodes(genders_handle, nlist, num, NULL, NULL) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       goto cleanup;
     }
    
   for (i = 0; i < num; i++) 
     {
-      if ((hostlist_find(handle->up_nodes, nlist[i]) < 0)
-          && (hostlist_find(handle->down_nodes, nlist[i]) < 0)) 
-        {
-          /* This node must also be down */
-          if (hostlist_push_host(handle->down_nodes, nlist[i]) == 0) 
-            {
-              handle->errnum = NODEUPDOWN_ERR_HOSTLIST;
-              goto cleanup;
-            }
-        }
+      int rv;
+      
+      if ((rv = nodeupdown_is_added(handle, nlist[i])) < 0)
+	goto cleanup;
+
+      if (!rv)
+	{
+	  if (nodeupdown_add_down_node(handle, nlist[i]) < 0)
+	    goto cleanup;
+	}
     }
  
   if (genders_nodelist_destroy(genders_handle, nlist) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       goto cleanup;
     }
  

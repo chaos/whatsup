@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.134 2005-05-05 21:36:34 achu Exp $
+ *  $Id: nodeupdown.c,v 1.135 2005-05-06 01:01:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -48,9 +48,6 @@
 #include "hostlist.h"
 #include "list.h"
 #include "ltdl.h"
-
-#define NODEUPDOWN_UP_NODES   1
-#define NODEUPDOWN_DOWN_NODES 0
 
 /* 
  * nodeupdown_errmsg
@@ -163,7 +160,7 @@ _initialize_handle(nodeupdown_t handle)
   handle->is_loaded = 0;
   handle->up_nodes = NULL;
   handle->down_nodes = NULL;
-  handle->max_nodes = 0;
+  handle->numnodes = 0;
 }
 
 nodeupdown_t 
@@ -536,10 +533,13 @@ nodeupdown_load_data(nodeupdown_t handle,
         goto cleanup;
     }
 
+  if (nodeupdown_clusterlist_compare_to_clusterlist(handle) < 0)
+    goto cleanup;
+  
   hostlist_sort(handle->up_nodes);
   hostlist_sort(handle->down_nodes);
 
-  if ((handle->max_nodes = nodeupdown_clusterlist_get_numnodes(handle)) < 0)
+  if ((handle->numnodes = nodeupdown_clusterlist_get_numnodes(handle)) < 0)
     goto cleanup;
 
   /* loading complete */
@@ -652,7 +652,7 @@ _get_nodes_list(nodeupdown_t handle, char **list, int len, int up_or_down)
 {
   int count = 0;
   hostlist_t hl;
-  hostlist_iterator_t iter;
+  hostlist_iterator_t itr;
   char *nodename = NULL;
 
   if (_loaded_handle_error_check(handle) < 0)
@@ -669,13 +669,13 @@ _get_nodes_list(nodeupdown_t handle, char **list, int len, int up_or_down)
   else
     hl = handle->down_nodes;
 
-  if (!(iter = hostlist_iterator_create(hl))) 
+  if (!(itr = hostlist_iterator_create(hl))) 
     {
       handle->errnum = NODEUPDOWN_ERR_HOSTLIST;
       return -1;
     }
 
-  while ((nodename = hostlist_next(iter)) != NULL) 
+  while ((nodename = hostlist_next(itr)) != NULL) 
     {
       if (count >= len) 
         {
@@ -694,13 +694,13 @@ _get_nodes_list(nodeupdown_t handle, char **list, int len, int up_or_down)
       count++;
     }
   
-  hostlist_iterator_destroy(iter);
+  hostlist_iterator_destroy(itr);
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return count;
 
  cleanup:
   free(nodename);
-  hostlist_iterator_destroy(iter);
+  hostlist_iterator_destroy(itr);
   return -1;
 }
 
@@ -832,13 +832,13 @@ nodeupdown_nodelist_create(nodeupdown_t handle, char ***list)
       return -1;
     }
 
-  if (!(nodes = (char **)malloc(sizeof(char *) * handle->max_nodes))) 
+  if (!(nodes = (char **)malloc(sizeof(char *) * handle->numnodes))) 
     {
       handle->errnum = NODEUPDOWN_ERR_OUTMEM;
       return -1;
     }
 
-  for (i = 0; i < handle->max_nodes; i++) 
+  for (i = 0; i < handle->numnodes; i++) 
     {
       if (!(nodes[i] = (char *)malloc(NODEUPDOWN_MAXNODENAMELEN+1))) 
         {
@@ -855,7 +855,7 @@ nodeupdown_nodelist_create(nodeupdown_t handle, char ***list)
   *list = nodes;
 
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
-  return handle->max_nodes;
+  return handle->numnodes;
 }
 
 int 
@@ -872,7 +872,7 @@ nodeupdown_nodelist_clear(nodeupdown_t handle, char **list)
       return -1;
     }
 
-  for (i = 0; i < handle->max_nodes; i++) 
+  for (i = 0; i < handle->numnodes; i++) 
     {
       if (!list[i]) 
         {
@@ -900,7 +900,7 @@ nodeupdown_nodelist_destroy(nodeupdown_t handle, char **list)
       return -1;
     }
 
-  for (i = 0; i < handle->max_nodes; i++)
+  for (i = 0; i < handle->numnodes; i++)
     free(list[i]);
   free(list);
 

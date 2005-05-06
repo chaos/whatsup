@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_util.c,v 1.3 2005-05-05 21:23:51 achu Exp $
+ *  $Id: nodeupdown_clusterlist_util.c,v 1.4 2005-05-06 01:01:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -50,7 +50,7 @@ nodeupdown_clusterlist_copy_nodename(nodeupdown_t handle,
  
   if ((len + 1) > buflen)
     {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
       return -1;
     }
  

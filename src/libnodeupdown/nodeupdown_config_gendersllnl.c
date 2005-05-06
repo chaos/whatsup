@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_config_gendersllnl.c,v 1.10 2005-05-05 21:36:34 achu Exp $
+ *  $Id: nodeupdown_config_gendersllnl.c,v 1.11 2005-05-06 01:01:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -69,8 +69,8 @@ gendersllnl_config_setup(nodeupdown_t handle)
 
   if (rv < 0)
     {
-      if (handle->errnum == NODEUPDOWN_ERR_INTERNAL)
-        handle->errnum = NODEUPDOWN_ERR_CONFIG_MODULE;
+      if (nodeupdown_errnum(handle) == NODEUPDOWN_ERR_INTERNAL)
+	nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONFIG_MODULE);
     }
 
   return rv;
@@ -100,7 +100,7 @@ gendersllnl_config_load_default(nodeupdown_t handle,
 
   if ((ret = genders_testattr(gendersllnl_handle, NULL, "mgmt", NULL, 0)) < 0)
     {
-      handle->errnum = NODEUPDOWN_ERR_CONFIG_MODULE;
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONFIG_MODULE);
       return -1;
     }
 
@@ -112,7 +112,7 @@ gendersllnl_config_load_default(nodeupdown_t handle,
       if ((nodelistlen = genders_nodelist_create(gendersllnl_handle, 
                                                  &nodelist)) < 0)
         {
-          handle->errnum = NODEUPDOWN_ERR_CONFIG_MODULE;
+	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONFIG_MODULE);
           return -1;
         }
 
@@ -123,7 +123,7 @@ gendersllnl_config_load_default(nodeupdown_t handle,
                                        NULL)) < 0)
         {
           (void)genders_nodelist_destroy(gendersllnl_handle, nodelist);
-          handle->errnum = NODEUPDOWN_ERR_CONFIG_MODULE;
+	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONFIG_MODULE);
           return -1;
         }
 
@@ -134,7 +134,7 @@ gendersllnl_config_load_default(nodeupdown_t handle,
           if (numnodes > NODEUPDOWN_CONFIG_HOSTNAMES_MAX)
             {
               (void)genders_nodelist_destroy(gendersllnl_handle, nodelist);
-              handle->errnum = NODEUPDOWN_ERR_CONFIG_MODULE;
+	      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONFIG_MODULE);
               return -1;
             }
 
@@ -143,7 +143,7 @@ gendersllnl_config_load_default(nodeupdown_t handle,
               if (strlen(nodelist[i]) > NODEUPDOWN_MAXHOSTNAMELEN)
                 {
                   (void)genders_nodelist_destroy(gendersllnl_handle, nodelist);
-                  handle->errnum = NODEUPDOWN_ERR_CONFIG_MODULE;
+		  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONFIG_MODULE);
                   return -1;
                 }
               strcpy(conf->hostnames[i], nodelist[i]);
@@ -154,7 +154,7 @@ gendersllnl_config_load_default(nodeupdown_t handle,
 
       if (genders_nodelist_destroy(gendersllnl_handle, nodelist) < 0)
         {
-          handle->errnum = NODEUPDOWN_ERR_CONFIG_MODULE;
+	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONFIG_MODULE);
           return -1;
         }
     }

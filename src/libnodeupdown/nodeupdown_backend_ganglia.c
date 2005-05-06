@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_ganglia.c,v 1.12 2005-05-05 21:36:34 achu Exp $
+ *  $Id: nodeupdown_backend_ganglia.c,v 1.13 2005-05-06 01:01:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -51,12 +51,11 @@
 #include "nodeupdown.h"
 #include "nodeupdown_api.h"
 #include "nodeupdown_backend_module.h"
-#include "nodeupdown_clusterlist_module.h"
 #include "nodeupdown_constants.h"
 #include "nodeupdown_module.h"
+#include "nodeupdown_node.h"
 #include "nodeupdown_util.h"
 
-#include "hostlist.h"
 #include "xmlparse.h"
 
 /* Used to pass multiple variables as one during XML parsing */
@@ -84,7 +83,7 @@ ganglia_backend_default_hostname(nodeupdown_t handle)
   memset(ganglia_default_hostname, '\0', NODEUPDOWN_MAXHOSTNAMELEN+1);
   if (gethostname(ganglia_default_hostname, NODEUPDOWN_MAXHOSTNAMELEN) < 0)
     {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
       return NULL;
     }
   return &ganglia_default_hostname[0];
@@ -148,7 +147,6 @@ _xml_parse_start(void *data, const char *e1, const char **attr)
   nodeupdown_t handle = ((struct parse_vars *)data)->handle;
   int timeout_len = ((struct parse_vars *)data)->timeout_len;
   unsigned long localtime = ((struct parse_vars *)data)->localtime;
-  char buffer[NODEUPDOWN_MAXNODENAMELEN+1];
   unsigned long reported;
 
   if (strcmp("HOST", e1) == 0) 
@@ -163,21 +161,12 @@ _xml_parse_start(void *data, const char *e1, const char **attr)
        * - remaining attributes aren't needed 
        */
 
-      if (nodeupdown_clusterlist_is_node_in_cluster(handle, attr[1]) <= 0)
-        return;
-      
-      if (nodeupdown_clusterlist_get_nodename(handle, 
-                                              attr[1], 
-                                              buffer, 
-                                              NODEUPDOWN_MAXNODENAMELEN+1) < 0)
-        return;
-      
       /* store as up or down */
       reported = atol(attr[5]);
       if (abs(localtime - reported) < timeout_len)
-        hostlist_push(handle->up_nodes, buffer);
+	nodeupdown_add_up_node(handle, attr[1]);
       else
-        hostlist_push(handle->down_nodes, buffer);
+	nodeupdown_add_down_node(handle, attr[1]);
     }
 }
 
@@ -222,7 +211,7 @@ ganglia_backend_get_updown_data(nodeupdown_t handle,
   /* Call gettimeofday at the latest point right before XML stuff. */
   if (gettimeofday(&tv, NULL) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
       goto cleanup;
     } 
   pv.localtime = tv.tv_sec;
@@ -242,19 +231,19 @@ ganglia_backend_get_updown_data(nodeupdown_t handle,
       
       if (!(buff = XML_GetBuffer(xml_parser, BUFSIZ))) 
         {
-          handle->errnum = NODEUPDOWN_ERR_XML;
+	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
           goto cleanup;
         }
 
       if ((bytes_read = read(fd, buff, BUFSIZ)) < 0) 
         {
-          handle->errnum = NODEUPDOWN_ERR_NETWORK;
+	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_NETWORK);
           goto cleanup;
         }
 
       if (!XML_ParseBuffer(xml_parser, bytes_read, bytes_read == 0)) 
         {
-          handle->errnum = NODEUPDOWN_ERR_XML;
+	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_XML);
           goto cleanup;
         }
       
@@ -262,9 +251,6 @@ ganglia_backend_get_updown_data(nodeupdown_t handle,
         break;
     }
   
-  if (nodeupdown_clusterlist_compare_to_clusterlist(handle) < 0)
-    goto cleanup;
-
   retval = 0;
 
  cleanup:

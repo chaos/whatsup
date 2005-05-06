@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_gendersllnl.c,v 1.16 2005-05-05 21:36:34 achu Exp $
+ *  $Id: nodeupdown_clusterlist_gendersllnl.c,v 1.17 2005-05-06 01:01:02 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -69,8 +69,8 @@ gendersllnl_clusterlist_setup(nodeupdown_t handle)
 
   if (rv < 0)
     {
-      if (handle->errnum == NODEUPDOWN_ERR_INTERNAL)
-        handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_OPEN;
+      if (nodeupdown_errnum(handle) == NODEUPDOWN_ERR_INTERNAL)
+	nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_OPEN);
     }
 
   return rv;
@@ -123,10 +123,10 @@ gendersllnl_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node
     }
   else
     nodePtr = (char *)node;
-
+  
   if ((ret = genders_isnode_or_altnode(gendersllnl_handle, nodePtr)) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       return -1;
     }
   return ret;
@@ -160,7 +160,7 @@ gendersllnl_clusterlist_is_node_discovered(nodeupdown_t handle, const char *node
 
   if ((ret = genders_isnode_or_altnode(gendersllnl_handle, nodePtr)) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       return -1;
     }
   return ret;
@@ -196,7 +196,7 @@ gendersllnl_clusterlist_get_nodename(nodeupdown_t handle,
 
   if (genders_to_gendname(gendersllnl_handle, nodePtr, buffer, buflen) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       return -1;
     }
   return 0;

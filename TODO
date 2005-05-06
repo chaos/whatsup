@@ -7,3 +7,9 @@
 - max_nodes - even necessary???
 - need some warpper api around hostlist_t stuff
 - get to point to remove nodeupdown_api.h from all module dot c files
+- additional handle checks?
+
+code cleanup
+ - null 
+ - 80 columns
+ - ret vs rv

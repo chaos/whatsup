@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.46 2005-05-05 21:36:34 achu Exp $
+## $Id: Makefile.am,v 1.47 2005-05-06 01:01:02 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -67,6 +67,7 @@ noinst_HEADERS  = nodeupdown_api.h \
 		  nodeupdown_constants.h \
 		  nodeupdown_genders_util.h \
 		  nodeupdown_module.h \
+		  nodeupdown_node.h \
 		  nodeupdown_util.h
 
 lib_LTLIBRARIES = libnodeupdown.la
@@ -80,6 +81,7 @@ libnodeupdown_la_SOURCES = nodeupdown.c \
 	 		   nodeupdown_clusterlist_default.c \
 			   nodeupdown_clusterlist_util.c \
 			   nodeupdown_module.c \
+			   nodeupdown_node.c \
 			   nodeupdown_util.c \
 			   $(STATIC_MODULE_SOURCES)
 
