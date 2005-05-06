@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.c,v 1.6 2005-05-06 18:27:46 achu Exp $
+ *  $Id: nodeupdown_module.c,v 1.7 2005-05-06 20:52:22 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -104,7 +104,7 @@ static char *clusterlist_modules[] = {
   "nodeupdown_clusterlist_hostsfile.la",
   NULL
 };
-static int clusterlist_modules_len = 4;
+static int clusterlist_modules_len = 3;
 
 static char *config_modules[] = {
   "nodeupdown_config_gendersllnl.la",
@@ -237,15 +237,15 @@ nodeupdown_backend_module_load(nodeupdown_t handle)
 					  _backend_module_load)) < 0)
     goto cleanup;
   
+  if (rv)
+    goto found;
+
   if ((rv = nodeupdown_util_search_for_module(handle,
 					      NODEUPDOWN_MODULE_DIR,
 					      "nodeupdown_backend_",
 					      _backend_module_load)) < 0)
     goto cleanup;
   
-  if (rv)
-    goto found;
-                                                                          
   handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
   goto cleanup;
 
@@ -467,6 +467,9 @@ nodeupdown_clusterlist_module_load(nodeupdown_t handle)
                                           _clusterlist_module_load)) < 0)
     goto cleanup;
                       
+  if (rv)
+    goto found;
+
   if ((rv = nodeupdown_util_search_for_module(handle,
                                               NODEUPDOWN_MODULE_DIR,
                                               "nodeupdown_clusterlist_",

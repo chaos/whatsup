@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_node.c,v 1.4 2005-05-06 18:27:46 achu Exp $
+ *  $Id: nodeupdown_devel.c,v 1.1 2005-05-06 20:52:22 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -127,7 +127,7 @@ nodeupdown_add_up_node(nodeupdown_t handle, const char *node)
 int 
 nodeupdown_add_down_node(nodeupdown_t handle, const char *node)
 {
-  return _add_node(handle, node, NODEUPDOWN_UP_NODES);
+  return _add_node(handle, node, NODEUPDOWN_DOWN_NODES);
 }
 
 /* 

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.138 2005-05-06 18:27:46 achu Exp $
+ *  $Id: nodeupdown.c,v 1.139 2005-05-06 20:52:22 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -235,20 +235,6 @@ _cb_hostnames(conffile_t cf, struct conffile_data *data, char *optionname,
   return 0;
 }
 
-/*  
- * _init_nodeupdown_config
- *
- * initialize nodeupdown_config structure with defaults
- *
- * Return 0 on success, -1 on error
- */
-static int
-_init_nodeupdown_config(nodeupdown_t handle, struct nodeupdown_config *conf)
-{
-  memset(conf, '\0', sizeof(struct nodeupdown_config));
-  return 0;
-}
-
 /* 
  * _read_conffile
  *
@@ -336,6 +322,9 @@ nodeupdown_load_data(nodeupdown_t handle,
   if (_unloaded_handle_error_check(handle) < 0)
     goto cleanup;
 
+  memset(&conffile_config, '\0', sizeof(struct nodeupdown_config));
+  memset(&module_config, '\0', sizeof(struct nodeupdown_config));
+
 #if !WITH_STATIC_MODULES
   if (lt_dlinit() != 0)
     {
@@ -349,7 +338,6 @@ nodeupdown_load_data(nodeupdown_t handle,
    * which module to load.
    */
 
-  _init_nodeupdown_config(handle, &conffile_config);
   if (_read_conffile(handle, &conffile_config) < 0)
     goto cleanup;
 
@@ -383,7 +371,6 @@ nodeupdown_load_data(nodeupdown_t handle,
       if (nodeupdown_config_module_setup(handle) < 0)
 	goto cleanup;
 
-      _init_nodeupdown_config(handle, &module_config);
       if (nodeupdown_config_module_load_default(handle, &module_config) < 0)
 	goto cleanup;
     }
