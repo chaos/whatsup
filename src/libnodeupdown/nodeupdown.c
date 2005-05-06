@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.140 2005-05-06 20:57:09 achu Exp $
+ *  $Id: nodeupdown.c,v 1.141 2005-05-06 21:25:08 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -317,7 +317,6 @@ nodeupdown_load_data(nodeupdown_t handle,
 {
   struct nodeupdown_config conffile_config;
   struct nodeupdown_config module_config;
-  int rv;
 
   if (_unloaded_handle_error_check(handle) < 0)
     goto cleanup;
@@ -362,18 +361,14 @@ nodeupdown_load_data(nodeupdown_t handle,
   /* 
    * Load config module
    */
-  if ((rv = nodeupdown_config_module_load(handle)) < 0)
+  if (nodeupdown_config_module_load(handle) < 0)
     goto cleanup;
 
-  /* It is not necessary to find a config module */
-  if (rv)
-    {
-      if (nodeupdown_config_module_setup(handle) < 0)
-	goto cleanup;
+  if (nodeupdown_config_module_setup(handle) < 0)
+    goto cleanup;
 
-      if (nodeupdown_config_module_load_default(handle, &module_config) < 0)
-	goto cleanup;
-    }
+  if (nodeupdown_config_module_load_default(handle, &module_config) < 0)
+    goto cleanup;
 
   if (!(handle->up_nodes = hostlist_create(NULL))) 
     {
