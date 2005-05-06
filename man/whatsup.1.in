@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: whatsup.1.in,v 1.16 2005-04-25 17:43:26 achu Exp $
+\."$Id: whatsup.1.in,v 1.17 2005-05-06 15:40:36 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -103,7 +103,7 @@ List nodes by alternate names (default=off).  Only available if the
 gendersllnl whatsup module has been installed.
 \}
 .LP
-.SH "HOST RANGES"
+.SH HOST RANGES
 As noted in sections above,
 .B whatsup
 accepts ranges of hostnames in the general form: prefix[n-m,l-k,...],
@@ -134,7 +134,7 @@ tcsh, the above two examples should be executed as:
     whatsup "foo[01-05]"
     whatsup "foo[7,9-10]"
 
-.SH "EXAMPLES"
+.SH EXAMPLES
 .LP
 List all nodes that are up and down.
      whatsup
@@ -165,11 +165,11 @@ Only output the number of up nodes
 .LP
 Only output the number of up nodes among foo[5-25]
      whatsup -u -t foo[5-25]
-.SH "FILES"
+.SH FILES
 /usr/bin/whatsup
-.SH "SEE ALSO"
+.SH SEE ALSO
 libnodeupdown(3), nodeupdown.conf(5)
-.SH "ORIGIN"
+.SH ORIGIN
 Developed by Albert Chu <chu11@llnl.gov> on LLNL's Linux clusters.
 This software is open source and distributed under the terms of the
 Gnu GPL.

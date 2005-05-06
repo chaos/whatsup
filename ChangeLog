@@ -1,3 +1,7 @@
+2005-05-06  Albert Chu  <chu11@llnl.gov>
+
+	* Manpage cleanup.
+	
 2005-05-05  Albert Chu  <chu11@llnl.gov>
 
 	* Remove increase_max_nodes clusterlist function.  Re-worked

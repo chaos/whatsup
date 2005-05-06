@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: libnodeupdown.3.in,v 1.16 2005-05-02 23:00:28 achu Exp $
+\."$Id: libnodeupdown.3.in,v 1.17 2005-05-06 15:40:36 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -83,11 +83,9 @@ manpage for information about the nodeupdown configuration file.
 .SH BACKEND MODULES
 
 The nodeupdown library loads a backend module, which uses a particular
-backend tool, to gather up/down info for the nodeupdown library.  The
-backend module typically interacts with a clusterlist module to
-determine which nodes in a cluster are up or down.  By default, the
-following backend tools are searched for by nodeupdown in the
-following order:
+backend tool, to gather up/down info for the nodeupdown library.  By
+default, the following backend tools are searched for by nodeupdown in
+the following order:
 
 ganglia - See http://ganglia.sourceforge.net for more information.
 
@@ -145,7 +143,7 @@ When neither are in use, defaults are supplied by the backend tool.
 
 .SH FILES
 /usr/include/nodeupdown.h
-.SH "SEE ALSO"
+.SH SEE ALSO
 nodeupdown_handle_create(3), nodeupdown_load_data(3),
 nodeupdown_handle_destroy(3), nodeupdown_errnum(3),
 nodeupdown_strerror(3), nodeupdown_errormsg(3), nodeupdown_perror(3),
