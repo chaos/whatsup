@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.c,v 1.8 2005-05-06 20:54:01 achu Exp $
+ *  $Id: nodeupdown_module.c,v 1.9 2005-05-06 21:19:37 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -127,6 +127,8 @@ static struct nodeupdown_clusterlist_module_info *clusterlist_module_info = NULL
 static struct nodeupdown_config_module_info *config_module_info = NULL;
 
 extern struct nodeupdown_clusterlist_module_info default_clusterlist_module_info;
+
+extern struct nodeupdown_config_module_info default_config_module_info;
 
 static int clusterlist_module_found = 0;
 
@@ -689,6 +691,10 @@ nodeupdown_config_module_load(nodeupdown_t handle)
        
       i++;
     }
+
+  if (!ptr[i])
+    config_module_info = &default_config_module_info;
+
 #else  /* !WITH_STATIC_MODULES */
   int rv;
    
@@ -720,14 +726,16 @@ nodeupdown_config_module_load(nodeupdown_t handle)
  
   if (rv)
     goto found;
-   
+
+  config_module_info = &default_config_module_info;
+
 #endif /* !WITH_STATIC_MODULES */
- 
+
   return 0;
 
  found:
   config_module_found++;
-  return 1;
+  return 0;
  
  cleanup:
   return -1;

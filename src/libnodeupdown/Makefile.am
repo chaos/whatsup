@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.49 2005-05-06 20:52:22 achu Exp $
+## $Id: Makefile.am,v 1.50 2005-05-06 21:19:37 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -81,6 +81,7 @@ libnodeupdown_la_CFLAGS = -D_REENTRANT -I ../../config \
 libnodeupdown_la_SOURCES = nodeupdown.c \
 	 		   nodeupdown_clusterlist_default.c \
 			   nodeupdown_clusterlist_util.c \
+	 		   nodeupdown_config_default.c \
 			   nodeupdown_devel.c \
 			   nodeupdown_module.c \
 			   nodeupdown_util.c \

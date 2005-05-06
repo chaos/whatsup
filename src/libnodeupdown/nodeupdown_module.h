@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.h,v 1.6 2005-05-06 18:27:46 achu Exp $
+ *  $Id: nodeupdown_module.h,v 1.7 2005-05-06 21:19:37 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -183,9 +183,10 @@ int nodeupdown_clusterlist_module_compare_to_clusterlist(nodeupdown_t handle);
 /*
  * nodeupdown_config_module_load
  *
- * Find and load the nodeupdown config module
+ * Find and load the nodeupdown config module.  If none is found a
+ * default one will still be loaded.
  *
- * Returns 1 if module loaded, 0 if not, -1 on error
+ * Returns 0 on success, -1 on error
  */
 int nodeupdown_config_module_load(nodeupdown_t handle);
  
