@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.h,v 1.37 2005-05-06 20:57:09 achu Exp $
+ *  $Id: nodeupdown.h,v 1.38 2005-05-07 05:33:23 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -61,7 +61,7 @@ typedef struct nodeupdown *nodeupdown_t;
 /* 
  * nodeupdown_handle_create
  * 
- * create a nodeupdown handle
+ * Create a nodeupdown handle.
  *
  * Returns handle on success, NULL on error
  */
@@ -69,7 +69,7 @@ nodeupdown_t nodeupdown_handle_create(void);
 
 /* nodeupdown_handle_destroy
  *
- * destroy a nodeupdown handle
+ * Destroy a nodeupdown handle.
  *
  * Returns 0 on success, -1 on error
  */
@@ -78,11 +78,13 @@ int nodeupdown_handle_destroy(nodeupdown_t handle);
 /* 
  * nodeupdown_load_data
  *
- * loads data from the backend tool used to evaluate
- * up and down nodes
- * - if hostname is NULL, port is <= 0, or timeout_len <=0, the
+ * Loads data from the backend tool used to evaluate up and down
+ * nodes.
+ *
+ * If 'hostname' is NULL, 'port' is <= 0, or 'timeout_len' <=0, the
  * backend tool's respective defaults will be used.
- * - 'reserved' is used for backwards compatability
+ *
+ * 'reserved' is used for backwards compatability
  *
  * Returns 0 on success, -1 on error
  */
@@ -95,7 +97,7 @@ int nodeupdown_load_data(nodeupdown_t handle,
 /* 
  * nodeupdown_errnum
  *
- * return the most recent error number
+ * Return the most recent error number.
  *
  * Returns error number on success
  */
@@ -104,7 +106,7 @@ int nodeupdown_errnum(nodeupdown_t handle);
 /* 
  * nodeupdown_strerror
  *
- * return a string message describing an error number
+ * Return a string message describing an error number.
  *
  * Returns pointer to message on success
  */
@@ -113,7 +115,7 @@ char *nodeupdown_strerror(int errnum);
 /* 
  * nodeupdown_errormsg
  * 
- * return a string message describing the most recent error
+ * Return a string message describing the most recent error.
  *
  * Returns pointer to message on success
  */
