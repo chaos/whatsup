@@ -82,8 +82,6 @@ rm -rf "$RPM_BUILD_ROOT"
 %if %{?_with_chaos:1}%{!?_with_chaos:0}
 %{_libdir}/nodeupdown/*
 %{_libdir}/whatsup/*
-%else
-%{_libdir}/nodeupdown/*none.*
 %endif
 %{_libdir}/libnodeupdown.*
 %{_perldir}/*
