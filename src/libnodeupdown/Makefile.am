@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.51 2005-05-07 17:34:42 achu Exp $
+## $Id: Makefile.am,v 1.52 2005-05-07 18:06:14 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -43,6 +43,7 @@ endif
 
 if WITH_STATIC_MODULES
 STATIC_MODULE_SOURCES     = nodeupdown_backend_ganglia.c \
+			    nodeupdown_backend_util.c \
 			    $(GENDERSLLNL_STATIC_SOURCES) \
 			    $(GENDERS_STATIC_SOURCES) \
 			    $(GENDERS_UTIL_STATIC_SOURCES) \
@@ -65,6 +66,7 @@ nobase_include_HEADERS = nodeupdown/nodeupdown_backend_module.h \
 			 nodeupdown/nodeupdown_constants.h \
 			 nodeupdown/nodeupdown_devel.h
 noinst_HEADERS  = nodeupdown_api.h \
+		  nodeupdown_backend_util.h \
 		  nodeupdown_clusterlist_util.h \
 		  nodeupdown_clusterlist_genders_util.h \
 		  nodeupdown_genders_util.h \
@@ -123,7 +125,8 @@ nodeupdownmodulelib_LTLIBRARIES = \
 endif
 
 nodeupdown_backend_ganglia_la_SOURCES = \
-	nodeupdown_backend_ganglia.c
+	nodeupdown_backend_ganglia.c \
+	nodeupdown_backend_util.c 
 nodeupdown_backend_ganglia_la_LDFLAGS = \
 	$(MODULE_FLAGS) \
 	$(NODEUPDOWN_BACKEND_OTHER_FLAGS) 

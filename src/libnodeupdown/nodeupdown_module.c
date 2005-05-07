@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.c,v 1.10 2005-05-07 17:34:42 achu Exp $
+ *  $Id: nodeupdown_module.c,v 1.11 2005-05-07 18:06:14 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -38,6 +38,7 @@
 #if HAVE_UNISTD_H
 #include <unistd.h>
 #endif /* HAVE_UNISTD_H */
+#include <dirent.h>
 #include <errno.h>
 
 #include "nodeupdown.h"
@@ -133,6 +134,136 @@ extern struct nodeupdown_config_module_info default_config_module_info;
 static int clusterlist_module_found = 0;
 
 static int config_module_found = 0;
+
+/* 
+ * Nodeupdown_util_load_module
+ *
+ * Define a load module function to be passed to
+ * nodeupdown_util_lookup_module().
+ *
+ * Returns 1 if module is found and loaded successfully, 0 if module
+ * cannot be found, -1 on fatal error.
+ */
+typedef int (*Nodeupdown_util_load_module)(nodeupdown_t, char *);
+
+/* 
+ * _nodeupdown_util_lookup_module
+ *
+ * Search the directory 'search_dir' for any one of the modules listed
+ * in 'modules_list'.  Call 'load_module' on any discovered module.
+ *
+ * Returns 1 if a module is found and loaded, 0 if a module is not
+ * found, -1 on fatal error.
+ */
+static int
+_nodeupdown_util_lookup_module(nodeupdown_t handle, 
+			       char *search_dir,
+			       char **modules_list,
+			       int modules_list_len,
+			       Nodeupdown_util_load_module load_module)
+{
+  DIR *dir;
+  int i = 0, found = 0, rv = -1;
+ 
+  /* Can't open the directory? we assume it doesn't exit, so its not
+   * an error.
+   */
+  if (!(dir = opendir(search_dir)))
+    return 0;
+
+  for (i = 0; i < modules_list_len; i++)
+    {
+      struct dirent *dirent;
+
+      while ((dirent = readdir(dir)))
+        {
+          if (!strcmp(dirent->d_name, modules_list[i]))
+            {
+              char filebuf[NODEUPDOWN_MAXPATHLEN+1];
+              int flag;
+
+              memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
+              snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/%s",
+                       search_dir, modules_list[i]);
+
+              if ((flag = load_module(handle, filebuf)) < 0)
+                  goto cleanup;
+
+              if (flag)
+                {
+                  found++;
+                  goto done;
+                }
+            }
+        }
+      rewinddir(dir);
+    }
+
+ done:
+  rv = (found) ? 1 : 0;
+ cleanup:
+  closedir(dir);
+  return rv;
+}
+
+/*
+ * _nodeupdown_util_search_for_module
+ *
+ * Search the directory 'search_dir' for any module with the given signature.
+ *
+ * Returns 1 when a module is found, 0 when one is not, -1 on fatal error
+ */
+static int
+_nodeupdown_util_search_for_module(nodeupdown_t handle,
+				   char *search_dir,
+				   char *signature,
+				   Nodeupdown_util_load_module load_module)
+{
+  DIR *dir;
+  struct dirent *dirent;
+  int rv = -1, found = 0;
+ 
+  if (!(dir = opendir(search_dir)))
+    return 0;
+ 
+  while ((dirent = readdir(dir)))
+    {
+      char *ptr = strstr(dirent->d_name, signature);
+
+      if (ptr && ptr == &dirent->d_name[0])
+        {
+          char filebuf[NODEUPDOWN_MAXPATHLEN+1];
+          int flag;
+ 
+          /*
+           * Don't bother trying to load this file unless its a shared
+           * object file or libtool file.
+           */
+          ptr = strchr(dirent->d_name, '.');
+          if (!ptr || !(!strcmp(ptr, ".la") || !strcmp(ptr, ".so")))
+            continue;
+ 
+          memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
+          snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/%s",
+                   search_dir, dirent->d_name);
+           
+          if ((flag = load_module(handle, filebuf)) < 0)
+	    goto cleanup;
+ 
+          if (flag)
+            {
+              found++;
+              goto done;
+            }
+        }
+    }
+   
+ done:
+  rv = (found) ? 1 : 0;
+ cleanup:
+  closedir(dir);
+  return rv;
+}
 
 /* 
  * _backend_module_load

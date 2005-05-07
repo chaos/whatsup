@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_ganglia.c,v 1.17 2005-05-07 17:34:42 achu Exp $
+ *  $Id: nodeupdown_backend_ganglia.c,v 1.18 2005-05-07 18:06:14 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -50,7 +50,7 @@
 
 #include "nodeupdown.h"
 #include "nodeupdown_module.h"
-#include "nodeupdown_util.h"
+#include "nodeupdown_backend_util.h"
 #include "nodeupdown/nodeupdown_backend_module.h"
 #include "nodeupdown/nodeupdown_constants.h"
 #include "nodeupdown/nodeupdown_devel.h"
