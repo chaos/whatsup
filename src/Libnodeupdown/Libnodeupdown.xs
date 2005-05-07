@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: Libnodeupdown.xs,v 1.16 2005-05-06 18:27:46 achu Exp $
+ *  $Id: Libnodeupdown.xs,v 1.17 2005-05-07 18:29:53 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -279,7 +279,7 @@ SV *
 nodeupdown_get_up_nodes_string(handle)
     nodeupdown_t handle
     PREINIT:
-        int ret, len;
+        int rv, len;
         char *buf = NULL;
     CODE:
 
@@ -290,7 +290,7 @@ nodeupdown_get_up_nodes_string(handle)
                 goto handle_error;
 
             memset(buf, '\0', len+1);
-            if ((ret = nodeupdown_get_up_nodes_string(handle, buf, len+1)) == -1) {
+            if ((rv = nodeupdown_get_up_nodes_string(handle, buf, len+1)) == -1) {
                 if (nodeupdown_errnum(handle) == NODEUPDOWN_ERR_OVERFLOW) {
                     free(buf);
                     continue;
@@ -319,7 +319,7 @@ SV *
 nodeupdown_get_down_nodes_string(handle)
     nodeupdown_t handle
     PREINIT:
-        int ret, len;
+        int rv, len;
         char *buf = NULL;
     CODE:
 
@@ -330,7 +330,7 @@ nodeupdown_get_down_nodes_string(handle)
                 goto handle_error;
 
             memset(buf, '\0', len+1);
-            if ((ret = nodeupdown_get_down_nodes_string(handle, buf, len+1)) == -1) {
+            if ((rv = nodeupdown_get_down_nodes_string(handle, buf, len+1)) == -1) {
                 if (nodeupdown_errnum(handle) == NODEUPDOWN_ERR_OVERFLOW) {
                     free(buf);
                     continue;
@@ -359,17 +359,17 @@ AV *
 nodeupdown_get_up_nodes_list(handle) 
     nodeupdown_t handle
     PREINIT:
-        int num, ret, temp, i;
+        int len, num, errnum, i;
         char **nlist = NULL; 
     CODE:
-        if ((num = nodeupdown_nodelist_create(handle, &nlist)) == -1) 
+        if ((len = nodeupdown_nodelist_create(handle, &nlist)) == -1) 
             goto handle_error;
 
-        if ((ret = nodeupdown_get_up_nodes_list(handle, nlist, num)) == -1)
+        if ((num = nodeupdown_get_up_nodes_list(handle, nlist, num)) == -1)
             goto handle_error;
 
         RETVAL = newAV();
-        for (i = 0; i < ret; i++)
+        for (i = 0; i < num; i++)
             av_push(RETVAL, newSVpv(nlist[i], 0));
         
         if (nodeupdown_nodelist_destroy(handle, nlist) == -1)
@@ -379,11 +379,11 @@ nodeupdown_get_up_nodes_list(handle)
 
         handle_error:
 
-            temp = nodeupdown_errnum(handle);
+            errnum = nodeupdown_errnum(handle);
 
             (void)nodeupdown_nodelist_destroy(handle, nlist);
 
-            nodeupdown_set_errnum(handle, temp);
+            nodeupdown_set_errnum(handle, errnum);
 
             XSRETURN_UNDEF;
 
@@ -395,17 +395,17 @@ AV *
 nodeupdown_get_down_nodes_list(handle) 
     nodeupdown_t handle
     PREINIT:
-        int num, ret, temp, i;
+        int len, num, errnum, i;
         char **nlist = NULL; 
     CODE:
-        if ((num = nodeupdown_nodelist_create(handle, &nlist)) == -1) 
+        if ((len = nodeupdown_nodelist_create(handle, &nlist)) == -1) 
             goto handle_error;
 
-        if ((ret = nodeupdown_get_down_nodes_list(handle, nlist, num)) == -1)
+        if ((num = nodeupdown_get_down_nodes_list(handle, nlist, len)) == -1)
             goto handle_error;
 
         RETVAL = newAV();
-        for (i = 0; i < ret; i++)
+        for (i = 0; i < num; i++)
             av_push(RETVAL, newSVpv(nlist[i], 0));
         
         if (nodeupdown_nodelist_destroy(handle, nlist) == -1)
@@ -415,11 +415,11 @@ nodeupdown_get_down_nodes_list(handle)
 
         handle_error:
 
-            temp = nodeupdown_errnum(handle);
+            errnum = nodeupdown_errnum(handle);
 
             (void)nodeupdown_nodelist_destroy(handle, nlist);
 
-            nodeupdown_set_errnum(handle, temp);
+            nodeupdown_set_errnum(handle, errnum);
 
             XSRETURN_UNDEF;
 
