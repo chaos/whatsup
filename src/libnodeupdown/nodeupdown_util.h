@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_util.h,v 1.5 2005-05-06 18:27:46 achu Exp $
+ *  $Id: nodeupdown_util.h,v 1.6 2005-05-07 17:34:42 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -30,13 +30,13 @@
 #include "nodeupdown.h"
 
 /* 
- * nodeupdown_handle_error_check
+ * _nodeupdown_handle_error_check
  * 
  * standard handle error checker
  *
  * Returns 0 on success, -1 one error
  */
-int nodeupdown_handle_error_check(nodeupdown_t handle); 
+int _nodeupdown_handle_error_check(nodeupdown_t handle); 
 
 /* 
  * Nodeupdown_util_load_module
@@ -50,17 +50,17 @@ int nodeupdown_handle_error_check(nodeupdown_t handle);
 typedef int (*Nodeupdown_util_load_module)(nodeupdown_t, char *);
 
 /* 
- * nodeupdown_util_low_timeout_connect
+ * _nodeupdown_util_low_timeout_connect
  *
  * Setup a tcp connection to 'hostname' and 'port' using a connection
  * timeout of 'connect_timeout'.
  *
  * Return file descriptor on success, -1 on error.
  */
-int nodeupdown_util_low_timeout_connect(nodeupdown_t handle, 
-                                        const char *hostname, 
-                                        int port,
-                                        int connect_timeout); 
+int _nodeupdown_util_low_timeout_connect(nodeupdown_t handle, 
+					 const char *hostname, 
+					 int port,
+					 int connect_timeout); 
 
 /* 
  * nodeupdown_util_lookup_module
@@ -71,11 +71,11 @@ int nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
  * Returns 1 if a module is found and loaded, 0 if a module is not
  * found, -1 on fatal error.
  */
-int nodeupdown_util_lookup_module(nodeupdown_t handle, 
-				  char *search_dir,
-				  char **modules_list,
-				  int modules_list_len,
-				  Nodeupdown_util_load_module load_module);
+int _nodeupdown_util_lookup_module(nodeupdown_t handle, 
+				   char *search_dir,
+				   char **modules_list,
+				   int modules_list_len,
+				   Nodeupdown_util_load_module load_module);
 
 /*
  * cerebrod_search_for_module
@@ -84,10 +84,10 @@ int nodeupdown_util_lookup_module(nodeupdown_t handle,
  *
  * Returns 1 when a module is found, 0 when one is not, -1 on fatal error
  */
-int nodeupdown_util_search_for_module(nodeupdown_t handle,
-				      char *search_dir,
-				      char *signature,
-				      Nodeupdown_util_load_module load_module);
+int _nodeupdown_util_search_for_module(nodeupdown_t handle,
+				       char *search_dir,
+				       char *signature,
+				       Nodeupdown_util_load_module load_module);
 
 
 #endif /* _NODEUPDOWN_UTIL_H */

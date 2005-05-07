@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_default.c,v 1.9 2005-05-06 18:27:46 achu Exp $
+ *  $Id: nodeupdown_clusterlist_default.c,v 1.10 2005-05-07 17:34:42 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -38,6 +38,7 @@
 #include "nodeupdown_api.h"
 #include "nodeupdown_clusterlist_util.h"
 #include "nodeupdown/nodeupdown_clusterlist_module.h"
+#include "nodeupdown/nodeupdown_devel.h"
 #include "hostlist.h"
 
 /*
@@ -98,10 +99,22 @@ default_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node)
 int 
 default_clusterlist_get_nodename(nodeupdown_t handle, 
 				 const char *node, 
-				 char *buffer, 
+				 char *buf, 
 				 unsigned int buflen) 
 {
-  return nodeupdown_clusterlist_copy_nodename(handle, node, buffer, buflen);
+  int len;
+  
+  len = strlen(node);
+  
+  if ((len + 1) > buflen)
+    {
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
+      return -1;
+    }
+  
+  strcpy(buf, node);
+ 
+  return 0;
 }
 
 /*

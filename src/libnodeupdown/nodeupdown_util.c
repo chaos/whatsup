@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_util.c,v 1.8 2005-05-06 18:27:46 achu Exp $
+ *  $Id: nodeupdown_util.c,v 1.9 2005-05-07 17:34:42 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -53,27 +53,20 @@
 #include "nodeupdown/nodeupdown_constants.h"
 #include "ltdl.h"
 
-/* 
- * nodeupdown_handle_error_check
- * 
- * standard handle error checker
- *
- * Returns -1 on error, 0 on success
- */
 int 
-nodeupdown_handle_error_check(nodeupdown_t handle) 
+_nodeupdown_handle_error_check(nodeupdown_t handle) 
 {
   if (!handle || handle->magic != NODEUPDOWN_MAGIC_NUM)
     return -1;
-
+  
   return 0;
 }
 
 int
-nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
-                                    const char *hostname,
-                                    int port,
-                                    int connect_timeout)
+_nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
+				     const char *hostname,
+				     int port,
+				     int connect_timeout)
 {
   int rv, old_flags, fd = -1;
   struct sockaddr_in servaddr;
@@ -187,11 +180,11 @@ nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
 }
 
 int
-nodeupdown_util_lookup_module(nodeupdown_t handle, 
-			      char *search_dir,
-			      char **modules_list,
-			      int modules_list_len,
-			      Nodeupdown_util_load_module load_module)
+_nodeupdown_util_lookup_module(nodeupdown_t handle, 
+			       char *search_dir,
+			       char **modules_list,
+			       int modules_list_len,
+			       Nodeupdown_util_load_module load_module)
 {
   DIR *dir;
   int i = 0, found = 0, rv = -1;
@@ -238,10 +231,10 @@ nodeupdown_util_lookup_module(nodeupdown_t handle,
 }
 
 int
-nodeupdown_util_search_for_module(nodeupdown_t handle,
-				  char *search_dir,
-				  char *signature,
-				  Nodeupdown_util_load_module load_module)
+_nodeupdown_util_search_for_module(nodeupdown_t handle,
+				   char *search_dir,
+				   char *signature,
+				   Nodeupdown_util_load_module load_module)
 {
   DIR *dir;
   struct dirent *dirent;

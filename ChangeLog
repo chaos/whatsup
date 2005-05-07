@@ -1,3 +1,7 @@
+2005-05-07  Albert Chu  <chu11@llnl.gov>
+
+	* Add '_' to nodeupdown functions that should not be exported.
+	
 2005-05-06  Albert Chu  <chu11@llnl.gov>
 
 	* Manpage cleanup.

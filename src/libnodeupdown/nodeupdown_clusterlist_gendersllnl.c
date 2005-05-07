@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_gendersllnl.c,v 1.21 2005-05-06 18:27:46 achu Exp $
+ *  $Id: nodeupdown_clusterlist_gendersllnl.c,v 1.22 2005-05-07 17:34:42 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -137,7 +137,7 @@ gendersllnl_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node
 int 
 gendersllnl_clusterlist_get_nodename(nodeupdown_t handle, 
 				     const char *node, 
-				     char *buffer, 
+				     char *buf, 
 				     unsigned int buflen) 
 {
   char nodebuf[NODEUPDOWN_MAXNODENAMELEN+1];
@@ -157,7 +157,7 @@ gendersllnl_clusterlist_get_nodename(nodeupdown_t handle,
   else
     nodePtr = (char *)node;
 
-  if (genders_to_gendname(gendersllnl_handle, nodePtr, buffer, buflen) < 0) 
+  if (genders_to_gendname(gendersllnl_handle, nodePtr, buf, buflen) < 0) 
     {
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       return -1;

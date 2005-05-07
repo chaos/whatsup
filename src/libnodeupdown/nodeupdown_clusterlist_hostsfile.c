@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.18 2005-05-06 18:27:46 achu Exp $
+ *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.19 2005-05-07 17:34:42 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -330,7 +330,7 @@ hostsfile_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node)
 int 
 hostsfile_clusterlist_get_nodename(nodeupdown_t handle, 
                                    const char *node, 
-                                   char *buffer, 
+                                   char *buf, 
                                    unsigned int buflen) 
 {
   char nodebuf[NODEUPDOWN_MAXNODENAMELEN+1];
@@ -350,7 +350,7 @@ hostsfile_clusterlist_get_nodename(nodeupdown_t handle,
   else
     nodePtr = (char *)node;
 
-  return nodeupdown_clusterlist_copy_nodename(handle, nodePtr, buffer, buflen);
+  return nodeupdown_clusterlist_copy_nodename(handle, nodePtr, buf, buflen);
 }
     
 /*

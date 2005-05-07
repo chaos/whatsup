@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_devel.c,v 1.1 2005-05-06 20:52:22 achu Exp $
+ *  $Id: nodeupdown_devel.c,v 1.2 2005-05-07 17:34:42 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -53,7 +53,7 @@
 static int
 _setup_handle_error_check(nodeupdown_t handle)
 {
-  if (nodeupdown_handle_error_check(handle) < 0)
+  if (_nodeupdown_handle_error_check(handle) < 0)
     return -1;
 
   if (handle->load_state != NODEUPDOWN_LOAD_STATE_SETUP)
@@ -88,17 +88,17 @@ _add_node(nodeupdown_t handle, const char *node, int up_or_down)
       return -1;
     }
 
-  if ((rv = nodeupdown_clusterlist_module_is_node_in_cluster(handle, 
-							     node)) < 0)
+  if ((rv = _nodeupdown_clusterlist_module_is_node_in_cluster(handle, 
+							      node)) < 0)
     goto cleanup;
   
   if (!rv)
     return 0;
   
-  if (nodeupdown_clusterlist_module_get_nodename(handle,
-						 node,
-						 buffer,
-						 NODEUPDOWN_MAXNODENAMELEN+1) < 0)
+  if (_nodeupdown_clusterlist_module_get_nodename(handle,
+						  node,
+						  buffer,
+						  NODEUPDOWN_MAXNODENAMELEN+1) < 0)
     goto cleanup;
       
   if (up_or_down == NODEUPDOWN_UP_NODES)
@@ -172,17 +172,17 @@ _add_nodes(nodeupdown_t handle, const char *nodes, int up_or_down)
       char buffer[NODEUPDOWN_MAXNODENAMELEN+1];
       int rv;
       
-      if ((rv = nodeupdown_clusterlist_module_is_node_in_cluster(handle, 
-								 nodename)) < 0)
+      if ((rv = _nodeupdown_clusterlist_module_is_node_in_cluster(handle, 
+								  nodename)) < 0)
 	goto cleanup;
 
       if (!rv)
 	goto loop_end;
 
-      if (nodeupdown_clusterlist_module_get_nodename(handle,
-						     nodename,
-						     buffer,
-						     NODEUPDOWN_MAXNODENAMELEN+1) < 0)
+      if (_nodeupdown_clusterlist_module_get_nodename(handle,
+						      nodename,
+						      buffer,
+						      NODEUPDOWN_MAXNODENAMELEN+1) < 0)
 	goto cleanup;
       
       if (up_or_down == NODEUPDOWN_UP_NODES)
@@ -247,7 +247,7 @@ void
 nodeupdown_set_errnum(nodeupdown_t handle, int errnum) 
 {
   /* Does not need to be setup or loaded */
-  if (nodeupdown_handle_error_check(handle) < 0)
+  if (_nodeupdown_handle_error_check(handle) < 0)
     return;
 
   if (errnum >= NODEUPDOWN_ERR_SUCCESS && errnum <= NODEUPDOWN_ERR_ERRNUMRANGE) 
