@@ -19,8 +19,9 @@ Conflicts: ganglia-monitor-core
 %description
 Whatsup is a cluster node up/down detection utility.
 
-%{!?_with_genders: %{!?_without_genders: %define _with_genders --with-genders}}
 %{!?_with_gendersllnl: %{!?_without_gendersllnl: %define _with_gendersllnl --with-gendersllnl}}
+%{!?_with_genders: %{!?_without_genders: %define _with_genders --with-genders}}
+%{!?_with_hostsfile: %{!?_without_hostsfile: %define _with_hostsfile --with-hostsfile}}
 
 %package backend-ganglia
 Summary: whatsup ganglia backend
@@ -74,10 +75,12 @@ Gendersllnl options module
 %build
 %configure --program-prefix=%{?_program_prefix:%{_program_prefix}} \
            --with-perl-install-destdir="$RPM_BUILD_ROOT" \
+           %{?_with_gendersllnl} \
+           %{?_without_gendersllnl} \
            %{?_with_genders} \
            %{?_without_genders} \
-           %{?_with_gendersllnl} \
-           %{?_without_gendersllnl}
+           %{?_with_hostsfile} \
+           %{?_without_hostsfile}
 make
 
 %install
