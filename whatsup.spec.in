@@ -29,28 +29,44 @@ Requires: whatsup
 %description backend-ganglia
 Ganglia backend module
 
-%package gendersllnl
-Summary: whatsup gendersllnl modules package
+%package clusterlist-gendersllnl
+Summary: whatsup gendersllnl clusterlist module
 Group: System Environment/Base
 Requires: whatsup
 Requires: gendersllnl
-%description gendersllnl
-Gendersllnl modules packages.
+%description clusterlist-gendersllnl
+Gendersllnl clusterlist module
 
-%package genders
-Summary: whatsup genders modules package
+%package clusterlist-genders
+Summary: whatsup genders clusterlist module
 Group: System Environment/Base
 Requires: whatsup
 Requires: genders >= 1.2
-%description genders
-Genders modules packages.
+%description clusterlist-genders
+Genders clusterlist module
 
-%package hostsfile
-Summary: whatsup hostsfile modules package
+%package clusterlist-hostsfile
+Summary: whatsup hostsfile clusterlist module
 Group: System Environment/Base
 Requires: whatsup
-%description hostsfile
-Hostsfile modules packages.
+%description clusterlist-hostsfile
+Hostsfile clusterlist module
+
+%package config-gendersllnl
+Summary: whatsup gendersllnl config module
+Group: System Environment/Base
+Requires: whatsup
+Requires: gendersllnl
+%description config-gendersllnl
+Gendersllnl config module
+
+%package options-gendersllnl
+Summary: whatsup gendersllnl options module
+Group: System Environment/Base
+Requires: whatsup
+Requires: gendersllnl
+%description options-gendersllnl
+Gendersllnl options module
 
 %prep
 %setup -q -n @PROJECT@-@VERSION@-@RELEASE@
@@ -94,20 +110,30 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_libdir}/nodeupdown/*ganglia.*
 
 %if %{?_with_gendersllnl:1}%{!?_with_gendersllnl:0}
-%files gendersllnl
+%files clusterlist-gendersllnl
 %defattr(-,root,root)
-%{_libdir}/nodeupdown/*gendersllnl.*
-%{_libdir}/whatsup/*gendersllnl.*
+%{_libdir}/nodeupdown/*clusterlist_gendersllnl.*
 %endif
 
 %if %{?_with_genders:1}%{!?_with_genders:0}
-%files genders
+%files clusterlist-genders
 %defattr(-,root,root)
 %{_libdir}/nodeupdown/*genders.*
 %endif
 
-%files hostsfile
+%files clusterlist-hostsfile
 %defattr(-,root,root)
 %{_libdir}/nodeupdown/*hostsfile.*
 
+%if %{?_with_gendersllnl:1}%{!?_with_gendersllnl:0}
+%files config-gendersllnl
+%defattr(-,root,root)
+%{_libdir}/nodeupdown/*config_gendersllnl.*
+%endif
+
+%if %{?_with_gendersllnl:1}%{!?_with_gendersllnl:0}
+%files options-gendersllnl
+%defattr(-,root,root)
+%{_libdir}/whatsup/*gendersllnl.*
+%endif
 %endif
