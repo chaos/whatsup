@@ -21,9 +21,7 @@ The whatsup package includes:
     whatsup(1).
 
 The nodeupdown library works in conjunction with one of several
-possible backend tools and a cluster database of nodes.  The backend tool
-and clusterlist are configurable through the nodeupdown configuration
-file.  See nodeupdown.conf(5) for more information. 
+possible backend tools and a cluster database of nodes.
 
 The currently available backend tools are:
 
@@ -40,11 +38,15 @@ all nodes in the cluster.
 Hostsfile - Uses a file that lists the hostname of every node in the
 cluster on a separate line.
 
-None - No database will be used.
+The nodeupdown library may also load a configuration module to make
+cluster configuration easier.  The currently available clusterlist
+database tools are:
 
-Other backend and clusterlist modules may be implemented in the
-future.  If you are interested in seeing some new mechanism
-implemented, feel free to e-mail me and I'll see what I can do.
+Gendersllnl - For the most part, specifically used by Lawrence
+Livermore National Laboratory.
+
+More information about writing backend, clusterlist, and configuration
+modules, see XXX.
 
 Comments, patches, fixes, suggestions are always welcome.  Please read
 DISCLAIMER and COPYING for copyright and license information.
