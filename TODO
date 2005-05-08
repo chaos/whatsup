@@ -1,3 +1,4 @@
 - repackage for multilib
 - doc for writing modules
 - can actually build modules?
+- clusterlist/config module splitup in spec file??
