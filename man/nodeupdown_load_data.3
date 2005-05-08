@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown_load_data.3,v 1.27 2005-05-06 20:57:09 achu Exp $
+\."$Id: nodeupdown_load_data.3,v 1.28 2005-05-08 15:10:14 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -55,7 +55,7 @@ or equal to 0, nodeupdown assumes the backend tool's default timeout.
 \fIreserved\fR is no longer used.  It remains for backwards
 compatability with older libraries.
 
-The default values used in \fBnodeupdown_load_data()\fR can
+The default values used in \fBnodeupdown_load_data()\fR can be
 overwritten if a nodeupdown configuration module is found or
 if the nodeupdown configuration file is used.  See
 .BR libnodeupdown (3)
@@ -93,9 +93,6 @@ Incorrect hostname specified by \fIhostname\fR.
 .TP
 .B NODEUPDOWN_ERR_ADDRESS
 Incorrect network address specified by \fIhostname\fR.
-.TP
-.B NODEUPDOWN_ERR_NETWORK
-Internal network failure.
 .TP
 .B NODEUPDOWN_ERR_ISLOADED
 .BR nodeupdown_load_data (3) 
