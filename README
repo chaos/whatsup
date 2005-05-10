@@ -46,7 +46,7 @@ Gendersllnl - For the most part, specifically used by Lawrence
 Livermore National Laboratory.
 
 More information about writing backend, clusterlist, and configuration
-modules, see XXX.
+modules, see the nodeupdown_module manpage.
 
 Comments, patches, fixes, suggestions are always welcome.  Please read
 DISCLAIMER and COPYING for copyright and license information.
