@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.10 2005-05-06 23:18:38 achu Exp $
+## $Id: Makefile.am,v 1.11 2005-05-10 17:08:55 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -26,7 +26,8 @@ man3_MANS = \
 	nodeupdown_down_count.3 \
 	nodeupdown_nodelist_create.3 \
 	nodeupdown_nodelist_clear.3 \
-	nodeupdown_nodelist_destroy.3
+	nodeupdown_nodelist_destroy.3 \
+	nodeupdown_module.3
 
 man5_MANS = nodeupdown.conf.5
 
@@ -50,4 +51,6 @@ EXTRA_DIST = \
 	nodeupdown_down_count.3 \
 	nodeupdown_nodelist_create.3 \
 	nodeupdown_nodelist_clear.3 \
-	nodeupdown_nodelist_destroy.3
+	nodeupdown_nodelist_destroy.3 \
+	nodeupdown_module.3 \
+	nodeupdown.conf.5
