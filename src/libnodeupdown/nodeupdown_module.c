@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.c,v 1.11 2005-05-07 18:06:14 achu Exp $
+ *  $Id: nodeupdown_module.c,v 1.12 2005-05-10 23:30:03 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -54,6 +54,9 @@
 
 #if WITH_STATIC_MODULES
 extern struct nodeupdown_backend_module_info ganglia_backend_module_info;
+#if WITH_CEREBRO
+extern struct nodeupdown_backend_module_info cerebro_backend_module_info;
+#endif /* WITH_CEREBRO */
 
 #if WITH_GENDERSLLNL
 extern struct nodeupdown_clusterlist_module_info gendersllnl_clusterlist_module_info;
@@ -68,6 +71,9 @@ extern struct nodeupdown_clusterlist_module_info hostsfile_clusterlist_module_in
 
 static struct nodeupdown_backend_module_info *backend_modules[] =
   {
+#if WITH_CEREBRO
+    &cerebro_backend_module_info,
+#endif /* WITH_CEREBRO */
     &ganglia_backend_module_info,
     NULL
   };
@@ -96,6 +102,7 @@ static struct nodeupdown_config_module_info *config_modules[] =
 
 #else  /* !WITH_STATIC_MODULES */
 static char *backend_modules[] = {
+  "nodeupdown_backend_cerebro.la",
   "nodeupdown_backend_ganglia.la",
   NULL
 };
