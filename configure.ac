@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.51 2005-05-10 17:04:12 achu Exp $
+## $Id: configure.ac,v 1.52 2005-05-10 22:29:34 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -87,6 +87,12 @@ AM_CONDITIONAL(WITH_STATIC_MODULES, [test "$ac_with_static_modules" = "yes"])
 # Check for perl install destdir
 #
 AC_PERL_INSTALL_DESTDIR
+
+#
+# Check for cerebro
+#
+AC_CEREBRO
+AM_CONDITIONAL(WITH_CEREBRO, [test "$ac_with_cerebro" = "yes"])
 
 #
 # Check for gendersllnl

@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.52 2005-05-07 18:06:14 achu Exp $
+## $Id: Makefile.am,v 1.53 2005-05-10 22:29:34 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -21,6 +21,11 @@ endif
 #
 # libnodeupdown
 #
+
+if WITH_CEREBRO
+CEREBRO_STATIC_SOURCES        = nodeupdown_backend_cerebro.c
+CEREBRO_STATIC_LIBS           = $(CEREBRO_LIBS)
+endif
 
 if WITH_GENDERSLLNL
 GENDERSLLNL_STATIC_SOURCES    = nodeupdown_clusterlist_gendersllnl.c \
@@ -44,11 +49,15 @@ endif
 if WITH_STATIC_MODULES
 STATIC_MODULE_SOURCES     = nodeupdown_backend_ganglia.c \
 			    nodeupdown_backend_util.c \
+			    $(CEREBRO_STATIC_SOURCES) \
 			    $(GENDERSLLNL_STATIC_SOURCES) \
 			    $(GENDERS_STATIC_SOURCES) \
 			    $(GENDERS_UTIL_STATIC_SOURCES) \
-			    $(HOSTSFILE_STATIC_SOURCES)
-STATIC_MODULE_LIBS        = $(GENDERSLLNL_STATIC_LIBS) $(GENDERS_STATIC_LIBS)
+			    $(HOSTSFILE_STATIC_SOURCES) \
+			    nodeupdown_clusterlist_util.c
+STATIC_MODULE_LIBS        = $(CEREBRO_LIBS) \
+			    $(GENDERSLLNL_STATIC_LIBS) \
+			    $(GENDERS_STATIC_LIBS)
 STATIC_MODULE_LIBEXPAT    = ../libexpat/libexpat.la
 STATIC_MODULE_LIBEXPATDIR = -I$(srcdir)/../libexpat
 else
@@ -65,6 +74,7 @@ nobase_include_HEADERS = nodeupdown/nodeupdown_backend_module.h \
 			 nodeupdown/nodeupdown_config_module.h \
 			 nodeupdown/nodeupdown_constants.h \
 			 nodeupdown/nodeupdown_devel.h
+
 noinst_HEADERS  = nodeupdown_api.h \
 		  nodeupdown_backend_util.h \
 		  nodeupdown_clusterlist_util.h \
@@ -102,6 +112,10 @@ libnodeupdown_la_LDFLAGS = -version-info @LIBNODEUPDOWN_VERSION_INFO@ \
 
 MODULE_FLAGS = -module -avoid-version
 
+if WITH_CEREBRO
+CEREBRO_BACKEND_MODULE         = nodeupdown_backend_cerebro.la
+endif
+
 if WITH_GENDERSLLNL
 GENDERSLLNL_CLUSTERLIST_MODULE = nodeupdown_clusterlist_gendersllnl.la
 GENDERSLLNL_CONFIG_MODULE      = nodeupdown_config_gendersllnl.la
@@ -114,10 +128,12 @@ endif
 if WITH_HOSTSFILE
 HOSTSFILE_CLUSTERLIST_MODULE   = nodeupdown_clusterlist_hostsfile.la
 endif
+
 if !WITH_STATIC_MODULES
 nodeupdownmodulelibdir = $(NODEUPDOWN_MODULE_DIR)
 nodeupdownmodulelib_LTLIBRARIES = \
 	nodeupdown_backend_ganglia.la \
+	$(CEREBRO_BACKEND_MODULE) \
 	$(GENDERSLLNL_CLUSTERLIST_MODULE) \
 	$(GENDERS_CLUSTERLIST_MODULE) \
 	$(HOSTSFILE_CLUSTERLIST_MODULE) \
@@ -131,11 +147,17 @@ nodeupdown_backend_ganglia_la_LDFLAGS = \
 	$(MODULE_FLAGS) \
 	$(NODEUPDOWN_BACKEND_OTHER_FLAGS) 
 nodeupdown_backend_ganglia_la_CFLAGS  = \
-	-I$(srcdir)/../libcommon \
 	-I$(srcdir)/../libexpat
 nodeupdown_backend_ganglia_la_LIBADD = \
-	../libcommon/libcommon.la \
 	../libexpat/libexpat.la
+
+nodeupdown_backend_cerebro_la_SOURCES = \
+	nodeupdown_backend_cerebro.c \
+	nodeupdown_backend_util.c 
+nodeupdown_backend_cerebro_la_LDFLAGS = \
+	$(MODULE_FLAGS) \
+	$(CEREBRO_LIBS) \
+	$(NODEUPDOWN_BACKEND_OTHER_FLAGS) 
 
 nodeupdown_clusterlist_gendersllnl_la_SOURCES = \
 	nodeupdown_clusterlist_gendersllnl.c \
@@ -145,10 +167,6 @@ nodeupdown_clusterlist_gendersllnl_la_LDFLAGS = \
 	$(MODULE_FLAGS) \
 	$(GENDERSLLNL_LIBS) \
 	$(NODEUPDOWN_CLUSTERLIST_OTHER_FLAGS) 
-nodeupdown_clusterlist_gendersllnl_la_CFLAGS  = \
-	-I$(srcdir)/../libcommon
-nodeupdown_clusterlist_gendersllnl_la_LIBADD = \
-	../libcommon/libcommon.la
  
 nodeupdown_clusterlist_genders_la_SOURCES = \
 	nodeupdown_clusterlist_genders.c \
@@ -159,10 +177,6 @@ nodeupdown_clusterlist_genders_la_LDFLAGS = \
 	$(MODULE_FLAGS) \
 	$(GENDERS_LIBS) \
 	$(NODEUPDOWN_CLUSTERLIST_OTHER_FLAGS) 
-nodeupdown_clusterlist_genders_la_CFLAGS  = \
-	-I$(srcdir)/../libcommon
-nodeupdown_clusterlist_genders_la_LIBADD = \
-	../libcommon/libcommon.la
  
 nodeupdown_clusterlist_hostsfile_la_SOURCES = \
 	nodeupdown_clusterlist_hostsfile.c \
@@ -182,8 +196,6 @@ nodeupdown_config_gendersllnl_la_LDFLAGS = \
 	$(MODULE_FLAGS) \
 	$(GENDERSLLNL_LIBS) \
 	$(NODEUPDOWN_CONFIG_OTHER_FLAGS)
-nodeupdown_config_gendersllnl_la_CFLAGS  = \
-	-I$(srcdir)/../libcommon
 
 ../libcommon/libcommon.la: force-dependency-check
 	@cd `dirname $@` && make `basename $@`

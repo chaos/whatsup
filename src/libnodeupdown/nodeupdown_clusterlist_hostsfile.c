@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.19 2005-05-07 17:34:42 achu Exp $
+ *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.20 2005-05-10 22:29:34 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -350,7 +350,7 @@ hostsfile_clusterlist_get_nodename(nodeupdown_t handle,
   else
     nodePtr = (char *)node;
 
-  return nodeupdown_clusterlist_copy_nodename(handle, nodePtr, buf, buflen);
+  return _nodeupdown_clusterlist_copy_nodename(handle, nodePtr, buf, buflen);
 }
     
 /*

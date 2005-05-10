@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_ganglia.c,v 1.18 2005-05-07 18:06:14 achu Exp $
+ *  $Id: nodeupdown_backend_ganglia.c,v 1.19 2005-05-10 22:29:34 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -195,7 +195,7 @@ ganglia_backend_get_updown_data(nodeupdown_t handle,
   XML_Parser xml_parser = NULL;
   struct parse_vars pv;
   struct timeval tv;
-  int fd, retval = -1;
+  int fd, rv = -1;
 
   if ((fd = _nodeupdown_util_low_timeout_connect(handle,
 						 hostname,
@@ -250,13 +250,13 @@ ganglia_backend_get_updown_data(nodeupdown_t handle,
         break;
     }
   
-  retval = 0;
+  rv = 0;
 
  cleanup:
   close(fd);
   if (xml_parser != NULL)
     XML_ParserFree(xml_parser);
-  return retval;
+  return rv;
 }
 
 #if WITH_STATIC_MODULES

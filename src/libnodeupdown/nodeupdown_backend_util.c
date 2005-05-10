@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_util.c,v 1.1 2005-05-07 18:06:53 achu Exp $
+ *  $Id: nodeupdown_backend_util.c,v 1.2 2005-05-10 22:29:34 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -47,8 +47,8 @@
 #include <errno.h>
 
 #include "nodeupdown.h"
-#include "nodeupdown_api.h"
 #include "nodeupdown_backend_util.h"
+#include "nodeupdown/nodeupdown_devel.h"
 
 int
 _nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
@@ -63,7 +63,8 @@ _nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
   /* valgrind will report a mem-leak in gethostbyname() */
   if (!(hptr = gethostbyname(hostname))) 
     {
-      handle->errnum = NODEUPDOWN_ERR_HOSTNAME;
+      
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_HOSTNAME);
       return -1;
     }
       
@@ -71,7 +72,7 @@ _nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
 
   if ((fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
       goto cleanup;
     }
 
@@ -82,13 +83,13 @@ _nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
 
   if ((old_flags = fcntl(fd, F_GETFL, 0)) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
       goto cleanup;
     }
   
   if (fcntl(fd, F_SETFL, old_flags | O_NONBLOCK) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
       goto cleanup;
     }
   
@@ -97,7 +98,7 @@ _nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
                sizeof(struct sockaddr_in));
   if (rv < 0 && errno != EINPROGRESS) 
     {
-      handle->errnum = NODEUPDOWN_ERR_CONNECT;
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONNECT);
       goto cleanup;
     }
   else if (rv < 0 && errno == EINPROGRESS) 
@@ -114,13 +115,13 @@ _nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
       
       if ((rv = select(fd+1, &rset, &wset, NULL, &tval)) < 0) 
         {
-          handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+          nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
           goto cleanup;
         }
 
       if (!rv) 
         {
-          handle->errnum = NODEUPDOWN_ERR_TIMEOUT;
+          nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_TIMEOUT);
           goto cleanup;
         }
       else 
@@ -133,21 +134,21 @@ _nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
               
               if (getsockopt(fd, SOL_SOCKET, SO_ERROR, &error, &len) < 0) 
                 {
-                  handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+                  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
                   goto cleanup;
                 }
         
               if (error != 0) 
                 {
                   errno = error;
-                  handle->errnum = NODEUPDOWN_ERR_CONNECT;
+                  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
                   goto cleanup;
                 }
               /* else no error, connected within timeout length */
             }
           else 
             {
-              handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+              nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
               goto cleanup;
             }
         }
@@ -156,7 +157,7 @@ _nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
   /* reset flags */
   if (fcntl(fd, F_SETFL, old_flags) < 0) 
     {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
       goto cleanup;
     }
   

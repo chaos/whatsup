@@ -5,6 +5,10 @@
 	* man/nodeupdown_module.3: New manpage.
 
 	* man/Makefile.am: Update for new manpage appropriately.
+
+	* Continued bug fixing and code cleanup.
+
+	* Begin cerebro module development
 	
 2005-05-08  Albert Chu  <chu11@llnl.gov>
 
