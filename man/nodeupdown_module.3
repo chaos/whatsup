@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown_module.3,v 1.5 2005-05-10 17:27:35 achu Exp $
+\."$Id: nodeupdown_module.3,v 1.6 2005-05-10 17:49:23 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -302,6 +302,10 @@ typedef int (*Nodeupdown_config_load_default)(nodeupdown_t, struct nodeupdown_co
 
 The 'load_default' function loads an alternate set of configuration
 values and stores them within the configuration structure passed in.
+
+All of the above functions must be defined in the module and listed in
+the 'config_module_info' structure.
+
 The structure nodeupdown_config is defined as:
 
 .nf
@@ -331,9 +335,6 @@ Any parameter that is set in the configuration structure must have its
 respective flag set.  The 'hostnames' field must also have the
 'hostnames_len' field appropriately set to the number of hostnames
 loaded.
-
-All of the above functions must be defined in the module and listed in
-the 'config_module_info' structure.
 
 .SH SEE ALSO
 libnodeupdown(3)
