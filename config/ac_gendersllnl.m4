@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: ac_gendersllnl.m4,v 1.2 2005-05-02 23:00:28 achu Exp $
+## $Id: ac_gendersllnl.m4,v 1.3 2005-05-10 22:41:51 achu Exp $
 ##*****************************************************************************
 
 AC_DEFUN([AC_GENDERSLLNL],
@@ -17,9 +17,7 @@ AC_DEFUN([AC_GENDERSLLNL],
   AC_MSG_RESULT([${ac_gendersllnl_test=yes}])
   
   if test "$ac_gendersllnl_test" = "yes"; then
-     AC_MSG_CHECKING([for libgendersllnl library])
      AC_CHECK_LIB([gendersllnl], [genders_isnode_or_altnode], [ac_have_gendersllnl=yes], [])
-     AC_MSG_RESULT([${ac_have_gendersllnl=no}])
   fi
 
   if test "$ac_have_gendersllnl" = "yes"; then

@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: ac_cerebro.m4,v 1.1 2005-05-10 22:29:34 achu Exp $
+## $Id: ac_cerebro.m4,v 1.2 2005-05-10 22:41:51 achu Exp $
 ##*****************************************************************************
 
 AC_DEFUN([AC_CEREBRO],
@@ -17,9 +17,7 @@ AC_DEFUN([AC_CEREBRO],
   AC_MSG_RESULT([${ac_cerebro_test=yes}])
   
   if test "$ac_cerebro_test" = "yes"; then
-     AC_MSG_CHECKING([for libcerebro library])
      AC_CHECK_LIB([cerebro], [cerebro_handle_create], [ac_have_cerebro=yes], [])
-     AC_MSG_RESULT([${ac_have_cerebro=no}])
   fi
 
   if test "$ac_have_cerebro" = "yes"; then
