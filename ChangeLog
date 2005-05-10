@@ -1,5 +1,7 @@
 2005-05-10  Albert Chu  <chu11@llnl.gov>
 
+	* configure.ac: Update library version.
+
 	* man/nodeupdown_module.3: New manpage.
 	
 2005-05-08  Albert Chu  <chu11@llnl.gov>

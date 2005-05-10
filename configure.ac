@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.50 2005-05-02 23:00:28 achu Exp $
+## $Id: configure.ac,v 1.51 2005-05-10 17:04:12 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -35,7 +35,7 @@ AM_MAINTAINER_MODE
 # If any interfaces have been removed, set age = 0
 #
 LIBNODEUPDOWN_CURRENT=0
-LIBNODEUPDOWN_REVISION=0
+LIBNODEUPDOWN_REVISION=1
 LIBNODEUPDOWN_AGE=0
 LIBNODEUPDOWN_VERSION_INFO=$LIBNODEUPDOWN_CURRENT:$LIBNODEUPDOWN_REVISION:$LIBNODEUPDOWN_AGE
 AC_SUBST([LIBNODEUPDOWN_VERSION_INFO])
