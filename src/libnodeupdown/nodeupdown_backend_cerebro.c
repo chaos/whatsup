@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_cerebro.c,v 1.1 2005-05-10 22:29:34 achu Exp $
+ *  $Id: nodeupdown_backend_cerebro.c,v 1.2 2005-05-10 22:47:22 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -75,7 +75,7 @@ cerebro_backend_default_hostname(nodeupdown_t handle)
 int 
 cerebro_backend_default_port(nodeupdown_t handle)
 {
-  return CEREBRO_BACKEND_DEFAULT_PORT;
+  return CEREBRO_UPDOWN_SERVER_PORT;
 }
 
 /*
@@ -86,7 +86,7 @@ cerebro_backend_default_port(nodeupdown_t handle)
 int 
 cerebro_backend_default_timeout_len(nodeupdown_t handle)
 {
-  return CEREBRO_BACKEND_DEFAULT_TIMEOUT_LEN;
+  return CEREBRO_UPDOWN_TIMEOUT_LEN_DEFAULT;
 }
 
 /*
@@ -128,7 +128,7 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
   if ((fd = _nodeupdown_util_low_timeout_connect(handle,
 						 hostname,
 						 port,
-						 CEREBRO_BACKEND_CONNECT_LEN)) < 0)
+						 CEREBRO_UPDOWN_PROTOCOL_CONNECT_TIMEOUT_LEN)) < 0)
     goto cleanup;
   
   rv = 0;
