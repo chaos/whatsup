@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown_module.3,v 1.1 2005-05-10 06:02:30 achu Exp $
+\."$Id: nodeupdown_module.3,v 1.2 2005-05-10 15:21:46 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -41,7 +41,44 @@ or down
 .sp
 .B #include <nodeupdown/nodeupdown_devel.h>
 .sp
+.B int nodeupdown_add_up_node(nodeupdown_t handle, const char *node);
+.sp
+.B int nodeupdown_add_down_node(nodeupdown_t handle, const char *node);
+.sp
+.B int nodeupdown_add_up_nodes(nodeupdown_t handle, const char *nodes);
+.sp
+.B int nodeupdown_add_down_nodes(nodeupdown_t handle, const char *nodes);
+.sp
+.B int nodeupdown_not_discovered_check(nodeupdown_t handle, const char *node);
+.sp
+.B void nodeupdown_set_errnum(nodeupdown_t handle, int errnum);
+.sp
 .br
+.SH DESCRIPTION
+Development of nodeupdown modules will rely on the nodeupdown
+development functions that give the module writer the ability to
+modify the contents in the nodeupdown handle.
+
+\fBnodeupdown_add_up_node\fR and \fBnodeupdown_add_down_node\fR add an
+up or down node to the nodeupdown handle respectively.
+
+\fBnodeupdown_add_up_nodes\fR and \fBnodeupdown_add_down_nodes\fR add
+multiple up or down nodes to the nodeupdown handle respectively.  The
+nodes can be specified in either a comma separated list or a ranged
+string.  See the
+.BR whatsup(1)
+manpage for details on host ranges.
+
+\fBnodeupdown_not_discovered_check\fR will check if the specified \fInode\fR
+currently exists in the \fIhandle\fR.  If it does not, the node will be
+added to the internal list of down nodes.
+
+\fBnodeupdown_set_errnum\fR will set the errnum inside the nodeupdown
+handle to the specified \fIerrnum\fR.
+
+Additional information about the development of nodeupdown backend,
+clusterlist, and config modules can be found below.
+
 .SH BACKEND MODULES
 
 A nodeupdown backend module of the name 'foobar' can be written by
