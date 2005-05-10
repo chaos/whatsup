@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.142 2005-05-07 17:34:42 achu Exp $
+ *  $Id: nodeupdown.c,v 1.143 2005-05-10 23:47:05 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -487,7 +487,7 @@ nodeupdown_load_data(nodeupdown_t handle,
             }
         }
       
-      if (i > hostnames_len)
+      if (i >= hostnames_len)
         {
           handle->errnum = NODEUPDOWN_ERR_CONNECT;
           goto cleanup;

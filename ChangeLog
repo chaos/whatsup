@@ -8,7 +8,7 @@
 
 	* Continued bug fixing and code cleanup.
 
-	* Begin cerebro module development
+	* Added Cerebro backend module support.
 	
 2005-05-08  Albert Chu  <chu11@llnl.gov>
 
