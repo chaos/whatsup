@@ -31,6 +31,13 @@ Requires: whatsup
 %description backend-ganglia
 Ganglia backend module
 
+%package backend-cerebro
+Summary: whatsup cerebro backend
+Group: System Environment/Base
+Requires: whatsup
+%description backend-cerebro
+Cerebro backend module
+
 %package clusterlist-gendersllnl
 Summary: whatsup gendersllnl clusterlist module
 Group: System Environment/Base
@@ -76,6 +83,8 @@ Gendersllnl options module
 %build
 %configure --program-prefix=%{?_program_prefix:%{_program_prefix}} \
            --with-perl-install-destdir="$RPM_BUILD_ROOT" \
+           %{?_with_cerebro} \
+           %{?_without_cerebro} \
            %{?_with_gendersllnl} \
            %{?_without_gendersllnl} \
            %{?_with_genders} \
@@ -112,6 +121,12 @@ rm -rf "$RPM_BUILD_ROOT"
 %files backend-ganglia
 %defattr(-,root,root)
 %{_libdir}/nodeupdown/*ganglia.*
+
+%if %{?_with_cerebro:1}%{!?_with_cerebro:0}
+%files backend-cerebro
+%defattr(-,root,root)
+%{_libdir}/nodeupdown/*cerebro.*
+%endif
 
 %if %{?_with_gendersllnl:1}%{!?_with_gendersllnl:0}
 %files clusterlist-gendersllnl
