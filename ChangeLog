@@ -4,96 +4,27 @@
 	
 2005-05-10  Albert Chu  <chu11@llnl.gov>
 
-	* configure.ac: Update library version.
+	* Added Cerebro backend module support.
+
+	* configure.ac: Updated library versions.
 
 	* man/nodeupdown_module.3: New manpage.
 
 	* man/Makefile.am: Update for new manpage appropriately.
 
-	* Continued bug fixing and code cleanup.
+	* Various code and manpage cleanup.
 
-	* Added Cerebro backend module support.
-	
-2005-05-08  Albert Chu  <chu11@llnl.gov>
-
-	* Spec file reorg.
-
-2005-05-07  Albert Chu  <chu11@llnl.gov>
-
-	* Add '_' to nodeupdown functions that should not be exported.
-
-	* More code cleanup.
-	
-2005-05-06  Albert Chu  <chu11@llnl.gov>
-
-	* Manpage cleanup.
-
-	* Various code cleanup.
-
-	* Header file reorg.
-	
-2005-05-05  Albert Chu  <chu11@llnl.gov>
-
-	* Remove increase_max_nodes clusterlist function.  Re-worked
-	default module and backend ganglia to not need it.
-
-	* Complete_loading clusterlist function is now reworked into
-	get_numnodes clusterlist function.  Nodeupdown library reworked
-	appropriately.
-
-	* Added hostnames_len to confdata structure.
-
-	* Major nodeupdown header files reorg and code reorg.
-
-	* Begin re-work so modules never need to have knowledge of
-	contents in nodeupdown_t handle.
-	
-2005-05-02  Albert Chu  <chu11@llnl.gov>
-
-	* src/libcommon/conffile.h, src/libcommon/conffile.c
-	(conffile_parse): filename parameter is now const char *.
-
-	* Re-worked so none module is not built and potentially
-	dynamically loaded.  It is compiled in as the default behavior
-	when a clusterlist module cannot be found.
-
-	* Removed configurability of dynamically loaded modules.
-
-	* Cleaned up manpages.
-	
-2005-04-28  Albert Chu  <chu11@llnl.gov>
-
-	* Support shortened hostnames in hostsfile clusterlist module.
-	
 2005-04-27  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown_util.c
 	(nodeupdown_util_low_timeout_connect): Remove unnecessary code.
 	
-2005-04-25  Albert Chu  <chu11@llnl.gov>
-
-	* Added IGNORE_UNKNOWN option and flags checking to conffile lib.
-
-	* Added ability to search for any module, not just ones known to
-	nodeupdown and whatsup.
-
-	* Reworked whatsup loading of modules to more intelligently call
-	modules after an option is found.
-
-	* Minor code cleanup and bug fixes throughout.
-
-	* Build and dist fixes throughout.
-
-	* Export module header files to allow others to build modules.
-
-	* Various documentation fixes.
+	* Various bug fixes and code cleanup.
 	
 2005-04-22  Albert Chu  <chu11@llnl.gov>
 
 	* Added support for nodeupdown configuration modules.  Re-worked
 	various libraries to add this support.
-
-	* Re-worked error code names.
 	
 2005-04-19  Albert Chu  <chu11@llnl.gov>
 
