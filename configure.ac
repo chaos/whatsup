@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.52 2005-05-10 22:29:34 achu Exp $
+## $Id: configure.ac,v 1.53 2005-05-13 23:38:34 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -56,6 +56,7 @@ AC_PROG_LIBTOOL
 AC_LIB_LTDL
 AM_CONDITIONAL(WITH_GNU_LD, test "$with_gnu_ld" = "yes")
 AC_PATH_PROG(PERL, perl)
+AC_PATH_PROG(POD2MAN, pod2man)
 AC_DEBUG
 
 ##
@@ -149,6 +150,7 @@ AC_CONFIG_FILES( \
   src/Nodeupdown/Makefile \
   man/Makefile \
   man/libnodeupdown.3 \
+  man/nodeupdown_module.3 \
   man/nodeupdown.conf.5 \
   man/whatsup.1 \
   src/Libnodeupdown/Libnodeupdown.pm \

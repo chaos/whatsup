@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_cerebro.c,v 1.4 2005-05-10 23:47:05 achu Exp $
+ *  $Id: nodeupdown_backend_cerebro.c,v 1.5 2005-05-13 23:38:35 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -148,8 +148,10 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
                                 unsigned int timeout_len,
                                 char *reserved) 
 {
-  char upbuf[NODEUPDOWN_BUFFERLEN];
-  char downbuf[NODEUPDOWN_BUFFERLEN];
+  char nodebuf[NODEUPDOWN_MAXNODENAMELEN];
+  cerebro_nodes_iterator_t up_itr = NULL;
+  cerebro_nodes_iterator_t down_itr = NULL;
+  int flag, rv = -1;
 
   if (cerebro_updown_load_data(cerebro_handle, 
                                hostname,
@@ -161,38 +163,55 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
       return -1;
     }
 
-  memset(upbuf, '\0', NODEUPDOWN_BUFFERLEN);
-  memset(downbuf, '\0', NODEUPDOWN_BUFFERLEN);
-
-  if (cerebro_updown_get_up_nodes(cerebro_handle,
-                                  upbuf,
-                                  NODEUPDOWN_BUFFERLEN) < 0)
+  if (!(up_itr = cerebro_updown_up_nodes_iterator(cerebro_handle)))
     {
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
       return -1;
     }
 
-  if (cerebro_updown_get_down_nodes(cerebro_handle,
-                                    downbuf,
-                                    NODEUPDOWN_BUFFERLEN) < 0)
+  if (!(down_itr = cerebro_updown_down_nodes_iterator(cerebro_handle)))
     {
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
       return -1;
     }
-  
-  if (nodeupdown_add_up_nodes(handle, upbuf) < 0)
+
+  while ((flag = cerebro_nodes_iterator_next(cerebro_handle,
+                                             up_itr,
+                                             nodebuf,
+                                             NODEUPDOWN_MAXNODENAMELEN)) > 0)
     {
-      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
-      return -1;
+      if (nodeupdown_add_up_node(handle, nodebuf) < 0)
+        goto cleanup;
     }
-  
-  if (nodeupdown_add_down_nodes(handle, downbuf) < 0)
+
+  if (flag < 0)
     {
-      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
       return -1;
     }
 
-  return 0;
+  while ((flag = cerebro_nodes_iterator_next(cerebro_handle,
+                                             down_itr,
+                                             nodebuf,
+                                             NODEUPDOWN_MAXNODENAMELEN)) > 0)
+    {
+      if (nodeupdown_add_down_node(handle, nodebuf) < 0)
+        goto cleanup;
+    }
+
+  if (flag < 0)
+    {
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
+      return -1;
+    }
+
+  rv = 0;
+ cleanup:
+  if (up_itr)
+    cerebro_nodes_iterator_destroy(cerebro_handle, up_itr);
+  if (down_itr)
+    cerebro_nodes_iterator_destroy(cerebro_handle, down_itr);
+  return rv;
 }
 
 #if WITH_STATIC_MODULES

@@ -33,6 +33,7 @@ Ganglia backend module
 Summary: whatsup cerebro backend
 Group: System Environment/Base
 Requires: whatsup
+Requires: cerebro
 %description backend-cerebro
 Cerebro backend module
 

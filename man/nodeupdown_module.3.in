@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown_module.3,v 1.6 2005-05-10 17:49:23 achu Exp $
+\."$Id: nodeupdown_module.3.in,v 1.1 2005-05-13 23:38:34 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -47,10 +47,6 @@ or down
 .sp
 .B int nodeupdown_add_down_node(nodeupdown_t handle, const char *node);
 .sp
-.B int nodeupdown_add_up_nodes(nodeupdown_t handle, const char *nodes);
-.sp
-.B int nodeupdown_add_down_nodes(nodeupdown_t handle, const char *nodes);
-.sp
 .B int nodeupdown_not_discovered_check(nodeupdown_t handle, const char *node);
 .sp
 .B void nodeupdown_set_errnum(nodeupdown_t handle, int errnum);
@@ -63,13 +59,6 @@ modify the contents in the nodeupdown handle.
 
 \fBnodeupdown_add_up_node\fR and \fBnodeupdown_add_down_node\fR add an
 up or down node to the nodeupdown handle respectively.
-
-\fBnodeupdown_add_up_nodes\fR and \fBnodeupdown_add_down_nodes\fR add
-multiple up or down nodes to the nodeupdown handle respectively.  The
-nodes can be specified in either a comma separated list or a ranged
-string.  See the
-.BR whatsup(1)
-manpage for details on host ranges.
 
 \fBnodeupdown_not_discovered_check\fR will check if the specified \fInode\fR
 currently exists in the \fIhandle\fR.  If it does not, the node will be
@@ -153,9 +142,8 @@ typedef int (*Nodeupdown_backend_get_updown_data)(nodeupdown_t, const char *, un
 
 The 'get_updown_data' function retrieves all updown data from the
 backend technology and stores it in the nodeupdown_t handle.  The
-nodeupdown development functions \fBnodeupdown_add_up_node\fR,
-\fBnodeupdown_add_down_node\fR, \fBnodeupdown_add_up_nodes\fR, and
-\fBnodeupdown_add_down_nodes\fR should be used to add the up or down
+nodeupdown development functions \fBnodeupdown_add_up_node\fR and
+\fBnodeupdown_add_down_node\fR should be used to add the up or down
 nodes into the handle.  'get_updown_data' is passed a hostname, port,
 timeout_len, and reserved fields similar to
 .BR nodeupdown_load_data(3).

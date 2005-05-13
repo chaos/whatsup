@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_devel.h,v 1.1 2005-05-06 18:27:46 achu Exp $
+ *  $Id: nodeupdown_devel.h,v 1.2 2005-05-13 23:38:35 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -46,24 +46,6 @@ int nodeupdown_add_up_node(nodeupdown_t handle, const char *node);
  * Returns 0 on success, -1 on error
  */
 int nodeupdown_add_down_node(nodeupdown_t handle, const char *node);
-
-/*
- * nodeupdown_add_up_nodes
- *
- * Add up nodes into the handle
- *
- * Returns 0 on success, -1 on error
- */
-int nodeupdown_add_up_nodes(nodeupdown_t handle, const char *nodes);
-
-/*
- * nodeupdown_add_down_nodes
- *
- * Add down nodes into the handle
- *
- * Returns 0 on success, -1 on error
- */
-int nodeupdown_add_down_nodes(nodeupdown_t handle, const char *nodes);
 
 /*
  * nodeupdown_not_discovered_check
