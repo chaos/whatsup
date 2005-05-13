@@ -13,8 +13,6 @@ BuildRoot: %{_tmppath}/@PROJECT@-@VERSION@-@RELEASE@
 %if %{?_with_chaos:1}%{!?_with_chaos:0}
 Requires: gendersllnl
 Requires: cerebro
-# Temporary until Chaos 3.0 test machines are fully ready
-#Conflicts: ganglia-monitor-core
 %endif
 
 %description
