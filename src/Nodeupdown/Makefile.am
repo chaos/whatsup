@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.12 2005-05-13 23:38:35 achu Exp $
+## $Id: Makefile.am,v 1.13 2005-05-14 05:00:53 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -11,6 +11,10 @@ NODEUPDOWNPMFILESdir = $(libdir)/$(INSTALLSITEARCH)
 NODEUPDOWNPMFILES_DATA = $(NODEUPDOWNPMFILES)
  
 Nodeupdown.3pm:
+# Hacks to make distcheck work
+	if ! test -a Nodeupdown.pm; then \
+		cp $(srcdir)/Nodeupdown.pm .; \
+	fi
 	$(POD2MAN) Nodeupdown.pm Nodeupdown.3pm
  
 man3_MANS = Nodeupdown.3pm
