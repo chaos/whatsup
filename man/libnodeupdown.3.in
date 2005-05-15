@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: libnodeupdown.3.in,v 1.17 2005-05-06 15:40:36 achu Exp $
+\."$Id: libnodeupdown.3.in,v 1.18 2005-05-15 14:58:59 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -88,6 +88,8 @@ default, the following backend tools are searched for by nodeupdown in
 the following order:
 
 ganglia - See http://ganglia.sourceforge.net for more information.
+
+cerebro - See URL to be determined.
 
 If none of the above are found, the nodeupdown library will search for
 a backend module in @NODEUPDOWN_MODULE_DIR@ until one is found.

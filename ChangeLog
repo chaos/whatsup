@@ -1,3 +1,7 @@
+2005-05-15  Albert Chu  <chu11@llnl.gov>
+
+	* Various documentation updates for cerebro.
+	
 2005-05-13  Albert Chu  <chu11@llnl.gov>
 
 	* Removed nodeupdown_add_up_nodes and nodeupdown_add_down_nodes
