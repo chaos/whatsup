@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_cerebro.c,v 1.5 2005-05-13 23:38:35 achu Exp $
+ *  $Id: nodeupdown_backend_cerebro.c,v 1.6 2005-05-15 15:30:48 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -163,13 +163,13 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
       return -1;
     }
 
-  if (!(up_itr = cerebro_updown_up_nodes_iterator(cerebro_handle)))
+  if (!(up_itr = cerebro_updown_get_up_nodes_iterator(cerebro_handle)))
     {
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
       return -1;
     }
 
-  if (!(down_itr = cerebro_updown_down_nodes_iterator(cerebro_handle)))
+  if (!(down_itr = cerebro_updown_get_down_nodes_iterator(cerebro_handle)))
     {
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
       return -1;
