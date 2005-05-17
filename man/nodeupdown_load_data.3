@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown_load_data.3,v 1.29 2005-05-15 14:58:59 achu Exp $
+\."$Id: nodeupdown_load_data.3,v 1.30 2005-05-17 17:04:23 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -85,14 +85,11 @@ A clusterlist database could not be opened.
 .B NODEUPDOWN_ERR_CONNECT	
 Error connecting to server specified by \fIhostname\fR and \fIgmond_port\fR.
 .TP
-.B NODEUPDOWN_ERR_TIMEOUT
+.B NODEUPDOWN_ERR_CONNECT_TIMEOUT
 Connection to server timed out.
 .TP
 .B NODEUPDOWN_ERR_HOSTNAME
 Incorrect hostname specified by \fIhostname\fR.
-.TP
-.B NODEUPDOWN_ERR_ADDRESS
-Incorrect network address specified by \fIhostname\fR.
 .TP
 .B NODEUPDOWN_ERR_ISLOADED
 .BR nodeupdown_load_data (3) 

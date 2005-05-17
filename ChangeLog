@@ -2,7 +2,7 @@
 
 	* whatsup.spec.in: Update chaos build.
 
-	* Removed unused error codes, renamed NODEUPDOWN_ERR_TIMEOUT to
+	* Removed unused error codes.  Renamed NODEUPDOWN_ERR_TIMEOUT to
 	NODEUPDOWN_ERR_CONNECT_TIMEOUT globally.
 
 	* tagged whatsup-1-4-0-pre1

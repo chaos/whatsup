@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: Libnodeupdown.xs,v 1.17 2005-05-07 18:29:53 achu Exp $
+ *  $Id: Libnodeupdown.xs,v 1.18 2005-05-17 17:04:23 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -62,10 +62,10 @@ NODEUPDOWN_ERR_CONNECT (sv=&PL_sv_undef)
         RETVAL    
 
 int
-NODEUPDOWN_ERR_TIMEOUT (sv=&PL_sv_undef)
+NODEUPDOWN_ERR_CONNECT_TIMEOUT (sv=&PL_sv_undef)
     SV *sv    
     CODE:
-        RETVAL = NODEUPDOWN_ERR_TIMEOUT;
+        RETVAL = NODEUPDOWN_ERR_CONNECT_TIMEOUT;
     OUTPUT:
         RETVAL    
 
@@ -74,14 +74,6 @@ NODEUPDOWN_ERR_HOSTNAME (sv=&PL_sv_undef)
     SV *sv    
     CODE:
         RETVAL = NODEUPDOWN_ERR_HOSTNAME;
-    OUTPUT:
-        RETVAL    
-
-int
-NODEUPDOWN_ERR_ADDRESS (sv=&PL_sv_undef)
-    SV *sv    
-    CODE:
-        RETVAL = NODEUPDOWN_ERR_ADDRESS;
     OUTPUT:
         RETVAL    
 
