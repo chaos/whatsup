@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.102 2005-05-06 18:27:46 achu Exp $
+ *  $Id: whatsup.c,v 1.103 2005-05-17 16:45:59 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -902,12 +902,10 @@ main(int argc, char *argv[])
         err_exit("Parse error in conf file");
       else if (errnum == NODEUPDOWN_ERR_CONNECT) 
         err_exit("Cannot connect to server");
-      else if (errnum == NODEUPDOWN_ERR_TIMEOUT)
+      else if (errnum == NODEUPDOWN_ERR_CONNECT_TIMEOUT)
         err_exit("Timeout connecting to server");
       else if (errnum == NODEUPDOWN_ERR_HOSTNAME)
         err_exit("Invalid hostname");
-      else if (errnum == NODEUPDOWN_ERR_ADDRESS)
-        err_exit("Invalid address");
       else
         err_exit("main: nodeupdown_load_data(): %s", 
 		 nodeupdown_errormsg(w.handle));

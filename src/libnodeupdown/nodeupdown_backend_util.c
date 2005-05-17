@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_util.c,v 1.2 2005-05-10 22:29:34 achu Exp $
+ *  $Id: nodeupdown_backend_util.c,v 1.3 2005-05-17 16:45:59 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -121,7 +121,7 @@ _nodeupdown_util_low_timeout_connect(nodeupdown_t handle,
 
       if (!rv) 
         {
-          nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_TIMEOUT);
+          nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONNECT_TIMEOUT);
           goto cleanup;
         }
       else 

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.h,v 1.38 2005-05-07 05:33:23 achu Exp $
+ *  $Id: nodeupdown.h,v 1.39 2005-05-17 16:45:59 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -36,25 +36,24 @@
 #define NODEUPDOWN_ERR_SUCCESS               0
 #define NODEUPDOWN_ERR_NULLHANDLE            1
 #define NODEUPDOWN_ERR_CONNECT               2
-#define NODEUPDOWN_ERR_TIMEOUT               3
+#define NODEUPDOWN_ERR_CONNECT_TIMEOUT       3
 #define NODEUPDOWN_ERR_HOSTNAME              4
-#define NODEUPDOWN_ERR_ADDRESS               5
-#define NODEUPDOWN_ERR_ISLOADED              6
-#define NODEUPDOWN_ERR_NOTLOADED             7
-#define NODEUPDOWN_ERR_OVERFLOW              8
-#define NODEUPDOWN_ERR_PARAMETERS            9
-#define NODEUPDOWN_ERR_NULLPTR              10
-#define NODEUPDOWN_ERR_OUTMEM               11
-#define NODEUPDOWN_ERR_NOTFOUND             12
-#define NODEUPDOWN_ERR_BACKEND_MODULE       13
-#define NODEUPDOWN_ERR_CLUSTERLIST_MODULE   14
-#define NODEUPDOWN_ERR_CONFIG_MODULE        15
-#define NODEUPDOWN_ERR_CONF_PARSE           16
-#define NODEUPDOWN_ERR_CONF_INPUT           17
-#define NODEUPDOWN_ERR_CONF_INTERNAL        18
-#define NODEUPDOWN_ERR_MAGIC                19
-#define NODEUPDOWN_ERR_INTERNAL             20
-#define NODEUPDOWN_ERR_ERRNUMRANGE          21
+#define NODEUPDOWN_ERR_ISLOADED              5
+#define NODEUPDOWN_ERR_NOTLOADED             6
+#define NODEUPDOWN_ERR_OVERFLOW              7
+#define NODEUPDOWN_ERR_PARAMETERS            8
+#define NODEUPDOWN_ERR_NULLPTR               9
+#define NODEUPDOWN_ERR_OUTMEM               10
+#define NODEUPDOWN_ERR_NOTFOUND             11
+#define NODEUPDOWN_ERR_BACKEND_MODULE       12
+#define NODEUPDOWN_ERR_CLUSTERLIST_MODULE   13
+#define NODEUPDOWN_ERR_CONFIG_MODULE        14
+#define NODEUPDOWN_ERR_CONF_PARSE           15
+#define NODEUPDOWN_ERR_CONF_INPUT           16
+#define NODEUPDOWN_ERR_CONF_INTERNAL        17
+#define NODEUPDOWN_ERR_MAGIC                18
+#define NODEUPDOWN_ERR_INTERNAL             19
+#define NODEUPDOWN_ERR_ERRNUMRANGE          20
 
 typedef struct nodeupdown *nodeupdown_t;
 

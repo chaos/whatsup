@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_cerebro.c,v 1.6 2005-05-15 15:30:48 achu Exp $
+ *  $Id: nodeupdown_backend_cerebro.c,v 1.7 2005-05-17 16:45:59 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -159,7 +159,14 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
                                timeout_len,
                                CEREBRO_UPDOWN_UP_AND_DOWN_NODES) < 0)
     {
-      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
+      if (cerebro_errnum(cerebro_handle) == CEREBRO_ERR_CONNECT) 
+        nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONNECT);
+     else if (cerebro_errnum(cerebro_handle) == CEREBRO_ERR_CONNECT_TIMEOUT)
+        nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONNECT_TIMEOUT);
+      else if (cerebro_errnum(cerebro_handle) == CEREBRO_ERR_HOSTNAME)
+        nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_HOSTNAME);
+      else
+        nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
       return -1;
     }
 

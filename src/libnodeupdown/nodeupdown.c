@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.143 2005-05-10 23:47:05 achu Exp $
+ *  $Id: nodeupdown.c,v 1.144 2005-05-17 16:45:59 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -61,7 +61,6 @@ static char * nodeupdown_errmsg[] =
     "connection to server error",
     "connection to server timeout",
     "improper hostname error",
-    "improper address error",
     "data already loaded",
     "data not loaded",
     "array or string not large enough to store result",
