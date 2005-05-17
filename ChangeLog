@@ -1,6 +1,8 @@
 2005-05-17  Albert Chu  <chu11@llnl.gov>
 
 	* whatsup.spec.in: Update chaos build.
+
+	* tagged whatsup-1-4-0-pre1
 	
 2005-05-16  Albert Chu  <chu11@llnl.gov>
 
