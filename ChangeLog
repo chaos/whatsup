@@ -1,3 +1,7 @@
+2005-05-17  Albert Chu  <chu11@llnl.gov>
+
+	* whatsup.spec.in: Update chaos build.
+	
 2005-05-16  Albert Chu  <chu11@llnl.gov>
 
 	* Fix libdir path calculation.

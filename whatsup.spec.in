@@ -19,9 +19,17 @@ Requires: cerebro
 %description
 Whatsup is a cluster node up/down detection utility.
 
+%if %{?_with_chaos:1}%{!?_with_chaos:0}
+%define _with_cerebro      --with-cerebro
+%define _with_gendersllnl  --with-gendersllnl
+%define _without_genders   --without-genders
+%define _without_hostsfile --without-hostsfile
+%else
+%{!?_with_cerebro: %{!?_without_cerebro: %define _with_cerebro --with-cerebro}}
 %{!?_with_gendersllnl: %{!?_without_gendersllnl: %define _with_gendersllnl --with-gendersllnl}}
 %{!?_with_genders: %{!?_without_genders: %define _with_genders --with-genders}}
 %{!?_with_hostsfile: %{!?_without_hostsfile: %define _with_hostsfile --with-hostsfile}}
+%endif
 
 %package backend-ganglia
 Summary: whatsup ganglia backend
