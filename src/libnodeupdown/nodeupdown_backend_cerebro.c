@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_cerebro.c,v 1.7 2005-05-17 16:45:59 achu Exp $
+ *  $Id: nodeupdown_backend_cerebro.c,v 1.8 2005-05-31 23:32:45 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -36,6 +36,7 @@
 #if HAVE_UNISTD_H
 #include <unistd.h>
 #endif /* HAVE_UNISTD_H */
+#include <sys/types.h>
 #include <errno.h>
 
 #include "nodeupdown.h"
@@ -46,7 +47,7 @@
 #include "nodeupdown/nodeupdown_devel.h"
 
 #include <cerebro.h>
-#include <cerebro/cerebro_updown_protocol.h>
+#include <cerebro/cerebro_metric_protocol.h>
 
 static cerebro_t cerebro_handle = NULL;
 
@@ -77,7 +78,7 @@ cerebro_backend_default_hostname(nodeupdown_t handle)
 int 
 cerebro_backend_default_port(nodeupdown_t handle)
 {
-  return CEREBRO_UPDOWN_SERVER_PORT;
+  return CEREBRO_METRIC_SERVER_PORT;
 }
 
 /*
@@ -88,7 +89,7 @@ cerebro_backend_default_port(nodeupdown_t handle)
 int 
 cerebro_backend_default_timeout_len(nodeupdown_t handle)
 {
-  return CEREBRO_UPDOWN_TIMEOUT_LEN_DEFAULT;
+  return CEREBRO_METRIC_UPDOWN_TIMEOUT_LEN_DEFAULT;
 }
 
 /*
@@ -148,16 +149,30 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
                                 unsigned int timeout_len,
                                 char *reserved) 
 {
-  char nodebuf[NODEUPDOWN_MAXNODENAMELEN];
-  cerebro_nodes_iterator_t up_itr = NULL;
-  cerebro_nodes_iterator_t down_itr = NULL;
+  cerebro_nodelist_t nodelist = NULL;
+  cerebro_nodelist_iterator_t itr = NULL;
   int flag, rv = -1;
 
-  if (cerebro_updown_load_data(cerebro_handle, 
-                               hostname,
-                               port,
-                               timeout_len,
-                               CEREBRO_UPDOWN_UP_AND_DOWN_NODES) < 0)
+  if (cerebro_set_hostname(cerebro_handle, hostname) < 0)
+    {
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
+      return -1;
+    }
+
+  if (cerebro_set_port(cerebro_handle, port) < 0)
+    {
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
+      return -1;
+    }
+
+  if (cerebro_set_timeout_len(cerebro_handle, timeout_len) < 0)
+    {
+      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
+      return -1;
+    }
+
+  if (!(nodelist = cerebro_get_metric_data(cerebro_handle, 
+                                           CEREBRO_METRIC_UPDOWN_STATE)) < 0)
     {
       if (cerebro_errnum(cerebro_handle) == CEREBRO_ERR_CONNECT) 
         nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONNECT);
@@ -170,54 +185,73 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
       return -1;
     }
 
-  if (!(up_itr = cerebro_updown_get_up_nodes_iterator(cerebro_handle)))
+  if (cerebro_nodelist_metric_type(nodelist) != CEREBRO_METRIC_TYPE_UNSIGNED_INT32)
     {
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
-      return -1;
+      goto cleanup;
     }
-
-  if (!(down_itr = cerebro_updown_get_down_nodes_iterator(cerebro_handle)))
+  
+  if (!(itr = cerebro_nodelist_iterator_create(nodelist)))
     {
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
-      return -1;
+      goto cleanup;
     }
-
-  while ((flag = cerebro_nodes_iterator_next(cerebro_handle,
-                                             up_itr,
-                                             nodebuf,
-                                             NODEUPDOWN_MAXNODENAMELEN)) > 0)
+  
+  while (!(flag = cerebro_nodelist_iterator_end(itr)))
     {
-      if (nodeupdown_add_up_node(handle, nodebuf) < 0)
-        goto cleanup;
+      char *nodename;
+      u_int32_t *updown_state;
+      u_int32_t size;
+
+      if (!(nodename = cerebro_nodelist_iterator_nodename(itr)))
+        {
+          nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
+          goto cleanup;
+        }
+
+      if (!(updown_state = cerebro_nodelist_iterator_metric_value(itr,
+                                                                  &size)))
+        {
+          nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
+          goto cleanup;
+        }
+
+      if (size != sizeof(u_int32_t))
+        {
+          nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
+          goto cleanup;
+        }
+
+      if ((*updown_state))
+        {
+          if (nodeupdown_add_up_node(handle, nodename) < 0)
+            goto cleanup;
+        }
+      else
+        {
+          if (nodeupdown_add_down_node(handle, nodename) < 0)
+            goto cleanup;
+        }
+
+      if (cerebro_nodelist_iterator_next(itr) < 0)
+        {
+          nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
+          goto cleanup;
+        }
     }
 
   if (flag < 0)
     {
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
-      return -1;
-    }
-
-  while ((flag = cerebro_nodes_iterator_next(cerebro_handle,
-                                             down_itr,
-                                             nodebuf,
-                                             NODEUPDOWN_MAXNODENAMELEN)) > 0)
-    {
-      if (nodeupdown_add_down_node(handle, nodebuf) < 0)
-        goto cleanup;
-    }
-
-  if (flag < 0)
-    {
-      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
-      return -1;
+      goto cleanup;
     }
 
   rv = 0;
  cleanup:
-  if (up_itr)
-    cerebro_nodes_iterator_destroy(cerebro_handle, up_itr);
-  if (down_itr)
-    cerebro_nodes_iterator_destroy(cerebro_handle, down_itr);
+  if (itr)
+    cerebro_nodelist_iterator_destroy(itr);
+  if (nodelist)
+    cerebro_nodelist_destroy(nodelist);
   return rv;
 }
 
