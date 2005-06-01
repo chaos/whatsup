@@ -2,6 +2,8 @@
 
 	* src/libnodeupdown/nodeupdown_backend_cerebro.c: Reworked for new
 	cerebro nodelist API.
+
+	* whatsup.spec.in: Increase install requirement for cerebro.
 	
 2005-05-17  Albert Chu  <chu11@llnl.gov>
 
