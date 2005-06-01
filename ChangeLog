@@ -5,6 +5,8 @@
 
 	* whatsup.spec.in: Increase install requirement for cerebro.
 	
+	* tagged whatsup-1-4-0-pre2
+
 2005-05-17  Albert Chu  <chu11@llnl.gov>
 
 	* whatsup.spec.in: Update chaos build.
