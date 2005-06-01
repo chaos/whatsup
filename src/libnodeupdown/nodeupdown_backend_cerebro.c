@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_cerebro.c,v 1.8 2005-05-31 23:32:45 achu Exp $
+ *  $Id: nodeupdown_backend_cerebro.c,v 1.9 2005-06-01 19:36:36 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -197,7 +197,7 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
       goto cleanup;
     }
   
-  while (!(flag = cerebro_nodelist_iterator_end(itr)))
+  while (!(flag = cerebro_nodelist_iterator_at_end(itr)))
     {
       char *nodename;
       u_int32_t *updown_state;
