@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup_options_gendersllnl.c,v 1.10 2005-04-25 16:44:29 achu Exp $
+ *  $Id: whatsup_options_gendersllnl.c,v 1.11 2005-06-20 21:58:09 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -181,11 +181,7 @@ gendersllnl_options_convert_nodenames(char *nodes, char *buf, int buflen)
   return 1;
 }
 
-#if WITH_STATIC_MODULES
-struct whatsup_options_module_info gendersllnl_options_module_info = 
-#else  /* !WITH_STATIC_MODULES */
 struct whatsup_options_module_info options_module_info = 
-#endif /* !WITH_STATIC_MODULES */
   {
     "gendersllnl",
     &gendersllnl_options_setup,

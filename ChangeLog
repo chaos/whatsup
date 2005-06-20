@@ -4,6 +4,8 @@
 	Cerebro API changes.
 
 	* whatsup.spec.in: Increase install requirement for cerebro.
+
+	* Removed everything related to static compilation.
 	
 	* tagged whatsup-1-4-0-pre3
 	

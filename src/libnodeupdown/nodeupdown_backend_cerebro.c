@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_cerebro.c,v 1.10 2005-06-20 21:31:42 achu Exp $
+ *  $Id: nodeupdown_backend_cerebro.c,v 1.11 2005-06-20 21:58:09 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -266,11 +266,7 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
   return rv;
 }
 
-#if WITH_STATIC_MODULES
-struct nodeupdown_backend_module_info cerebro_backend_module_info = 
-#else  /* !WITH_STATIC_MODULES */
 struct nodeupdown_backend_module_info backend_module_info = 
-#endif /* !WITH_STATIC_MODULES */
   {
     "cerebro",
     &cerebro_backend_default_hostname,

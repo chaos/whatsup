@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.144 2005-05-17 16:45:59 achu Exp $
+ *  $Id: nodeupdown.c,v 1.145 2005-06-20 21:58:09 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -180,9 +180,7 @@ _free_handle_data(nodeupdown_t handle)
   hostlist_destroy(handle->up_nodes);
   hostlist_destroy(handle->down_nodes);
   _initialize_handle(handle);
-#if !WITH_STATIC_MODULES
   lt_dlexit();
-#endif /* !WITH_STATIC_MODULES */
 }
 
 int 
@@ -323,13 +321,11 @@ nodeupdown_load_data(nodeupdown_t handle,
   memset(&conffile_config, '\0', sizeof(struct nodeupdown_config));
   memset(&module_config, '\0', sizeof(struct nodeupdown_config));
 
-#if !WITH_STATIC_MODULES
   if (lt_dlinit() != 0)
     {
       handle->errnum = NODEUPDOWN_ERR_INTERNAL;
       goto cleanup;
     }
-#endif /* !WITH_STATIC_MODULES */
 
   /* Read configuration before loading a potential backend or
    * clusterlist module to use. The configuration file may indicate

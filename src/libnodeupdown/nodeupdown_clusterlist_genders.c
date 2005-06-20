@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_genders.c,v 1.21 2005-05-10 22:29:34 achu Exp $
+ *  $Id: nodeupdown_clusterlist_genders.c,v 1.22 2005-06-20 21:58:09 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -159,11 +159,7 @@ genders_clusterlist_compare_to_clusterlist(nodeupdown_t handle)
   return genders_util_clusterlist_compare_to_clusterlist(handle, genders_handle);
 }
 
-#if WITH_STATIC_MODULES
-struct nodeupdown_clusterlist_module_info genders_clusterlist_module_info =
-#else  /* !WITH_STATIC_MODULES */
 struct nodeupdown_clusterlist_module_info clusterlist_module_info =
-#endif /* !WITH_STATIC_MODULES */
   {
     "genders",
     &genders_clusterlist_setup,

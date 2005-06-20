@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.103 2005-05-17 16:45:59 achu Exp $
+ *  $Id: whatsup.c,v 1.104 2005-06-20 21:58:09 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -92,33 +92,11 @@ struct whatsup_data
   int count_output;
   nodeupdown_t handle;
   hostlist_t cmdline_nodes;
-#if !WITH_STATIC_MODULES
   lt_dlhandle module_handles[WHATSUP_MODULES_LEN];
-#endif /* !WITH_STATIC_MODULES */
   struct whatsup_options_module_info *module_info[WHATSUP_MODULES_LEN];
   char module_options[WHATSUP_MODULES_LEN][WHATSUP_OPTIONS_LEN+1];
   int module_loaded_count;
 };
-
-#if WITH_STATIC_MODULES
-/*  
- * whatsup_options_modules
- *
- * list of options modules to search for
- */
-
-#if WITH_GENDERSLLNL
-extern struct whatsup_options_module_info gendersllnl_options_module_info;
-#endif /* WITH_GENDERSLLNL */
-
-static struct whatsup_options_module_info *whatsup_options_modules[] =
-  {
-#if WITH_GENDERSLLNL
-    &gendersllnl_options_module_info,
-#endif /* WITH_GENDERSLLNL */
-    NULL
-  };
-#endif /* WITH_STATIC_MODULES */
 
 /* 
  * _init_whatsup_data
@@ -168,36 +146,23 @@ _cleanup_whatsup_data(struct whatsup_data *w)
  */
 static void
 _load_options_module(struct whatsup_data *w, 
-#if WITH_STATIC_MODULES
-		     struct whatsup_options_module_info *module_info
-#else /* !WITH_STATIC_MODULES */
-		     char *module_path
-#endif /* !WITH_STATIC_MODULES */
-		     )
+		     char *module_path)
 {
   int count = w->module_loaded_count;
   int i;
 
   assert(w);
-#if WITH_STATIC_MODULES
-  assert(module_info);
-#else /* !WITH_STATIC_MODULES */
   assert(module_path);
-#endif /* !WITH_STATIC_MODULES */
 
   if (count >= WHATSUP_MODULES_LEN)
     return;
 
-#if WITH_STATIC_MODULES
-  w->module_info[count] = module_info;
-#else /* !WITH_STATIC_MODULES */
   if (!(w->module_handles[count] = lt_dlopen(module_path)))
     goto cleanup;
 
   if (!(w->module_info[count] = lt_dlsym(w->module_handles[count],
 					 "options_module_info")))
     goto cleanup;
-#endif /* !WITH_STATIC_MODULES */
 
   if (!w->module_info[count]->options_module_name
       || !w->module_info[count]->output_usage
@@ -221,15 +186,12 @@ _load_options_module(struct whatsup_data *w,
   return;
 
  cleanup:
-#if !WITH_STATIC_MODULES
   lt_dlclose(w->module_handles[count]);
   w->module_handles[count] = NULL;
-#endif /* !WITH_STATIC_MODULES */
   w->module_info[count] = NULL;
   return;
 }
 
-#if !WITH_STATIC_MODULES
 /*  
  * _load_options_modules_in_dir
  *
@@ -275,7 +237,6 @@ _load_options_modules_in_dir(struct whatsup_data *w, char *search_dir)
         }
     }
 }
-#endif /* !WITH_STATIC_MODULES */
 
 /*  
  * _load_options_modules
@@ -287,21 +248,11 @@ _load_options_modules(struct whatsup_data *w)
 {
   assert(w);
 
-#if WITH_STATIC_MODULES
-  int i = 0;
-
-  while (whatsup_options_modules[i])
-    {
-      _load_options_module(w, whatsup_options_modules[i]);
-      i++;
-    }
-#else /* !WITH_STATIC_MODULES */
   if (lt_dlinit() != 0)
     err_exit("_load_options_modules: lt_dlinit: %s", lt_dlerror());
 
   _load_options_modules_in_dir(w, WHATSUP_MODULE_BUILDDIR);
   _load_options_modules_in_dir(w, WHATSUP_MODULE_DIR);
-#endif /* !WITH_STATIC_MODULES */
 }
 
 /*  
@@ -319,14 +270,10 @@ _unload_options_modules(struct whatsup_data *w)
   for (i = 0; i < w->module_loaded_count; i++)
     {
       (*w->module_info[i]->cleanup)();
-#if !WITH_STATIC_MODULES
       lt_dlclose(w->module_handles[i]);
-#endif /* !WITH_STATIC_MODULES */
       i++;
     }
-#if !WITH_STATIC_MODULES
   lt_dlexit();
-#endif /* !WITH_STATIC_MODULES */
 }
 
 /* 

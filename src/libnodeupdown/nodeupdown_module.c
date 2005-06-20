@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.c,v 1.12 2005-05-10 23:30:03 achu Exp $
+ *  $Id: nodeupdown_module.c,v 1.13 2005-06-20 21:58:09 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -52,55 +52,6 @@
 #include "nodeupdown/nodeupdown_constants.h"
 #include "ltdl.h"
 
-#if WITH_STATIC_MODULES
-extern struct nodeupdown_backend_module_info ganglia_backend_module_info;
-#if WITH_CEREBRO
-extern struct nodeupdown_backend_module_info cerebro_backend_module_info;
-#endif /* WITH_CEREBRO */
-
-#if WITH_GENDERSLLNL
-extern struct nodeupdown_clusterlist_module_info gendersllnl_clusterlist_module_info;
-extern struct nodeupdown_config_module_info gendersllnl_config_module_info;
-#endif /* WITH_GENDERSLLNL */
-#if WITH_GENDERS
-extern struct nodeupdown_clusterlist_module_info genders_clusterlist_module_info;
-#endif /* WITH_GENDERS */
-#if WITH_HOSTSFILE
-extern struct nodeupdown_clusterlist_module_info hostsfile_clusterlist_module_info;
-#endif /* WITH_HOSTSFILE */
-
-static struct nodeupdown_backend_module_info *backend_modules[] =
-  {
-#if WITH_CEREBRO
-    &cerebro_backend_module_info,
-#endif /* WITH_CEREBRO */
-    &ganglia_backend_module_info,
-    NULL
-  };
-
-static struct nodeupdown_clusterlist_module_info *clusterlist_modules[] =
-  {
-#if WITH_GENDERSLLNL
-    &gendersllnl_clusterlist_module_info,
-#endif /* WITH_GENDERSLLNL */
-#if WITH_GENDERS
-    &genders_clusterlist_module_info,
-#endif /* WITH_GENDERS */
-#if WITH_HOSTSFILE
-    &hostsfile_clusterlist_module_info,
-#endif /* WITH_HOSTSFILE */
-    NULL
-  };
-
-static struct nodeupdown_config_module_info *config_modules[] =
-  {
-#if WITH_GENDERSLLNL
-    &gendersllnl_config_module_info,
-#endif /* WITH_GENDERSLLNL */
-    NULL
-  };
-
-#else  /* !WITH_STATIC_MODULES */
 static char *backend_modules[] = {
   "nodeupdown_backend_cerebro.la",
   "nodeupdown_backend_ganglia.la",
@@ -125,8 +76,6 @@ static int config_modules_len = 1;
 static lt_dlhandle backend_module_dl_handle = NULL;
 static lt_dlhandle clusterlist_module_dl_handle = NULL;
 static lt_dlhandle config_module_dl_handle = NULL;
-
-#endif /* !WITH_STATIC_MODULES */
 
 static struct nodeupdown_backend_module_info *backend_module_info = NULL;
 
@@ -282,20 +231,10 @@ _nodeupdown_util_search_for_module(nodeupdown_t handle,
  */
 static int
 _backend_module_load(nodeupdown_t handle, 
-#if WITH_STATIC_MODULES
-	     struct nodeupdown_backend_module_info *module_info
-#else  /* !WITH_STATIC_MODULES */
-	     char *module_path
-#endif /* !WITH_STATIC_MODULES */
-	     )
+	     char *module_path)
 {
-#if !WITH_STATIC_MODULES
   struct stat buf;
-#endif /* !WITH_STATIC_MODULES */
 
-#if WITH_STATIC_MODULES
-  backend_module_info = module_info;
-#else  /* !WITH_STATIC_MODULES */
   if (stat(module_path, &buf) < 0)
     return 0;
 
@@ -310,7 +249,6 @@ _backend_module_load(nodeupdown_t handle,
       handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
       goto cleanup;
     }
-#endif /* !WITH_STATIC_MODULES */
 
   if (!backend_module_info->backend_module_name
       || !backend_module_info->default_hostname
@@ -327,11 +265,9 @@ _backend_module_load(nodeupdown_t handle,
   return 1;
 
  cleanup:
-#if !WITH_STATIC_MODULES
   if (backend_module_dl_handle)
     lt_dlclose(backend_module_dl_handle);
   backend_module_dl_handle = NULL;
-#endif /* !WITH_STATIC_MODULES */
   backend_module_info = NULL;
   return -1;
 }
@@ -339,27 +275,6 @@ _backend_module_load(nodeupdown_t handle,
 int 
 _nodeupdown_backend_module_load(nodeupdown_t handle)
 {
-#if WITH_STATIC_MODULES
-  struct nodeupdown_backend_module_info **ptr;
-  int i = 0;
-  
-  ptr = &backend_modules[0];
-  while (ptr[i] != NULL)
-    {
-      int rv;
-      
-      if (!ptr[i]->backend_module_name)
-	continue;
-      
-      if ((rv = _backend_module_load(handle, backend_modules[i])) < 0)
-	goto cleanup;
-      
-      if (rv)
-	goto found;
-      
-      i++;
-    }
-#else  /* !WITH_STATIC_MODULES */
   int rv;
   
   if ((rv = _nodeupdown_util_lookup_module(handle,
@@ -391,8 +306,6 @@ _nodeupdown_backend_module_load(nodeupdown_t handle)
   handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
   goto cleanup;
 
-#endif /* !WITH_STATIC_MODULES */
-
  found:
   return 0;
 
@@ -403,12 +316,10 @@ _nodeupdown_backend_module_load(nodeupdown_t handle)
 int
 _nodeupdown_backend_module_unload(nodeupdown_t handle)
 {
-#if !WITH_STATIC_MODULES
   /* May have not been loaded, so can't close */
   if (backend_module_dl_handle)
     lt_dlclose(backend_module_dl_handle);
   backend_module_dl_handle = NULL;
-#endif /* !WITH_STATIC_MODULES */
   backend_module_info = NULL;
   return 0;
 }
@@ -508,20 +419,10 @@ _nodeupdown_backend_module_get_updown_data(nodeupdown_t handle,
  */
 static int
 _clusterlist_module_load(nodeupdown_t handle,
-#if WITH_STATIC_MODULES
-             struct nodeupdown_clusterlist_module_info *module_info
-#else  /* !WITH_STATIC_MODULES */
-             char *module_path
-#endif /* !WITH_STATIC_MODULES */
-             )
+                         char *module_path)
 {
-#if !WITH_STATIC_MODULES
   struct stat buf;
-#endif /* !WITH_STATIC_MODULES */
 
-#if WITH_STATIC_MODULES
-  clusterlist_module_info = module_info;
-#else  /* !WITH_STATIC_MODULES */
   if (stat(module_path, &buf) < 0)
     return 0;
 
@@ -536,7 +437,6 @@ _clusterlist_module_load(nodeupdown_t handle,
       handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
       goto cleanup;
     }
-#endif /* !WITH_STATIC_MODULES */
 
   if (!clusterlist_module_info->clusterlist_module_name
       || !clusterlist_module_info->setup
@@ -553,11 +453,9 @@ _clusterlist_module_load(nodeupdown_t handle,
   return 1;
 
  cleanup:
-#if !WITH_STATIC_MODULES
   if (clusterlist_module_dl_handle)
     lt_dlclose(clusterlist_module_dl_handle);
   clusterlist_module_dl_handle = NULL;
-#endif /* !WITH_STATIC_MODULES */
   clusterlist_module_info = NULL;
   return -1;
 }
@@ -565,31 +463,6 @@ _clusterlist_module_load(nodeupdown_t handle,
 int
 _nodeupdown_clusterlist_module_load(nodeupdown_t handle)
 {
-#if WITH_STATIC_MODULES
-  struct nodeupdown_clusterlist_module_info **ptr;
-  int i = 0;
-
-  ptr = &clusterlist_modules[0];
-  while (ptr[i] != NULL)
-    {
-      int rv;
-
-      if (!ptr[i]->clusterlist_module_name)
-        continue;
-
-      if ((rv = _clusterlist_module_load(handle, clusterlist_modules[i])) < 0)
-        goto cleanup;
-
-      if (rv)
-        goto found;
-
-      i++;
-    }
-
-  if (!ptr[i])
-    clusterlist_module_info = &default_clusterlist_module_info;
-
-#else  /* !WITH_STATIC_MODULES */
   int rv;
 
   if ((rv = _nodeupdown_util_lookup_module(handle,
@@ -623,8 +496,6 @@ _nodeupdown_clusterlist_module_load(nodeupdown_t handle)
 
   clusterlist_module_info = &default_clusterlist_module_info;
 
-#endif /* !WITH_STATIC_MODULES */
-
   return 0;
   
  found:
@@ -638,12 +509,10 @@ _nodeupdown_clusterlist_module_load(nodeupdown_t handle)
 int
 _nodeupdown_clusterlist_module_unload(nodeupdown_t handle)
 {
-#if !WITH_STATIC_MODULES
   /* May have not been loaded, so can't close */
   if (clusterlist_module_dl_handle)
     lt_dlclose(clusterlist_module_dl_handle);
   clusterlist_module_dl_handle = NULL;
-#endif /* !WITH_STATIC_MODULES */
   clusterlist_module_info = NULL;
   clusterlist_module_found = 0;
   return 0;
@@ -755,20 +624,10 @@ _nodeupdown_clusterlist_module_get_nodename(nodeupdown_t handle,
  */
 static int
 _config_module_load(nodeupdown_t handle,
-#if WITH_STATIC_MODULES
-             struct nodeupdown_config_module_info *module_info
-#else  /* !WITH_STATIC_MODULES */
-             char *module_path
-#endif /* !WITH_STATIC_MODULES */
-             )
+                    char *module_path)
 {
-#if !WITH_STATIC_MODULES
   struct stat buf;
-#endif /* !WITH_STATIC_MODULES */
  
-#if WITH_STATIC_MODULES
-  config_module_info = module_info;
-#else  /* !WITH_STATIC_MODULES */
   if (stat(module_path, &buf) < 0)
     return 0;
  
@@ -783,7 +642,6 @@ _config_module_load(nodeupdown_t handle,
       handle->errnum = NODEUPDOWN_ERR_CONFIG_MODULE;
       goto cleanup;
     }
-#endif /* !WITH_STATIC_MODULES */
  
   if (!config_module_info->config_module_name
       || !config_module_info->setup
@@ -797,11 +655,9 @@ _config_module_load(nodeupdown_t handle,
   return 1;
  
  cleanup:
-#if !WITH_STATIC_MODULES
   if (config_module_dl_handle)
     lt_dlclose(config_module_dl_handle);
   config_module_dl_handle = NULL;
-#endif /* !WITH_STATIC_MODULES */
   config_module_info = NULL;
   return -1;
 }
@@ -809,31 +665,6 @@ _config_module_load(nodeupdown_t handle,
 int
 _nodeupdown_config_module_load(nodeupdown_t handle)
 {
-#if WITH_STATIC_MODULES
-  struct nodeupdown_config_module_info **ptr;
-  int i = 0;
-   
-  ptr = &config_modules[0];
-  while (ptr[i] != NULL)
-    {
-      int rv;
-       
-      if (!ptr[i]->config_module_name)
-        continue;
-       
-      if ((rv = _config_module_load(handle, config_modules[i])) < 0)
-        goto cleanup;
-       
-      if (rv)
-        goto found;
-       
-      i++;
-    }
-
-  if (!ptr[i])
-    config_module_info = &default_config_module_info;
-
-#else  /* !WITH_STATIC_MODULES */
   int rv;
    
   if ((rv = _nodeupdown_util_lookup_module(handle,
@@ -867,8 +698,6 @@ _nodeupdown_config_module_load(nodeupdown_t handle)
 
   config_module_info = &default_config_module_info;
 
-#endif /* !WITH_STATIC_MODULES */
-
   return 0;
 
  found:
@@ -882,12 +711,10 @@ _nodeupdown_config_module_load(nodeupdown_t handle)
 int
 _nodeupdown_config_module_unload(nodeupdown_t handle)
 {
-#if !WITH_STATIC_MODULES
   /* May have not been loaded, so can't close */
   if (config_module_dl_handle)
     lt_dlclose(config_module_dl_handle);
   config_module_dl_handle = NULL;
-#endif /* !WITH_STATIC_MODULES */
   config_module_info = NULL;
   config_module_found = 0;
   return 0;

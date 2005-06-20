@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.20 2005-05-10 22:29:34 achu Exp $
+ *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.21 2005-06-20 21:58:09 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -384,11 +384,7 @@ hostsfile_clusterlist_compare_to_clusterlist(nodeupdown_t handle)
   return -1;
 }
 
-#if WITH_STATIC_MODULES
-struct nodeupdown_clusterlist_module_info hostsfile_clusterlist_module_info =
-#else  /* !WITH_STATIC_MODULES */
 struct nodeupdown_clusterlist_module_info clusterlist_module_info =
-#endif /* !WITH_STATIC_MODULES */
   {
     "hostsfile",
     &hostsfile_clusterlist_setup,

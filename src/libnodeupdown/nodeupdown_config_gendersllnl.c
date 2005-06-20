@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_config_gendersllnl.c,v 1.14 2005-05-06 18:27:46 achu Exp $
+ *  $Id: nodeupdown_config_gendersllnl.c,v 1.15 2005-06-20 21:58:09 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -159,11 +159,7 @@ gendersllnl_config_load_default(nodeupdown_t handle,
   return 0;
 }
 
-#if WITH_STATIC_MODULES
-struct nodeupdown_config_module_info gendersllnl_config_module_info =
-#else  /* !WITH_STATIC_MODULES */
 struct nodeupdown_config_module_info config_module_info =
-#endif /* !WITH_STATIC_MODULES */
   {
     "gendersllnl",
     &gendersllnl_config_setup,
