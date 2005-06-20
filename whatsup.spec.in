@@ -13,7 +13,7 @@ BuildRoot: %{_tmppath}/@PROJECT@-@VERSION@-@RELEASE@
 %if %{?_with_chaos:1}%{!?_with_chaos:0}
 Requires: gendersllnl
 Requires: genders >= 1.4
-Requires: cerebro >= 1.0-0pre1
+Requires: cerebro >= 1.0-0pre3
 %endif
 
 %description

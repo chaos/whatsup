@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_cerebro.c,v 1.9 2005-06-01 19:36:36 achu Exp $
+ *  $Id: nodeupdown_backend_cerebro.c,v 1.10 2005-06-20 21:31:42 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -89,7 +89,7 @@ cerebro_backend_default_port(nodeupdown_t handle)
 int 
 cerebro_backend_default_timeout_len(nodeupdown_t handle)
 {
-  return CEREBRO_METRIC_UPDOWN_TIMEOUT_LEN_DEFAULT;
+  return CEREBRO_METRIC_TIMEOUT_LEN_DEFAULT;
 }
 
 /*
@@ -185,12 +185,6 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
       return -1;
     }
 
-  if (cerebro_nodelist_metric_type(nodelist) != CEREBRO_METRIC_TYPE_UNSIGNED_INT32)
-    {
-      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
-      goto cleanup;
-    }
-  
   if (!(itr = cerebro_nodelist_iterator_create(nodelist)))
     {
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
@@ -200,29 +194,46 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
   while (!(flag = cerebro_nodelist_iterator_at_end(itr)))
     {
       char *nodename;
-      u_int32_t *updown_state;
-      u_int32_t size;
+      unsigned int metric_value_type, metric_value_len;
+      void *metric_value;
+      u_int32_t updown_state;
 
-      if (!(nodename = cerebro_nodelist_iterator_nodename(itr)))
+      if (cerebro_nodelist_iterator_nodename(itr, &nodename) < 0)
         {
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
           goto cleanup;
         }
 
-      if (!(updown_state = cerebro_nodelist_iterator_metric_value(itr,
-                                                                  &size)))
+      if (!nodename)
         {
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
           goto cleanup;
         }
 
-      if (size != sizeof(u_int32_t))
+      if (cerebro_nodelist_iterator_metric_value(itr,
+                                                 &metric_value_type,
+                                                 &metric_value_len,
+                                                 &metric_value) < 0)
         {
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
           goto cleanup;
         }
 
-      if ((*updown_state))
+      if (metric_value_type != CEREBRO_METRIC_VALUE_TYPE_U_INT32)
+        {
+          nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
+          goto cleanup;
+        }
+
+      if (metric_value_len != sizeof(u_int32_t))
+        {
+          nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
+          goto cleanup;
+        }
+
+      updown_state = *((u_int32_t *)metric_value);
+
+      if (updown_state)
         {
           if (nodeupdown_add_up_node(handle, nodename) < 0)
             goto cleanup;

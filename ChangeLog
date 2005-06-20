@@ -1,3 +1,12 @@
+2005-06-20  Albert Chu  <chu11@llnl.gov>
+
+	* src/libnodeupdown/nodeupdown_backend_cerebro.c: Reworked for
+	Cerebro API changes.
+
+	* whatsup.spec.in: Increase install requirement for cerebro.
+	
+	* tagged whatsup-1-4-0-pre3
+	
 2005-05-31  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown_backend_cerebro.c: Reworked for new
