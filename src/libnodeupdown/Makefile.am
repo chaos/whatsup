@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.53 2005-05-10 22:29:34 achu Exp $
+## $Id: Makefile.am,v 1.54 2005-06-20 22:04:40 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -22,47 +22,7 @@ endif
 # libnodeupdown
 #
 
-if WITH_CEREBRO
-CEREBRO_STATIC_SOURCES        = nodeupdown_backend_cerebro.c
-CEREBRO_STATIC_LIBS           = $(CEREBRO_LIBS)
-endif
-
-if WITH_GENDERSLLNL
-GENDERSLLNL_STATIC_SOURCES    = nodeupdown_clusterlist_gendersllnl.c \
-			        nodeupdown_config_gendersllnl.c
-GENDERS_UTIL_STATIC_SOURCES   = nodeupdown_clusterlist_genders_util.c \
-			        nodeupdown_genders_util.c
-GENDERSLLNL_STATIC_LIBS       = $(GENDERSLLNL_LIBS)
-endif
- 
-if WITH_GENDERS
-GENDERS_STATIC_SOURCES        = nodeupdown_clusterlist_genders.c
-GENDERS_UTIL_STATIC_SOURCES   = nodeupdown_clusterlist_genders_util.c \
-			        nodeupdown_genders_util.c
-GENDERS_STATIC_LIBS           = $(GENDERS_LIBS)
-endif
-
-if WITH_HOSTSFILE
-HOSTSFILE_STATIC_SOURCES      = nodeupdown_clusterlist_hostsfile.c
-endif
-
-if WITH_STATIC_MODULES
-STATIC_MODULE_SOURCES     = nodeupdown_backend_ganglia.c \
-			    nodeupdown_backend_util.c \
-			    $(CEREBRO_STATIC_SOURCES) \
-			    $(GENDERSLLNL_STATIC_SOURCES) \
-			    $(GENDERS_STATIC_SOURCES) \
-			    $(GENDERS_UTIL_STATIC_SOURCES) \
-			    $(HOSTSFILE_STATIC_SOURCES) \
-			    nodeupdown_clusterlist_util.c
-STATIC_MODULE_LIBS        = $(CEREBRO_LIBS) \
-			    $(GENDERSLLNL_STATIC_LIBS) \
-			    $(GENDERS_STATIC_LIBS)
-STATIC_MODULE_LIBEXPAT    = ../libexpat/libexpat.la
-STATIC_MODULE_LIBEXPATDIR = -I$(srcdir)/../libexpat
-else
 MODULE_EXPORT_FLAGS       = -export-dynamic
-endif
 
 nodeupdown_module_builddir=`cd $(top_builddir)/src/libnodeupdown && pwd`
 
@@ -87,24 +47,20 @@ lib_LTLIBRARIES = libnodeupdown.la
 
 libnodeupdown_la_CFLAGS = -D_REENTRANT -I ../../config \
 			  -DNODEUPDOWN_MODULE_BUILDDIR=\"$(nodeupdown_module_builddir)\" \
-	                  -I $(srcdir)/../libcommon \
-			  $(STATIC_MODULE_LIBEXPATDIR)
+	                  -I $(srcdir)/../libcommon
 
 libnodeupdown_la_SOURCES = nodeupdown.c \
 	 		   nodeupdown_clusterlist_default.c \
 	 		   nodeupdown_config_default.c \
 			   nodeupdown_devel.c \
 			   nodeupdown_module.c \
-			   nodeupdown_util.c \
-			   $(STATIC_MODULE_SOURCES)
+			   nodeupdown_util.c
 
-libnodeupdown_la_LIBADD = ../libcommon/libcommon.la \
-			  $(STATIC_MODULE_LIBEXPAT)
+libnodeupdown_la_LIBADD = ../libcommon/libcommon.la
 
 libnodeupdown_la_LDFLAGS = -version-info @LIBNODEUPDOWN_VERSION_INFO@ \
 			   $(NODEUPDOWN_OTHER_FLAGS) \
-			   $(MODULE_EXPORT_FLAGS) \
-			   $(STATIC_MODULE_LIBEXPATDIR)
+			   $(MODULE_EXPORT_FLAGS)
 
 #
 # libnodeupdown modules
@@ -129,7 +85,6 @@ if WITH_HOSTSFILE
 HOSTSFILE_CLUSTERLIST_MODULE   = nodeupdown_clusterlist_hostsfile.la
 endif
 
-if !WITH_STATIC_MODULES
 nodeupdownmodulelibdir = $(NODEUPDOWN_MODULE_DIR)
 nodeupdownmodulelib_LTLIBRARIES = \
 	nodeupdown_backend_ganglia.la \
@@ -138,7 +93,6 @@ nodeupdownmodulelib_LTLIBRARIES = \
 	$(GENDERS_CLUSTERLIST_MODULE) \
 	$(HOSTSFILE_CLUSTERLIST_MODULE) \
 	$(GENDERSLLNL_CONFIG_MODULE)
-endif
 
 nodeupdown_backend_ganglia_la_SOURCES = \
 	nodeupdown_backend_ganglia.c \

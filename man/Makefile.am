@@ -1,12 +1,8 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.12 2005-05-10 18:24:49 achu Exp $
+## $Id: Makefile.am,v 1.13 2005-06-20 22:04:40 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
-
-if !WITH_STATIC_MODULES
-DYNAMIC_MODULES_MANPAGES = nodeupdown_module.3
-endif
 
 man1_MANS = whatsup.1
 
@@ -31,7 +27,7 @@ man3_MANS = \
 	nodeupdown_nodelist_create.3 \
 	nodeupdown_nodelist_clear.3 \
 	nodeupdown_nodelist_destroy.3 \
-	$(DYNAMIC_MODULES_MANPAGES)
+	nodeupdown_module.3
 
 man5_MANS = nodeupdown.conf.5
 
@@ -56,5 +52,5 @@ EXTRA_DIST = \
 	nodeupdown_nodelist_create.3 \
 	nodeupdown_nodelist_clear.3 \
 	nodeupdown_nodelist_destroy.3 \
-	$(DYNAMIC_MODULES_MANPAGES) \
+	nodeupdown_module.3 \
 	nodeupdown.conf.5
