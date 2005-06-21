@@ -1,3 +1,8 @@
+2005-06-21  Albert Chu  <chu11@llnl.gov>
+
+	* src/libnodeupdown/nodeupdown_backend_cerebro.c
+	(cerebro_backend_get_updown_data): Fix typo.
+	
 2005-06-20  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown_backend_cerebro.c: Reworked for
