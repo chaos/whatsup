@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_module.h,v 1.4 2005-05-06 18:23:39 achu Exp $
+ *  $Id: nodeupdown_backend_module.h,v 1.5 2005-06-23 17:32:17 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -28,6 +28,11 @@
 #define _NODEUPDOWN_BACKEND_MODULE_H
 
 #include <nodeupdown.h>
+
+/* 
+ * Backend Tool Flags
+ */
+#define NODEUPDOWN_BACKEND_NO_CLUSTERLIST 0x0001
 
 /*
  * Nodeupdown_backend_default_hostname
@@ -67,6 +72,13 @@ typedef int (*Nodeupdown_backend_setup)(nodeupdown_t);
  * Return 0 on success, -1 on error
  */
 typedef int (*Nodeupdown_backend_cleanup)(nodeupdown_t);
+
+/*
+ * Nodeupdown_backend_flags
+ *
+ * Return backend tool flags
+ */
+typedef int (*Nodeupdown_backend_flags)(nodeupdown_t);
 
 /* 
  * Nodeupdown_backend_get_updown_data
