@@ -1,3 +1,9 @@
+2005-06-28  Albert Chu  <chu11@llnl.gov>
+
+	* src/libnodeupdown/nodeupdown_config_gendersllnl.c
+	(gendersllnl_config_load_default): By default use management
+	network instead of cluster interconnect.
+	
 2005-06-21  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown_backend_cerebro.c

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_config_gendersllnl.c,v 1.15 2005-06-20 21:58:09 achu Exp $
+ *  $Id: nodeupdown_config_gendersllnl.c,v 1.16 2005-06-28 22:55:59 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -103,59 +103,55 @@ gendersllnl_config_load_default(nodeupdown_t handle,
 
   if (!flag)
     {
-      char **nodelist;
-      int nodelistlen, numnodes;
+      char **altnodelist;
+      int altnodelistlen, mgmt_len;
 
-      if ((nodelistlen = genders_nodelist_create(gendersllnl_handle, 
-                                                 &nodelist)) < 0)
+      if ((altnodelistlen = genders_altnodelist_create(gendersllnl_handle, 
+                                                       &altnodelist)) < 0)
         {
 	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONFIG_MODULE);
           return -1;
         }
 
-      if ((numnodes = genders_getnodes(gendersllnl_handle, 
-                                       nodelist, 
-                                       nodelistlen, 
-                                       "mgmt", 
-                                       NULL)) < 0)
+      if ((mgmt_len = genders_getaltnodes_preserve(gendersllnl_handle, 
+                                                   altnodelist, 
+                                                   altnodelistlen, 
+                                                   "mgmt", 
+                                                   NULL)) < 0)
         {
-          (void)genders_nodelist_destroy(gendersllnl_handle, nodelist);
+          (void)genders_altnodelist_destroy(gendersllnl_handle, altnodelist);
 	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONFIG_MODULE);
           return -1;
         }
 
-      if (numnodes)
+      if (mgmt_len)
         {
           int i;
 
-          if (numnodes > NODEUPDOWN_CONFIG_HOSTNAMES_MAX)
-            {
-              (void)genders_nodelist_destroy(gendersllnl_handle, nodelist);
-	      nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONFIG_MODULE);
-              return -1;
-            }
+          if (mgmt_len > NODEUPDOWN_CONFIG_HOSTNAMES_MAX)
+            mgmt_len = NODEUPDOWN_CONFIG_HOSTNAMES_MAX;
 
-          for (i = 0; i < numnodes; i++)
+          for (i = 0; i < mgmt_len; i++)
             {
-              if (strlen(nodelist[i]) > NODEUPDOWN_MAXHOSTNAMELEN)
+              if (strlen(altnodelist[i]) > NODEUPDOWN_MAXHOSTNAMELEN)
                 {
-                  (void)genders_nodelist_destroy(gendersllnl_handle, nodelist);
+                  (void)genders_altnodelist_destroy(gendersllnl_handle, altnodelist);
 		  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONFIG_MODULE);
                   return -1;
                 }
-              strcpy(conf->hostnames[i], nodelist[i]);
+              strcpy(conf->hostnames[i], altnodelist[i]);
             }
-	  conf->hostnames_len = numnodes;
+	  conf->hostnames_len = mgmt_len;
           conf->hostnames_flag++;
         }
-
-      if (genders_nodelist_destroy(gendersllnl_handle, nodelist) < 0)
+      
+      if (genders_altnodelist_destroy(gendersllnl_handle, altnodelist) < 0)
         {
 	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONFIG_MODULE);
           return -1;
         }
     }
-
+  
   return 0;
 }
 
