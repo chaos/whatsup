@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.145 2005-06-20 21:58:09 achu Exp $
+ *  $Id: nodeupdown.c,v 1.146 2005-06-29 00:16:54 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -314,6 +314,7 @@ nodeupdown_load_data(nodeupdown_t handle,
 {
   struct nodeupdown_config conffile_config;
   struct nodeupdown_config module_config;
+  int flags;
 
   if (_unloaded_handle_error_check(handle) < 0)
     goto cleanup;
@@ -344,14 +345,20 @@ nodeupdown_load_data(nodeupdown_t handle,
   if (_nodeupdown_backend_module_setup(handle) < 0)
     goto cleanup;
 
-  /* 
-   * Load clusterlist module
-   */
-  if (_nodeupdown_clusterlist_module_load(handle) < 0)
+  if (flags = _nodeupdown_backend_module_flags(handle) < 0)
     goto cleanup;
 
-  if (_nodeupdown_clusterlist_module_setup(handle) < 0)
-    goto cleanup;
+  if (!(flags & NODEUPDOWN_BACKEND_NO_CLUSTERLIST))
+    {
+      /* 
+       * Load clusterlist module
+       */
+      if (_nodeupdown_clusterlist_module_load(handle) < 0)
+        goto cleanup;
+      
+      if (_nodeupdown_clusterlist_module_setup(handle) < 0)
+        goto cleanup;
+    }
 
   /* 
    * Load config module
@@ -503,8 +510,11 @@ nodeupdown_load_data(nodeupdown_t handle,
         goto cleanup;
     }
 
-  if (_nodeupdown_clusterlist_module_compare_to_clusterlist(handle) < 0)
-    goto cleanup;
+  if (!(flags & NODEUPDOWN_BACKEND_NO_CLUSTERLIST))
+    {
+      if (_nodeupdown_clusterlist_module_compare_to_clusterlist(handle) < 0)
+        goto cleanup;
+    }
   
   hostlist_sort(handle->up_nodes);
   hostlist_sort(handle->down_nodes);

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_module.h,v 1.5 2005-06-23 17:32:17 achu Exp $
+ *  $Id: nodeupdown_backend_module.h,v 1.6 2005-06-29 00:16:54 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -56,6 +56,13 @@ typedef int (*Nodeupdown_backend_default_port)(nodeupdown_t);
 typedef int (*Nodeupdown_backend_default_timeout_len)(nodeupdown_t);
 
 /*
+ * Nodeupdown_backend_flags
+ *
+ * Return backend tool flags
+ */
+typedef int (*Nodeupdown_backend_flags)(nodeupdown_t);
+
+/*
  * Nodeupdown_backend_setup
  *
  * Setup the backend module
@@ -72,13 +79,6 @@ typedef int (*Nodeupdown_backend_setup)(nodeupdown_t);
  * Return 0 on success, -1 on error
  */
 typedef int (*Nodeupdown_backend_cleanup)(nodeupdown_t);
-
-/*
- * Nodeupdown_backend_flags
- *
- * Return backend tool flags
- */
-typedef int (*Nodeupdown_backend_flags)(nodeupdown_t);
 
 /* 
  * Nodeupdown_backend_get_updown_data
@@ -105,6 +105,7 @@ struct nodeupdown_backend_module_info
   Nodeupdown_backend_default_hostname default_hostname;
   Nodeupdown_backend_default_port default_port;
   Nodeupdown_backend_default_timeout_len default_timeout_len;
+  Nodeupdown_backend_flags flags;
   Nodeupdown_backend_setup setup;
   Nodeupdown_backend_cleanup cleanup;
   Nodeupdown_backend_get_updown_data get_updown_data;

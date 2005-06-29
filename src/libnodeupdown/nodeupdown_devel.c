@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_devel.c,v 1.3 2005-05-13 23:38:35 achu Exp $
+ *  $Id: nodeupdown_devel.c,v 1.4 2005-06-29 00:16:54 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -39,6 +39,7 @@
 #include "nodeupdown_api.h"
 #include "nodeupdown_module.h"
 #include "nodeupdown_util.h"
+#include "nodeupdown/nodeupdown_backend_module.h"
 #include "nodeupdown/nodeupdown_constants.h"
 #include "nodeupdown/nodeupdown_devel.h"
 #include "hostlist.h"
@@ -77,7 +78,8 @@ int
 _add_node(nodeupdown_t handle, const char *node, int up_or_down)
 {
   char buffer[NODEUPDOWN_MAXNODENAMELEN+1];
-  int rv;
+  char *nodePtr;
+  int rv, flags;
       
   if (_setup_handle_error_check(handle) < 0)
     return -1;
@@ -88,23 +90,33 @@ _add_node(nodeupdown_t handle, const char *node, int up_or_down)
       return -1;
     }
 
-  if ((rv = _nodeupdown_clusterlist_module_is_node_in_cluster(handle, 
-							      node)) < 0)
+  if ((flags = _nodeupdown_backend_module_flags(handle)) < 0)
     goto cleanup;
-  
-  if (!rv)
-    return 0;
-  
-  if (_nodeupdown_clusterlist_module_get_nodename(handle,
-						  node,
-						  buffer,
-						  NODEUPDOWN_MAXNODENAMELEN+1) < 0)
-    goto cleanup;
+
+  if (!(flags & NODEUPDOWN_BACKEND_NO_CLUSTERLIST))
+    {
+      if ((rv = _nodeupdown_clusterlist_module_is_node_in_cluster(handle, 
+                                                                  node)) < 0)
+        goto cleanup;
+      
+      if (!rv)
+        return 0;
+      
+      if (_nodeupdown_clusterlist_module_get_nodename(handle,
+                                                      node,
+                                                      buffer,
+                                                      NODEUPDOWN_MAXNODENAMELEN+1) < 0)
+        goto cleanup;
+      
+      nodePtr = buffer;
+    }
+  else
+    nodePtr = node;
       
   if (up_or_down == NODEUPDOWN_UP_NODES)
-    rv = hostlist_push(handle->up_nodes, buffer);
+    rv = hostlist_push(handle->up_nodes, nodePtr);
   else
-    rv = hostlist_push(handle->down_nodes, buffer);
+    rv = hostlist_push(handle->down_nodes, nodePtr);
       
   if (!rv)
     {

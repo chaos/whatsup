@@ -3,6 +3,13 @@
 	* src/libnodeupdown/nodeupdown_config_gendersllnl.c
 	(gendersllnl_config_load_default): By default use management
 	network instead of cluster interconnect.
+
+	* src/libnodeupdown/nodeupdown_backend_cerebro.c,
+	src/libnodeupdown/nodeupdown.c,
+	src/libnodeupdown/nodeupdown/nodeupdown_backend_module.h,
+	src/libnodeupdown/nodeupdown_devel.c: Support backend module flag
+	to optionally not open/use the clusterlist module.  This is for
+	performance reasons.
 	
 2005-06-21  Albert Chu  <chu11@llnl.gov>
 

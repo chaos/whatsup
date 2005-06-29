@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_cerebro.c,v 1.12 2005-06-21 18:07:19 achu Exp $
+ *  $Id: nodeupdown_backend_cerebro.c,v 1.13 2005-06-29 00:16:54 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -49,6 +49,8 @@
 #include <cerebro.h>
 #include <cerebro/cerebro_metric_protocol.h>
 
+#define CEREBRO_BACKEND_FLAGS NODEUPDOWN_BACKEND_NO_CLUSTERLIST
+
 static cerebro_t cerebro_handle = NULL;
 
 char cerebro_default_hostname[NODEUPDOWN_MAXHOSTNAMELEN+1];
@@ -90,6 +92,17 @@ int
 cerebro_backend_default_timeout_len(nodeupdown_t handle)
 {
   return CEREBRO_METRIC_TIMEOUT_LEN_DEFAULT;
+}
+
+/*
+ * cerebro_backend_flags
+ *
+ * cerebro backend module flags function
+ */
+int 
+cerebro_backend_flags(nodeupdown_t handle)
+{
+  return CEREBRO_BACKEND_FLAGS;
 }
 
 /*
@@ -272,6 +285,7 @@ struct nodeupdown_backend_module_info backend_module_info =
     &cerebro_backend_default_hostname,
     &cerebro_backend_default_port,
     &cerebro_backend_default_timeout_len,
+    &cerebro_backend_flags,
     &cerebro_backend_setup,
     &cerebro_backend_cleanup,
     &cerebro_backend_get_updown_data
