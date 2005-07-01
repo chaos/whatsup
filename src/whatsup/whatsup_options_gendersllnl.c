@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup_options_gendersllnl.c,v 1.11 2005-06-20 21:58:09 achu Exp $
+ *  $Id: whatsup_options_gendersllnl.c,v 1.12 2005-07-01 23:51:08 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -33,11 +33,6 @@
 #if STDC_HEADERS
 #include <string.h>
 #endif /* STDC_HEADERS */
-
-#define _GNU_SOURCE
-#if HAVE_GETOPT_H
-#include <getopt.h>
-#endif /* HAVE_GETOPT_H */
 
 #include <gendersllnl.h>
 
@@ -119,15 +114,22 @@ gendersllnl_options_register_option(char c, char *options)
  * gendersllnl add_long_option func
  */
 int 
-gendersllnl_options_add_long_option(char c, struct option *long_option)
+gendersllnl_options_add_long_option(char c, 
+                                    const char **name,
+                                    int *has_arg,
+                                    int **flag,
+                                    int *val)
 {
 #if HAVE_GETOPT_LONG
   if (c == 'a' && gendersllnl_option_a_registered)
     {
-      long_option->name = GENDERSLLNL_OPTION_ALTNAME;
-      long_option->has_arg = 0;
-      long_option->flag = NULL;
-      long_option->val = 'a';
+      if (!name || !has_arg || !flag || !val)
+        return -1;
+
+      *name = GENDERSLLNL_OPTION_ALTNAME;
+      *has_arg = 0;
+      *flag = NULL;
+      *val = 'a';
     }
 #endif /* HAVE_GETOPT_LONG */
   return 0;

@@ -1,3 +1,7 @@
+2005-07-01  Albert Chu  <chu11@llnl.gov>
+	
+	* Whatsup and options modules cleanup.
+	
 2005-06-28  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown_config_gendersllnl.c

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup_options.h,v 1.7 2005-04-25 16:44:29 achu Exp $
+ *  $Id: whatsup_options.h,v 1.8 2005-07-01 23:51:08 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -30,11 +30,6 @@
 #if HAVE_CONFIG_H
 #include "config.h"
 #endif /* HAVE_CONFIG_H */
-
-#define _GNU_SOURCE
-#if HAVE_GETOPT_H
-#include <getopt.h>
-#endif /* HAVE_GETOPT_H */
 
 /*
  * Whatsup_options_setup
@@ -89,12 +84,16 @@ typedef int (*Whatsup_options_register_option)(char c, char *options);
 /*
  * Whatsup_options_add_long_option
  *
- * If long options are supported, add the long options values into the
- * structure pointed to by long_option.
+ * If long options are supported, add the long options values
+ * appropriately.
  *
  * Returns 0 on success, -1 on error
  */
-typedef int (*Whatsup_options_add_long_option)(char c, struct option *long_option);
+typedef int (*Whatsup_options_add_long_option)(char c,
+                                               const char **name,
+                                               int *has_arg,
+                                               int **flag,
+                                               int *val);
 
 /*  
  * Whatsup_options_handle_option
