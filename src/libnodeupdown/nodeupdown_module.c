@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.c,v 1.14 2005-06-29 00:16:54 achu Exp $
+ *  $Id: nodeupdown_module.c,v 1.15 2005-07-02 00:06:47 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -53,22 +53,22 @@
 #include "ltdl.h"
 
 static char *backend_modules[] = {
-  "nodeupdown_backend_cerebro.la",
-  "nodeupdown_backend_ganglia.la",
+  "nodeupdown_backend_cerebro.so",
+  "nodeupdown_backend_ganglia.so",
   NULL
 };
 static int backend_modules_len = 1;
 
 static char *clusterlist_modules[] = {
-  "nodeupdown_clusterlist_gendersllnl.la",
-  "nodeupdown_clusterlist_genders.la",
-  "nodeupdown_clusterlist_hostsfile.la",
+  "nodeupdown_clusterlist_gendersllnl.so",
+  "nodeupdown_clusterlist_genders.so",
+  "nodeupdown_clusterlist_hostsfile.so",
   NULL
 };
 static int clusterlist_modules_len = 3;
 
 static char *config_modules[] = {
-  "nodeupdown_config_gendersllnl.la",
+  "nodeupdown_config_gendersllnl.so",
   NULL
 };
 static int config_modules_len = 1;
@@ -196,7 +196,7 @@ _nodeupdown_util_search_for_module(nodeupdown_t handle,
            * object file or libtool file.
            */
           ptr = strchr(dirent->d_name, '.');
-          if (!ptr || !(!strcmp(ptr, ".la") || !strcmp(ptr, ".so")))
+          if (!ptr || strcmp(ptr, ".so"))
             continue;
  
           memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
