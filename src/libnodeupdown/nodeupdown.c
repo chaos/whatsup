@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.147 2005-07-02 13:21:21 achu Exp $
+ *  $Id: nodeupdown.c,v 1.148 2005-07-02 15:10:09 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -48,6 +48,8 @@
 #include "hostlist.h"
 #include "list.h"
 #include "ltdl.h"
+
+extern int clusterlist_module_found;
 
 /* 
  * nodeupdown_errmsg
@@ -717,7 +719,7 @@ _is_node(nodeupdown_t handle, const char *node, int up_or_down)
       return -1;
     }
 
-  if (clusterlist_module_found(handle))
+  if (clusterlist_module_found)
     {
       if ((rv = clusterlist_module_is_node_in_cluster(handle, node)) < 0)
 	return -1;

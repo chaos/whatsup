@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_devel.c,v 1.4 2005-06-29 00:16:54 achu Exp $
+ *  $Id: nodeupdown_devel.c,v 1.5 2005-07-02 15:10:09 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -90,28 +90,27 @@ _add_node(nodeupdown_t handle, const char *node, int up_or_down)
       return -1;
     }
 
-  if ((flags = _nodeupdown_backend_module_flags(handle)) < 0)
+  if ((flags = backend_module_flags(handle)) < 0)
     goto cleanup;
 
   if (!(flags & NODEUPDOWN_BACKEND_NO_CLUSTERLIST))
     {
-      if ((rv = _nodeupdown_clusterlist_module_is_node_in_cluster(handle, 
-                                                                  node)) < 0)
+      if ((rv = clusterlist_module_is_node_in_cluster(handle, node)) < 0)
         goto cleanup;
       
       if (!rv)
         return 0;
       
-      if (_nodeupdown_clusterlist_module_get_nodename(handle,
-                                                      node,
-                                                      buffer,
-                                                      NODEUPDOWN_MAXNODENAMELEN+1) < 0)
+      if (clusterlist_module_get_nodename(handle,
+                                          node,
+                                          buffer,
+                                          NODEUPDOWN_MAXNODENAMELEN+1) < 0)
         goto cleanup;
       
       nodePtr = buffer;
     }
   else
-    nodePtr = node;
+    nodePtr = (char *)node;
       
   if (up_or_down == NODEUPDOWN_UP_NODES)
     rv = hostlist_push(handle->up_nodes, nodePtr);

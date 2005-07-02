@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.h,v 1.10 2005-07-02 13:21:21 achu Exp $
+ *  $Id: nodeupdown_module.h,v 1.11 2005-07-02 15:10:09 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -31,87 +31,87 @@
 #include "nodeupdown/nodeupdown_config.h"
 
 /*
- * backend_module_module_load
+ * backend_module_load
  *
- * Find and load the nodeupdown backend module
+ * Find and load a nodeupdown backend module
  *
  * Returns 0 on success, -1 on error
  */
-int backend_module_module_load(nodeupdown_t handle);
+int backend_module_load(nodeupdown_t handle);
  
 /*
- * backend_module_module_unload
+ * backend_module_unload
  *
  * unload the nodeupdown backend module
  *
  * Returns 0 on success, -1 on error
  */
-int backend_module_module_unload(nodeupdown_t handle);
+int backend_module_unload(nodeupdown_t handle);
 
 /* 
- * backend_module_module_name
+ * backend_module_name
  *
  * Return pointer to backend module name
  */
-char *backend_module_module_name(nodeupdown_t handle);
+char *backend_module_name(nodeupdown_t handle);
 
 /* 
- * backend_module_module_default_hostname
+ * backend_module_default_hostname
  *
  * call backend module default_hostname function
  */
-char *backend_module_module_default_hostname(nodeupdown_t handle);
+char *backend_module_default_hostname(nodeupdown_t handle);
 
 /* 
- * backend_module_module_default_port
+ * backend_module_default_port
  *
  * call backend module default_port function
  */
-int backend_module_module_default_port(nodeupdown_t handle);
+int backend_module_default_port(nodeupdown_t handle);
 
 /* 
- * backend_module_module_default_timeout_len
+ * backend_module_default_timeout_len
  *
  * call backend module default_timeout_len function
  */
-int backend_module_module_default_timeout_len(nodeupdown_t handle);
+int backend_module_default_timeout_len(nodeupdown_t handle);
 
 /* 
- * backend_module_module_flags
+ * backend_module_flags
  *
  * call backend module flags function
  */
-int backend_module_module_flags(nodeupdown_t handle);
+int backend_module_flags(nodeupdown_t handle);
 
 /* 
- * backend_module_module_setup
+ * backend_module_setup
  *
  * call backend module setup function
  */
-int backend_module_module_setup(nodeupdown_t handle);
+int backend_module_setup(nodeupdown_t handle);
 
 /* 
- * backend_module_module_cleanup
+ * backend_module_cleanup
  *
  * call backend module cleanup function
  */
-int backend_module_module_cleanup(nodeupdown_t handle);
+int backend_module_cleanup(nodeupdown_t handle);
 
 /* 
- * backend_module_module_get_updown_data
+ * backend_module_get_updown_data
  *
  * call backend module get_updown_data function
  */
-int backend_module_module_get_updown_data(nodeupdown_t handle, 
-					  const char *hostname,
-					  unsigned int port,
-					  unsigned int timeout_len,
-					  char *reserved);
+int backend_module_get_updown_data(nodeupdown_t handle, 
+                                   const char *hostname,
+                                   unsigned int port,
+                                   unsigned int timeout_len,
+                                   char *reserved);
 
 /*
  * clusterlist_module_load
  *
- * Find and load the nodeupdown clusterlist module.  If none is
+ * Find and load a nodeupdown clusterlist module.  If none is
  * found a default one will still be loaded.
  *
  * Returns 0 on success, -1 on error
@@ -126,13 +126,6 @@ int clusterlist_module_load(nodeupdown_t handle);
  * Returns 0 on success, -1 on error
  */
 int clusterlist_module_unload(nodeupdown_t handle);
-
-/* 
- * clusterlist_module_found
- *
- * Returns 1 if a clusterlist module was found, 0 if not
- */
-int clusterlist_module_found(nodeupdown_t handle);
 
 /* 
  * clusterlist_module_name
@@ -189,7 +182,7 @@ int clusterlist_module_compare_to_clusterlist(nodeupdown_t handle);
 /*
  * config_module_load
  *
- * Find and load the nodeupdown config module.  If none is found a
+ * Find and load a nodeupdown config module.  If none is found a
  * default one will still be loaded.
  *
  * Returns 0 on success, -1 on error
@@ -204,13 +197,6 @@ int config_module_load(nodeupdown_t handle);
  * Returns 0 on success, -1 on error
  */
 int config_module_unload(nodeupdown_t handle);
-
-/* 
- * config_module_found
- *
- * Returns 1 if a config module was found, 0 if not
- */
-int config_module_found(nodeupdown_t handle);
 
 /* 
  * config_module_name

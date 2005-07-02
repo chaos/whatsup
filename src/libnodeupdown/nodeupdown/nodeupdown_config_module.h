@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_config_module.h,v 1.4 2005-05-06 18:23:39 achu Exp $
+ *  $Id: nodeupdown_config_module.h,v 1.5 2005-07-02 15:10:09 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -49,13 +49,13 @@ typedef int (*Nodeupdown_config_setup)(nodeupdown_t);
 typedef int (*Nodeupdown_config_cleanup)(nodeupdown_t);
 
 /*
- * Nodeupdown_config_load_default
+ * Nodeupdown_config_load_config
  *
  * change default configuration values
  *
  * Returns 0 on success, -1 on error
  */
-typedef int (*Nodeupdown_config_load_default)(nodeupdown_t, 
+typedef int (*Nodeupdown_config_load_config)(nodeupdown_t, 
 					      struct nodeupdown_config *);
  
 /*
@@ -69,7 +69,7 @@ struct nodeupdown_config_module_info
   char *config_module_name;
   Nodeupdown_config_setup setup;
   Nodeupdown_config_cleanup cleanup;
-  Nodeupdown_config_load_default load_default;
+  Nodeupdown_config_load_config load_config;
 };
 
 #endif /* _NODEUPDOWN_CONFIG_MODULE_H  */

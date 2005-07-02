@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.c,v 1.16 2005-07-02 13:21:21 achu Exp $
+ *  $Id: nodeupdown_module.c,v 1.17 2005-07-02 15:10:09 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -73,6 +73,14 @@ static char *config_modules[] = {
 };
 static int config_modules_len = 1;
 
+#define BACKEND_MODULE_SIGNATURE     "nodeupdown_backend_"
+#define CLUSTERLIST_MODULE_SIGNATURE "nodeupdown_clusterlist_"
+#define CONFIG_MODULE_SIGNATURE      "nodeupdown_config_"
+
+#define BACKEND_MODULE_INFO_SYM      "backend_module_info"
+#define CLUSTERLIST_MODULE_INFO_SYM  "clusterlist_module_info"
+#define CONFIG_MODULE_INFO_SYM       "config_module_info"
+
 static lt_dlhandle backend_module_dl_handle = NULL;
 static lt_dlhandle clusterlist_module_dl_handle = NULL;
 static lt_dlhandle config_module_dl_handle = NULL;
@@ -89,34 +97,82 @@ extern struct nodeupdown_config_module_info default_config_module_info;
 
 static int clusterlist_module_found = 0;
 
-static int config_module_found = 0;
-
 /* 
- * Nodeupdown_util_load_module
+ * Nodeupdown_module_callback
  *
- * Define a load module function to be passed to
- * nodeupdown_util_lookup_module().
+ * Define a load module function to be passed to a module finder
+ * function.
  *
- * Returns 1 if module is found and loaded successfully, 0 if module
- * cannot be found, -1 on fatal error.
+ * Returns 1 if module is loaded, 0 if not, -1 on fatal error.
  */
-typedef int (*Nodeupdown_util_load_module)(nodeupdown_t, char *);
+typedef int (*Nodeupdown_module_callback)(nodeupdown_t, void *, void *);
 
 /* 
- * _nodeupdown_util_lookup_module
+ * _load_module
+ *
+ * Load module indicated by the parameters and call module callback
+ *
+ * Returns 1 if module loaded, 0 if not, -1 on error
+ */
+static int
+_load_module(nodeupdown_t handle,
+             char *search_dir,
+             char *filename,
+             Nodeupdown_module_callback module_callback,
+             char *module_info_sym)
+{
+  char filebuf[NODEUPDOWN_MAXPATHLEN+1];
+  struct stat buf;
+  lt_dlhandle dl_handle;
+  void *module_info;
+  int flag;
+
+  memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
+  snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/%s", search_dir, filename);
+
+  if (stat(filebuf, &buf) < 0)
+    return 0;
+
+  if (!(dl_handle = lt_dlopen(filebuf)))
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      goto cleanup;
+    }
+  
+  if (!(module_info = lt_dlsym(dl_handle, module_info_sym)))
+    {
+      lt_dlclose(dl_handle);
+      return 0;
+    }
+
+  if ((flag = module_callback(handle, dl_handle, filebuf)) < 0)
+    goto cleanup;
+
+  if (!flag)
+    lt_dlclose(dl_handle);
+
+  return flag;
+
+ cleanup:
+  return -1;
+}
+
+/* 
+ * _find_known_module
  *
  * Search the directory 'search_dir' for any one of the modules listed
- * in 'modules_list'.  Call 'load_module' on any discovered module.
+ * in 'modules_list'.  Call 'module_callback' on any discovered module.
  *
  * Returns 1 if a module is found and loaded, 0 if a module is not
  * found, -1 on fatal error.
  */
 static int
-_nodeupdown_util_lookup_module(nodeupdown_t handle, 
-			       char *search_dir,
-			       char **modules_list,
-			       int modules_list_len,
-			       Nodeupdown_util_load_module load_module)
+_find_known_module(nodeupdown_t handle, 
+                   char *search_dir,
+                   char **modules_list,
+                   int modules_list_len,
+                   Nodeupdown_module_callback module_callback,
+                   char *module_info_sym)
 {
   DIR *dir;
   int i = 0, found = 0, rv = -1;
@@ -135,16 +191,15 @@ _nodeupdown_util_lookup_module(nodeupdown_t handle,
         {
           if (!strcmp(dirent->d_name, modules_list[i]))
             {
-              char filebuf[NODEUPDOWN_MAXPATHLEN+1];
               int flag;
 
-              memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
-              snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/%s",
-                       search_dir, modules_list[i]);
-
-              if ((flag = load_module(handle, filebuf)) < 0)
-                  goto cleanup;
-
+              if ((flag = _load_module(handle,
+                                       search_dir,
+                                       modules_list[i],
+                                       module_callback,
+                                       module_info_sym)) < 0)
+                goto cleanup;
+                                       
               if (flag)
                 {
                   found++;
@@ -163,17 +218,18 @@ _nodeupdown_util_lookup_module(nodeupdown_t handle,
 }
 
 /*
- * _nodeupdown_util_search_for_module
+ * _find_unknown_module
  *
  * Search the directory 'search_dir' for any module with the given signature.
  *
  * Returns 1 when a module is found, 0 when one is not, -1 on fatal error
  */
 static int
-_nodeupdown_util_search_for_module(nodeupdown_t handle,
-				   char *search_dir,
-				   char *signature,
-				   Nodeupdown_util_load_module load_module)
+_find_unknown_module(nodeupdown_t handle,
+                     char *search_dir,
+                     char *signature,
+                     Nodeupdown_module_callback module_callback,
+                     char *module_info_sym)
 {
   DIR *dir;
   struct dirent *dirent;
@@ -188,24 +244,20 @@ _nodeupdown_util_search_for_module(nodeupdown_t handle,
 
       if (ptr && ptr == &dirent->d_name[0])
         {
-          char filebuf[NODEUPDOWN_MAXPATHLEN+1];
           int flag;
- 
-          /*
-           * Don't bother trying to load this file unless its a shared
-           * object file or libtool file.
-           */
+
+          /* Don't bother unless its a shared object */
           ptr = strchr(dirent->d_name, '.');
           if (!ptr || strcmp(ptr, ".so"))
             continue;
- 
-          memset(filebuf, '\0', NODEUPDOWN_MAXPATHLEN+1);
-          snprintf(filebuf, NODEUPDOWN_MAXPATHLEN, "%s/%s",
-                   search_dir, dirent->d_name);
-           
-          if ((flag = load_module(handle, filebuf)) < 0)
-	    goto cleanup;
- 
+
+          if ((flag = _load_module(handle,
+                                   search_dir,
+                                   dirent->d_name,
+                                   module_callback,
+                                   module_info_sym)) < 0)
+            goto cleanup;
+
           if (flag)
             {
               found++;
@@ -221,34 +273,83 @@ _nodeupdown_util_search_for_module(nodeupdown_t handle,
   return rv;
 }
 
-/* 
- * _backend_module_load
+/*
+ * _find_module
  *
- * Load the specified backend module
- * 
- * Returns 1 if module is found and loaded successfully, 0 if module
- * cannot be found, -1 on fatal error.
+ * Find and load a module
+ *
+ * Returns 1 when a module is found, 0 when one is not, -1 on fatal error
  */
 static int
-_backend_module_load(nodeupdown_t handle, char *module_path)
+_find_module(nodeupdown_t handle,
+             char **modules_list,
+             int modules_list_len,
+             char *signature,
+             Nodeupdown_module_callback module_callback,
+             char *module_info_sym)
 {
-  struct stat buf;
+  int rv;
 
-  if (stat(module_path, &buf) < 0)
-    return 0;
-
-  if (!(backend_module_dl_handle = lt_dlopen(module_path)))
+  if (modules_list && modules_list_len)
     {
-      handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
-      goto cleanup;
+#ifndef NDEBUG
+      if ((rv = _find_known_module(handle,
+                                   NODEUPDOWN_MODULE_BUILDDIR "/.libs",
+                                   modules_list,
+                                   modules_list_len,
+                                   module_callback,
+                                   module_info_sym)) < 0)
+        return -1;
+      
+      if (rv)
+        return 1;
+#endif /* !NDEBUG */
+      
+      if ((rv = _find_known_module(handle,
+                                   NODEUPDOWN_MODULE_DIR,
+                                   modules_list,
+                                   modules_list_len,
+                                   module_callback,
+                                   module_info_sym)) < 0)
+        return -1;
+      
+      if (rv)
+        return 1;
+    }
+  
+  if ((rv = _find_unknown_module(handle,
+                                 NODEUPDOWN_MODULE_DIR,
+                                 signature,
+                                 module_callback,
+                                 module_info_sym)) < 0)
+    return -1;
+  
+  if (rv)
+    return 1;
+
+  return 0;
+}
+
+/* 
+ * _backend_module_callback
+ *
+ * Check and setup the backend module
+ * 
+ * Returns 1 if is loaded, 0 if not, -1 on fatal error
+ */
+static int
+_backend_module_callback(nodeupdown_t handle, void *dl_handle, void *module_info)
+{
+  if (!dl_handle || !module_info)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
     }
 
-  if (!(backend_module_info = (struct nodeupdown_backend_module_info *)lt_dlsym(backend_module_dl_handle, "backend_module_info")))
-    {
-      handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
-      goto cleanup;
-    }
+  backend_module_dl_handle = dl_handle;
+  backend_module_info = module_info;
 
+  backend_module_info = module_info;
   if (!backend_module_info->backend_module_name
       || !backend_module_info->default_hostname
       || !backend_module_info->default_port
@@ -257,18 +358,12 @@ _backend_module_load(nodeupdown_t handle, char *module_path)
       || !backend_module_info->cleanup
       || !backend_module_info->get_updown_data)
     {
-      handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
-      goto cleanup;
+      backend_module_dl_handle = NULL;
+      backend_module_info = NULL;
+      return 0;
     }
 
   return 1;
-
- cleanup:
-  if (backend_module_dl_handle)
-    lt_dlclose(backend_module_dl_handle);
-  backend_module_dl_handle = NULL;
-  backend_module_info = NULL;
-  return -1;
 }
 
 int 
@@ -276,40 +371,21 @@ backend_module_load(nodeupdown_t handle)
 {
   int rv;
   
-  if ((rv = _nodeupdown_util_lookup_module(handle,
-					   NODEUPDOWN_MODULE_BUILDDIR,
-					   backend_modules,
-					   backend_modules_len,
-					   _backend_module_load)) < 0)
-    goto cleanup;
-  
-  if (rv)
-    goto found;
-  
-  if ((rv = _nodeupdown_util_lookup_module(handle,
-					   NODEUPDOWN_MODULE_DIR,
-					   backend_modules,
-					   backend_modules_len,
-					   _backend_module_load)) < 0)
-    goto cleanup;
-  
-  if (rv)
-    goto found;
+  if ((rv = _find_module(handle,
+                         backend_modules,
+                         backend_modules_len,
+                         BACKEND_MODULE_SIGNATURE,
+                         _backend_module_callback,
+                         BACKEND_MODULE_INFO_SYM)) < 0)
+    return -1;
 
-  if ((rv = _nodeupdown_util_search_for_module(handle,
-					       NODEUPDOWN_MODULE_DIR,
-					       "nodeupdown_backend_",
-					       _backend_module_load)) < 0)
-    goto cleanup;
-  
-  handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
-  goto cleanup;
+  if (!rv)
+    {
+      handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
+      return -1;
+    }
 
- found:
   return 0;
-
- cleanup:
-  return -1;
 }
 
 int
@@ -420,33 +496,25 @@ backend_module_get_updown_data(nodeupdown_t handle,
 }
 
 /*
- * _clusterlist_module_load
+ * _clusterlist_module_callback
  *
- * Load the specified clusterlist module
+ * Check and setup the clusterlist module
  *
- * Returns 1 if module is found and loaded successfully, 0 if module
- * cannot be found, -1 on fatal error.
+ * Returns 1 if is loaded, 0 if not, -1 on fatal error
  */
 static int
-_clusterlist_module_load(nodeupdown_t handle, char *module_path)
+_clusterlist_module_callback(nodeupdown_t handle, void *dl_handle, void *module_info)
 {
-  struct stat buf;
-
-  if (stat(module_path, &buf) < 0)
-    return 0;
-
-  if (!(clusterlist_module_dl_handle = lt_dlopen(module_path)))
+  if (!dl_handle || !module_info)
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
-      goto cleanup;
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
     }
 
-  if (!(clusterlist_module_info = (struct nodeupdown_clusterlist_module_info *)lt_dlsym(clusterlist_module_dl_handle, "clusterlist_module_info")))
-    {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
-      goto cleanup;
-    }
+  clusterlist_module_dl_handle = dl_handle;
+  clusterlist_module_info = module_info;
 
+  clusterlist_module_info = module_info;
   if (!clusterlist_module_info->clusterlist_module_name
       || !clusterlist_module_info->setup
       || !clusterlist_module_info->get_numnodes
@@ -455,64 +523,35 @@ _clusterlist_module_load(nodeupdown_t handle, char *module_path)
       || !clusterlist_module_info->get_nodename
       || !clusterlist_module_info->compare_to_clusterlist)
     {
-      handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
-      goto cleanup;
+      clusterlist_module_dl_handle = NULL;
+      clusterlist_module_info = NULL;
+      return 0;
     }
 
   return 1;
-
- cleanup:
-  if (clusterlist_module_dl_handle)
-    lt_dlclose(clusterlist_module_dl_handle);
-  clusterlist_module_dl_handle = NULL;
-  clusterlist_module_info = NULL;
-  return -1;
 }
 
 int
 clusterlist_module_load(nodeupdown_t handle)
 {
   int rv;
-
-  if ((rv = _nodeupdown_util_lookup_module(handle,
-					   NODEUPDOWN_MODULE_BUILDDIR,
-					   clusterlist_modules,
-					   clusterlist_modules_len,
-					   _clusterlist_module_load)) < 0)
-    goto cleanup;
-
-  if (rv)
-    goto found;
-
-  if ((rv = _nodeupdown_util_lookup_module(handle,
-					   NODEUPDOWN_MODULE_DIR,
-					   clusterlist_modules,
-					   clusterlist_modules_len,
-					   _clusterlist_module_load)) < 0)
-    goto cleanup;
-                      
-  if (rv)
-    goto found;
-
-  if ((rv = _nodeupdown_util_search_for_module(handle,
-					       NODEUPDOWN_MODULE_DIR,
-					       "nodeupdown_clusterlist_",
-					       _clusterlist_module_load)) < 0)
-    goto cleanup;
+  
+  if ((rv = _find_module(handle,
+                         clusterlist_modules,
+                         clusterlist_modules_len,
+                         CLUSTERLIST_MODULE_SIGNATURE,
+                         _clusterlist_module_callback,
+                         CLUSTERLIST_MODULE_INFO_SYM)) < 0)
+    return -1;
 
   if (rv)
-    goto found;
+    {
+      clusterlist_module_found++;
+      return 0;
+    }
 
   clusterlist_module_info = &default_clusterlist_module_info;
-
   return 0;
-  
- found:
-  clusterlist_module_found++;
-  return 0;
-
- cleanup:
-  return -1;
 }
 
 int
@@ -525,12 +564,6 @@ clusterlist_module_unload(nodeupdown_t handle)
   clusterlist_module_info = NULL;
   clusterlist_module_found = 0;
   return 0;
-}
-
-int 
-clusterlist_module_found(nodeupdown_t handle)
-{
-  return (clusterlist_module_found) ? 1 : 0;
 }
 
 char *
@@ -623,97 +656,56 @@ clusterlist_module_get_nodename(nodeupdown_t handle,
 }
 
 /*
- * _config_module_load
+ * _config_module_callback
  *
- * Load the specified config module
+ * Check and setup the config module
  *
- * Returns 1 if module is found and loaded successfully, 0 if module
- * cannot be found, -1 on fatal error.
+ * Returns 1 if is loaded, 0 if not, -1 on fatal error
  */
 static int
-_config_module_load(nodeupdown_t handle,
-                    char *module_path)
+_config_module_callback(nodeupdown_t handle, void *dl_handle, void *module_info)
 {
-  struct stat buf;
- 
-  if (stat(module_path, &buf) < 0)
-    return 0;
- 
-  if (!(config_module_dl_handle = lt_dlopen(module_path)))
+  if (!dl_handle || !module_info)
     {
-      handle->errnum = NODEUPDOWN_ERR_CONFIG_MODULE;
-      goto cleanup;
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
     }
- 
-  if (!(config_module_info = (struct nodeupdown_config_module_info *)lt_dlsym(config_module_dl_handle, "config_module_info")))
-    {
-      handle->errnum = NODEUPDOWN_ERR_CONFIG_MODULE;
-      goto cleanup;
-    }
- 
+  
+  config_module_dl_handle = dl_handle;
+  config_module_info = module_info;
+  
+  config_module_info = module_info;
   if (!config_module_info->config_module_name
       || !config_module_info->setup
       || !config_module_info->cleanup
       || !config_module_info->load_config)
     {
-      handle->errnum = NODEUPDOWN_ERR_CONFIG_MODULE;
-      goto cleanup;
+      config_module_dl_handle = NULL;
+      config_module_info = NULL;
+      return 0;
     }
- 
+
   return 1;
- 
- cleanup:
-  if (config_module_dl_handle)
-    lt_dlclose(config_module_dl_handle);
-  config_module_dl_handle = NULL;
-  config_module_info = NULL;
-  return -1;
 }
  
 int
 config_module_load(nodeupdown_t handle)
 {
   int rv;
-   
-  if ((rv = _nodeupdown_util_lookup_module(handle,
-					   NODEUPDOWN_MODULE_BUILDDIR,
-					   config_modules,
-					   config_modules_len,
-					   _config_module_load)) < 0)
-    goto cleanup;
-   
+  
+  if ((rv = _find_module(handle,
+                         config_modules,
+                         config_modules_len,
+                         CONFIG_MODULE_SIGNATURE,
+                         _config_module_callback,
+                         CONFIG_MODULE_INFO_SYM)) < 0)
+    return -1;
+
   if (rv)
-    goto found;
-   
-  if ((rv = _nodeupdown_util_lookup_module(handle,
-					   NODEUPDOWN_MODULE_DIR,
-					   config_modules,
-					   config_modules_len,
-					   _config_module_load)) < 0)
-    goto cleanup;
-   
-  if (rv)
-    goto found;
-   
-  if ((rv = _nodeupdown_util_search_for_module(handle,
-					       NODEUPDOWN_MODULE_DIR,
-					       "nodeupdown_config_",
-					       _config_module_load)) < 0)
-    goto cleanup;
- 
-  if (rv)
-    goto found;
+    return 0;
 
   config_module_info = &default_config_module_info;
-
   return 0;
-
- found:
-  config_module_found++;
-  return 0;
- 
- cleanup:
-  return -1;
 }
  
 int
@@ -724,14 +716,7 @@ config_module_unload(nodeupdown_t handle)
     lt_dlclose(config_module_dl_handle);
   config_module_dl_handle = NULL;
   config_module_info = NULL;
-  config_module_found = 0;
   return 0;
-}
- 
-int 
-config_module_found(nodeupdown_t handle)
-{
-  return (config_module_found) ? 1 : 0;
 }
  
 char *
