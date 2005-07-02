@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.148 2005-07-02 15:10:09 achu Exp $
+ *  $Id: nodeupdown.c,v 1.149 2005-07-02 15:41:51 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -333,7 +333,6 @@ nodeupdown_load_data(nodeupdown_t handle,
    * clusterlist module to use. The configuration file may indicate
    * which module to load.
    */
-
   if (_read_conffile(handle, &conffile_config) < 0)
     goto cleanup;
 
@@ -519,8 +518,13 @@ nodeupdown_load_data(nodeupdown_t handle,
   hostlist_sort(handle->up_nodes);
   hostlist_sort(handle->down_nodes);
 
-  if ((handle->numnodes = clusterlist_module_get_numnodes(handle)) < 0)
-    goto cleanup;
+  if (!(flags & NODEUPDOWN_BACKEND_NO_CLUSTERLIST))
+    {
+      if ((handle->numnodes = clusterlist_module_get_numnodes(handle)) < 0)
+        goto cleanup;
+    }
+  else
+    handle->numnodes = hostlist_count(handle->up_nodes) + hostlist_count(handle->down_nodes);
 
   /* loading complete */
   handle->load_state = NODEUPDOWN_LOAD_STATE_LOADED;

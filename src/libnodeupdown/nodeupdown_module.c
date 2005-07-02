@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.c,v 1.17 2005-07-02 15:10:09 achu Exp $
+ *  $Id: nodeupdown_module.c,v 1.18 2005-07-02 15:41:51 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -95,7 +95,7 @@ extern struct nodeupdown_clusterlist_module_info default_clusterlist_module_info
 
 extern struct nodeupdown_config_module_info default_config_module_info;
 
-static int clusterlist_module_found = 0;
+int clusterlist_module_found = 0;
 
 /* 
  * Nodeupdown_module_callback
@@ -145,7 +145,7 @@ _load_module(nodeupdown_t handle,
       return 0;
     }
 
-  if ((flag = module_callback(handle, dl_handle, filebuf)) < 0)
+  if ((flag = module_callback(handle, dl_handle, module_info)) < 0)
     goto cleanup;
 
   if (!flag)
@@ -349,7 +349,6 @@ _backend_module_callback(nodeupdown_t handle, void *dl_handle, void *module_info
   backend_module_dl_handle = dl_handle;
   backend_module_info = module_info;
 
-  backend_module_info = module_info;
   if (!backend_module_info->backend_module_name
       || !backend_module_info->default_hostname
       || !backend_module_info->default_port
@@ -513,8 +512,6 @@ _clusterlist_module_callback(nodeupdown_t handle, void *dl_handle, void *module_
 
   clusterlist_module_dl_handle = dl_handle;
   clusterlist_module_info = module_info;
-
-  clusterlist_module_info = module_info;
   if (!clusterlist_module_info->clusterlist_module_name
       || !clusterlist_module_info->setup
       || !clusterlist_module_info->get_numnodes
@@ -672,8 +669,6 @@ _config_module_callback(nodeupdown_t handle, void *dl_handle, void *module_info)
     }
   
   config_module_dl_handle = dl_handle;
-  config_module_info = module_info;
-  
   config_module_info = module_info;
   if (!config_module_info->config_module_name
       || !config_module_info->setup
