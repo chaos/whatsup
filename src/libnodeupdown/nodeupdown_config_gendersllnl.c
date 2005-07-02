@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_config_gendersllnl.c,v 1.16 2005-06-28 22:55:59 achu Exp $
+ *  $Id: nodeupdown_config_gendersllnl.c,v 1.17 2005-07-02 13:21:21 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -49,7 +49,7 @@ static genders_t gendersllnl_handle = NULL;
  *
  * gendersllnl config module setup function
  */
-int 
+static int 
 gendersllnl_config_setup(nodeupdown_t handle) 
 {
   int rv;
@@ -78,19 +78,19 @@ gendersllnl_config_setup(nodeupdown_t handle)
  *
  * gendersllnl config module cleanup function
  */
-int 
+static int 
 gendersllnl_config_cleanup(nodeupdown_t handle) 
 {
   return genders_util_cleanup(handle, &gendersllnl_handle);
 }
 
 /* 
- * gendersllnl_config_load_default
+ * gendersllnl_config_load_config
  *
- * gendersllnl config module load_default function
+ * gendersllnl config module load_config function
  */
-int 
-gendersllnl_config_load_default(nodeupdown_t handle, 
+static int 
+gendersllnl_config_load_config(nodeupdown_t handle, 
                                 struct nodeupdown_config *conf)
 {
   int flag;
@@ -160,5 +160,5 @@ struct nodeupdown_config_module_info config_module_info =
     "gendersllnl",
     &gendersllnl_config_setup,
     &gendersllnl_config_cleanup,
-    &gendersllnl_config_load_default,
+    &gendersllnl_config_load_config,
   };

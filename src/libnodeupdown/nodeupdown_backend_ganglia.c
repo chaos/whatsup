@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_ganglia.c,v 1.21 2005-06-29 00:16:54 achu Exp $
+ *  $Id: nodeupdown_backend_ganglia.c,v 1.22 2005-07-02 13:21:21 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -77,7 +77,7 @@ char ganglia_default_hostname[NODEUPDOWN_MAXHOSTNAMELEN+1];
  *
  * ganglia backend module default_hostname function
  */
-char *
+static char *
 ganglia_backend_default_hostname(nodeupdown_t handle)
 {
   memset(ganglia_default_hostname, '\0', NODEUPDOWN_MAXHOSTNAMELEN+1);
@@ -94,7 +94,7 @@ ganglia_backend_default_hostname(nodeupdown_t handle)
  *
  * ganglia backend module default_port function
  */
-int 
+static int 
 ganglia_backend_default_port(nodeupdown_t handle)
 {
   return GANGLIA_BACKEND_DEFAULT_PORT;
@@ -105,7 +105,7 @@ ganglia_backend_default_port(nodeupdown_t handle)
  *
  * ganglia backend module default_timeout_len function
  */
-int 
+static int 
 ganglia_backend_default_timeout_len(nodeupdown_t handle)
 {
   return GANGLIA_BACKEND_DEFAULT_TIMEOUT_LEN;
@@ -116,7 +116,7 @@ ganglia_backend_default_timeout_len(nodeupdown_t handle)
  *
  * ganglia backend module flags function
  */
-int 
+static int 
 ganglia_backend_flags(nodeupdown_t handle)
 {
   return GANGLIA_BACKEND_FLAGS;
@@ -127,7 +127,7 @@ ganglia_backend_flags(nodeupdown_t handle)
  *
  * ganglia backend module setup function
  */
-int 
+static int 
 ganglia_backend_setup(nodeupdown_t handle)
 {
   /* nothing to do */
@@ -139,7 +139,7 @@ ganglia_backend_setup(nodeupdown_t handle)
  *
  * ganglia backend module cleanup function
  */
-int
+static int
 ganglia_backend_cleanup(nodeupdown_t handle)
 {
   /* nothing to do */
@@ -197,7 +197,7 @@ _xml_parse_end(void *data, const char *e1)
  *
  * ganglia backend module get_updown_data function
  */
-int 
+static int 
 ganglia_backend_get_updown_data(nodeupdown_t handle, 
                                 const char *hostname,
                                 unsigned int port,

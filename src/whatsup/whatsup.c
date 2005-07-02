@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.105 2005-07-01 23:51:08 achu Exp $
+ *  $Id: whatsup.c,v 1.106 2005-07-02 13:21:21 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -59,17 +59,9 @@ extern int optind, opterr, optopt;
 /* 
  * Definitions 
  */
-#define WHATSUP_TRUE              1
-#define WHATSUP_FALSE             0
-
 #define WHATSUP_UP_NODES          0 
 #define WHATSUP_DOWN_NODES        1
 #define WHATSUP_UP_AND_DOWN       2
-
-#define WHATSUP_HOSTLIST          '\0'
-#define WHATSUP_COMMA             ','
-#define WHATSUP_NEWLINE           '\n'
-#define WHATSUP_SPACE             ' '
 
 #define WHATSUP_BUFFERLEN         65536
 #define WHATSUP_FORMATLEN         64
@@ -100,8 +92,8 @@ extern int optind, opterr, optopt;
 static char *hostname = NULL;
 static int port = 0;
 static int updown_output = WHATSUP_UP_AND_DOWN;
-static int output_type = WHATSUP_HOSTLIST;
-static int count_only_output = WHATSUP_FALSE;
+static char output_type = 0;
+static int count_only_output = 0;
 static nodeupdown_t handle;
 static hostlist_t inputted_nodes;
 static lt_dlhandle mod_handles[WHATSUP_MODULES_LEN];
@@ -499,19 +491,19 @@ _cmdline_parse(int argc, char **argv)
         updown_output = WHATSUP_DOWN_NODES;
         break;
       case 't':
-        count_only_output = WHATSUP_TRUE;
+        count_only_output++;
         break;
       case 'q':
-        output_type = WHATSUP_HOSTLIST;
+        output_type = 0;
         break;
       case 'c':
-        output_type = WHATSUP_COMMA;
+        output_type = ',';
         break;
       case 'n':
-        output_type = WHATSUP_NEWLINE;
+        output_type = '\n';
         break;
       case 's':
-        output_type = WHATSUP_SPACE;
+        output_type = ' ';
         break;
       default:
 	used_option = 0;
@@ -523,7 +515,7 @@ _cmdline_parse(int argc, char **argv)
 	    if (strchr(mod_options[i], c))
 	      {
 		if ((rv = (*mod_info[i]->handle_option)(c, optarg)) < 0)
-		  err_exit("handle_option error: %s", strerror(errno));
+		  err_exit("%s: handle_option failure", func);
 		
 		if (rv)
 		  {
@@ -719,7 +711,7 @@ _output_nodes(char *nodebuf)
 
   assert(nodebuf);
 
-  if (output_type == WHATSUP_HOSTLIST)
+  if (!output_type)
     fprintf(stdout, "%s\n", nodebuf);
   else 
     {
@@ -737,15 +729,14 @@ _output_nodes(char *nodebuf)
         err_exit("%s: hostlist_deranged_string() error", func);
       
       /* convert commas to appropriate break types */
-      if (output_type != WHATSUP_COMMA) 
+      if (output_type != ',') 
         {
           while ((ptr = strchr(tbuf, ',')))
             *ptr = (char)output_type;
         }
 
       /* start on the next line if its a newline separator */
-      if (updown_output == WHATSUP_UP_AND_DOWN 
-          && output_type == WHATSUP_NEWLINE)
+      if (updown_output == WHATSUP_UP_AND_DOWN && output_type == '\n')
         fprintf(stdout, "\n");
 
       fprintf(stdout,"%s\n", tbuf);
@@ -834,7 +825,7 @@ main(int argc, char *argv[])
   _get_nodes(up_nodes, WHATSUP_BUFFERLEN, WHATSUP_UP_NODES, &up_count);
   _get_nodes(down_nodes, WHATSUP_BUFFERLEN, WHATSUP_DOWN_NODES, &down_count);
   
-  if (count_only_output == WHATSUP_TRUE) 
+  if (count_only_output) 
     {
       if (updown_output == WHATSUP_UP_AND_DOWN) 
         {
@@ -852,7 +843,7 @@ main(int argc, char *argv[])
       /* output up, down, or both up and down nodes */
       if (updown_output == WHATSUP_UP_AND_DOWN) 
         {
-          if (output_type == WHATSUP_NEWLINE)
+          if (output_type == '\n')
             {
               /* newline output is funny, thus special */
               snprintf(upfmt,   WHATSUP_FORMATLEN, "up %d:", up_count);
@@ -866,7 +857,7 @@ main(int argc, char *argv[])
           _output_nodes(up_nodes);
           
           /* handle odd situation with newline output list */
-          if (output_type == WHATSUP_NEWLINE)
+          if (output_type == '\n')
             fprintf(stdout, "\n");
           
           fprintf(stdout, downfmt, down_count);

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.21 2005-06-20 21:58:09 achu Exp $
+ *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.22 2005-07-02 13:21:21 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -183,7 +183,7 @@ _move_past_whitespace(char *buf)
  *
  * hostsfile clusterlist module setup function
  */
-int 
+static int 
 hostsfile_clusterlist_setup(nodeupdown_t handle) 
 {
   int fd = -1, len;
@@ -261,7 +261,7 @@ hostsfile_clusterlist_setup(nodeupdown_t handle)
  *
  * hostsfile clusterlist module cleanup function
  */
-int 
+static int 
 hostsfile_clusterlist_cleanup(nodeupdown_t handle) 
 {
   if (hosts)
@@ -275,7 +275,7 @@ hostsfile_clusterlist_cleanup(nodeupdown_t handle)
  *
  * hostsfile clusterlist module get_numnodes function
  */
-int 
+static int 
 hostsfile_clusterlist_get_numnodes(nodeupdown_t handle) 
 {
   return list_count(hosts);
@@ -294,7 +294,7 @@ _find_str(void *x, void *key)
  *
  * hostsfile clusterlist module is_node_in_cluster function
  */
-int 
+static int 
 hostsfile_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) 
 {
   char nodebuf[NODEUPDOWN_MAXNODENAMELEN+1];
@@ -316,7 +316,7 @@ hostsfile_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node)
     nodePtr = (char *)node;
 
   ptr = list_find_first(hosts, _find_str, (void *)nodePtr);
-  if (ptr != NULL)
+  if (ptr)
     return 1;
   else
     return 0;
@@ -327,7 +327,7 @@ hostsfile_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node)
  *
  * hostsfile clusterlist module get_nodename function
  */
-int 
+static int 
 hostsfile_clusterlist_get_nodename(nodeupdown_t handle, 
                                    const char *node, 
                                    char *buf, 
@@ -358,7 +358,7 @@ hostsfile_clusterlist_get_nodename(nodeupdown_t handle,
  *
  * hostsfile clusterlist module compare_to_clusterlist function
  */
-int 
+static int 
 hostsfile_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
 {
   ListIterator itr = NULL;

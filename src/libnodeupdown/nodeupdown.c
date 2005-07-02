@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.146 2005-06-29 00:16:54 achu Exp $
+ *  $Id: nodeupdown.c,v 1.147 2005-07-02 13:21:21 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -171,12 +171,12 @@ nodeupdown_handle_create()
 static void 
 _free_handle_data(nodeupdown_t handle) 
 {
-  _nodeupdown_backend_module_cleanup(handle);
-  _nodeupdown_backend_module_unload(handle);
-  _nodeupdown_clusterlist_module_cleanup(handle);
-  _nodeupdown_clusterlist_module_unload(handle);
-  _nodeupdown_config_module_cleanup(handle);
-  _nodeupdown_config_module_unload(handle);
+  backend_module_cleanup(handle);
+  backend_module_unload(handle);
+  clusterlist_module_cleanup(handle);
+  clusterlist_module_unload(handle);
+  config_module_cleanup(handle);
+  config_module_unload(handle);
   hostlist_destroy(handle->up_nodes);
   hostlist_destroy(handle->down_nodes);
   _initialize_handle(handle);
@@ -271,7 +271,6 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_config *conf)
        conffile_empty, 0, 0, NULL, NULL, 0},
       {"gendersfile", CONFFILE_OPTION_IGNORE, 0, 
        conffile_empty, 0, 0, NULL, NULL, 0},
-
     };
   conffile_t cf = NULL;
   int num, rv = -1;
@@ -299,7 +298,7 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_config *conf)
       }
     }
 
-   rv = 0;
+  rv = 0;
  cleanup:
   (void)conffile_handle_destroy(cf);
   return rv;
@@ -339,13 +338,13 @@ nodeupdown_load_data(nodeupdown_t handle,
   /* 
    * Load backend module
    */
-  if (_nodeupdown_backend_module_load(handle) < 0)
+  if (backend_module_load(handle) < 0)
     goto cleanup;
 
-  if (_nodeupdown_backend_module_setup(handle) < 0)
+  if (backend_module_setup(handle) < 0)
     goto cleanup;
 
-  if (flags = _nodeupdown_backend_module_flags(handle) < 0)
+  if ((flags = backend_module_flags(handle)) < 0)
     goto cleanup;
 
   if (!(flags & NODEUPDOWN_BACKEND_NO_CLUSTERLIST))
@@ -353,23 +352,23 @@ nodeupdown_load_data(nodeupdown_t handle,
       /* 
        * Load clusterlist module
        */
-      if (_nodeupdown_clusterlist_module_load(handle) < 0)
+      if (clusterlist_module_load(handle) < 0)
         goto cleanup;
       
-      if (_nodeupdown_clusterlist_module_setup(handle) < 0)
+      if (clusterlist_module_setup(handle) < 0)
         goto cleanup;
     }
 
   /* 
    * Load config module
    */
-  if (_nodeupdown_config_module_load(handle) < 0)
+  if (config_module_load(handle) < 0)
     goto cleanup;
 
-  if (_nodeupdown_config_module_setup(handle) < 0)
+  if (config_module_setup(handle) < 0)
     goto cleanup;
 
-  if (_nodeupdown_config_module_load_default(handle, &module_config) < 0)
+  if (config_module_load_config(handle, &module_config) < 0)
     goto cleanup;
 
   if (!(handle->up_nodes = hostlist_create(NULL))) 
@@ -408,12 +407,12 @@ nodeupdown_load_data(nodeupdown_t handle,
 	}
       else
 	{
-	  if (_nodeupdown_backend_module_default_port(handle) <= 0)
+	  if (backend_module_default_port(handle) <= 0)
 	    {
 	      handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
 	      goto cleanup;
 	    }
-	  port = _nodeupdown_backend_module_default_port(handle);
+	  port = backend_module_default_port(handle);
 	}
     }
   
@@ -439,26 +438,25 @@ nodeupdown_load_data(nodeupdown_t handle,
 	}
       else
 	{
-	  if (_nodeupdown_backend_module_default_timeout_len(handle) <= 0)
+	  if (backend_module_default_timeout_len(handle) <= 0)
 	    {
 	      handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
 	      goto cleanup;
 	    }
-	  timeout_len = _nodeupdown_backend_module_default_timeout_len(handle);
+	  timeout_len = backend_module_default_timeout_len(handle);
 	}
     }
 
   if (hostname)
     {
-      if (_nodeupdown_backend_module_get_updown_data(handle, 
-						     hostname,
-						     port, 
-						     timeout_len,
-						     reserved) < 0)
+      if (backend_module_get_updown_data(handle, 
+					 hostname,
+					 port, 
+					 timeout_len,
+					 reserved) < 0)
         goto cleanup;
     }
-  else if (conffile_config.hostnames_flag 
-           || module_config.hostnames_flag)
+  else if (conffile_config.hostnames_flag || module_config.hostnames_flag)
     {
       char (*hostnames)[NODEUPDOWN_MAXHOSTNAMELEN+1];
       int i, hostnames_len;
@@ -478,11 +476,11 @@ nodeupdown_load_data(nodeupdown_t handle,
         {
           if (strlen(hostnames[i]) > 0)
             {
-              if (_nodeupdown_backend_module_get_updown_data(handle, 
-							     hostnames[i],
-							     port,
-							     timeout_len,
-							     reserved) < 0)
+              if (backend_module_get_updown_data(handle, 
+						 hostnames[i],
+						 port,
+						 timeout_len,
+						 reserved) < 0)
                 continue;
               else
                 break;
@@ -499,27 +497,27 @@ nodeupdown_load_data(nodeupdown_t handle,
     {
       char *hostnamePtr;
 
-      if (!(hostnamePtr = _nodeupdown_backend_module_default_hostname(handle)))
+      if (!(hostnamePtr = backend_module_default_hostname(handle)))
         goto cleanup;
 
-      if (_nodeupdown_backend_module_get_updown_data(handle, 
-						     hostnamePtr,
-						     port, 
-						     timeout_len,
-						     reserved) < 0)
+      if (backend_module_get_updown_data(handle, 
+					 hostnamePtr,
+					 port, 
+					 timeout_len,
+					 reserved) < 0)
         goto cleanup;
     }
 
   if (!(flags & NODEUPDOWN_BACKEND_NO_CLUSTERLIST))
     {
-      if (_nodeupdown_clusterlist_module_compare_to_clusterlist(handle) < 0)
+      if (clusterlist_module_compare_to_clusterlist(handle) < 0)
         goto cleanup;
     }
   
   hostlist_sort(handle->up_nodes);
   hostlist_sort(handle->down_nodes);
 
-  if ((handle->numnodes = _nodeupdown_clusterlist_module_get_numnodes(handle)) < 0)
+  if ((handle->numnodes = clusterlist_module_get_numnodes(handle)) < 0)
     goto cleanup;
 
   /* loading complete */
@@ -719,10 +717,9 @@ _is_node(nodeupdown_t handle, const char *node, int up_or_down)
       return -1;
     }
 
-  if (_nodeupdown_clusterlist_module_found(handle))
+  if (clusterlist_module_found(handle))
     {
-      if ((rv = _nodeupdown_clusterlist_module_is_node_in_cluster(handle, 
-								  node)) < 0)
+      if ((rv = clusterlist_module_is_node_in_cluster(handle, node)) < 0)
 	return -1;
 
       if (!rv) 
@@ -731,10 +728,10 @@ _is_node(nodeupdown_t handle, const char *node, int up_or_down)
 	  return -1;
 	}
       
-      if (_nodeupdown_clusterlist_module_get_nodename(handle, 
-						      node, 
-						      buffer, 
-						      NODEUPDOWN_MAXNODENAMELEN+1) < 0)
+      if (clusterlist_module_get_nodename(handle, 
+					  node, 
+					  buffer, 
+					  NODEUPDOWN_MAXNODENAMELEN+1) < 0)
 	return -1;
     }
   else

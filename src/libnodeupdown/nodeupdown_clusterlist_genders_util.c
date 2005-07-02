@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_genders_util.c,v 1.9 2005-05-06 18:27:46 achu Exp $
+ *  $Id: nodeupdown_clusterlist_genders_util.c,v 1.10 2005-07-02 13:21:21 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -40,8 +40,7 @@
 #include "nodeupdown/nodeupdown_devel.h"
 
 int 
-genders_util_clusterlist_get_numnodes(nodeupdown_t handle, 
-				      genders_t genders_handle) 
+genders_util_clusterlist_get_numnodes(nodeupdown_t handle, genders_t genders_handle) 
 {
   int count;
 

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_gendersllnl.c,v 1.23 2005-06-20 21:58:09 achu Exp $
+ *  $Id: nodeupdown_clusterlist_gendersllnl.c,v 1.24 2005-07-02 13:21:21 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -49,7 +49,7 @@ static genders_t gendersllnl_handle = NULL;
  *
  * gendersllnl clusterlist module setup function
  */
-int 
+static int 
 gendersllnl_clusterlist_setup(nodeupdown_t handle) 
 {
   int rv;
@@ -78,7 +78,7 @@ gendersllnl_clusterlist_setup(nodeupdown_t handle)
  *
  * gendersllnl clusterlist module cleanup function
  */
-int 
+static int 
 gendersllnl_clusterlist_cleanup(nodeupdown_t handle) 
 {
   return genders_util_cleanup(handle, &gendersllnl_handle);
@@ -89,7 +89,7 @@ gendersllnl_clusterlist_cleanup(nodeupdown_t handle)
  *
  * gendersllnl clusterlist module get_numnodes function
  */
-int 
+static int 
 gendersllnl_clusterlist_get_numnodes(nodeupdown_t handle) 
 {
   return genders_util_clusterlist_get_numnodes(handle, gendersllnl_handle);
@@ -100,7 +100,7 @@ gendersllnl_clusterlist_get_numnodes(nodeupdown_t handle)
  *
  * gendersllnl clusterlist module is_node_in_cluster function
  */
-int 
+static int 
 gendersllnl_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) 
 {
   char nodebuf[NODEUPDOWN_MAXNODENAMELEN+1];
@@ -134,7 +134,7 @@ gendersllnl_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node
  *
  * gendersllnl clusterlist module get_nodename function
  */
-int 
+static int 
 gendersllnl_clusterlist_get_nodename(nodeupdown_t handle, 
 				     const char *node, 
 				     char *buf, 
@@ -170,7 +170,7 @@ gendersllnl_clusterlist_get_nodename(nodeupdown_t handle,
  *
  * gendersllnl clusterlist module compare_to_clusterlist function
  */
-int 
+static int 
 gendersllnl_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
 {
   return genders_util_clusterlist_compare_to_clusterlist(handle, gendersllnl_handle);

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_cerebro.c,v 1.13 2005-06-29 00:16:54 achu Exp $
+ *  $Id: nodeupdown_backend_cerebro.c,v 1.14 2005-07-02 13:21:21 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -60,7 +60,7 @@ char cerebro_default_hostname[NODEUPDOWN_MAXHOSTNAMELEN+1];
  *
  * cerebro backend module default_hostname function
  */
-char *
+static char *
 cerebro_backend_default_hostname(nodeupdown_t handle)
 {
   memset(cerebro_default_hostname, '\0', NODEUPDOWN_MAXHOSTNAMELEN+1);
@@ -77,7 +77,7 @@ cerebro_backend_default_hostname(nodeupdown_t handle)
  *
  * cerebro backend module default_port function
  */
-int 
+static int 
 cerebro_backend_default_port(nodeupdown_t handle)
 {
   return CEREBRO_METRIC_SERVER_PORT;
@@ -88,7 +88,7 @@ cerebro_backend_default_port(nodeupdown_t handle)
  *
  * cerebro backend module default_timeout_len function
  */
-int 
+static int 
 cerebro_backend_default_timeout_len(nodeupdown_t handle)
 {
   return CEREBRO_METRIC_TIMEOUT_LEN_DEFAULT;
@@ -99,7 +99,7 @@ cerebro_backend_default_timeout_len(nodeupdown_t handle)
  *
  * cerebro backend module flags function
  */
-int 
+static int 
 cerebro_backend_flags(nodeupdown_t handle)
 {
   return CEREBRO_BACKEND_FLAGS;
@@ -110,7 +110,7 @@ cerebro_backend_flags(nodeupdown_t handle)
  *
  * cerebro backend module setup function
  */
-int 
+static int 
 cerebro_backend_setup(nodeupdown_t handle)
 {
   if (cerebro_handle)
@@ -135,7 +135,7 @@ cerebro_backend_setup(nodeupdown_t handle)
  *
  * cerebro backend module cleanup function
  */
-int
+static int
 cerebro_backend_cleanup(nodeupdown_t handle)
 {
   if (!cerebro_handle)
@@ -155,7 +155,7 @@ cerebro_backend_cleanup(nodeupdown_t handle)
  *
  * cerebro backend module get_updown_data function
  */
-int 
+static int 
 cerebro_backend_get_updown_data(nodeupdown_t handle, 
                                 const char *hostname,
                                 unsigned int port,
