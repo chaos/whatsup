@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_cerebro.c,v 1.14 2005-07-02 13:21:21 achu Exp $
+ *  $Id: nodeupdown_backend_cerebro.c,v 1.15 2005-07-02 15:18:35 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -41,7 +41,6 @@
 
 #include "nodeupdown.h"
 #include "nodeupdown_module.h"
-#include "nodeupdown_backend_util.h"
 #include "nodeupdown/nodeupdown_backend_module.h"
 #include "nodeupdown/nodeupdown_constants.h"
 #include "nodeupdown/nodeupdown_devel.h"

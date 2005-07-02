@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.54 2005-06-20 22:04:40 achu Exp $
+## $Id: Makefile.am,v 1.55 2005-07-02 15:18:35 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -36,7 +36,6 @@ nobase_include_HEADERS = nodeupdown/nodeupdown_backend_module.h \
 			 nodeupdown/nodeupdown_devel.h
 
 noinst_HEADERS  = nodeupdown_api.h \
-		  nodeupdown_backend_util.h \
 		  nodeupdown_clusterlist_util.h \
 		  nodeupdown_clusterlist_genders_util.h \
 		  nodeupdown_genders_util.h \
@@ -95,8 +94,7 @@ nodeupdownmodulelib_LTLIBRARIES = \
 	$(GENDERSLLNL_CONFIG_MODULE)
 
 nodeupdown_backend_ganglia_la_SOURCES = \
-	nodeupdown_backend_ganglia.c \
-	nodeupdown_backend_util.c 
+	nodeupdown_backend_ganglia.c
 nodeupdown_backend_ganglia_la_LDFLAGS = \
 	$(MODULE_FLAGS) \
 	$(NODEUPDOWN_BACKEND_OTHER_FLAGS) 
@@ -106,8 +104,7 @@ nodeupdown_backend_ganglia_la_LIBADD = \
 	../libexpat/libexpat.la
 
 nodeupdown_backend_cerebro_la_SOURCES = \
-	nodeupdown_backend_cerebro.c \
-	nodeupdown_backend_util.c 
+	nodeupdown_backend_cerebro.c
 nodeupdown_backend_cerebro_la_LDFLAGS = \
 	$(MODULE_FLAGS) \
 	$(CEREBRO_LIBS) \
