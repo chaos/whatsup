@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: whatsup.1.in,v 1.17 2005-05-06 15:40:36 achu Exp $
+\."$Id: whatsup.1.in,v 1.18 2005-07-05 16:04:50 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -64,7 +64,7 @@ option.
 .B "-h, --help"
 Print help and exit
 .TP
-.B "-V, --version"
+.B "-v, --version"
 Print version and exit
 .TP
 .B \-o \fISTRING\fR, \fB\-\-hostname\fR=\fISTRING\fR

@@ -1,6 +1,9 @@
 2005-07-05  Albert Chu  <chu11@llnl.gov>
 
 	* src/whatsup/whatsup.c (_create_formats): Added assert check.
+
+	* src/whatsup/whatsup.c, man/whatsup.1.in: Change -V option to -v
+	option.
 	
 2005-07-02  Albert Chu  <chu11@llnl.gov>
 

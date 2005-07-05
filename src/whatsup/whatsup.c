@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.107 2005-07-05 15:24:00 achu Exp $
+ *  $Id: whatsup.c,v 1.108 2005-07-05 16:04:50 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -284,7 +284,7 @@ _usage(void)
   fprintf(stderr,
 	  "Usage: whatsup [OPTIONS]... [NODES]...\n"
 	  "  -h         --help              Print help and exit\n"
-	  "  -V         --version           Print version and exit\n"
+	  "  -v         --version           Print version and exit\n"
 	  "  -o STRING  --hostname=STRING   Server hostname\n"
 	  "  -p INT     --port=INT          Server port\n"
 	  "  -b         --updown            Output up and down nodes\n"
@@ -381,7 +381,7 @@ _cmdline_parse(int argc, char **argv)
   struct option loptions[WHATSUP_LONG_OPTIONS_LEN+1] = 
     {
       {"help",      0, NULL, 'h'},
-      {"version",   0, NULL, 'V'},
+      {"version",   0, NULL, 'v'},
       {"hostname",  1, NULL, 'o'},
       {"port",      1, NULL, 'p'},
       {"updown",    0, NULL, 'b'},
@@ -400,7 +400,7 @@ _cmdline_parse(int argc, char **argv)
   assert(argv);
 
   memset(options, '\0', WHATSUP_OPTIONS_LEN+1);
-  strncpy(options, "hVo:p:budtqcns", WHATSUP_OPTIONS_LEN);
+  strncpy(options, "hvo:p:budtqcns", WHATSUP_OPTIONS_LEN);
 
   /* 
    * Load additional option arguments
@@ -474,7 +474,7 @@ _cmdline_parse(int argc, char **argv)
       {
       case 'h':
         _usage();
-      case 'V':
+      case 'v':
         _version();
       case 'o':
         hostname = optarg;
