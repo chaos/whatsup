@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.108 2005-07-05 16:04:50 achu Exp $
+ *  $Id: whatsup.c,v 1.109 2005-07-05 17:24:40 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -376,6 +376,7 @@ _cmdline_parse(int argc, char **argv)
   const char *func = __FUNCTION__;
   int i, c, index, used_option;
   char options[WHATSUP_OPTIONS_LEN+1];
+  char *ptr;
 
 #if HAVE_GETOPT_LONG
   struct option loptions[WHATSUP_LONG_OPTIONS_LEN+1] = 
@@ -480,7 +481,9 @@ _cmdline_parse(int argc, char **argv)
         hostname = optarg;
         break;
       case 'p':
-        port = atoi(optarg);
+        port = strtol(optarg, &ptr, 10);
+        if (ptr != (optarg + strlen(optarg)))
+          err_exit("invalid port specified");
         break;
       case 'b':
         updown_output = WHATSUP_UP_AND_DOWN;

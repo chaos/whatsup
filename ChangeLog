@@ -4,6 +4,9 @@
 
 	* src/whatsup/whatsup.c, man/whatsup.1.in: Change -V option to -v
 	option.
+
+	* src/whatsup/whatsup.c (_cmdline_parse): Fix port input check
+	bug.
 	
 2005-07-02  Albert Chu  <chu11@llnl.gov>
 
