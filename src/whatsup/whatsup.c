@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.106 2005-07-02 13:21:21 achu Exp $
+ *  $Id: whatsup.c,v 1.107 2005-07-05 15:24:00 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -108,7 +108,8 @@ static char up_nodes[WHATSUP_BUFFERLEN];
 static char down_nodes[WHATSUP_BUFFERLEN];
 static char upfmt[WHATSUP_FORMATLEN];
 static char downfmt[WHATSUP_FORMATLEN];
-static int up_count, down_count;
+static int up_count = -1;
+static int down_count = -1;
 
 /* 
  * _init_whatsup
@@ -773,6 +774,8 @@ static void
 _create_formats(char *endstr)
 {
   int max;
+
+  assert(up_count >= 0 && down_count >= 0);
 
   if (up_count > down_count)
     max = _log10(up_count);

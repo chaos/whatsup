@@ -1,3 +1,7 @@
+2005-07-05  Albert Chu  <chu11@llnl.gov>
+
+	* src/whatsup/whatsup.c (_create_formats): Added assert check.
+	
 2005-07-02  Albert Chu  <chu11@llnl.gov>
 
 	* libnodeupdown cleanup
