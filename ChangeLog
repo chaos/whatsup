@@ -4,6 +4,10 @@
 	man/whatsup.1.in: Rename --hostlist option to --hostrange.
 
 	* man/whatsup.1.in: Remove gmond references.
+
+	* whatsup.spec.in: Increase install requirement for cerebro.
+
+	* tagged whatsup-1-4-0-pre4
 	
 2005-07-05  Albert Chu  <chu11@llnl.gov>
 
