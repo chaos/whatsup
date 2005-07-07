@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: whatsup.1.in,v 1.19 2005-07-07 15:56:43 achu Exp $
+\."$Id: whatsup.1.in,v 1.20 2005-07-07 16:27:51 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -68,10 +68,10 @@ Print help and exit
 Print version and exit
 .TP
 .B \-o \fISTRING\fR, \fB\-\-hostname\fR=\fISTRING\fR
-gmond server hostname (default=localhost)
+server hostname (default=localhost)
 .TP
 .B \-p \fIINT\fR, \fB\-\-port\fR=\fIINT\fR
-gmond server port (default=8649)
+server port (default=8649)
 .TP
 .B \-b, \-\-updown
 List both up and down nodes (default)
