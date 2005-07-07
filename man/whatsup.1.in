@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: whatsup.1.in,v 1.18 2005-07-05 16:04:50 achu Exp $
+\."$Id: whatsup.1.in,v 1.19 2005-07-07 15:56:43 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -42,9 +42,9 @@ library.
 will check on the status of every node in the cluster unless specific
 nodes are listed at the command line.  If the first node listed is
 "-", nodes will be read in from standard input.  The nodes can be
-listed in hostlist format, comma separated lists, or space separated
+listed in hostrange format, comma separated lists, or space separated
 lists.  See the section below on HOST RANGES for instructions on how
-to list hosts in hostlist format.  The hostnames listed must be the
+to list hosts in hostrange format.  The hostnames listed must be the
 shortened names of hostnames.
 
 The exit value of 
@@ -85,8 +85,8 @@ List only down nodes
 .B \-t, \-\-count
 List only node counts
 .TP
-.B \-q, \-\-hostlist
-List nodes in hostlist format (default)
+.B \-q, \-\-hostrange
+List nodes in hostrange format (default)
 .TP
 .B \-c, \-\-comma
 List nodes in comma separated list

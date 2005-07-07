@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.109 2005-07-05 17:24:40 achu Exp $
+ *  $Id: whatsup.c,v 1.110 2005-07-07 15:56:43 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -291,7 +291,7 @@ _usage(void)
 	  "  -u         --up                Output only up nodes\n"
 	  "  -d         --down              Output only down nodes\n"
 	  "  -t         --count             Output only node counts\n"
-	  "  -q         --hostlist          Output in hostlist format\n"
+	  "  -q         --hostrange         Output in hostrange format\n"
 	  "  -c         --comma             Output in comma separated list\n"
 	  "  -n         --newline           Output in newline separated list\n"
 	  "  -s         --space             Output in space separated list\n");
@@ -389,7 +389,7 @@ _cmdline_parse(int argc, char **argv)
       {"up",        0, NULL, 'u'},
       {"down",      0, NULL, 'd'},
       {"count",     0, NULL, 't'},
-      {"hostlist",  0, NULL, 'q'},
+      {"hostrange", 0, NULL, 'q'},
       {"comma",     0, NULL, 'c'},
       {"newline",   0, NULL, 'n'},
       {"space",     0, NULL, 's'},
