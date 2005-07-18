@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: ac_hostsfile.m4,v 1.2 2005-05-02 23:00:28 achu Exp $
+## $Id: ac_hostsfile.m4,v 1.3 2005-07-18 21:31:02 achu Exp $
 ##*****************************************************************************
 
 AC_DEFUN([AC_HOSTSFILE],
@@ -29,17 +29,19 @@ AC_DEFUN([AC_HOSTSFILE],
 
 AC_DEFUN([AC_HOSTSFILE_PATH],
 [
+  NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT=/etc/hostsfile
+
   AC_MSG_CHECKING([for default hostsfile path])
   AC_ARG_WITH([hostsfile-path],
     AC_HELP_STRING([--with-hostsfile-path=PATH], [Specify default hostsfile clusterlist path]),
     [ case "$withval" in
-        no)  NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT=/etc/hostsfile ;;
-        yes) NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT=/etc/hostsfile ;;
+        no)  ;;
+        yes) ;;
         *)   NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT=$withval ;;
       esac
     ]
   )
-  AC_MSG_RESULT([${NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT=/etc/hostsfile}])
+  AC_MSG_RESULT([$NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT)
  
   AC_DEFINE_UNQUOTED([NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT],
                      ["$NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT"],
