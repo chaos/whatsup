@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_cerebro.c,v 1.15 2005-07-02 15:18:35 achu Exp $
+ *  $Id: nodeupdown_backend_cerebro.c,v 1.16 2005-07-27 18:11:36 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -46,7 +46,6 @@
 #include "nodeupdown/nodeupdown_devel.h"
 
 #include <cerebro.h>
-#include <cerebro/cerebro_metric_protocol.h>
 
 #define CEREBRO_BACKEND_FLAGS NODEUPDOWN_BACKEND_NO_CLUSTERLIST
 
@@ -90,7 +89,7 @@ cerebro_backend_default_port(nodeupdown_t handle)
 static int 
 cerebro_backend_default_timeout_len(nodeupdown_t handle)
 {
-  return CEREBRO_METRIC_TIMEOUT_LEN_DEFAULT;
+  return CEREBRO_METRIC_SERVER_TIMEOUT_LEN_DEFAULT;
 }
 
 /*
@@ -206,8 +205,8 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
   while (!(flag = cerebro_nodelist_iterator_at_end(itr)))
     {
       char *nodename;
-      unsigned int metric_value_type, metric_value_len;
-      void *metric_value;
+      unsigned int mtime, mtype, mlen;
+      void *mvalue;
       u_int32_t updown_state;
 
       if (cerebro_nodelist_iterator_nodename(itr, &nodename) < 0)
@@ -223,27 +222,28 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
         }
 
       if (cerebro_nodelist_iterator_metric_value(itr,
-                                                 &metric_value_type,
-                                                 &metric_value_len,
-                                                 &metric_value) < 0)
+                                                 &mtime,
+                                                 &mtype,
+                                                 &mlen,
+                                                 &mvalue) < 0)
         {
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
           goto cleanup;
         }
 
-      if (metric_value_type != CEREBRO_METRIC_VALUE_TYPE_U_INT32)
+      if (mtype != CEREBRO_METRIC_VALUE_TYPE_U_INT32)
         {
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
           goto cleanup;
         }
 
-      if (metric_value_len != sizeof(u_int32_t))
+      if (mlen != sizeof(u_int32_t))
         {
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
           goto cleanup;
         }
 
-      updown_state = *((u_int32_t *)metric_value);
+      updown_state = *((u_int32_t *)mvalue);
 
       if (updown_state)
         {
