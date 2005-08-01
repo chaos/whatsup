@@ -109,7 +109,7 @@ DESTDIR="$RPM_BUILD_ROOT" make install
 rm -rf "$RPM_BUILD_ROOT"
 
 %files
-%defattr(-,root,root,0755)
+%defattr(-,root,root)
 %doc AUTHORS COPYING ChangeLog DISCLAIMER INSTALL NEWS README README.expat 
 # It doesn't matter if the user chooses a 32bit or 64bit target.  The
 # packaging must work off whatever Perl is installed.
@@ -117,8 +117,8 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_bindir}/*
 %{_includedir}/*
 %if %{?_with_chaos:1}%{!?_with_chaos:0}
-%{_libdir}/nodeupdown/*
-%{_libdir}/whatsup/*
+%attr(700,root,root) %{_libdir}/nodeupdown/*
+%attr(700,root,root) %{_libdir}/whatsup/*
 %endif
 %{_libdir}/libnodeupdown.*
 %{_perldir}/*
