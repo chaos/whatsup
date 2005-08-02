@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: ac_hostsfile.m4,v 1.3 2005-07-18 21:31:02 achu Exp $
+## $Id: ac_hostsfile.m4,v 1.4 2005-08-02 00:34:20 achu Exp $
 ##*****************************************************************************
 
 AC_DEFUN([AC_HOSTSFILE],
@@ -41,7 +41,7 @@ AC_DEFUN([AC_HOSTSFILE_PATH],
       esac
     ]
   )
-  AC_MSG_RESULT([$NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT)
+  AC_MSG_RESULT([$NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT])
  
   AC_DEFINE_UNQUOTED([NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT],
                      ["$NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT"],
