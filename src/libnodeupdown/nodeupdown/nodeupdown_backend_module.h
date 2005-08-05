@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_module.h,v 1.6 2005-06-29 00:16:54 achu Exp $
+ *  $Id: nodeupdown_backend_module.h,v 1.7 2005-08-05 15:52:17 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -29,11 +29,6 @@
 
 #include <nodeupdown.h>
 
-/* 
- * Backend Tool Flags
- */
-#define NODEUPDOWN_BACKEND_NO_CLUSTERLIST 0x0001
-
 /*
  * Nodeupdown_backend_default_hostname
  *
@@ -54,13 +49,6 @@ typedef int (*Nodeupdown_backend_default_port)(nodeupdown_t);
  * Return default timeout_len of backend tool
  */
 typedef int (*Nodeupdown_backend_default_timeout_len)(nodeupdown_t);
-
-/*
- * Nodeupdown_backend_flags
- *
- * Return backend tool flags
- */
-typedef int (*Nodeupdown_backend_flags)(nodeupdown_t);
 
 /*
  * Nodeupdown_backend_setup
@@ -105,7 +93,6 @@ struct nodeupdown_backend_module_info
   Nodeupdown_backend_default_hostname default_hostname;
   Nodeupdown_backend_default_port default_port;
   Nodeupdown_backend_default_timeout_len default_timeout_len;
-  Nodeupdown_backend_flags flags;
   Nodeupdown_backend_setup setup;
   Nodeupdown_backend_cleanup cleanup;
   Nodeupdown_backend_get_updown_data get_updown_data;

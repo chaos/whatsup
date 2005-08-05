@@ -1,3 +1,19 @@
+2005-08-05  Albert Chu  <chu11@llnl.gov>
+
+	* src/libnodeupdown/nodeupdown_backend_cerebro.c,
+	src/libnodeupdown/nodeupdown.c,
+	src/libnodeupdown/nodeupdown/nodeupdown_backend_module.h,
+	src/libnodeupdown/nodeupdown_devel.c,
+	src/libnodeupdown/nodeupdown_module.h,
+	src/libnodeupdown/nodeupdown_module.c: Remove support for backend
+	module flags.
+
+	* src/libnodeupdown/nodeupdown.c (_is_node): Fixed corner case.
+
+	* src/libnodeupdown/nodeupdown_backend_cerebro.c
+	(cerebro_backend_default_timeout_len): Let libcerebro or the
+	cerebro server pick the default timeout.
+	
 2005-08-01  Albert Chu  <chu11@llnl.gov>
 
 	* config/ac_hostsfile.m4: Fix typo.

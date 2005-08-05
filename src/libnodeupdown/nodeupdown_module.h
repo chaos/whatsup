@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.h,v 1.11 2005-07-02 15:10:09 achu Exp $
+ *  $Id: nodeupdown_module.h,v 1.12 2005-08-05 15:52:17 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -75,13 +75,6 @@ int backend_module_default_port(nodeupdown_t handle);
  * call backend module default_timeout_len function
  */
 int backend_module_default_timeout_len(nodeupdown_t handle);
-
-/* 
- * backend_module_flags
- *
- * call backend module flags function
- */
-int backend_module_flags(nodeupdown_t handle);
 
 /* 
  * backend_module_setup

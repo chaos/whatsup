@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.c,v 1.18 2005-07-02 15:41:51 achu Exp $
+ *  $Id: nodeupdown_module.c,v 1.19 2005-08-05 15:52:17 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -440,17 +440,6 @@ backend_module_default_timeout_len(nodeupdown_t handle)
       return -1;
     }
   return (*backend_module_info->default_timeout_len)(handle);
-}
-
-int
-backend_module_flags(nodeupdown_t handle)
-{
-  if (!backend_module_info)
-    {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      return -1;
-    }
-  return (*backend_module_info->flags)(handle);
 }
 
 int 
