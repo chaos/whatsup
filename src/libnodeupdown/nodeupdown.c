@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.151 2005-08-05 16:06:06 achu Exp $
+ *  $Id: nodeupdown.c,v 1.152 2005-08-05 19:30:54 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -432,7 +432,7 @@ nodeupdown_load_data(nodeupdown_t handle,
 	}
       else
 	{
-	  if (backend_module_default_timeout_len(handle) <= 0)
+	  if (backend_module_default_timeout_len(handle) < 0)
 	    {
 	      handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
 	      goto cleanup;
