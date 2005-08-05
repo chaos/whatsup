@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.150 2005-08-05 15:52:17 achu Exp $
+ *  $Id: nodeupdown.c,v 1.151 2005-08-05 16:06:06 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -502,22 +502,14 @@ nodeupdown_load_data(nodeupdown_t handle,
         goto cleanup;
     }
 
-  if (!(flags & NODEUPDOWN_BACKEND_NO_CLUSTERLIST))
-    {
-      if (clusterlist_module_compare_to_clusterlist(handle) < 0)
-        goto cleanup;
-    }
+  if (clusterlist_module_compare_to_clusterlist(handle) < 0)
+    goto cleanup;
   
   hostlist_sort(handle->up_nodes);
   hostlist_sort(handle->down_nodes);
 
-  if (!(flags & NODEUPDOWN_BACKEND_NO_CLUSTERLIST))
-    {
-      if ((handle->numnodes = clusterlist_module_get_numnodes(handle)) < 0)
-        goto cleanup;
-    }
-  else
-    handle->numnodes = hostlist_count(handle->up_nodes) + hostlist_count(handle->down_nodes);
+  if ((handle->numnodes = clusterlist_module_get_numnodes(handle)) < 0)
+    goto cleanup;
 
   /* loading complete */
   handle->load_state = NODEUPDOWN_LOAD_STATE_LOADED;
