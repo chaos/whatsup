@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.149 2005-07-02 15:41:51 achu Exp $
+ *  $Id: nodeupdown.c,v 1.149.2.1 2005-08-12 18:27:03 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -315,7 +315,6 @@ nodeupdown_load_data(nodeupdown_t handle,
 {
   struct nodeupdown_config conffile_config;
   struct nodeupdown_config module_config;
-  int flags;
 
   if (_unloaded_handle_error_check(handle) < 0)
     goto cleanup;
@@ -345,20 +344,14 @@ nodeupdown_load_data(nodeupdown_t handle,
   if (backend_module_setup(handle) < 0)
     goto cleanup;
 
-  if ((flags = backend_module_flags(handle)) < 0)
+  /* 
+   * Load clusterlist module
+   */
+  if (clusterlist_module_load(handle) < 0)
     goto cleanup;
-
-  if (!(flags & NODEUPDOWN_BACKEND_NO_CLUSTERLIST))
-    {
-      /* 
-       * Load clusterlist module
-       */
-      if (clusterlist_module_load(handle) < 0)
-        goto cleanup;
-      
-      if (clusterlist_module_setup(handle) < 0)
-        goto cleanup;
-    }
+  
+  if (clusterlist_module_setup(handle) < 0)
+    goto cleanup;
 
   /* 
    * Load config module
@@ -509,22 +502,14 @@ nodeupdown_load_data(nodeupdown_t handle,
         goto cleanup;
     }
 
-  if (!(flags & NODEUPDOWN_BACKEND_NO_CLUSTERLIST))
-    {
-      if (clusterlist_module_compare_to_clusterlist(handle) < 0)
-        goto cleanup;
-    }
+  if (clusterlist_module_compare_to_clusterlist(handle) < 0)
+    goto cleanup;
   
   hostlist_sort(handle->up_nodes);
   hostlist_sort(handle->down_nodes);
 
-  if (!(flags & NODEUPDOWN_BACKEND_NO_CLUSTERLIST))
-    {
-      if ((handle->numnodes = clusterlist_module_get_numnodes(handle)) < 0)
-        goto cleanup;
-    }
-  else
-    handle->numnodes = hostlist_count(handle->up_nodes) + hostlist_count(handle->down_nodes);
+  if ((handle->numnodes = clusterlist_module_get_numnodes(handle)) < 0)
+    goto cleanup;
 
   /* loading complete */
   handle->load_state = NODEUPDOWN_LOAD_STATE_LOADED;
@@ -712,6 +697,7 @@ static int
 _is_node(nodeupdown_t handle, const char *node, int up_or_down) 
 { 
   char buffer[NODEUPDOWN_MAXNODENAMELEN+1];
+  char *nodePtr;
   int temp, rv = -1;
 
   if (_loaded_handle_error_check(handle) < 0)
@@ -739,6 +725,8 @@ _is_node(nodeupdown_t handle, const char *node, int up_or_down)
 					  buffer, 
 					  NODEUPDOWN_MAXNODENAMELEN+1) < 0)
 	return -1;
+
+      nodePtr = buffer;
     }
   else
     {
@@ -751,12 +739,14 @@ _is_node(nodeupdown_t handle, const char *node, int up_or_down)
 	  handle->errnum = NODEUPDOWN_ERR_NOTFOUND;
 	  return -1;
 	}
+
+      nodePtr = (char *)node;
     }
 
   if (up_or_down == NODEUPDOWN_UP_NODES)
-    temp = hostlist_find(handle->up_nodes, buffer);
+    temp = hostlist_find(handle->up_nodes, nodePtr);
   else
-    temp = hostlist_find(handle->down_nodes, buffer);
+    temp = hostlist_find(handle->down_nodes, nodePtr);
 
   if (temp != -1)
     rv = 1;

@@ -1,3 +1,17 @@
+2005-08-12  Albert Chu  <chu11@llnl.gov>
+
+	* src/libnodeupdown/nodeupdown_backend_cerebro.c,
+	src/libnodeupdown/nodeupdown.c,
+	src/libnodeupdown/nodeupdown/nodeupdown_backend_module.h,
+	src/libnodeupdown/nodeupdown_devel.c,
+	src/libnodeupdown/nodeupdown_module.h,
+	src/libnodeupdown/nodeupdown_module.c: Remove support for backend
+	module flags.
+	 
+	 * src/libnodeupdown/nodeupdown.c (_is_node): Fixed corner case.
+	 
+	 * tagged whatsup-1-4-0-pre5
+	
 2005-07-07  Albert Chu  <chu11@llnl.gov>
 	
 	* src/whatsup/whatsup.c (_usage, _cmdline_parse),
