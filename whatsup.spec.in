@@ -117,8 +117,8 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_bindir}/*
 %{_includedir}/*
 %if %{?_with_chaos:1}%{!?_with_chaos:0}
-%attr(700,root,root) %{_libdir}/nodeupdown/*
-%attr(700,root,root) %{_libdir}/whatsup/*
+%{_libdir}/nodeupdown/*
+%{_libdir}/whatsup/*
 %endif
 %{_libdir}/libnodeupdown.*
 %{_perldir}/*
