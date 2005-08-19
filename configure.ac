@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.54 2005-06-20 21:58:08 achu Exp $
+## $Id: configure.ac,v 1.55 2005-08-19 00:39:25 achu Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -107,6 +107,12 @@ AM_CONDITIONAL(WITH_GENDERS, [test "$ac_with_genders" = "yes"])
 AC_HOSTSFILE
 AC_HOSTSFILE_PATH
 AM_CONDITIONAL(WITH_HOSTSFILE, [test "$ac_with_hostsfile" = "yes"])
+
+#
+# Check for chaos config 
+#
+AC_CHAOS_CONFIG
+AM_CONDITIONAL(WITH_CHAOS_CONFIG, [test "$ac_with_chaos_config" = "yes"])
 
 ##
 # Checks for typedefs, structures, and compiler characteristics.

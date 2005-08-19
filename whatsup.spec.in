@@ -24,11 +24,13 @@ Whatsup is a cluster node up/down detection utility.
 %define _with_gendersllnl  --with-gendersllnl
 %define _without_genders   --without-genders
 %define _without_hostsfile --without-hostsfile
+%define _with_chaos_config --with-chaos-config
 %else
 %{!?_with_cerebro: %{!?_without_cerebro: %define _with_cerebro --with-cerebro}}
 %{!?_with_gendersllnl: %{!?_without_gendersllnl: %define _with_gendersllnl --with-gendersllnl}}
 %{!?_with_genders: %{!?_without_genders: %define _with_genders --with-genders}}
 %{!?_with_hostsfile: %{!?_without_hostsfile: %define _with_hostsfile --with-hostsfile}}
+%{!?_with_chaos_config: %{!?_without_chaos_config: %define _with_chaos_config --with-chaos-config}}
 %endif
 
 %package backend-ganglia
@@ -69,13 +71,13 @@ Requires: whatsup
 %description clusterlist-hostsfile
 Hostsfile clusterlist module
 
-%package config-gendersllnl
-Summary: whatsup gendersllnl config module
+%package config-chaos
+Summary: whatsup chaos config module
 Group: System Environment/Base
 Requires: whatsup
-Requires: gendersllnl
-%description config-gendersllnl
-Gendersllnl config module
+Requires: chaos
+%description config-chaos
+Chaos config module
 
 %package options-gendersllnl
 Summary: whatsup gendersllnl options module
@@ -98,7 +100,9 @@ Gendersllnl options module
            %{?_with_genders} \
            %{?_without_genders} \
            %{?_with_hostsfile} \
-           %{?_without_hostsfile}
+           %{?_without_hostsfile} \
+           %{?_with_chaos_config} \
+           %{?_without_chaos_config}
 make
 
 %install
@@ -152,10 +156,10 @@ rm -rf "$RPM_BUILD_ROOT"
 %defattr(-,root,root)
 %{_libdir}/nodeupdown/*hostsfile.*
 
-%if %{?_with_gendersllnl:1}%{!?_with_gendersllnl:0}
-%files config-gendersllnl
+%if %{?_with_chaos_config:1}%{!?_with_chaos_config:0}
+%files config-chaos
 %defattr(-,root,root)
-%{_libdir}/nodeupdown/*config_gendersllnl.*
+%{_libdir}/nodeupdown/*config_chaos.*
 %endif
 
 %if %{?_with_gendersllnl:1}%{!?_with_gendersllnl:0}

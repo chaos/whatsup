@@ -1,6 +1,13 @@
+2005-08-18  Albert Chu  <chu11@llnl.gov>
+
+	* Renamed gendersllnl config module to chaos config module
+	globally.
+	
 2005-08-16  Albert Chu  <chu11@llnl.gov>
 
 	* whatsup.spec.in, META: Prepare for new release.
+
+	* tagged whatsup-1-4-0-pre6
 	
 2005-08-05  Albert Chu  <chu11@llnl.gov>
 

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.c,v 1.19 2005-08-05 15:52:17 achu Exp $
+ *  $Id: nodeupdown_module.c,v 1.20 2005-08-19 00:39:26 achu Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -68,7 +68,7 @@ static char *clusterlist_modules[] = {
 static int clusterlist_modules_len = 3;
 
 static char *config_modules[] = {
-  "nodeupdown_config_gendersllnl.so",
+  "nodeupdown_config_chaos.so",
   NULL
 };
 static int config_modules_len = 1;

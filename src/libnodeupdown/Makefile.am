@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.55 2005-07-02 15:18:35 achu Exp $
+## $Id: Makefile.am,v 1.56 2005-08-19 00:39:26 achu Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -73,7 +73,6 @@ endif
 
 if WITH_GENDERSLLNL
 GENDERSLLNL_CLUSTERLIST_MODULE = nodeupdown_clusterlist_gendersllnl.la
-GENDERSLLNL_CONFIG_MODULE      = nodeupdown_config_gendersllnl.la
 endif
  
 if WITH_GENDERS
@@ -84,6 +83,10 @@ if WITH_HOSTSFILE
 HOSTSFILE_CLUSTERLIST_MODULE   = nodeupdown_clusterlist_hostsfile.la
 endif
 
+if WITH_CHAOS_CONFIG
+CHAOS_CONFIG_MODULE            = nodeupdown_config_chaos.la
+endif
+
 nodeupdownmodulelibdir = $(NODEUPDOWN_MODULE_DIR)
 nodeupdownmodulelib_LTLIBRARIES = \
 	nodeupdown_backend_ganglia.la \
@@ -91,7 +94,7 @@ nodeupdownmodulelib_LTLIBRARIES = \
 	$(GENDERSLLNL_CLUSTERLIST_MODULE) \
 	$(GENDERS_CLUSTERLIST_MODULE) \
 	$(HOSTSFILE_CLUSTERLIST_MODULE) \
-	$(GENDERSLLNL_CONFIG_MODULE)
+	$(CHAOS_CONFIG_MODULE)
 
 nodeupdown_backend_ganglia_la_SOURCES = \
 	nodeupdown_backend_ganglia.c
@@ -140,12 +143,12 @@ nodeupdown_clusterlist_hostsfile_la_CFLAGS  = \
 nodeupdown_clusterlist_hostsfile_la_LIBADD = \
 	../libcommon/libcommon.la
  
-nodeupdown_config_gendersllnl_la_SOURCES = \
-	nodeupdown_config_gendersllnl.c \
+nodeupdown_config_chaos_la_SOURCES = \
+	nodeupdown_config_chaos.c \
 	nodeupdown_genders_util.c
-nodeupdown_config_gendersllnl_la_LDFLAGS = \
+nodeupdown_config_chaos_la_LDFLAGS = \
 	$(MODULE_FLAGS) \
-	$(GENDERSLLNL_LIBS) \
+	$(CHAOS_CONFIG_LIBS) \
 	$(NODEUPDOWN_CONFIG_OTHER_FLAGS)
 
 ../libcommon/libcommon.la: force-dependency-check

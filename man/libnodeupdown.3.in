@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: libnodeupdown.3.in,v 1.18 2005-05-15 14:58:59 achu Exp $
+\."$Id: libnodeupdown.3.in,v 1.19 2005-08-19 00:39:26 achu Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -132,8 +132,8 @@ configuration files throughout a cluster.  By default, the following
 configuration modules are searched for by nodeupdown in the following
 order:
 
-.if @MANPAGE_GENDERSLLNL@ \{
-gendersllnl - For the most part, specifically used by Lawrence
+.if @MANPAGE_CHAOS_CONFIG@ \{
+chaos - For the most part, specifically used by Lawrence
 Livermore National Laboratory.
    
 \}
