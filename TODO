@@ -1,1 +1,5 @@
 - repackage for multilib
+- Support for other technologies (I have no idea if these are possible, I'm just randomly thinking these up)
+  - Supermon
+  - Clumon
+  - Nagios
