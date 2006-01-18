@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.55 2005-08-19 00:39:25 achu Exp $
+## $Id: configure.ac,v 1.56 2006-01-18 21:15:42 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -90,12 +90,6 @@ AC_CEREBRO
 AM_CONDITIONAL(WITH_CEREBRO, [test "$ac_with_cerebro" = "yes"])
 
 #
-# Check for gendersllnl
-#
-AC_GENDERSLLNL
-AM_CONDITIONAL(WITH_GENDERSLLNL, [test "$ac_with_gendersllnl" = "yes"])
-
-#
 # Check for genders
 #
 AC_GENDERS
@@ -107,12 +101,6 @@ AM_CONDITIONAL(WITH_GENDERS, [test "$ac_with_genders" = "yes"])
 AC_HOSTSFILE
 AC_HOSTSFILE_PATH
 AM_CONDITIONAL(WITH_HOSTSFILE, [test "$ac_with_hostsfile" = "yes"])
-
-#
-# Check for chaos config 
-#
-AC_CHAOS_CONFIG
-AM_CONDITIONAL(WITH_CHAOS_CONFIG, [test "$ac_with_chaos_config" = "yes"])
 
 ##
 # Checks for typedefs, structures, and compiler characteristics.

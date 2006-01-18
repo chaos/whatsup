@@ -31,9 +31,6 @@ Cerebro: See URL to be determined.
 
 The currently clusterlist database tools are:
 
-Gendersllnl - For the most part, specifically used by Lawrence
-Livermore National Laboratory.
-
 Genders - Uses a genders database and the genders library to determine
 all nodes in the cluster.
 
@@ -41,11 +38,7 @@ Hostsfile - Uses a file that lists the hostname of every node in the
 cluster on a separate line.
 
 The nodeupdown library may also load a configuration module to make
-cluster configuration easier.  The currently available clusterlist
-database tools are:
-
-Gendersllnl - For the most part, specifically used by Lawrence
-Livermore National Laboratory.
+cluster configuration easier.  
 
 For whatsup to work, atleast one backend module must be installed.  If
 more than one is installed, the first one discovered will be used.

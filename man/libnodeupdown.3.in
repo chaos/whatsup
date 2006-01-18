@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: libnodeupdown.3.in,v 1.19 2005-08-19 00:39:26 achu Exp $
+\."$Id: libnodeupdown.3.in,v 1.20 2006-01-18 21:15:43 chu11 Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -89,7 +89,7 @@ the following order:
 
 ganglia - See http://ganglia.sourceforge.net for more information.
 
-cerebro - See URL to be determined.
+cerebro - See http://cerebro.sourceforge.net for more information.
 
 If none of the above are found, the nodeupdown library will search for
 a backend module in @NODEUPDOWN_MODULE_DIR@ until one is found.
@@ -101,12 +101,6 @@ all cluster nodes.  There are several possible clusterlist formats
 that can be parsed.  By default, the following clusterlist modules are
 searched for by nodeupdown in the following order:
 
-.if @MANPAGE_GENDERSLLNL@ \{
-gendersllnl - For the most part, specifically used by Lawrence
-Livermore National Laboratory.
-   
-\}
-   
 .if @MANPAGE_GENDERS@ \{
 genders - Uses a genders database and the genders library to determine
 all nodes in the cluster.
@@ -132,11 +126,7 @@ configuration files throughout a cluster.  By default, the following
 configuration modules are searched for by nodeupdown in the following
 order:
 
-.if @MANPAGE_CHAOS_CONFIG@ \{
-chaos - For the most part, specifically used by Lawrence
-Livermore National Laboratory.
-   
-\}
+None built by default
 
 If none of the above are found, the nodeupdown library will search for
 a config module in @NODEUPDOWN_MODULE_DIR@.  The nodeupdown

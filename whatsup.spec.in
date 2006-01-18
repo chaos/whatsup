@@ -1,37 +1,18 @@
 Name:    @PROJECT@
 Version: @VERSION@
-%if %{?_with_chaos:1}%{!?_with_chaos:0}
-Release: @RELEASE@chaos
-%else
 Release: @RELEASE@
-%endif
 Summary: whatsup node up/down detection utility
 Group: Applications/Communications
 License: GPL
 Source: @PROJECT@-@VERSION@-@RELEASE@.tgz
 BuildRoot: %{_tmppath}/@PROJECT@-@VERSION@-@RELEASE@
-%if %{?_with_chaos:1}%{!?_with_chaos:0}
-Requires: gendersllnl
-Requires: genders >= 1.4
-Requires: cerebro >= 1.0-0.pre8
-%endif
 
 %description
 Whatsup is a cluster node up/down detection utility.
 
-%if %{?_with_chaos:1}%{!?_with_chaos:0}
-%define _with_cerebro      --with-cerebro
-%define _with_gendersllnl  --with-gendersllnl
-%define _without_genders   --without-genders
-%define _without_hostsfile --without-hostsfile
-%define _with_chaos_config --with-chaos-config
-%else
 %{!?_with_cerebro: %{!?_without_cerebro: %define _with_cerebro --with-cerebro}}
-%{!?_with_gendersllnl: %{!?_without_gendersllnl: %define _with_gendersllnl --with-gendersllnl}}
 %{!?_with_genders: %{!?_without_genders: %define _with_genders --with-genders}}
 %{!?_with_hostsfile: %{!?_without_hostsfile: %define _with_hostsfile --with-hostsfile}}
-%{!?_with_chaos_config: %{!?_without_chaos_config: %define _with_chaos_config --with-chaos-config}}
-%endif
 
 %package backend-ganglia
 Summary: whatsup ganglia backend
@@ -48,14 +29,6 @@ Requires: cerebro
 %description backend-cerebro
 Cerebro backend module
 
-%package clusterlist-gendersllnl
-Summary: whatsup gendersllnl clusterlist module
-Group: System Environment/Base
-Requires: whatsup
-Requires: gendersllnl
-%description clusterlist-gendersllnl
-Gendersllnl clusterlist module
-
 %package clusterlist-genders
 Summary: whatsup genders clusterlist module
 Group: System Environment/Base
@@ -71,22 +44,6 @@ Requires: whatsup
 %description clusterlist-hostsfile
 Hostsfile clusterlist module
 
-%package config-chaos
-Summary: whatsup chaos config module
-Group: System Environment/Base
-Requires: whatsup
-Requires: chaos
-%description config-chaos
-Chaos config module
-
-%package options-gendersllnl
-Summary: whatsup gendersllnl options module
-Group: System Environment/Base
-Requires: whatsup
-Requires: gendersllnl
-%description options-gendersllnl
-Gendersllnl options module
-
 %prep
 %setup -q -n @PROJECT@-@VERSION@-@RELEASE@
 
@@ -95,14 +52,10 @@ Gendersllnl options module
            --with-perl-install-destdir="$RPM_BUILD_ROOT" \
            %{?_with_cerebro} \
            %{?_without_cerebro} \
-           %{?_with_gendersllnl} \
-           %{?_without_gendersllnl} \
            %{?_with_genders} \
            %{?_without_genders} \
            %{?_with_hostsfile} \
-           %{?_without_hostsfile} \
-           %{?_with_chaos_config} \
-           %{?_without_chaos_config}
+           %{?_without_hostsfile}
 make
 
 %install
@@ -120,15 +73,9 @@ rm -rf "$RPM_BUILD_ROOT"
 %define _perldir %(perl -e 'use Config; $T=$Config{installsitearch}; $T=~/(.*)\\/site_perl.*/; print $1;')
 %{_bindir}/*
 %{_includedir}/*
-%if %{?_with_chaos:1}%{!?_with_chaos:0}
-%{_libdir}/nodeupdown/*
-%{_libdir}/whatsup/*
-%endif
 %{_libdir}/libnodeupdown.*
 %{_perldir}/*
 %{_mandir}/*
-
-%if %{?_with_chaos:0}%{!?_with_chaos:1}
 
 %files backend-ganglia
 %defattr(-,root,root)
@@ -166,5 +113,4 @@ rm -rf "$RPM_BUILD_ROOT"
 %files options-gendersllnl
 %defattr(-,root,root)
 %{_libdir}/whatsup/*gendersllnl.*
-%endif
 %endif
