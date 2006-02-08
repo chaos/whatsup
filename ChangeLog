@@ -1,3 +1,10 @@
+2006-02-08  Albert Chu  <chu11@llnl.gov>
+
+	* src/Libnodeupdown/Libnodeupdown.xs
+	(nodeupdown_get_up_nodes_list): Fix bug.
+
+	* whatsup.spec.in: Fix dir creation bugs.
+	
 2006-01-18  Albert Chu  <chu11@llnl.gov>
 
 	* Removed localisms.

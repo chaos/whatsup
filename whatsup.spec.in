@@ -73,6 +73,8 @@ rm -rf "$RPM_BUILD_ROOT"
 %define _perldir %(perl -e 'use Config; $T=$Config{installsitearch}; $T=~/(.*)\\/site_perl.*/; print $1;')
 %{_bindir}/*
 %{_includedir}/*
+%dir %{_libdir}/nodeupdown
+%dir %{_libdir}/whatsup
 %{_libdir}/libnodeupdown.*
 %{_perldir}/*
 %{_mandir}/*

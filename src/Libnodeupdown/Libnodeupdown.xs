@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: Libnodeupdown.xs,v 1.18 2005-05-17 17:04:23 achu Exp $
+ *  $Id: Libnodeupdown.xs,v 1.19 2006-02-08 18:00:39 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -357,7 +357,7 @@ nodeupdown_get_up_nodes_list(handle)
         if ((len = nodeupdown_nodelist_create(handle, &nlist)) == -1) 
             goto handle_error;
 
-        if ((num = nodeupdown_get_up_nodes_list(handle, nlist, num)) == -1)
+        if ((num = nodeupdown_get_up_nodes_list(handle, nlist, len)) == -1)
             goto handle_error;
 
         RETVAL = newAV();
