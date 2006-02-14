@@ -1,3 +1,7 @@
+2006-02-14  Albert Chu  <chu11@llnl.gov>
+
+	* src/Nodeupdown/Nodeupdown.pm.in: Fix syntax bug.
+	
 2006-02-08  Albert Chu  <chu11@llnl.gov>
 
 	* src/Libnodeupdown/Libnodeupdown.xs
