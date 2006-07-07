@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.56 2006-01-18 21:15:42 chu11 Exp $
+## $Id: configure.ac,v 1.57 2006-07-07 18:14:15 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -77,6 +77,8 @@ AC_CHECK_HEADERS( \
 AC_NODEUPDOWN_CONF
 AC_NODEUPDOWN_MODULE_DIR
 AC_WHATSUP_MODULE_DIR
+AC_PINGD_CONF
+AC_PINGD_MODULE_DIR
 
 #
 # Check for perl install destdir
@@ -94,6 +96,12 @@ AM_CONDITIONAL(WITH_CEREBRO, [test "$ac_with_cerebro" = "yes"])
 #
 AC_GENDERS
 AM_CONDITIONAL(WITH_GENDERS, [test "$ac_with_genders" = "yes"])
+
+#
+# Check for gendersllnl
+#
+AC_GENDERS
+AM_CONDITIONAL(WITH_GENDERSLLNL, [test "$ac_with_gendersllnl" = "yes"])
 
 #
 # Check for hostsfile 
@@ -134,6 +142,7 @@ AC_CONFIG_FILES( \
   src/libexpat/Makefile \
   src/libnodeupdown/Makefile \
   src/whatsup/Makefile \
+  src/pingd/Makefile \
   src/Libnodeupdown/Makefile \
   src/Nodeupdown/Makefile \
   man/Makefile \

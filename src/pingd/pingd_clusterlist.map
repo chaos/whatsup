@@ -1,0 +1,6 @@
+{
+  global:
+    module_info;
+  local:
+    *;
+};
