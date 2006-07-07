@@ -1,0 +1,106 @@
+#!/bin/sh
+# $Id: pingd,v 1.1 2006-07-07 20:57:17 chu11 Exp $
+#
+# chkconfig: 2345 70 40
+# description: pingd startup script
+#
+### BEGIN INIT INFO
+# Provides: pingd
+# Required-Start: $network $remote_fs $syslog
+# Required-Stop:  $network $remote_fs $syslog
+# Default-Start:  3 5
+# Default-Stop:   0 1 2 6
+# Description:    Start pingd-
+### END INIT INFO
+
+PINGD=/usr/sbin/pingd
+
+[ -f $PINGD ] || exit 1
+
+# Load Redhat or Suse appropriate libs
+if [ -f /etc/rc.d/init.d/functions ] ; then
+    . /etc/rc.d/init.d/functions
+    Xstart() {
+        daemon $PINGD
+        RETVAL=$?
+        echo
+        [ $RETVAL -eq 0 ] && touch /var/lock/subsys/pingd
+    }
+    Xstop() {
+        killproc pingd -TERM
+        RETVAL=$?
+        echo
+        [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/pingd
+    }
+    Xstatus() {
+        status pingd
+	RETVAL=$?
+    }
+    Xcondrestart() {
+        if test -e /var/lock/subsys/pingd; then
+	    $0 stop
+	    $0 start
+   	    RETVAL=$?
+        fi
+    }
+    Xexit() {
+	exit $RETVAL
+    }
+elif [ -f /etc/rc.status ] ; then
+    . /etc/rc.status
+    Xstart() {
+        startproc $PINGD
+        rc_status -v
+    }
+    Xstop() {
+        killproc -TERM $PINGD
+        rc_status -v
+    }
+    Xstatus() {
+        echo -n "Checking for pingd: "
+        checkproc $PINGD
+        rc_status -v
+    }
+    Xcondrestart() {
+        $0 status
+        if test $? = 0; then
+            $0 restart
+        else
+            rc_reset
+        fi
+        rc_status
+    }
+    Xexit() {
+	rc_exit
+    }
+else
+    echo "Unknown distribution type"
+    exit 1
+fi
+
+RETVAL=0
+
+case "$1" in
+   start)
+   	echo -n "Starting pingd: "
+        Xstart
+        ;;
+  stop)
+   	echo -n "Shutting down pingd: "
+	Xstop
+   	;;
+  restart|reload)
+   	$0 stop
+   	$0 start
+   	RETVAL=$?
+   	;;
+  status)
+        Xstatus
+   	;;
+  condrestart)
+        Xcondrestart
+   	;;
+  *)
+	echo "Usage: $0 {start|stop|restart|status|condrestart}"
+	exit 1
+esac
