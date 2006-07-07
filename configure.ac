@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.58 2006-07-07 21:00:48 chu11 Exp $
+## $Id: configure.ac,v 1.59 2006-07-07 21:43:29 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -100,7 +100,7 @@ AM_CONDITIONAL(WITH_GENDERS, [test "$ac_with_genders" = "yes"])
 #
 # Check for gendersllnl
 #
-AC_GENDERS
+AC_GENDERSLLNL
 AM_CONDITIONAL(WITH_GENDERSLLNL, [test "$ac_with_gendersllnl" = "yes"])
 
 #

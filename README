@@ -29,6 +29,9 @@ Ganglia: See http://ganglia.sourceforge.net
 
 Cerebro: See URL to be determined.
 
+Pingd: A simple daemon distributed as a whatsup subpackage that
+regularly pings nodes.
+
 The currently clusterlist database tools are:
 
 Genders - Uses a genders database and the genders library to determine
@@ -42,6 +45,7 @@ cluster configuration easier.
 
 For whatsup to work, atleast one backend module must be installed.  If
 more than one is installed, the first one discovered will be used.
+The pingd backend module package also includes the daemon.
 
 More information about writing backend, clusterlist, and configuration
 modules, see the nodeupdown_module manpage.
