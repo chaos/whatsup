@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd_config.c,v 1.2 2006-07-07 21:00:48 chu11 Exp $
+ *  $Id: pingd_config.c,v 1.3 2006-07-07 21:53:12 chu11 Exp $
 \*****************************************************************************/
 
 #if HAVE_CONFIG_H
@@ -38,7 +38,6 @@ struct pingd_config conf;
 
 static char *clusterlist_modules[] = 
   {
-    "pingd_clusterlist_gendersllnl.so",
     "pingd_clusterlist_genders.so",
     "pingd_clusterlist_hostsfile.so",
     NULL,

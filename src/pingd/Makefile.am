@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.1 2006-07-07 18:14:16 chu11 Exp $
+## $Id: Makefile.am,v 1.2 2006-07-07 21:52:43 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -36,10 +36,6 @@ pingd_LDADD = ../libcommon/libcommon.la
 
 MODULE_FLAGS = -module -avoid-version
 
-if WITH_GENDERSLLNL
-GENDERSLLNL_CLUSTERLIST_MODULE = pingd_clusterlist_gendersllnl.la
-endif
-
 if WITH_GENDERS
 GENDERS_CLUSTERLIST_MODULE     = pingd_clusterlist_genders.la
 endif
@@ -50,20 +46,8 @@ endif
 
 pingdmodulelibdir = $(PINGD_MODULE_DIR)
 pingdmodulelib_LTLIBRARIES = \
-	$(GENDERSLLNL_CLUSTERLIST_MODULE) \
 	$(GENDERS_CLUSTERLIST_MODULE) \
 	$(HOSTSFILE_CLUSTERLIST_MODULE)
-
-pingd_clusterlist_gendersllnl_la_SOURCES = \
-	pingd_clusterlist_gendersllnl.c
-pingd_clusterlist_gendersllnl_la_CFLAGS = \
-	-I$(srcdir)/../libcommon
-pingd_clusterlist_gendersllnl_la_LDFLAGS = \
-	$(MODULE_FLAGS) \
-	$(GENDERSLLNL_LIBS) \
-	$(PINGD_CLUSTERLIST_OTHER_FLAGS)
-pingd_clusterlist_gendersllnl_la_LIBADD = \
-	../libcommon/libcommon.la
 
 pingd_clusterlist_genders_la_SOURCES = \
 	pingd_clusterlist_genders.c
