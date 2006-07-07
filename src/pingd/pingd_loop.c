@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd_loop.c,v 1.1 2006-07-07 18:14:16 chu11 Exp $
+ *  $Id: pingd_loop.c,v 1.2 2006-07-07 21:00:48 chu11 Exp $
 \*****************************************************************************/
 
 #ifdef HAVE_CONFIG_H
@@ -441,7 +441,7 @@ pingd_loop(void)
           if (gettimeofday(&now, NULL) < 0)
             ERR_EXIT(("gettimeofday: %s", strerror(errno)));
 
-          timeval_add_ms(&now, conf.ping_interval, &pingd_next_send);
+          timeval_add_ms(&now, conf.ping_period, &pingd_next_send);
         }
 
       _setup_pfds(pfds);

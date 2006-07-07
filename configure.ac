@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.57 2006-07-07 18:14:15 chu11 Exp $
+## $Id: configure.ac,v 1.58 2006-07-07 21:00:48 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -146,10 +146,13 @@ AC_CONFIG_FILES( \
   src/Libnodeupdown/Makefile \
   src/Nodeupdown/Makefile \
   man/Makefile \
+  etc/Makefile
   man/libnodeupdown.3 \
   man/nodeupdown_module.3 \
   man/nodeupdown.conf.5 \
   man/whatsup.1 \
+  man/pingd.8 \
+  man/pingd.conf.5 \
   src/Libnodeupdown/Libnodeupdown.pm \
   src/Nodeupdown/Nodeupdown.pm \
 )

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd_config.c,v 1.1 2006-07-07 18:14:16 chu11 Exp $
+ *  $Id: pingd_config.c,v 1.2 2006-07-07 21:00:48 chu11 Exp $
 \*****************************************************************************/
 
 #if HAVE_CONFIG_H
@@ -53,7 +53,7 @@ _config_default(void)
   conf.debug = PINGD_DEBUG_DEFAULT;
 #endif /* NDEBUG */
   conf.config_file = PINGD_CONF_FILE;
-  conf.ping_interval = PINGD_PING_INTERVAL_DEFAULT;
+  conf.ping_period = PINGD_PING_PERIOD_DEFAULT;
   conf.pingd_server_port = PINGD_SERVER_PORT_DEFAULT;
 
   if (!(conf.hosts = hostlist_create(NULL)))
@@ -166,21 +166,21 @@ _cb_host(conffile_t cf,
 static void
 _config_file_parse(void)
 {
-  int ping_interval_flag, 
+  int ping_period_flag, 
     pingd_server_port_flag,
     host_flag;
   
   struct conffile_option options[] =
     {
       {
-        "ping_interval",
+        "ping_period",
         CONFFILE_OPTION_INT,
         -1,
         conffile_int,
         1,
         0,
-        &(ping_interval_flag),
-        &(conf.ping_interval),
+        &(ping_period_flag),
+        &(conf.ping_period),
         0
       },
       {
@@ -461,7 +461,7 @@ pingd_config_setup(int argc, char **argv)
     {
       char hbuf[1024];
       fprintf(stderr, "conf.debug = %d\n", conf.debug);
-      fprintf(stderr, "conf.ping_interval = %d\n", conf.ping_interval);
+      fprintf(stderr, "conf.ping_period = %d\n", conf.ping_period);
       fprintf(stderr, "conf.pingd_server_port = %d\n", conf.pingd_server_port);
       hostlist_ranged_string(conf.hosts, 1024, hbuf);
       fprintf(stderr, "conf.hosts = %s\n", hbuf);

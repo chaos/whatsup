@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd_config.h,v 1.1 2006-07-07 18:14:16 chu11 Exp $
+ *  $Id: pingd_config.h,v 1.2 2006-07-07 21:00:48 chu11 Exp $
 \*****************************************************************************/
 
 #ifndef _PINGD_CONFIG_H
@@ -12,7 +12,7 @@
 #include "hostlist.h"
 
 #define PINGD_DEBUG_DEFAULT           0
-#define PINGD_PING_INTERVAL_DEFAULT   15000
+#define PINGD_PING_PERIOD_DEFAULT     15000
 #define PINGD_SERVER_PORT_DEFAULT     9125
 
 struct pingd_config
@@ -22,7 +22,7 @@ struct pingd_config
 #endif /* NDEBUG */
   char *config_file;
 
-  int ping_interval;
+  int ping_period;
   int pingd_server_port;
   hostlist_t hosts;
 };

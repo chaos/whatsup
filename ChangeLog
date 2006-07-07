@@ -1,7 +1,7 @@
 2006-07-07  Albert Chu  <chu11@llnl.gov>
 
-	* configure.ac, config/, src/libcommon/ src/pingd/: Added initial
-	implementation and support for a pingd daemon.
+	* configure.ac, config/, src/libcommon/, src/pingd/, man/, etc/:
+	Added initial implementation and support for a pingd daemon.
 	
 2006-06-19  Albert Chu  <chu11@llnl.gov>
 

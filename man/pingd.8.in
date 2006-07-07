@@ -1,0 +1,70 @@
+\."#############################################################################
+\."$Id: pingd.8.in,v 1.1 2006-07-07 21:00:48 chu11 Exp $
+\."#############################################################################
+\."  Copyright (C) 2003 The Regents of the University of California.
+\."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
+\."  Written by Albert Chu <chu11@llnl.gov>
+\."  UCRL-CODE-155699
+\."  
+\."  This file is part of Whatsup, tools and libraries for determining up and
+\."  down nodes in a cluster.  For details, see http://www.llnl.gov/linux/.
+\."
+\."  Whatsup is free software; you can redistribute it and/or modify it under
+\."  the terms of the GNU General Public License as published by the Free
+\."  Software Foundation; either version 2 of the License, or (at your option)
+\."  any later version.
+\."  
+\."  Whatsup is distributed in the hope that it will be useful, but WITHOUT 
+\."  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+\."  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+\."  for more details.
+\."  
+\."  You should have received a copy of the GNU General Public License along
+\."  with Whatsup; if not, write to the Free Software Foundation, Inc.,
+\."  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+\."#############################################################################
+.TH pingd 8 "May 2005" "pingd @VERSION@" pingd
+.SH "NAME"
+pingd \- node up/down monitoring daemon
+.SH "SYNOPSIS"
+.B pingd [OPTIONS]
+.br
+.SH "DESCRIPTION"
+The
+.B pingd
+daemon regularly sends out ICMP pings to determine if nodes are still
+up or down.
+
+The 
+.B pingd
+daemon can be configured using the pingd configuration file.  Nodes
+which should be pinged may also be configured via loadable modules.
+
+See the
+.BR pingd.conf(5)
+manpage for additional information.
+
+.SH "OPTIONS"
+.TP
+.B  -h, --help
+Output help
+.TP
+.B  -v, --version
+Output version
+.if @MANPAGE_DEBUG@ \{
+.TP
+.B  -c, --config-file
+Specify alternate configuration file
+.TP
+.B  -d, --debug
+Turn on debugging and run daemon in foreground
+\}
+
+.SH "FILES"
+@PINGD_CONF_FILE@
+
+@PINGD_MODULE_DIR@
+.SH "ORIGIN"
+Developed by Albert Chu <chu11@llnl.gov> on LLNL's Linux clusters.
+.SH "SEE ALSO"
+pingd.conf(5)
