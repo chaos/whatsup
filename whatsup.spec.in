@@ -120,7 +120,7 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_sbindir}/pingd
 %{_libdir}/nodeupdown/*pingd.*
 %dir %{_libdir}/pingd
-%{_libdir/pingd/*
+%{_libdir}/pingd/*
 %{_mandir}/pingd*
 
 %if %{?_with_genders:1}%{!?_with_genders:0}
