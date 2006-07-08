@@ -41,7 +41,7 @@ Summary: whatsup pingd backend clusterlist genders module
 Group: System Environment/Base
 Requires: whatsup
 Requires: whatsup-backend-pingd
-%description backend-pingd
+%description backend-pingd-clusterlist-genders
 Pingd genders clusterlist module
 
 %package backend-pingd-clusterlist-hostsfile
@@ -49,7 +49,7 @@ Summary: whatsup pingd backend clusterlist hostsfile module
 Group: System Environment/Base
 Requires: whatsup
 Requires: whatsup-backend-pingd
-%description backend-pingd
+%description backend-pingd-clusterlist-hostsfile
 Pingd hostsfile clusterlist module
 
 %package clusterlist-genders
