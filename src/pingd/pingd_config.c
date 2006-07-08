@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd_config.c,v 1.3 2006-07-07 21:53:12 chu11 Exp $
+ *  $Id: pingd_config.c,v 1.4 2006-07-08 00:20:08 chu11 Exp $
 \*****************************************************************************/
 
 #if HAVE_CONFIG_H
@@ -427,8 +427,10 @@ _module_load(void)
       goto cleanup;
     }
 
+#ifndef NDEBUG
   if (!_load_builddir_modules())
     goto cleanup;
+#endif /* NDEBUG */
 
   if (!_load_known_modules())
     goto cleanup;
