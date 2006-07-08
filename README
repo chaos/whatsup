@@ -25,12 +25,12 @@ possible backend tools and a cluster database of nodes.
 
 The currently available backend tools are:
 
+Pingd: A simple daemon distributed as a whatsup subpackage that
+regularly pings nodes.
+
 Ganglia: See http://ganglia.sourceforge.net
 
 Cerebro: See URL to be determined.
-
-Pingd: A simple daemon distributed as a whatsup subpackage that
-regularly pings nodes.
 
 The currently clusterlist database tools are:
 

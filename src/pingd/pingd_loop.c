@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd_loop.c,v 1.2 2006-07-07 21:00:48 chu11 Exp $
+ *  $Id: pingd_loop.c,v 1.3 2006-07-08 00:09:24 chu11 Exp $
 \*****************************************************************************/
 
 #ifdef HAVE_CONFIG_H
@@ -339,14 +339,14 @@ _receive_ping(int fd)
   socklen_t fromlen = sizeof(struct sockaddr_in);
   char *tmpstr;
 
-  assert(fd);
-
   /* We're happy as long as we receive something.  We don't bother
    * checking sequence numbers or anything like that.
   */
 
   if ((len = recvfrom(fd, buf, PINGD_BUFLEN, 0, (struct sockaddr *)&from, &fromlen)) < 0)
     ERR_EXIT(("recvfrom: %s", strerror(errno)));
+
+  printf("%s:%d\n", __FUNCTION__, __LINE__);
 
   if (!(tmpstr = inet_ntoa(from.sin_addr)))
     ERR_EXIT(("inet_ntoa: %s", strerror(errno))); /* strerror? */

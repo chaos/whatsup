@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd.c,v 1.1 2006-07-07 18:14:16 chu11 Exp $
+ *  $Id: pingd.c,v 1.2 2006-07-08 00:09:24 chu11 Exp $
 \*****************************************************************************/
 
 #ifdef HAVE_CONFIG_H
@@ -39,10 +39,10 @@ _daemon_init(void)
 
   if ((pid = fork()) < 0)
     ERR_EXIT(("fork: %s", strerror(errno)));
-
+  
   if (pid != 0)                 /* Terminate Parent */
     exit(0);
-
+  
   setsid();
   
   if (signal(SIGHUP, SIG_IGN) == SIG_ERR)

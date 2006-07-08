@@ -29,6 +29,29 @@ Requires: cerebro
 %description backend-cerebro
 Cerebro backend module
 
+%package backend-pingd
+Summary: whatsup pingd backend
+Group: System Environment/Base
+Requires: whatsup
+%description backend-pingd
+Pingd backend module and daemon
+
+%package backend-pingd-clusterlist-genders
+Summary: whatsup pingd backend clusterlist genders module
+Group: System Environment/Base
+Requires: whatsup
+Requires: whatsup-backend-pingd
+%description backend-pingd
+Pingd genders clusterlist module
+
+%package backend-pingd-clusterlist-hostsfile
+Summary: whatsup pingd backend clusterlist hostsfile module
+Group: System Environment/Base
+Requires: whatsup
+Requires: whatsup-backend-pingd
+%description backend-pingd
+Pingd hostsfile clusterlist module
+
 %package clusterlist-genders
 Summary: whatsup genders clusterlist module
 Group: System Environment/Base
@@ -77,7 +100,9 @@ rm -rf "$RPM_BUILD_ROOT"
 %dir %{_libdir}/whatsup
 %{_libdir}/libnodeupdown.*
 %{_perldir}/*
-%{_mandir}/*
+%{_mandir}/whatsup*
+%{_mandir}/libnodeupdown*
+%{_mandir}/nodeupdown*
 
 %files backend-ganglia
 %defattr(-,root,root)
@@ -89,11 +114,14 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_libdir}/nodeupdown/*cerebro.*
 %endif
 
-%if %{?_with_gendersllnl:1}%{!?_with_gendersllnl:0}
-%files clusterlist-gendersllnl
+%files backend-pingd
 %defattr(-,root,root)
-%{_libdir}/nodeupdown/*clusterlist_gendersllnl.*
-%endif
+%config(noreplace) %{_sysconfdir}/init.d/whatsup-pingd
+%{_sbindir}/pingd
+%{_libdir}/nodeupdown/*pingd.*
+%dir %{_libdir}/pingd
+%{_libdir/pingd/*
+%{_mandir}/pingd*
 
 %if %{?_with_genders:1}%{!?_with_genders:0}
 %files clusterlist-genders
@@ -105,14 +133,3 @@ rm -rf "$RPM_BUILD_ROOT"
 %defattr(-,root,root)
 %{_libdir}/nodeupdown/*hostsfile.*
 
-%if %{?_with_chaos_config:1}%{!?_with_chaos_config:0}
-%files config-chaos
-%defattr(-,root,root)
-%{_libdir}/nodeupdown/*config_chaos.*
-%endif
-
-%if %{?_with_gendersllnl:1}%{!?_with_gendersllnl:0}
-%files options-gendersllnl
-%defattr(-,root,root)
-%{_libdir}/whatsup/*gendersllnl.*
-%endif

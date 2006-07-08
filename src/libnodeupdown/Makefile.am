@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.57 2006-01-18 21:15:43 chu11 Exp $
+## $Id: Makefile.am,v 1.58 2006-07-08 00:09:24 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -82,9 +82,20 @@ endif
 nodeupdownmodulelibdir = $(NODEUPDOWN_MODULE_DIR)
 nodeupdownmodulelib_LTLIBRARIES = \
 	nodeupdown_backend_ganglia.la \
+	nodeupdown_backend_pingd.la \
 	$(CEREBRO_BACKEND_MODULE) \
 	$(GENDERS_CLUSTERLIST_MODULE) \
 	$(HOSTSFILE_CLUSTERLIST_MODULE)
+
+nodeupdown_backend_pingd_la_SOURCES = \
+	nodeupdown_backend_pingd.c
+nodeupdown_backend_pingd_la_LDFLAGS = \
+	$(MODULE_FLAGS) \
+	$(NODEUPDOWN_BACKEND_OTHER_FLAGS) 
+nodeupdown_backend_pingd_la_CFLAGS  = \
+	-I$(srcdir)/../libcommon
+nodeupdown_backend_pingd_la_LIBADD = \
+	../libcommon/libcommon.la
 
 nodeupdown_backend_ganglia_la_SOURCES = \
 	nodeupdown_backend_ganglia.c
