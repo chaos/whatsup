@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.2 2006-07-07 21:52:43 chu11 Exp $
+## $Id: Makefile.am,v 1.3 2006-07-08 00:16:20 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -74,3 +74,5 @@ pingd_clusterlist_hostsfile_la_LIBADD = \
 	@cd `dirname $@` && make `basename $@`
 
 force-dependency-check:
+
+EXTRA_DIST = pingd_clusterlist.map
