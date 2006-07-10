@@ -1,3 +1,7 @@
+2006-07-10  Albert Chu  <chu11@llnl.gov>
+
+	* whatsup.spec.in, README: Cleanup for new pingd.
+	
 2006-07-07  Albert Chu  <chu11@llnl.gov>
 
 	* configure.ac, config/, src/libcommon/, src/pingd/, man/, etc/,
