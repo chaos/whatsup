@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.60 2006-07-07 21:52:37 chu11 Exp $
+## $Id: configure.ac,v 1.61 2006-07-10 17:43:21 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -90,6 +90,18 @@ AC_PERL_INSTALL_DESTDIR
 #
 AC_CEREBRO
 AM_CONDITIONAL(WITH_CEREBRO, [test "$ac_with_cerebro" = "yes"])
+
+#
+# Check for ganglia build
+#
+AC_GANGLIA
+AM_CONDITIONAL(WITH_GANGLIA, [test "$ac_with_ganglia" = "yes"])
+
+#
+# Check for pingd build
+#
+AC_PINGD
+AM_CONDITIONAL(WITH_PINGD, [test "$ac_with_pingd" = "yes"])
 
 #
 # Check for genders

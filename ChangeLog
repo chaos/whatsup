@@ -1,6 +1,18 @@
 2006-07-10  Albert Chu  <chu11@llnl.gov>
 
 	* whatsup.spec.in, README: Cleanup for new pingd.
+
+	* man/libnodeupdown.3.in: Add pingd info.
+
+	* config/ac_hostsfile.m4: Fix typo.
+
+	* config/ac_ganglia.m4, config/ac_pingd.m4: New files.
+
+	* configure.ac, src/libnodeupdown/Makefile.am: Adjust for new
+	autoconf macros.
+
+	* src/pingd/pingd_config.c (_load_nodes), src/pingd/pingd_loop.c
+	(_nodes_setup): Fix compiler warnings.
 	
 2006-07-07  Albert Chu  <chu11@llnl.gov>
 

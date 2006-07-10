@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd_loop.c,v 1.3 2006-07-08 00:09:24 chu11 Exp $
+ *  $Id: pingd_loop.c,v 1.4 2006-07-10 17:45:39 chu11 Exp $
 \*****************************************************************************/
 
 #ifdef HAVE_CONFIG_H
@@ -127,7 +127,7 @@ _nodes_setup(void)
 {
   hostlist_iterator_t itr = NULL;
   char *host = NULL;
-  int i;
+  int i = 0;
 
   assert(fds);
   assert(fds_count);
@@ -184,6 +184,8 @@ _nodes_setup(void)
 
       if (!hash_insert(nodes_index, ip, info))
         ERR_EXIT(("hash_insert: %s", strerror(errno)));
+
+      i++;
     }
 
   hostlist_iterator_destroy(itr);

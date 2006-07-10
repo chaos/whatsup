@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd_config.c,v 1.4 2006-07-08 00:20:08 chu11 Exp $
+ *  $Id: pingd_config.c,v 1.5 2006-07-10 17:45:30 chu11 Exp $
 \*****************************************************************************/
 
 #if HAVE_CONFIG_H
@@ -237,7 +237,8 @@ _config_file_parse(void)
 static int
 _load_nodes(struct pingd_clusterlist_module_info *module_info)
 {
-  int numnodes, i, rv = -1;
+  int i, rv = -1;
+  int numnodes = 0;
   char **nodes = NULL;
 
   assert(module_info);

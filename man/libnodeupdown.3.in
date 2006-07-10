@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: libnodeupdown.3.in,v 1.20 2006-01-18 21:15:43 chu11 Exp $
+\."$Id: libnodeupdown.3.in,v 1.21 2006-07-10 17:44:16 chu11 Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -87,9 +87,12 @@ backend tool, to gather up/down info for the nodeupdown library.  By
 default, the following backend tools are searched for by nodeupdown in
 the following order:
 
+cerebro - See http://cerebro.sourceforge.net for more information.
+
 ganglia - See http://ganglia.sourceforge.net for more information.
 
-cerebro - See http://cerebro.sourceforge.net for more information.
+pingd - Simple pingd daemon.  See
+.B pingd(8)
 
 If none of the above are found, the nodeupdown library will search for
 a backend module in @NODEUPDOWN_MODULE_DIR@ until one is found.

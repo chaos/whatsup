@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.58 2006-07-08 00:09:24 chu11 Exp $
+## $Id: Makefile.am,v 1.59 2006-07-10 17:44:58 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -71,6 +71,14 @@ if WITH_CEREBRO
 CEREBRO_BACKEND_MODULE         = nodeupdown_backend_cerebro.la
 endif
 
+if WITH_GANGLIA
+GANGLIA_BACKEND_MODULE         = nodeupdown_backend_ganglia.la
+endif
+
+if WITH_PINGD
+PINGD_BACKEND_MODULE           = nodeupdown_backend_pingd.la
+endif
+
 if WITH_GENDERS
 GENDERS_CLUSTERLIST_MODULE     = nodeupdown_clusterlist_genders.la
 endif
@@ -81,21 +89,18 @@ endif
 
 nodeupdownmodulelibdir = $(NODEUPDOWN_MODULE_DIR)
 nodeupdownmodulelib_LTLIBRARIES = \
-	nodeupdown_backend_ganglia.la \
-	nodeupdown_backend_pingd.la \
 	$(CEREBRO_BACKEND_MODULE) \
+	$(GANGLIA_BACKEND_MODULE) \
+	$(PINGD_BACKEND_MODULE) \
 	$(GENDERS_CLUSTERLIST_MODULE) \
 	$(HOSTSFILE_CLUSTERLIST_MODULE)
 
-nodeupdown_backend_pingd_la_SOURCES = \
-	nodeupdown_backend_pingd.c
-nodeupdown_backend_pingd_la_LDFLAGS = \
+nodeupdown_backend_cerebro_la_SOURCES = \
+	nodeupdown_backend_cerebro.c
+nodeupdown_backend_cerebro_la_LDFLAGS = \
 	$(MODULE_FLAGS) \
+	$(CEREBRO_LIBS) \
 	$(NODEUPDOWN_BACKEND_OTHER_FLAGS) 
-nodeupdown_backend_pingd_la_CFLAGS  = \
-	-I$(srcdir)/../libcommon
-nodeupdown_backend_pingd_la_LIBADD = \
-	../libcommon/libcommon.la
 
 nodeupdown_backend_ganglia_la_SOURCES = \
 	nodeupdown_backend_ganglia.c
@@ -107,12 +112,15 @@ nodeupdown_backend_ganglia_la_CFLAGS  = \
 nodeupdown_backend_ganglia_la_LIBADD = \
 	../libexpat/libexpat.la
 
-nodeupdown_backend_cerebro_la_SOURCES = \
-	nodeupdown_backend_cerebro.c
-nodeupdown_backend_cerebro_la_LDFLAGS = \
+nodeupdown_backend_pingd_la_SOURCES = \
+	nodeupdown_backend_pingd.c
+nodeupdown_backend_pingd_la_LDFLAGS = \
 	$(MODULE_FLAGS) \
-	$(CEREBRO_LIBS) \
 	$(NODEUPDOWN_BACKEND_OTHER_FLAGS) 
+nodeupdown_backend_pingd_la_CFLAGS  = \
+	-I$(srcdir)/../libcommon
+nodeupdown_backend_pingd_la_LIBADD = \
+	../libcommon/libcommon.la
 
 nodeupdown_clusterlist_genders_la_SOURCES = \
 	nodeupdown_clusterlist_genders.c \
