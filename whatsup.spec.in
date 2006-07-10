@@ -133,9 +133,11 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_mandir}/man3/*
 %{_mandir}/man5/nodeupdown*
 
+%if %{?_with_ganglia:1}%{!?_with_ganglia:0}
 %files backend-ganglia
 %defattr(-,root,root)
 %{_libdir}/nodeupdown/*ganglia.*
+%endif
 
 %if %{?_with_cerebro:1}%{!?_with_cerebro:0}
 %files backend-cerebro
@@ -143,9 +145,11 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_libdir}/nodeupdown/*cerebro.*
 %endif
 
+%if %{?_with_pingd:1}%{!?_with_pingd:0}
 %files backend-pingd
 %defattr(-,root,root)
 %{_libdir}/nodeupdown/*pingd.*
+%endif
 
 %if %{?_with_genders:1}%{!?_with_genders:0}
 %files clusterlist-genders
@@ -153,9 +157,13 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_libdir}/nodeupdown/*genders.*
 %endif
 
+%if %{?_with_hostsfile:1}%{!?_with_hostsfile:0}
 %files clusterlist-hostsfile
 %defattr(-,root,root)
 %{_libdir}/nodeupdown/*hostsfile.*
+%endif
+
+%if %{?_with_pingd:1}%{!?_with_pingd:0}
 
 %files pingd
 %defattr(-,root,root)
@@ -171,6 +179,10 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_libdir}/pingd/*genders.*
 %endif
 
+%if %{?_with_hostsfile:1}%{!?_with_hostsfile:0}
 %files pingd-clusterlist-hostsfile
 %defattr(-,root,root)
 %{_libdir}/pingd/*hostsfile.*
+%endif
+
+%endif
