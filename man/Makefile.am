@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.14 2006-07-07 21:00:48 chu11 Exp $
+## $Id: Makefile.am,v 1.15 2006-07-10 23:51:22 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -29,11 +29,12 @@ man3_MANS = \
 	nodeupdown_nodelist_destroy.3 \
 	nodeupdown_module.3
 
-man5_MANS = \
-	nodeupdown.conf.5 \
-	pingd.conf.5
-
+if WITH_PINGD
+man5_MANS = nodeupdown.conf.5 pingd.conf.5
 man8_MANS = pingd.8
+else
+man5_MANS = nodeupdown.conf.5
+endif
 
 EXTRA_DIST = \
 	libnodeupdown.3 \

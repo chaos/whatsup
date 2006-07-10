@@ -10,8 +10,8 @@
 
 	* config/ac_ganglia.m4, config/ac_pingd.m4: New files.
 
-	* whatsup.spec.in, configure.ac, src/libnodeupdown/Makefile.am:
-	Adjust for new autoconf macros.
+	* whatsup.spec.in, configure.ac, src/libnodeupdown/Makefile.am,
+	man/Makefile.am, etc/Makefile.am: Adjust for new autoconf macros.
 
 	* src/pingd/pingd_config.c (_load_nodes), src/pingd/pingd_loop.c
 	(_nodes_setup): Fix compiler warnings.
