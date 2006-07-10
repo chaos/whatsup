@@ -36,22 +36,6 @@ Requires: whatsup
 %description backend-pingd
 Pingd backend module and daemon
 
-%package backend-pingd-clusterlist-genders
-Summary: whatsup pingd backend clusterlist genders module
-Group: System Environment/Base
-Requires: whatsup
-Requires: whatsup-backend-pingd
-%description backend-pingd-clusterlist-genders
-Pingd genders clusterlist module
-
-%package backend-pingd-clusterlist-hostsfile
-Summary: whatsup pingd backend clusterlist hostsfile module
-Group: System Environment/Base
-Requires: whatsup
-Requires: whatsup-backend-pingd
-%description backend-pingd-clusterlist-hostsfile
-Pingd hostsfile clusterlist module
-
 %package clusterlist-genders
 Summary: whatsup genders clusterlist module
 Group: System Environment/Base
@@ -66,6 +50,45 @@ Group: System Environment/Base
 Requires: whatsup
 %description clusterlist-hostsfile
 Hostsfile clusterlist module
+
+%package pingd
+Summary: whasup pingd daemon
+Group: System Environment/Base
+%description pingd
+Pingd daemon
+
+%package pingd-clusterlist-genders
+Summary: whatsup pingd backend clusterlist genders module
+Group: System Environment/Base
+Requires: whatsup
+Requires: whatsup-pingd
+%description pingd-clusterlist-genders
+Pingd genders clusterlist module
+
+%package pingd-clusterlist-hostsfile
+Summary: whatsup pingd backend clusterlist hostsfile module
+Group: System Environment/Base
+Requires: whatsup
+Requires: whatsup-pingd
+%description pingd-clusterlist-hostsfile
+Pingd hostsfile clusterlist module
+
+%post pingd
+if [ "$1" = 1 ]; then
+   if [ -x %{_initrddir}/whatsup-pingd ]; then
+      /sbin/chkconfig --add whatsup-pingd
+      /sbin/chkconfig whatsup-pingd off
+   fi
+fi
+if [ $1 -ge 1 ]; then
+   if [ -x %{_initrddir}/whatsup-pingd ]; then
+      if %{_initrddir}/whatsup-pingd status | grep -q running; then
+         %{_initrddir}/whatsup-pingd restart
+      else
+         %{_initrddir}/whatsup-pingd condrestart
+      fi
+   fi
+fi
 
 %prep
 %setup -q -n @PROJECT@-@VERSION@-@RELEASE@
@@ -116,13 +139,7 @@ rm -rf "$RPM_BUILD_ROOT"
 
 %files backend-pingd
 %defattr(-,root,root)
-%config(noreplace) %{_sysconfdir}/init.d/whatsup-pingd
-%{_sbindir}/pingd
 %{_libdir}/nodeupdown/*pingd.*
-%dir %{_libdir}/pingd
-%{_libdir}/pingd/*
-%{_mandir}/man5/pingd*
-%{_mandir}/man8/*
 
 %if %{?_with_genders:1}%{!?_with_genders:0}
 %files clusterlist-genders
@@ -134,3 +151,20 @@ rm -rf "$RPM_BUILD_ROOT"
 %defattr(-,root,root)
 %{_libdir}/nodeupdown/*hostsfile.*
 
+%files pingd
+%defattr(-,root,root)
+%config(noreplace) %{_sysconfdir}/init.d/whatsup-pingd
+%{_sbindir}/pingd
+%dir %{_libdir}/pingd
+%{_mandir}/man5/pingd*
+%{_mandir}/man8/*
+
+%if %{?_with_genders:1}%{!?_with_genders:0}
+%files pingd-clusterlist-genders
+%defattr(-,root,root)
+%{_libdir}/pingd/*genders.*
+%endif
+
+%files pingd-clusterlist-hostsfile
+%defattr(-,root,root)
+%{_libdir}/pingd/*hostsfile.*

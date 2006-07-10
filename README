@@ -25,14 +25,15 @@ possible backend tools and a cluster database of nodes.
 
 The currently available backend tools are:
 
-Pingd: A simple daemon distributed as a whatsup subpackage that
-regularly pings nodes.
+Pingd: A simple daemon that regularly pings cluster nodes.
 
 Ganglia: See http://ganglia.sourceforge.net
 
 Cerebro: See URL to be determined.
 
-The currently clusterlist database tools are:
+The Pingd daemon is distributed along with whatsup as a subpackage.
+
+The current clusterlist database tools are:
 
 Genders - Uses a genders database and the genders library to determine
 all nodes in the cluster.
@@ -43,9 +44,13 @@ cluster on a separate line.
 The nodeupdown library may also load a configuration module to make
 cluster configuration easier.  
 
-For whatsup to work, atleast one backend module must be installed.  If
-more than one is installed, the first one discovered will be used.
-The pingd backend module package also includes the daemon.
+For whatsup to work, you must have one of the backend tools already
+installed and configured on your system.  Atleast one backend module
+for the libnodeupdown library must also be installed.  If more than
+one module is installed, the first one discovered will be used.
+
+A clusterlist does not need to be installed for whatsup to work,
+however it would be beneficial to use atleast one.
 
 More information about writing backend, clusterlist, and configuration
 modules, see the nodeupdown_module manpage.
