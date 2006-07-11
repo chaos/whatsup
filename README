@@ -29,7 +29,7 @@ Pingd: A simple daemon that regularly pings cluster nodes.
 
 Ganglia: See http://ganglia.sourceforge.net
 
-Cerebro: See URL to be determined.
+Cerebro: See http://cerebro.sourceforge.net
 
 The Pingd daemon is distributed along with whatsup as a subpackage.
 
