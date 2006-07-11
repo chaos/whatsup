@@ -2,6 +2,8 @@
 
 	* README, META: Updated for release.
 
+	* man/libnodeupdown.3.in, man/pingd.8.in: Minor improvements made.
+
 	* tagged whatsup-1-5-1
 	
 2006-07-10  Albert Chu  <chu11@llnl.gov>

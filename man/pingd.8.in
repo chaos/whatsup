@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: pingd.8.in,v 1.1 2006-07-07 21:00:48 chu11 Exp $
+\."$Id: pingd.8.in,v 1.2 2006-07-11 21:36:46 chu11 Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -59,6 +59,27 @@ Specify alternate configuration file
 .B  -d, --debug
 Turn on debugging and run daemon in foreground
 \}
+
+.SH "CLUSTERLIST MODULES"
+
+The 
+.B pingd 
+daemon nodes to ping can also be configured with a clusterlist module.
+The clusterlist module can obtain a list of all cluster nodes.  There
+are several possible clusterlist formats that can be parsed.  By
+default, the following clusterlist modules are searched for by
+.B pingd
+in the following order:
+
+genders - Uses a genders database and the genders library to determine
+all nodes in the cluster.  See http://genders.sourceforge.net.
+
+hostsfile - Uses a file that lists the hostname of every node in the
+cluster on a separate line.  The default hostsfile is
+@PINGD_CLUSTERLIST_HOSTSFILE_DEFAULT@.
+
+If none of the above are found, nodes must be configured via the
+pingd configuration file.
 
 .SH "FILES"
 @PINGD_CONF_FILE@

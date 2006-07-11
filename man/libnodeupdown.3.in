@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: libnodeupdown.3.in,v 1.21 2006-07-10 17:44:16 chu11 Exp $
+\."$Id: libnodeupdown.3.in,v 1.22 2006-07-11 21:36:46 chu11 Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -104,11 +104,8 @@ all cluster nodes.  There are several possible clusterlist formats
 that can be parsed.  By default, the following clusterlist modules are
 searched for by nodeupdown in the following order:
 
-.if @MANPAGE_GENDERS@ \{
 genders - Uses a genders database and the genders library to determine
-all nodes in the cluster.
-   
-\}
+all nodes in the cluster.  See http://genders.sourceforge.net.
    
 hostsfile - Uses a file that lists the hostname of every node in the
 cluster on a separate line.  The default hostsfile is
