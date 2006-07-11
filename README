@@ -1,3 +1,10 @@
+-----------
+| Whatsup |
+-----------
+
+Description:
+------------
+
 Whatsup is cluster node up/down detection utility. 
 
 The whatsup package includes:
@@ -20,8 +27,11 @@ The whatsup package includes:
   - A command that outputs the up and down nodes in a cluster. See
     whatsup(1).
 
+Backend Tools:
+--------------
+
 The nodeupdown library works in conjunction with one of several
-possible backend tools and a cluster database of nodes.
+possible backend tools.
 
 The currently available backend tools are:
 
@@ -33,7 +43,11 @@ Cerebro: See http://cerebro.sourceforge.net
 
 The Pingd daemon is distributed along with whatsup as a subpackage.
 
-The current clusterlist database tools are:
+Clusterlist Definitions:
+------------------------
+
+The nodeupdown library can also work in conjunction with several
+cluster databases.
 
 Genders - Uses a genders database and the genders library to determine
 all nodes in the cluster.
@@ -41,19 +55,17 @@ all nodes in the cluster.
 Hostsfile - Uses a file that lists the hostname of every node in the
 cluster on a separate line.
 
-The nodeupdown library may also load a configuration module to make
-cluster configuration easier.  
+Install:
+--------
 
-For whatsup to work, you must have one of the backend tools already
-installed and configured on your system.  Atleast one backend module
-for the libnodeupdown library must also be installed.  If more than
-one module is installed, the first one discovered will be used.
+For whatsup to work, you must install and configuration one of the
+backend tools for your system.  The appropriate backend module for the
+libnodeupdown library must then be installed.  If more than one module
+is installed, the first one discovered will be used.
 
-A clusterlist does not need to be installed for whatsup to work,
-however it would be beneficial to use atleast one.
-
-More information about writing backend, clusterlist, and configuration
-modules, see the nodeupdown_module manpage.
+A clusterlist module and clusterlist database does not need to be
+installed for whatsup to work, however it would be beneficial to
+define one.
 
 Comments, patches, fixes, suggestions are always welcome.  Please read
 DISCLAIMER and COPYING for copyright and license information.
