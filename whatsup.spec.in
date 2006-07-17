@@ -97,7 +97,7 @@ fi
 
 %build
 %configure --program-prefix=%{?_program_prefix:%{_program_prefix}} \
-           --with-perl-install-destdir="$RPM_BUILD_ROOT" \
+           --with-perl-destdir="$RPM_BUILD_ROOT" \
            %{?_with_cerebro} \
            %{?_without_cerebro} \
            %{?_with_ganglia} \

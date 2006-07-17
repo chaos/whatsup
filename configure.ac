@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.61 2006-07-10 17:43:21 chu11 Exp $
+## $Id: configure.ac,v 1.62 2006-07-17 22:30:23 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -81,9 +81,9 @@ AC_PINGD_CONF
 AC_PINGD_MODULE_DIR
 
 #
-# Check for perl install destdir
+# Check for perl destdir
 #
-AC_PERL_INSTALL_DESTDIR
+AC_PERL_DESTDIR
 
 #
 # Check for cerebro
