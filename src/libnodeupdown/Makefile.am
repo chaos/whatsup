@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.59 2006-07-10 17:44:58 chu11 Exp $
+## $Id: Makefile.am,v 1.60 2006-07-27 02:29:42 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -87,7 +87,7 @@ if WITH_HOSTSFILE
 HOSTSFILE_CLUSTERLIST_MODULE   = nodeupdown_clusterlist_hostsfile.la
 endif
 
-nodeupdownmodulelibdir = $(NODEUPDOWN_MODULE_DIR)
+nodeupdownmodulelibdir = $(DESTDIR)/$(NODEUPDOWN_MODULE_DIR)
 nodeupdownmodulelib_LTLIBRARIES = \
 	$(CEREBRO_BACKEND_MODULE) \
 	$(GANGLIA_BACKEND_MODULE) \
