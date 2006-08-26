@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.c,v 1.21 2006-07-08 00:09:24 chu11 Exp $
+ *  $Id: nodeupdown_module.c,v 1.22 2006-08-26 00:00:19 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -58,7 +58,6 @@ static char *backend_modules[] = {
   "nodeupdown_backend_pingd.so",
   NULL
 };
-static int backend_modules_len = 3;
 
 static char *clusterlist_modules[] = {
   "nodeupdown_clusterlist_gendersllnl.so",
@@ -66,13 +65,11 @@ static char *clusterlist_modules[] = {
   "nodeupdown_clusterlist_hostsfile.so",
   NULL
 };
-static int clusterlist_modules_len = 3;
 
 static char *config_modules[] = {
   "nodeupdown_config_chaos.so",
   NULL
 };
-static int config_modules_len = 1;
 
 #define BACKEND_MODULE_SIGNATURE     "nodeupdown_backend_"
 #define CLUSTERLIST_MODULE_SIGNATURE "nodeupdown_clusterlist_"
@@ -171,7 +168,6 @@ static int
 _find_known_module(nodeupdown_t handle, 
                    char *search_dir,
                    char **modules_list,
-                   int modules_list_len,
                    Nodeupdown_module_callback module_callback,
                    char *module_info_sym)
 {
@@ -184,7 +180,7 @@ _find_known_module(nodeupdown_t handle,
   if (!(dir = opendir(search_dir)))
     return 0;
 
-  for (i = 0; i < modules_list_len; i++)
+  for (i = 0; modules_list[i]; i++)
     {
       struct dirent *dirent;
 
@@ -284,20 +280,18 @@ _find_unknown_module(nodeupdown_t handle,
 static int
 _find_module(nodeupdown_t handle,
              char **modules_list,
-             int modules_list_len,
              char *signature,
              Nodeupdown_module_callback module_callback,
              char *module_info_sym)
 {
   int rv;
 
-  if (modules_list && modules_list_len)
+  if (modules_list)
     {
 #ifndef NDEBUG
       if ((rv = _find_known_module(handle,
                                    NODEUPDOWN_MODULE_BUILDDIR "/.libs",
                                    modules_list,
-                                   modules_list_len,
                                    module_callback,
                                    module_info_sym)) < 0)
         return -1;
@@ -309,7 +303,6 @@ _find_module(nodeupdown_t handle,
       if ((rv = _find_known_module(handle,
                                    NODEUPDOWN_MODULE_DIR,
                                    modules_list,
-                                   modules_list_len,
                                    module_callback,
                                    module_info_sym)) < 0)
         return -1;
@@ -373,7 +366,6 @@ backend_module_load(nodeupdown_t handle)
   
   if ((rv = _find_module(handle,
                          backend_modules,
-                         backend_modules_len,
                          BACKEND_MODULE_SIGNATURE,
                          _backend_module_callback,
                          BACKEND_MODULE_INFO_SYM)) < 0)
@@ -525,7 +517,6 @@ clusterlist_module_load(nodeupdown_t handle)
   
   if ((rv = _find_module(handle,
                          clusterlist_modules,
-                         clusterlist_modules_len,
                          CLUSTERLIST_MODULE_SIGNATURE,
                          _clusterlist_module_callback,
                          CLUSTERLIST_MODULE_INFO_SYM)) < 0)
@@ -680,7 +671,6 @@ config_module_load(nodeupdown_t handle)
   
   if ((rv = _find_module(handle,
                          config_modules,
-                         config_modules_len,
                          CONFIG_MODULE_SIGNATURE,
                          _config_module_callback,
                          CONFIG_MODULE_INFO_SYM)) < 0)
