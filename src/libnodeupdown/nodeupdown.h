@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.h,v 1.39 2005-05-17 16:45:59 achu Exp $
+ *  $Id: nodeupdown.h,v 1.40 2006-08-29 17:30:14 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -83,7 +83,7 @@ int nodeupdown_handle_destroy(nodeupdown_t handle);
  * If 'hostname' is NULL, 'port' is <= 0, or 'timeout_len' <=0, the
  * backend tool's respective defaults will be used.
  *
- * 'reserved' is used for backwards compatability
+ * 'module' can be used to select a specific backend module
  *
  * Returns 0 on success, -1 on error
  */
@@ -91,7 +91,7 @@ int nodeupdown_load_data(nodeupdown_t handle,
                          const char *hostname, 
                          int port,
                          int timeout_len,
-                         char *reserved); 
+                         char *module); 
 
 /* 
  * nodeupdown_errnum

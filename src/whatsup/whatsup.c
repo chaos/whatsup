@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.110 2005-07-07 15:56:43 achu Exp $
+ *  $Id: whatsup.c,v 1.111 2006-08-29 17:30:14 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -84,6 +84,7 @@ extern int optind, opterr, optopt;
  * count_only_output - count output only or not
  * handle - nodeupdown handle
  * inputted_nodes - nodes input via the cmdline or stdin
+ * module - a specific backend module to use
  * mod_handles - module handles
  * mod_info - module info structures
  * mod_options - options stored in each module
@@ -95,7 +96,8 @@ static int updown_output = WHATSUP_UP_AND_DOWN;
 static char output_type = 0;
 static int count_only_output = 0;
 static nodeupdown_t handle;
-static hostlist_t inputted_nodes;
+static hostlist_t inputted_nodes = NULL;
+static char *module = NULL;
 static lt_dlhandle mod_handles[WHATSUP_MODULES_LEN];
 static struct whatsup_options_module_info *mod_info[WHATSUP_MODULES_LEN];
 static char mod_options[WHATSUP_MODULES_LEN][WHATSUP_OPTIONS_LEN+1];
@@ -294,7 +296,8 @@ _usage(void)
 	  "  -q         --hostrange         Output in hostrange format\n"
 	  "  -c         --comma             Output in comma separated list\n"
 	  "  -n         --newline           Output in newline separated list\n"
-	  "  -s         --space             Output in space separated list\n");
+	  "  -s         --space             Output in space separated list\n"
+          "  -m         --module            Specific backend module\n");
 
   for (i = 0; i < mod_count; i++)
     {
@@ -393,6 +396,7 @@ _cmdline_parse(int argc, char **argv)
       {"comma",     0, NULL, 'c'},
       {"newline",   0, NULL, 'n'},
       {"space",     0, NULL, 's'},
+      {"module",    1, NULL, 'm'},
       {0, 0, 0, 0},
   };
   int loptions_len = 12;
@@ -401,7 +405,7 @@ _cmdline_parse(int argc, char **argv)
   assert(argv);
 
   memset(options, '\0', WHATSUP_OPTIONS_LEN+1);
-  strncpy(options, "hvo:p:budtqcns", WHATSUP_OPTIONS_LEN);
+  strncpy(options, "hvo:p:budtqcnsm:", WHATSUP_OPTIONS_LEN);
 
   /* 
    * Load additional option arguments
@@ -508,6 +512,9 @@ _cmdline_parse(int argc, char **argv)
         break;
       case 's':
         output_type = ' ';
+        break;
+      case 'm':
+        module = optarg;
         break;
       default:
 	used_option = 0;
@@ -810,7 +817,7 @@ main(int argc, char *argv[])
 
   _cmdline_parse(argc, argv);
   
-  if (nodeupdown_load_data(handle, hostname, port, 0, NULL) < 0) 
+  if (nodeupdown_load_data(handle, hostname, port, 0, module) < 0) 
     {
       int errnum = nodeupdown_errnum(handle);
       char *msg = nodeupdown_errormsg(handle);

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.c,v 1.22 2006-08-26 00:00:19 chu11 Exp $
+ *  $Id: nodeupdown_module.c,v 1.23 2006-08-29 17:30:14 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -78,6 +78,8 @@ static char *config_modules[] = {
 #define BACKEND_MODULE_INFO_SYM      "backend_module_info"
 #define CLUSTERLIST_MODULE_INFO_SYM  "clusterlist_module_info"
 #define CONFIG_MODULE_INFO_SYM       "config_module_info"
+
+#define BACKEND_MODULE_BUFLEN        1024
 
 static lt_dlhandle backend_module_dl_handle = NULL;
 static lt_dlhandle clusterlist_module_dl_handle = NULL;
@@ -360,16 +362,45 @@ _backend_module_callback(nodeupdown_t handle, void *dl_handle, void *module_info
 }
 
 int 
-backend_module_load(nodeupdown_t handle)
+backend_module_load(nodeupdown_t handle, char *module)
 {
   int rv;
   
-  if ((rv = _find_module(handle,
-                         backend_modules,
-                         BACKEND_MODULE_SIGNATURE,
-                         _backend_module_callback,
-                         BACKEND_MODULE_INFO_SYM)) < 0)
-    return -1;
+  if (module)
+    {
+      char *temp_backend_modules[2];
+      char modulebuf[BACKEND_MODULE_BUFLEN];
+      int len;
+      
+      len = snprintf(modulebuf, 
+                     BACKEND_MODULE_BUFLEN, 
+                     "nodeupdown_backend_%s.so",
+                     module);
+      if (len < 0 || len >= BACKEND_MODULE_BUFLEN)
+        {
+          handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
+          return -1;
+        }
+
+      temp_backend_modules[0] = modulebuf;
+      temp_backend_modules[1] = NULL;
+
+      if ((rv = _find_module(handle,
+                             temp_backend_modules,
+                             BACKEND_MODULE_SIGNATURE,
+                             _backend_module_callback,
+                             BACKEND_MODULE_INFO_SYM)) < 0)
+        return -1;
+    }
+  else
+    {
+      if ((rv = _find_module(handle,
+                             backend_modules,
+                             BACKEND_MODULE_SIGNATURE,
+                             _backend_module_callback,
+                             BACKEND_MODULE_INFO_SYM)) < 0)
+        return -1;
+    }
 
   if (!rv)
     {

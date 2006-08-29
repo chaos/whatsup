@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.152 2005-08-05 19:30:54 achu Exp $
+ *  $Id: nodeupdown.c,v 1.153 2006-08-29 17:30:14 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -311,7 +311,7 @@ nodeupdown_load_data(nodeupdown_t handle,
                      const char *hostname, 
                      int port, 
                      int timeout_len, 
-                     char *reserved)
+                     char *module)
 {
   struct nodeupdown_config conffile_config;
   struct nodeupdown_config module_config;
@@ -338,7 +338,7 @@ nodeupdown_load_data(nodeupdown_t handle,
   /* 
    * Load backend module
    */
-  if (backend_module_load(handle) < 0)
+  if (backend_module_load(handle, module) < 0)
     goto cleanup;
 
   if (backend_module_setup(handle) < 0)
@@ -447,7 +447,7 @@ nodeupdown_load_data(nodeupdown_t handle,
 					 hostname,
 					 port, 
 					 timeout_len,
-					 reserved) < 0)
+					 module) < 0)
         goto cleanup;
     }
   else if (conffile_config.hostnames_flag || module_config.hostnames_flag)
@@ -474,7 +474,7 @@ nodeupdown_load_data(nodeupdown_t handle,
 						 hostnames[i],
 						 port,
 						 timeout_len,
-						 reserved) < 0)
+						 module) < 0)
                 continue;
               else
                 break;
@@ -498,7 +498,7 @@ nodeupdown_load_data(nodeupdown_t handle,
 					 hostnamePtr,
 					 port, 
 					 timeout_len,
-					 reserved) < 0)
+					 module) < 0)
         goto cleanup;
     }
 

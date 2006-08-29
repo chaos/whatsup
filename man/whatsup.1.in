@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: whatsup.1.in,v 1.20 2005-07-07 16:27:51 achu Exp $
+\."$Id: whatsup.1.in,v 1.21 2006-08-29 17:30:14 chu11 Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -96,6 +96,9 @@ List nodes in newline separated list
 .TP
 .B \-s, \-\-space
 List nodes in space separated list
+.TP
+.B \-m, \-\-module
+Use a specific backend module for up-down calculations.
 .if @MANPAGE_GENDERSLLNL@ \{
 .TP
 .B \-a, \-\-altnames

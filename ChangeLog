@@ -1,3 +1,13 @@
+2006-08-28  Albert Chu  <chu11@llnl.gov>
+
+	* src/libnodeupdown/nodeupdown.h, src/libnodeupdown/nodeupdown.c,
+	src/libnodeupdown/nodeupdown_module.c, man/libnodeupdown.3.in,
+	man/nodeupdown_load_data.3: Change nodeupdown_load_data() reserved
+	parameter to module parameter for optionally specified backend
+	module.
+	
+	* man/whatsup.1.in, src/whatsup/whatsup.c: Support new -m option.
+	
 2006-08-25  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown_module.c: Cleanup modules looping

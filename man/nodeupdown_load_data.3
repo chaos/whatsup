@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown_load_data.3,v 1.30 2005-05-17 17:04:23 achu Exp $
+\."$Id: nodeupdown_load_data.3,v 1.31 2006-08-29 17:30:14 chu11 Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -29,7 +29,7 @@ nodeupdown_load_data \- load data
 .SH SYNOPSIS
 .B #include <nodeupdown.h>
 .sp
-.BI "int nodeupdown_load_data(nodeupdown_t handle, const char *hostname, int port, int timeout_len, char *reserved);"
+.BI "int nodeupdown_load_data(nodeupdown_t handle, const char *hostname, int port, int timeout_len, char *module);"
 .br
 .SH DESCRIPTION
 \fBnodeupdown_load_data()\fR loads data from the nodeupdown backend
@@ -52,8 +52,9 @@ running on the backend tool's default port.
 determines if a node is up or down.  If \fItimeout_len\fR is less than
 or equal to 0, nodeupdown assumes the backend tool's default timeout.
  
-\fIreserved\fR is no longer used.  It remains for backwards
-compatability with older libraries.
+\fImodule\fR may be used to specify a specific backend module for
+up-down calculations.  If \fImodule\fR is NULL, nodeupdown will search
+for the appropriate module itself.
 
 The default values used in \fBnodeupdown_load_data()\fR can be
 overwritten if a nodeupdown configuration module is found or
