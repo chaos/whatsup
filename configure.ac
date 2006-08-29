@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.63 2006-08-29 20:44:01 chu11 Exp $
+## $Id: configure.ac,v 1.64 2006-08-29 20:46:17 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -149,7 +149,7 @@ AC_CONFIG_FILES( \
   src/libnodeupdown/Makefile \
   src/whatsup/Makefile \
   src/pingd/Makefile \
-  src/scripts \
+  src/scripts/Makefile \
   src/Libnodeupdown/Makefile \
   src/Nodeupdown/Makefile \
   man/Makefile \
