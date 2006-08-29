@@ -13,6 +13,8 @@
 	* src/scripts/whatsdown: New file.
 
 	* configure.ac, src/Makefile.am: Adjust for new files.
+
+	* src/libnodeupdown/Makefile.am: Fix DESTDIR issue.
 	
 2006-08-25  Albert Chu  <chu11@llnl.gov>
 
