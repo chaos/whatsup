@@ -1,4 +1,4 @@
-2006-08-28  Albert Chu  <chu11@llnl.gov>
+2006-08-29  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown.h, src/libnodeupdown/nodeupdown.c,
 	src/libnodeupdown/nodeupdown_module.c, man/libnodeupdown.3.in,
@@ -7,6 +7,12 @@
 	module.
 	
 	* man/whatsup.1.in, src/whatsup/whatsup.c: Support new -m option.
+
+	* src/scripts: New directory.
+
+	* src/scripts/whatsdown: New file.
+
+	* configure.ac, src/Makefile.am: Adjust for new files.
 	
 2006-08-25  Albert Chu  <chu11@llnl.gov>
 
