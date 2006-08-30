@@ -12,6 +12,8 @@
 	src/libnodeupdown/nodeupdown_clusterlist_genders_util.c,
 	src/libnodeupdown/nodeupdown_clusterlist_hostsfile.c: Add
 	debugging.
+
+	* whatsup.spec.in: Add in openib rpm subpackage.
 	
 2006-08-29  Ira Weiny  <weiny2@llnl.gov>
 

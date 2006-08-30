@@ -13,6 +13,7 @@ Whatsup is a cluster node up/down detection utility.
 %{!?_with_cerebro: %{!?_without_cerebro: %define _with_cerebro --with-cerebro}}
 %{!?_with_ganglia: %{!?_without_ganglia: %define _with_ganglia --with-ganglia}}
 %{!?_with_pingd: %{!?_without_pingd: %define _with_pingd --with-pingd}}
+%{!?_with_openib: %{!?_without_openib: %define _with_openib --with-openib}}
 %{!?_with_genders: %{!?_without_genders: %define _with_genders --with-genders}}
 %{!?_with_hostsfile: %{!?_without_hostsfile: %define _with_hostsfile --with-hostsfile}}
 
@@ -37,6 +38,13 @@ Group: System Environment/Base
 Requires: whatsup
 %description backend-pingd
 Pingd backend module and daemon
+
+%package backend-openib
+Summary: whatsup openib backend
+Group: System Environment/Base
+Requires: whatsup
+%description backend-openib
+Openib backend module
 
 %package clusterlist-genders
 Summary: whatsup genders clusterlist module
@@ -104,6 +112,8 @@ fi
            %{?_without_ganglia} \
            %{?_with_pingd} \
            %{?_without_pingd} \
+           %{?_with_openib} \
+           %{?_without_openib} \
            %{?_with_genders} \
            %{?_without_genders} \
            %{?_with_hostsfile} \
@@ -149,6 +159,12 @@ rm -rf "$RPM_BUILD_ROOT"
 %files backend-pingd
 %defattr(-,root,root)
 %{_libdir}/nodeupdown/*pingd.*
+%endif
+
+%if %{?_with_openib:1}%{!?_with_openib:0}
+%files backend-openib
+%defattr(-,root,root)
+%{_libdir}/nodeupdown/*openib.*
 %endif
 
 %if %{?_with_genders:1}%{!?_with_genders:0}
