@@ -43,6 +43,11 @@ Cerebro: See http://cerebro.sourceforge.net
 
 The Pingd daemon is distributed along with whatsup as a subpackage.
 
+OpenIB: Query's the opensm (SA) for node up information.  This requires the
+hostname to be reported as the HCA's "node description".  Currently Mellanox
+HCA's and OFED 1.1 or greater provide for this information.  More information
+can be found at http://openib.org
+
 Clusterlist Definitions:
 ------------------------
 

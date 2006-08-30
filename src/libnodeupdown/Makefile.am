@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.61 2006-08-29 21:15:03 chu11 Exp $
+## $Id: Makefile.am,v 1.62 2006-08-30 17:10:00 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -79,6 +79,10 @@ if WITH_PINGD
 PINGD_BACKEND_MODULE           = nodeupdown_backend_pingd.la
 endif
 
+if WITH_OPENIB
+OPENIB_BACKEND_MODULE           = nodeupdown_backend_openib.la
+endif
+
 if WITH_GENDERS
 GENDERS_CLUSTERLIST_MODULE     = nodeupdown_clusterlist_genders.la
 endif
@@ -92,6 +96,7 @@ nodeupdownmodulelib_LTLIBRARIES = \
 	$(CEREBRO_BACKEND_MODULE) \
 	$(GANGLIA_BACKEND_MODULE) \
 	$(PINGD_BACKEND_MODULE) \
+ 	$(OPENIB_BACKEND_MODULE) \
 	$(GENDERS_CLUSTERLIST_MODULE) \
 	$(HOSTSFILE_CLUSTERLIST_MODULE)
 
@@ -121,6 +126,14 @@ nodeupdown_backend_pingd_la_CFLAGS  = \
 	-I$(srcdir)/../libcommon
 nodeupdown_backend_pingd_la_LIBADD = \
 	../libcommon/libcommon.la
+	
+nodeupdown_backend_openib_la_SOURCES = \
+	nodeupdown_backend_openib.c
+nodeupdown_backend_openib_la_LDFLAGS = \
+	$(MODULE_FLAGS) \
+	$(NODEUPDOWN_BACKEND_OTHER_FLAGS) 
+nodeupdown_backend_openib_la_CFLAGS  = $(OPENIB_CFLAGS)
+nodeupdown_backend_openib_la_LIBADD  = $(OPENIB_LIBS)
 
 nodeupdown_clusterlist_genders_la_SOURCES = \
 	nodeupdown_clusterlist_genders.c \

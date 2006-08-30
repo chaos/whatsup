@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: libnodeupdown.3.in,v 1.23 2006-08-29 17:30:14 chu11 Exp $
+\."$Id: libnodeupdown.3.in,v 1.24 2006-08-30 17:10:00 chu11 Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -93,6 +93,8 @@ ganglia - See http://ganglia.sourceforge.net for more information.
 
 pingd - Simple pingd daemon.  See
 .B pingd(8)
+
+openib - See http://openib.org/
 
 If none of the above are found, the nodeupdown library will search for
 a backend module in @NODEUPDOWN_MODULE_DIR@ until one is found.

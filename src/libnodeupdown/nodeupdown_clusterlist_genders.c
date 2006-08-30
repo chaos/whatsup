@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_genders.c,v 1.23 2005-07-02 13:21:21 achu Exp $
+ *  $Id: nodeupdown_clusterlist_genders.c,v 1.24 2006-08-30 17:10:00 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -111,6 +111,9 @@ genders_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node)
 
   if ((rv = genders_isnode(genders_handle, nodePtr)) < 0) 
     {
+#ifndef NDEBUG
+      fprintf(stderr, "genders_isnode: %s", genders_strerror(genders_errnum(genders_handle)));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       return -1;
     }

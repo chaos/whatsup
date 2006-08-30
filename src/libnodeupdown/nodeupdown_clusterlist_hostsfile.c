@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.22 2005-07-02 13:21:21 achu Exp $
+ *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.23 2006-08-30 17:10:00 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -39,6 +39,7 @@
 #if HAVE_FCNTL_H
 #include <fcntl.h>
 #endif /* HAVE_FCNTL_H */
+#include <errno.h>
 
 #include "nodeupdown.h"
 #include "nodeupdown_clusterlist_util.h"
@@ -74,6 +75,9 @@ _readline(nodeupdown_t handle, int fd, char *buf, int buflen)
                                                                                      
   if ((len = fd_read_line(fd, buf, buflen)) < 0) 
     {
+#ifndef NDEBUG
+      fprintf(stderr, "fd_read_line: %s\n", strerror(errno));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       return -1;
     }
@@ -81,6 +85,9 @@ _readline(nodeupdown_t handle, int fd, char *buf, int buflen)
   /* buflen - 1 b/c fd_read_line guarantees null termination */
   if (len >= (buflen-1)) 
     {
+#ifndef NDEBUG
+      fprintf(stderr, "fd_read_line: buffer overflow\n");
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       return -1;
     }
@@ -192,12 +199,18 @@ hostsfile_clusterlist_setup(nodeupdown_t handle)
 
   if (!(hosts = list_create((ListDelF)free)))
     {
+#ifndef NDEBUG
+      fprintf(stderr, "list_create: %s\n", strerror(errno));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_OUTMEM);
       goto cleanup;
     }
                                                                                     
   if ((fd = open(NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT, O_RDONLY)) < 0)
     {
+#ifndef NDEBUG
+      fprintf(stderr, "open: %s\n", strerror(errno));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       goto cleanup;
     }
@@ -221,12 +234,18 @@ hostsfile_clusterlist_setup(nodeupdown_t handle)
                                                                                      
       if (strchr(hostPtr, ' ') || strchr(hostPtr, '\t'))
         {
+#ifndef NDEBUG
+	  fprintf(stderr, "parse error\n");
+#endif /* NDEBUG */
 	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
           goto cleanup;
         }
                                                                                      
       if (strlen(hostPtr) > NODEUPDOWN_MAXHOSTNAMELEN)
         {
+#ifndef NDEBUG
+	  fprintf(stderr, "parse error\n");
+#endif /* NDEBUG */
 	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
           goto cleanup;
         }
@@ -243,6 +262,9 @@ hostsfile_clusterlist_setup(nodeupdown_t handle)
 
       if (!list_append(hosts, str))
         {
+#ifndef NDEBUG
+	  fprintf(stderr, "list_append: %s\n", strerror(errno));
+#endif /* NDEBUG */
 	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
           goto cleanup;
         }
@@ -366,6 +388,9 @@ hostsfile_clusterlist_compare_to_clusterlist(nodeupdown_t handle)
                                                                                      
   if (!(itr = list_iterator_create(hosts))) 
     {
+#ifndef NDEBUG
+      fprintf(stderr, "list_iterator_create: %s\n", strerror(errno));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       return -1;
     }

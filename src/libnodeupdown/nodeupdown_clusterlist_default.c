@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_default.c,v 1.10 2005-05-07 17:34:42 achu Exp $
+ *  $Id: nodeupdown_clusterlist_default.c,v 1.11 2006-08-30 17:10:00 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -108,6 +108,9 @@ default_clusterlist_get_nodename(nodeupdown_t handle,
   
   if ((len + 1) > buflen)
     {
+#ifndef NDEBUG
+      fprintf(stderr, "default_clusterlist_get_nodename: invalid buffer length\n");
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
       return -1;
     }

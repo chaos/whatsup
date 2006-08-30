@@ -1,3 +1,30 @@
+2006-08-30  Albert Chu  <chu11@llnl.gov>
+
+	* config/ac_openib.m4: Modify to avoid addition of libs to LIBS.
+
+	* src/libnodeupdown/nodeupdown_backend_openib.c: Check for 'root'
+	in setup.  Adjust debug messages with errnum errors appropriately.
+
+	* src/libnodeupdown/nodeupdown_backend_cerebro.c,
+	src/libnodeupdown/nodeupdown_backend_ganglia.c,
+	src/libnodeupdown/nodeupdown_backend_pingd.c,
+	src/libnodeupdown/nodeupdown_clusterlist_genders.c,
+	src/libnodeupdown/nodeupdown_clusterlist_genders_util.c,
+	src/libnodeupdown/nodeupdown_clusterlist_hostsfile.c: Add
+	debugging.
+	
+2006-08-29  Ira Weiny  <weiny2@llnl.gov>
+
+	Add OpenIB up/down support.
+
+	* config/ac_openib.m4,
+	src/libnodeupdown/nodeupdown_backend_openib: New files.
+
+	* README, configure.ac, man/libnodeupdown.3.in,
+	src/libnodeupdown/Makefile.am,
+	src/libnodeupdown/nodeupdown_module.c: Adjust appropriately for
+	new backend module.
+	
 2006-08-29  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown.h, src/libnodeupdown/nodeupdown.c,
@@ -15,7 +42,7 @@
 	* configure.ac, src/Makefile.am: Adjust for new files.
 
 	* src/libnodeupdown/Makefile.am: Fix DESTDIR issue.
-	
+
 2006-08-25  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown_module.c: Cleanup modules looping

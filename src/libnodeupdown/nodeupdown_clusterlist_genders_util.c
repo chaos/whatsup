@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_genders_util.c,v 1.10 2005-07-02 13:21:21 achu Exp $
+ *  $Id: nodeupdown_clusterlist_genders_util.c,v 1.11 2006-08-30 17:10:00 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -46,6 +46,9 @@ genders_util_clusterlist_get_numnodes(nodeupdown_t handle, genders_t genders_han
 
   if ((count = genders_getnumnodes(genders_handle)) < 0)
     {
+#ifndef NDEBUG
+      fprintf(stderr, "genders_getnumnodes: %s", genders_strerror(genders_errnum(genders_handle)));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       return -1;
     }
@@ -63,12 +66,18 @@ genders_util_clusterlist_compare_to_clusterlist(nodeupdown_t handle,
   /* get all genders nodes */
   if ((num = genders_nodelist_create(genders_handle, &nlist)) < 0) 
     {
+#ifndef NDEBUG
+      fprintf(stderr, "genders_nodelist_create: %s", genders_strerror(genders_errnum(genders_handle)));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       goto cleanup;
     }
    
   if (genders_getnodes(genders_handle, nlist, num, NULL, NULL) < 0) 
     {
+#ifndef NDEBUG
+      fprintf(stderr, "genders_getnodes: %s", genders_strerror(genders_errnum(genders_handle)));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       goto cleanup;
     }
@@ -81,6 +90,9 @@ genders_util_clusterlist_compare_to_clusterlist(nodeupdown_t handle,
  
   if (genders_nodelist_destroy(genders_handle, nlist) < 0) 
     {
+#ifndef NDEBUG
+      fprintf(stderr, "genders_nodelist_destroy: %s", genders_strerror(genders_errnum(genders_handle)));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       goto cleanup;
     }

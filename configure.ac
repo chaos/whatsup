@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.64 2006-08-29 20:46:17 chu11 Exp $
+## $Id: configure.ac,v 1.65 2006-08-30 17:10:00 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -108,6 +108,12 @@ AM_CONDITIONAL(WITH_PINGD, [test "$ac_with_pingd" = "yes"])
 #
 AC_GENDERS
 AM_CONDITIONAL(WITH_GENDERS, [test "$ac_with_genders" = "yes"])
+
+#
+# Check for openib build
+#
+AC_OPENIB
+AM_CONDITIONAL(WITH_OPENIB, [test "$ac_with_openib" = "yes"])
 
 #
 # Check for hostsfile 

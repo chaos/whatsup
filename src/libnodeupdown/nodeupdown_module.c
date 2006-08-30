@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.c,v 1.23 2006-08-29 17:30:14 chu11 Exp $
+ *  $Id: nodeupdown_module.c,v 1.24 2006-08-30 17:10:00 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -56,6 +56,7 @@ static char *backend_modules[] = {
   "nodeupdown_backend_cerebro.so",
   "nodeupdown_backend_ganglia.so",
   "nodeupdown_backend_pingd.so",
+  "nodeupdown_backend_openib.so",
   NULL
 };
 

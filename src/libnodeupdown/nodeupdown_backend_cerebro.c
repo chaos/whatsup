@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_cerebro.c,v 1.17 2005-08-05 15:52:17 achu Exp $
+ *  $Id: nodeupdown_backend_cerebro.c,v 1.18 2006-08-30 17:10:00 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -62,6 +62,9 @@ cerebro_backend_default_hostname(nodeupdown_t handle)
   memset(cerebro_default_hostname, '\0', NODEUPDOWN_MAXHOSTNAMELEN+1);
   if (gethostname(cerebro_default_hostname, NODEUPDOWN_MAXHOSTNAMELEN) < 0)
     {
+#ifndef NDEBUG
+      fprintf(stderr, "gethostname: %s\n", strerror(errno));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
       return NULL;
     }
@@ -104,6 +107,9 @@ cerebro_backend_setup(nodeupdown_t handle)
 
   if (!(cerebro_handle = cerebro_handle_create()))
     {
+#ifndef NDEBUG
+      fprintf(stderr, "cerebro_handle_create: %s\n", strerror(errno));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
       goto cleanup;
     }
@@ -129,6 +135,10 @@ cerebro_backend_cleanup(nodeupdown_t handle)
 
   if (cerebro_handle_destroy(cerebro_handle) < 0)
     {
+#ifndef NDEBUG
+      fprintf(stderr, "cerebro_handle_destroy: %s\n", 
+	      cerebro_strerror(cerebro_errnum(cerebro_handle)));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
       return -1;
     }
@@ -154,18 +164,30 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
 
   if (cerebro_set_hostname(cerebro_handle, hostname) < 0)
     {
+#ifndef NDEBUG
+      fprintf(stderr, "cerebro_set_hostname: %s\n", 
+	      cerebro_strerror(cerebro_errnum(cerebro_handle)));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
       return -1;
     }
 
   if (cerebro_set_port(cerebro_handle, port) < 0)
     {
+#ifndef NDEBUG
+      fprintf(stderr, "cerebro_set_port: %s\n", 
+	      cerebro_strerror(cerebro_errnum(cerebro_handle)));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
       return -1;
     }
 
   if (cerebro_set_timeout_len(cerebro_handle, timeout_len) < 0)
     {
+#ifndef NDEBUG
+      fprintf(stderr, "cerebro_set_timeout_len: %s\n", 
+	      cerebro_strerror(cerebro_errnum(cerebro_handle)));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
       return -1;
     }
@@ -173,9 +195,13 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
   if (!(nodelist = cerebro_get_metric_data(cerebro_handle, 
                                            CEREBRO_METRIC_UPDOWN_STATE)))
     {
+#ifndef NDEBUG
+      fprintf(stderr, "cerebro_get_metric_data: %s\n", 
+	      cerebro_strerror(cerebro_errnum(cerebro_handle)));
+#endif /* NDEBUG */
       if (cerebro_errnum(cerebro_handle) == CEREBRO_ERR_CONNECT) 
         nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONNECT);
-     else if (cerebro_errnum(cerebro_handle) == CEREBRO_ERR_CONNECT_TIMEOUT)
+      else if (cerebro_errnum(cerebro_handle) == CEREBRO_ERR_CONNECT_TIMEOUT)
         nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONNECT_TIMEOUT);
       else if (cerebro_errnum(cerebro_handle) == CEREBRO_ERR_HOSTNAME)
         nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_HOSTNAME);
@@ -186,6 +212,10 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
 
   if (!(itr = cerebro_nodelist_iterator_create(nodelist)))
     {
+#ifndef NDEBUG
+      fprintf(stderr, "cerebro_nodelist_iterator_create: %s\n", 
+	      cerebro_strerror(cerebro_errnum(cerebro_handle)));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
       goto cleanup;
     }
@@ -199,12 +229,19 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
 
       if (cerebro_nodelist_iterator_nodename(itr, &nodename) < 0)
         {
+#ifndef NDEBUG
+	  fprintf(stderr, "cerebro_nodelist_iterator_nodename: %s\n", 
+		  cerebro_strerror(cerebro_errnum(cerebro_handle)));
+#endif /* NDEBUG */
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
           goto cleanup;
         }
 
       if (!nodename)
         {
+#ifndef NDEBUG
+	  fprintf(stderr, "cerebro_nodelist_iterator_create: null nodename\n");
+#endif /* NDEBUG */
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
           goto cleanup;
         }
@@ -215,18 +252,28 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
                                                  &mlen,
                                                  &mvalue) < 0)
         {
+#ifndef NDEBUG
+	  fprintf(stderr, "cerebro_nodelist_iterator_metric_value: %s\n", 
+		  cerebro_strerror(cerebro_errnum(cerebro_handle)));
+#endif /* NDEBUG */
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
           goto cleanup;
         }
 
       if (mtype != CEREBRO_METRIC_VALUE_TYPE_U_INT32)
         {
+#ifndef NDEBUG
+	  fprintf(stderr, "cerebro_nodelist_iterator_metric_value: invalid mtype: %u\n", mtype); 
+#endif /* NDEBUG */
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
           goto cleanup;
         }
 
       if (mlen != sizeof(u_int32_t))
         {
+#ifndef NDEBUG
+	  fprintf(stderr, "cerebro_nodelist_iterator_metric_value: invalid mlen: %u\n", mlen); 
+#endif /* NDEBUG */
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
           goto cleanup;
         }
@@ -246,6 +293,10 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
 
       if (cerebro_nodelist_iterator_next(itr) < 0)
         {
+#ifndef NDEBUG
+	  fprintf(stderr, "cerebro_nodelist_iterator_next: %s\n",
+		  cerebro_strerror(cerebro_errnum(cerebro_handle)));
+#endif /* NDEBUG */
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
           goto cleanup;
         }
@@ -253,6 +304,10 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
 
   if (flag < 0)
     {
+#ifndef NDEBUG
+      fprintf(stderr, "cerebro_nodelist_iterator_at_end: %s\n", 
+	      cerebro_strerror(cerebro_errnum(cerebro_handle)));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
       goto cleanup;
     }

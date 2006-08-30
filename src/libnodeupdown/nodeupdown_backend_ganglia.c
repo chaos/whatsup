@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_ganglia.c,v 1.25 2006-07-08 00:09:24 chu11 Exp $
+ *  $Id: nodeupdown_backend_ganglia.c,v 1.26 2006-08-30 17:10:00 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -89,6 +89,9 @@ ganglia_backend_default_hostname(nodeupdown_t handle)
   memset(ganglia_default_hostname, '\0', NODEUPDOWN_MAXHOSTNAMELEN+1);
   if (gethostname(ganglia_default_hostname, NODEUPDOWN_MAXHOSTNAMELEN) < 0)
     {
+#ifndef NDEBUG
+      fprintf(stderr, "gethostname: %s\n", strerror(errno));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
       return NULL;
     }
@@ -162,6 +165,9 @@ _low_timeout_connect(nodeupdown_t handle,
   /* valgrind will report a mem-leak in gethostbyname() */
   if (!(hptr = gethostbyname(hostname)))
     {
+#ifndef NDEBUG
+      fprintf(stderr, "gethostbyname: %s\n", strerror(errno));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_HOSTNAME);
       return -1;
     }
@@ -169,6 +175,9 @@ _low_timeout_connect(nodeupdown_t handle,
   /* Alot of this code is from Unix Network Programming, by Stevens */
   if ((fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
+#ifndef NDEBUG
+      fprintf(stderr, "socket: %s\n", strerror(errno));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
       goto cleanup;
     }
@@ -179,12 +188,18 @@ _low_timeout_connect(nodeupdown_t handle,
 
   if ((old_flags = fcntl(fd, F_GETFL, 0)) < 0)
     {
+#ifndef NDEBUG
+      fprintf(stderr, "fcntl: %s\n", strerror(errno));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
       goto cleanup;
     }
 
   if (fcntl(fd, F_SETFL, old_flags | O_NONBLOCK) < 0)
     {
+#ifndef NDEBUG
+      fprintf(stderr, "fcntl: %s\n", strerror(errno));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
       goto cleanup;
     }
@@ -192,6 +207,9 @@ _low_timeout_connect(nodeupdown_t handle,
   rv = connect(fd, (struct sockaddr *)&servaddr, sizeof(struct sockaddr_in));
   if (rv < 0 && errno != EINPROGRESS)
     {
+#ifndef NDEBUG
+      fprintf(stderr, "connect: %s\n", strerror(errno));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONNECT);
       goto cleanup;
     }
@@ -209,6 +227,9 @@ _low_timeout_connect(nodeupdown_t handle,
 
       if ((rv = select(fd+1, &rset, &wset, NULL, &tval)) < 0)
         {
+#ifndef NDEBUG
+	  fprintf(stderr, "select: %s\n", strerror(errno));
+#endif /* NDEBUG */
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
           goto cleanup;
         }
@@ -228,6 +249,9 @@ _low_timeout_connect(nodeupdown_t handle,
 
               if (getsockopt(fd, SOL_SOCKET, SO_ERROR, &error, &len) < 0)
                 {
+#ifndef NDEBUG
+		  fprintf(stderr, "getsockopt: %s\n", strerror(errno));
+#endif /* NDEBUG */
                   nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
                   goto cleanup;
                 }
@@ -246,6 +270,9 @@ _low_timeout_connect(nodeupdown_t handle,
             }
           else
             {
+#ifndef NDEBUG
+	      fprintf(stderr, "select: invalid state\n");
+#endif /* NDEBUG */
               nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
               goto cleanup;
             }
@@ -255,6 +282,9 @@ _low_timeout_connect(nodeupdown_t handle,
   /* reset flags */
   if (fcntl(fd, F_SETFL, old_flags) < 0)
     {
+#ifndef NDEBUG
+      fprintf(stderr, "fcntl: %s\n", strerror(errno));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
       goto cleanup;
     }
@@ -342,6 +372,9 @@ ganglia_backend_get_updown_data(nodeupdown_t handle,
   /* Call gettimeofday at the latest point right before XML stuff. */
   if (gettimeofday(&tv, NULL) < 0) 
     {
+#ifndef NDEBUG
+      fprintf(stderr, "gettimeofday: %s\n", strerror(errno));
+#endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
       goto cleanup;
     } 
@@ -362,18 +395,27 @@ ganglia_backend_get_updown_data(nodeupdown_t handle,
       
       if (!(buff = XML_GetBuffer(xml_parser, BUFSIZ))) 
         {
+#ifndef NDEBUG
+	  fprintf(stderr, "XML_GetBuffer: %s\n", strerror(errno));
+#endif /* NDEBUG */
 	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
           goto cleanup;
         }
 
       if ((bytes_read = read(fd, buff, BUFSIZ)) < 0) 
         {
+#ifndef NDEBUG
+	  fprintf(stderr, "read: %s\n", strerror(errno));
+#endif /* NDEBUG */
 	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
           goto cleanup;
         }
 
       if (!XML_ParseBuffer(xml_parser, bytes_read, bytes_read == 0)) 
         {
+#ifndef NDEBUG
+	  fprintf(stderr, "XML_ParseBuffer: %s\n", strerror(errno));
+#endif /* NDEBUG */
 	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
           goto cleanup;
         }
