@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.62 2006-08-30 17:10:00 chu11 Exp $
+## $Id: Makefile.am,v 1.63 2006-09-01 17:00:50 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -36,6 +36,7 @@ nobase_include_HEADERS = nodeupdown/nodeupdown_backend_module.h \
 			 nodeupdown/nodeupdown_devel.h
 
 noinst_HEADERS  = nodeupdown_api.h \
+		  nodeupdown_backend_connect_util.h \
 		  nodeupdown_clusterlist_util.h \
 		  nodeupdown_clusterlist_genders_util.h \
 		  nodeupdown_genders_util.h \
@@ -96,7 +97,7 @@ nodeupdownmodulelib_LTLIBRARIES = \
 	$(CEREBRO_BACKEND_MODULE) \
 	$(GANGLIA_BACKEND_MODULE) \
 	$(PINGD_BACKEND_MODULE) \
- 	$(OPENIB_BACKEND_MODULE) \
+	$(OPENIB_BACKEND_MODULE) \
 	$(GENDERS_CLUSTERLIST_MODULE) \
 	$(HOSTSFILE_CLUSTERLIST_MODULE)
 
@@ -108,7 +109,8 @@ nodeupdown_backend_cerebro_la_LDFLAGS = \
 	$(NODEUPDOWN_BACKEND_OTHER_FLAGS) 
 
 nodeupdown_backend_ganglia_la_SOURCES = \
-	nodeupdown_backend_ganglia.c
+	nodeupdown_backend_ganglia.c \
+	nodeupdown_backend_connect_util.c
 nodeupdown_backend_ganglia_la_LDFLAGS = \
 	$(MODULE_FLAGS) \
 	$(NODEUPDOWN_BACKEND_OTHER_FLAGS) 
@@ -118,7 +120,8 @@ nodeupdown_backend_ganglia_la_LIBADD = \
 	../libexpat/libexpat.la
 
 nodeupdown_backend_pingd_la_SOURCES = \
-	nodeupdown_backend_pingd.c
+	nodeupdown_backend_pingd.c \
+	nodeupdown_backend_connect_util.c
 nodeupdown_backend_pingd_la_LDFLAGS = \
 	$(MODULE_FLAGS) \
 	$(NODEUPDOWN_BACKEND_OTHER_FLAGS) 
@@ -126,7 +129,7 @@ nodeupdown_backend_pingd_la_CFLAGS  = \
 	-I$(srcdir)/../libcommon
 nodeupdown_backend_pingd_la_LIBADD = \
 	../libcommon/libcommon.la
-	
+
 nodeupdown_backend_openib_la_SOURCES = \
 	nodeupdown_backend_openib.c
 nodeupdown_backend_openib_la_LDFLAGS = \

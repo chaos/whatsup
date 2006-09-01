@@ -1,3 +1,15 @@
+2006-09-01  Albert Chu  <chu11@llnl.gov>
+
+	* src/libnodeupdown/nodeupdown_backend_connect_util.h,
+	src/libnodeupdown/nodeupdown_backend_connect_util.c: New files.
+
+	* src/libnodeupdown/nodeupdown_backend_ganglia.c,
+	src/libnodeupdown/nodeupdown_backend_pingd.c: Use new common
+	function.
+
+	* src/libnodeupdown/Makefile.am: Update for new build
+	appropriately.
+	
 2006-08-30  Albert Chu  <chu11@llnl.gov>
 
 	* config/ac_openib.m4: Modify to avoid addition of libs to LIBS.
