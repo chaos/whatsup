@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: whatsup.1.in,v 1.21 2006-08-29 17:30:14 chu11 Exp $
+\."$Id: whatsup.1.in,v 1.22 2006-10-15 04:35:29 chu11 Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -99,6 +99,17 @@ List nodes in space separated list
 .TP
 .B \-m, \-\-module
 Use a specific backend module for up-down calculations.
+.TP
+.B \-e, \-\-monitor
+Enter 
+.B whatsup
+monitoring mode.  Whatsup will regularly poll the backend tool
+for up-down calculations and output them as they occur.
+.TP
+.B \-l, \-\-monitor-poll
+Specify the length in seconds the monitor mode of
+.B whatsup
+should regularly poll.  Default is 30 seconds.
 .if @MANPAGE_GENDERSLLNL@ \{
 .TP
 .B \-a, \-\-altnames

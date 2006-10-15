@@ -1,3 +1,9 @@
+2006-10-14  Albert Chu  <chu11@llnl.gov>
+
+	* src/whasup/whatsup.c: Added support for monitor mode.
+
+	* man/whatsup.1.in: Updated appropriately.
+	
 2006-09-01  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown_backend_connect_util.h,

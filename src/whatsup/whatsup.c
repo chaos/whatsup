@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.111 2006-08-29 17:30:14 chu11 Exp $
+ *  $Id: whatsup.c,v 1.112 2006-10-15 04:35:29 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -40,6 +40,16 @@
 #include <getopt.h>
 #endif /* HAVE_GETOPT_H */
 #include <dirent.h>
+#if TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else  /* !TIME_WITH_SYS_TIME */
+# if HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else /* !HAVE_SYS_TIME_H */
+#  include <time.h>
+# endif /* !HAVE_SYS_TIME_H */
+#endif /* !TIME_WITH_SYS_TIME */
 #include <assert.h>
 #include <errno.h>
 
@@ -74,6 +84,8 @@ extern int optind, opterr, optopt;
 #define WHATSUP_MODULE_INFO_SYM   "options_module_info"
 #define WHATSUP_MODULE_DEVEL_DIR  WHATSUP_MODULE_BUILDDIR "/.libs"
 
+#define WHATSUP_MONITOR_POLL      30
+
 /* 
  * Whatsup Data
  *
@@ -102,6 +114,8 @@ static lt_dlhandle mod_handles[WHATSUP_MODULES_LEN];
 static struct whatsup_options_module_info *mod_info[WHATSUP_MODULES_LEN];
 static char mod_options[WHATSUP_MODULES_LEN][WHATSUP_OPTIONS_LEN+1];
 static int mod_count = 0;
+static int monitor_mode = 0;
+static int monitor_mode_poll = WHATSUP_MONITOR_POLL;
 
 /* 
  * Whatsup output data
@@ -122,9 +136,6 @@ static void
 _init_whatsup(void)
 {
   const char *func = __FUNCTION__;
-
-  if (!(handle = nodeupdown_handle_create()))
-    err_exit("%s: nodeupdown_handle_create()", func);
 
   if (!(inputted_nodes = hostlist_create(NULL)))
     err_exit("%s: hostlist_create()", func);
@@ -384,22 +395,24 @@ _cmdline_parse(int argc, char **argv)
 #if HAVE_GETOPT_LONG
   struct option loptions[WHATSUP_LONG_OPTIONS_LEN+1] = 
     {
-      {"help",      0, NULL, 'h'},
-      {"version",   0, NULL, 'v'},
-      {"hostname",  1, NULL, 'o'},
-      {"port",      1, NULL, 'p'},
-      {"updown",    0, NULL, 'b'},
-      {"up",        0, NULL, 'u'},
-      {"down",      0, NULL, 'd'},
-      {"count",     0, NULL, 't'},
-      {"hostrange", 0, NULL, 'q'},
-      {"comma",     0, NULL, 'c'},
-      {"newline",   0, NULL, 'n'},
-      {"space",     0, NULL, 's'},
-      {"module",    1, NULL, 'm'},
+      {"help",         0, NULL, 'h'},
+      {"version",      0, NULL, 'v'},
+      {"hostname",     1, NULL, 'o'},
+      {"port",         1, NULL, 'p'},
+      {"updown",       0, NULL, 'b'},
+      {"up",           0, NULL, 'u'},
+      {"down",         0, NULL, 'd'},
+      {"count",        0, NULL, 't'},
+      {"hostrange",    0, NULL, 'q'},
+      {"comma",        0, NULL, 'c'},
+      {"newline",      0, NULL, 'n'},
+      {"space",        0, NULL, 's'},
+      {"module",       1, NULL, 'm'},
+      {"monitor",      0, NULL, 'e'},
+      {"monitor-poll", 1, NULL, 'l'},
       {0, 0, 0, 0},
   };
-  int loptions_len = 12;
+  int loptions_len = 15;
 #endif /* HAVE_GETOPT_LONG */
 
   assert(argv);
@@ -515,7 +528,16 @@ _cmdline_parse(int argc, char **argv)
         break;
       case 'm':
         module = optarg;
+	break;
+      case 'e':
+	monitor_mode++;
         break;
+      case 'l':
+        monitor_mode_poll = strtol(optarg, &ptr, 10);
+        if (ptr != (optarg + strlen(optarg))
+	    || monitor_mode_poll <= 0)
+          err_exit("invalid monitor_mode_poll specified");
+	break;
       default:
 	used_option = 0;
 
@@ -798,25 +820,22 @@ _create_formats(char *endstr)
   snprintf(downfmt, WHATSUP_FORMATLEN, "down: %%%dd%s", max, endstr);
 }
 
-int 
-main(int argc, char *argv[]) 
+/* 
+ * _output_mode
+ *
+ * Output the current updown state based on inputs from the command line
+ *
+ * Returns exit_val;
+ */
+int
+_output_mode(void)
 {
   const char *func = __FUNCTION__;
   int exit_val;
 
-  err_init(argv[0]);
-  err_set_flags(ERROR_STDERR);
+  if (!(handle = nodeupdown_handle_create()))
+    err_exit("%s: nodeupdown_handle_create()", func);
 
-  _init_whatsup();
-
-  /* 
-   * Load options modules before calling cmdline_parse, b/c modules
-   * may be able to parse additional command line options.
-   */
-  _load_options_modules();
-
-  _cmdline_parse(argc, argv);
-  
   if (nodeupdown_load_data(handle, hostname, port, 0, module) < 0) 
     {
       int errnum = nodeupdown_errnum(handle);
@@ -890,6 +909,154 @@ main(int argc, char *argv[])
   else
     exit_val = (!up_count) ? 0 : 1;
   
+  return exit_val;
+}
+
+/* 
+ * _monitor_mode
+ *
+ * Output up/down info as it occurs
+ */
+int
+_monitor_mode(void)
+{
+  hostlist_t upnodes, downnodes;
+  const char *func = __FUNCTION__;
+  char upnodesbuf[WHATSUP_BUFFERLEN];
+  char downnodesbuf[WHATSUP_BUFFERLEN];
+  int nodes_init = 0;
+  int exit_val = 0;
+
+  while (1)
+    {
+      if (!(handle = nodeupdown_handle_create()))
+	err_exit("%s: nodeupdown_handle_create()", func);
+
+      if (nodeupdown_load_data(handle, hostname, port, 0, module) < 0) 
+	{
+	  int errnum = nodeupdown_errnum(handle);
+	  char *msg = nodeupdown_errormsg(handle);
+	  
+	  /* Check for "legit" errors and output appropriate message */
+	  if (errnum == NODEUPDOWN_ERR_CONF_PARSE)
+	    err_exit("Parse error in conf file");
+	  else if (errnum == NODEUPDOWN_ERR_CONNECT) 
+	    err_exit("Cannot connect to server");
+	  else if (errnum == NODEUPDOWN_ERR_CONNECT_TIMEOUT)
+	    err_exit("Timeout connecting to server");
+	  else if (errnum == NODEUPDOWN_ERR_HOSTNAME)
+	    err_exit("Invalid hostname");
+	  else
+	    err_exit("%s: nodeupdown_load_data(): %s", func, msg);
+	}
+
+      memset(upnodesbuf, '\0', WHATSUP_BUFFERLEN);
+      memset(downnodesbuf, '\0', WHATSUP_BUFFERLEN);
+
+      if (nodeupdown_get_up_nodes_string(handle, upnodesbuf, WHATSUP_BUFFERLEN) < 0)
+        err_exit("%s: nodeupdown_get_up_nodes_string(): %s", func, nodeupdown_errormsg(handle));
+
+      if (nodeupdown_get_down_nodes_string(handle, downnodesbuf, WHATSUP_BUFFERLEN) < 0)
+        err_exit("%s: nodeupdown_get_down_nodes_string(): %s", func, nodeupdown_errormsg(handle));
+
+      /* Don't output the first time through */
+      if (nodes_init)
+	{
+	  hostlist_t newupnodes, newdownnodes;
+	  hostlist_iterator_t upitr, downitr;
+	  char *node;
+
+	  if (!(newupnodes = hostlist_create(upnodesbuf)))
+	    err_exit("%s: hostlist_create()", func);
+	  
+	  if (!(newdownnodes = hostlist_create(downnodesbuf)))
+	    err_exit("%s: hostlist_create()", func);
+
+	  if (!(upitr = hostlist_iterator_create(newupnodes)))
+	    err_exit("%s: hostlist_iterator_create()", func);
+
+	  if (!(downitr = hostlist_iterator_create(newdownnodes)))
+	    err_exit("%s: hostlist_iterator_create()", func);
+
+	  while ((node = hostlist_next(upitr)))
+	    {
+	      if (hostlist_find(upnodes, node) < 0)
+		{
+		  time_t t;
+		  struct tm *tt;
+		  char timebuf[WHATSUP_BUFFERLEN];
+  
+		  t = time(NULL);
+		  tt = localtime(&t);
+		  strftime(timebuf, WHATSUP_BUFFERLEN, "%T", tt);
+		  printf("%s: '%s' UP\n", timebuf, node);
+		}
+	      free(node);
+	    }
+
+	  while ((node = hostlist_next(downitr)))
+	    {
+	      if (hostlist_find(downnodes, node) < 0)
+		{
+		  time_t t;
+		  struct tm *tt;
+		  char timebuf[WHATSUP_BUFFERLEN];
+  
+		  t = time(NULL);
+		  tt = localtime(&t);
+		  strftime(timebuf, WHATSUP_BUFFERLEN, "%T", tt);
+		  printf("%s: '%s' DOWN\n", timebuf, node);
+		}
+	      free(node);
+	    }
+
+	  hostlist_destroy(upnodes);
+	  hostlist_destroy(downnodes);
+	  upnodes = newupnodes;
+	  downnodes = newdownnodes;
+	}
+      else
+	{
+	  if (!(upnodes = hostlist_create(upnodesbuf)))
+	    err_exit("%s: hostlist_create()", func);
+
+	  if (!(downnodes = hostlist_create(downnodesbuf)))
+	    err_exit("%s: hostlist_create()", func);
+  
+	  nodes_init++;
+	}
+
+      (void)nodeupdown_handle_destroy(handle);
+      sleep(monitor_mode_poll);
+    }
+
+  /* NOT REACHED */
+  return exit_val;
+}
+
+int 
+main(int argc, char *argv[]) 
+{
+  int exit_val;
+
+  err_init(argv[0]);
+  err_set_flags(ERROR_STDERR);
+
+  _init_whatsup();
+
+  /* 
+   * Load options modules before calling cmdline_parse, b/c modules
+   * may be able to parse additional command line options.
+   */
+  _load_options_modules();
+
+  _cmdline_parse(argc, argv);
+
+  if (monitor_mode)
+    exit_val = _monitor_mode();
+  else
+    exit_val = _output_mode();
+
   _unload_options_modules();
   _cleanup_whatsup();
   exit(exit_val);
