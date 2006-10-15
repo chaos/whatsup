@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.113 2006-10-15 16:17:21 chu11 Exp $
+ *  $Id: whatsup.c,v 1.114 2006-10-15 16:55:45 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -594,7 +594,7 @@ _cmdline_parse(int argc, char **argv)
           char buf[WHATSUP_BUFFERLEN];
           int rv;
           
-          if ((rv = (*mod->convert_nodenames)(buf, WHATSUP_BUFFERLEN)) < 0)
+          if ((rv = (*mod->get_nodenames)(buf, WHATSUP_BUFFERLEN)) < 0)
             continue;
           
           if (rv)
