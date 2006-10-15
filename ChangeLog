@@ -1,3 +1,8 @@
+2006-10-15  Albert Chu  <chu11@llnl.gov>
+
+	* src/whatsup/whatsup.c (_cmdline), src/whatsup/whatsup_options.h:
+	Support get_nodenames optional commandline argument.
+	
 2006-10-14  Albert Chu  <chu11@llnl.gov>
 
 	* src/whasup/whatsup.c: Added support for monitor mode.

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.112 2006-10-15 04:35:29 chu11 Exp $
+ *  $Id: whatsup.c,v 1.113 2006-10-15 16:17:21 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -584,6 +584,26 @@ _cmdline_parse(int argc, char **argv)
       
       /* remove any duplicate nodes listed */
       hostlist_uniq(inputted_nodes);
+    }
+  else
+    {
+      /* get nodenames if desired */
+      for (i = 0; i < mod_count; i++)
+        {
+          struct whatsup_options_module_info *mod = mod_info[i];
+          char buf[WHATSUP_BUFFERLEN];
+          int rv;
+          
+          if ((rv = (*mod->convert_nodenames)(buf, WHATSUP_BUFFERLEN)) < 0)
+            continue;
+          
+          if (rv)
+            {
+              if (!hostlist_push(inputted_nodes, buf))
+                err_exit("%s: hostlist_push", func);
+              break;            
+            }
+        }
     }
 }
 

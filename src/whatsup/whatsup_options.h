@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup_options.h,v 1.8 2005-07-01 23:51:08 achu Exp $
+ *  $Id: whatsup_options.h,v 1.9 2006-10-15 16:17:21 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -116,6 +116,15 @@ typedef int (*Whatsup_options_handle_option)(char c, char *optarg);
 typedef int (*Whatsup_options_convert_nodenames)(char *nodes, char *buf, int buflen);
 
 /* 
+ * Whatsup_options_get_nodenames
+ *
+ * Retrieve nodenames specified by the user
+ *
+ * Returns 0 on success, -1 on error.
+ */
+typedef int (*Whatsup_options_get_nodenames)(char *buf, int buflen);
+
+/* 
  * struct whatsup_options_module_info
  * 
  * contains options module information and operations.  Required to be
@@ -132,6 +141,7 @@ struct whatsup_options_module_info
   Whatsup_options_add_long_option add_long_option;
   Whatsup_options_handle_option handle_option;
   Whatsup_options_convert_nodenames convert_nodenames;
+  Whatsup_options_get_nodenames get_nodenames;
 };
 
 #endif /* _WHATSUP_OPTIONS_H */
