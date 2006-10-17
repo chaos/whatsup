@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.117 2006-10-17 04:39:50 chu11 Exp $
+ *  $Id: whatsup.c,v 1.118 2006-10-17 04:54:39 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -422,7 +422,7 @@ _cmdline_parse(int argc, char **argv)
       {"log-poll",     1, NULL, 'e'},
       {0, 0, 0, 0},
     };
-  int loptions_len = 15;
+  int loptions_len = 16;
 #endif /* HAVE_GETOPT_LONG */
 
   assert(argv);
