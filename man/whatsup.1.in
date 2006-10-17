@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: whatsup.1.in,v 1.23 2006-10-17 02:52:01 chu11 Exp $
+\."$Id: whatsup.1.in,v 1.24 2006-10-17 04:39:50 chu11 Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -100,14 +100,13 @@ List nodes in space separated list
 .B \-m, \-\-module
 Use a specific backend module for up-down calculations.
 .TP
-.B \-e, \-\-log
+.B \-l, \-\-log
 Enter 
 .B whatsup
 logging mode.  
 .B Whatsup 
-will regularly poll the backend tool
-for up-down calculations and output them to the appropriate
-output.
+will regularly poll the backend tool to calculate up-down state
+changes and output them to the appropriate output.
 .TP
 .B \-f, \-\-log-file
 Specify the log file 

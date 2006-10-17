@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.116 2006-10-17 03:14:49 chu11 Exp $
+ *  $Id: whatsup.c,v 1.117 2006-10-17 04:39:50 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -314,7 +314,10 @@ _usage(void)
 	  "  -c         --comma             Output in comma separated list\n"
 	  "  -n         --newline           Output in newline separated list\n"
 	  "  -s         --space             Output in space separated list\n"
-          "  -m         --module            Specific backend module\n");
+          "  -m         --module            Specify backend module\n"
+          "  -l         --log               Output up/dog state log\n"
+          "  -f         --log-file          Specify log file\n"
+          "  -e         --log-poll          Specify log polling internval\n");
 
   for (i = 0; i < mod_count; i++)
     {
@@ -414,9 +417,9 @@ _cmdline_parse(int argc, char **argv)
       {"newline",      0, NULL, 'n'},
       {"space",        0, NULL, 's'},
       {"module",       1, NULL, 'm'},
-      {"log",          0, NULL, 'e'},
+      {"log",          0, NULL, 'l'},
       {"log-file",     1, NULL, 'f'}, 
-      {"log-poll",     1, NULL, 'l'},
+      {"log-poll",     1, NULL, 'e'},
       {0, 0, 0, 0},
     };
   int loptions_len = 15;
@@ -424,8 +427,9 @@ _cmdline_parse(int argc, char **argv)
 
   assert(argv);
 
+  /* aegijkrwxyz */
   memset(options, '\0', WHATSUP_OPTIONS_LEN+1);
-  strncpy(options, "hvo:p:budtqcnsm:ef:l:", WHATSUP_OPTIONS_LEN);
+  strncpy(options, "hvo:p:budtqcnsm:lf:e:", WHATSUP_OPTIONS_LEN);
 
   /* 
    * Load additional option arguments
@@ -536,13 +540,13 @@ _cmdline_parse(int argc, char **argv)
           case 'm':
             module = optarg;
             break;
-          case 'e':
+          case 'l':
             log_mode++;
             break;
           case 'f':
             log_file = optarg;
             break;
-          case 'l':
+          case 'e':
             log_poll = strtol(optarg, &ptr, 10);
             if (ptr != (optarg + strlen(optarg))
                 || log_poll <= 0)
@@ -1029,10 +1033,10 @@ _log_mode(void)
 
 		  t = time(NULL);
 		  tt = localtime(&t);
-		  strftime(timebuf, WHATSUP_BUFFERLEN, "%D: %T", tt);
+		  strftime(timebuf, WHATSUP_BUFFERLEN, "%Y/%m/%d %T", tt);
                   if ((write_len = snprintf(writebuf, 
                                             WHATSUP_BUFFERLEN,
-                                            "%s: '%s' UP\n", 
+                                            "%s %s UP\n", 
                                             timebuf, 
                                             node)) < 0)
                     err_exit("snprintf: %s", strerror(errno));
@@ -1065,10 +1069,10 @@ _log_mode(void)
 
 		  t = time(NULL);
 		  tt = localtime(&t);
-		  strftime(timebuf, WHATSUP_BUFFERLEN, "%D: %T", tt);
+		  strftime(timebuf, WHATSUP_BUFFERLEN, "%Y/%m/%d %T", tt);
                   if ((write_len = snprintf(writebuf, 
                                             WHATSUP_BUFFERLEN,
-                                            "%s: '%s' DOWN\n", 
+                                            "%s %s DOWN\n", 
                                             timebuf, 
                                             node)) < 0)
                     err_exit("snprintf: %s", strerror(errno));
