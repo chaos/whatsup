@@ -1,3 +1,8 @@
+2006-10-16  Albert Chu  <chu11@llnl.gov>
+
+	* src/whatsup/whatsup.c, man/whatsup.1.in: Re-adjust --monitor to
+	--log and --monitor-poll to --log-poll.  Add --log-file option.
+	
 2006-10-15  Albert Chu  <chu11@llnl.gov>
 
 	* src/whatsup/whatsup.c (_cmdline), src/whatsup/whatsup_options.h:

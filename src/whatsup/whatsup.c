@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.114 2006-10-15 16:55:45 chu11 Exp $
+ *  $Id: whatsup.c,v 1.115 2006-10-17 02:52:01 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -50,6 +50,11 @@
 #  include <time.h>
 # endif /* !HAVE_SYS_TIME_H */
 #endif /* !TIME_WITH_SYS_TIME */
+#include <sys/types.h>
+#include <sys/stat.h>
+#if HAVE_FCNTL_H
+#include <fcntl.h>
+#endif /* HAVE_FCNTL_H */
 #include <assert.h>
 #include <errno.h>
 
@@ -84,7 +89,7 @@ extern int optind, opterr, optopt;
 #define WHATSUP_MODULE_INFO_SYM   "options_module_info"
 #define WHATSUP_MODULE_DEVEL_DIR  WHATSUP_MODULE_BUILDDIR "/.libs"
 
-#define WHATSUP_MONITOR_POLL      30
+#define WHATSUP_LOG_POLL      30
 
 /* 
  * Whatsup Data
@@ -114,8 +119,9 @@ static lt_dlhandle mod_handles[WHATSUP_MODULES_LEN];
 static struct whatsup_options_module_info *mod_info[WHATSUP_MODULES_LEN];
 static char mod_options[WHATSUP_MODULES_LEN][WHATSUP_OPTIONS_LEN+1];
 static int mod_count = 0;
-static int monitor_mode = 0;
-static int monitor_mode_poll = WHATSUP_MONITOR_POLL;
+static int log_mode = 0;
+static char *log_file = NULL;
+static int log_poll = WHATSUP_LOG_POLL;
 
 /* 
  * Whatsup output data
@@ -408,17 +414,18 @@ _cmdline_parse(int argc, char **argv)
       {"newline",      0, NULL, 'n'},
       {"space",        0, NULL, 's'},
       {"module",       1, NULL, 'm'},
-      {"monitor",      0, NULL, 'e'},
-      {"monitor-poll", 1, NULL, 'l'},
+      {"log",          0, NULL, 'e'},
+      {"log-file",     1, NULL, 'f'}, 
+      {"log-poll",     1, NULL, 'l'},
       {0, 0, 0, 0},
-  };
+    };
   int loptions_len = 15;
 #endif /* HAVE_GETOPT_LONG */
 
   assert(argv);
 
   memset(options, '\0', WHATSUP_OPTIONS_LEN+1);
-  strncpy(options, "hvo:p:budtqcnsm:", WHATSUP_OPTIONS_LEN);
+  strncpy(options, "hvo:p:budtqcnsm:ef:l:", WHATSUP_OPTIONS_LEN);
 
   /* 
    * Load additional option arguments
@@ -485,87 +492,90 @@ _cmdline_parse(int argc, char **argv)
 #if HAVE_GETOPT_LONG
   while ((c = getopt_long(argc, argv, options, loptions, NULL)) != -1)
 #else
-  while ((c = getopt(argc, argv, options)) != -1)
+    while ((c = getopt(argc, argv, options)) != -1)
 #endif
-    {
-    switch(c) 
       {
-      case 'h':
-        _usage();
-      case 'v':
-        _version();
-      case 'o':
-        hostname = optarg;
-        break;
-      case 'p':
-        port = strtol(optarg, &ptr, 10);
-        if (ptr != (optarg + strlen(optarg)))
-          err_exit("invalid port specified");
-        break;
-      case 'b':
-        updown_output = WHATSUP_UP_AND_DOWN;
-        break;
-      case 'u':
-        updown_output = WHATSUP_UP_NODES;
-        break;
-      case 'd':
-        updown_output = WHATSUP_DOWN_NODES;
-        break;
-      case 't':
-        count_only_output++;
-        break;
-      case 'q':
-        output_type = 0;
-        break;
-      case 'c':
-        output_type = ',';
-        break;
-      case 'n':
-        output_type = '\n';
-        break;
-      case 's':
-        output_type = ' ';
-        break;
-      case 'm':
-        module = optarg;
-	break;
-      case 'e':
-	monitor_mode++;
-        break;
-      case 'l':
-        monitor_mode_poll = strtol(optarg, &ptr, 10);
-        if (ptr != (optarg + strlen(optarg))
-	    || monitor_mode_poll <= 0)
-          err_exit("invalid monitor_mode_poll specified");
-	break;
-      default:
-	used_option = 0;
+        switch(c) 
+          {
+          case 'h':
+            _usage();
+          case 'v':
+            _version();
+          case 'o':
+            hostname = optarg;
+            break;
+          case 'p':
+            port = strtol(optarg, &ptr, 10);
+            if (ptr != (optarg + strlen(optarg)))
+              err_exit("invalid port specified");
+            break;
+          case 'b':
+            updown_output = WHATSUP_UP_AND_DOWN;
+            break;
+          case 'u':
+            updown_output = WHATSUP_UP_NODES;
+            break;
+          case 'd':
+            updown_output = WHATSUP_DOWN_NODES;
+            break;
+          case 't':
+            count_only_output++;
+            break;
+          case 'q':
+            output_type = 0;
+            break;
+          case 'c':
+            output_type = ',';
+            break;
+          case 'n':
+            output_type = '\n';
+            break;
+          case 's':
+            output_type = ' ';
+            break;
+          case 'm':
+            module = optarg;
+            break;
+          case 'e':
+            log_mode++;
+            break;
+          case 'f':
+            log_file = optarg;
+            break;
+          case 'l':
+            log_poll = strtol(optarg, &ptr, 10);
+            if (ptr != (optarg + strlen(optarg))
+                || log_poll <= 0)
+              err_exit("invalid log_poll specified");
+            break;
+          default:
+            used_option = 0;
 
-	for (i = 0; i < mod_count; i++)
-	  {
-	    int rv;
+            for (i = 0; i < mod_count; i++)
+              {
+                int rv;
 	    
-	    if (strchr(mod_options[i], c))
-	      {
-		if ((rv = (*mod_info[i]->handle_option)(c, optarg)) < 0)
-		  err_exit("%s: handle_option failure", func);
+                if (strchr(mod_options[i], c))
+                  {
+                    if ((rv = (*mod_info[i]->handle_option)(c, optarg)) < 0)
+                      err_exit("%s: handle_option failure", func);
 		
-		if (rv)
-		  {
-		    used_option = 1;
-		    break;
-		  }
-	      }
-	  }
+                    if (rv)
+                      {
+                        used_option = 1;
+                        break;
+                      }
+                  }
+              }
 
-	if (used_option)
-	  break;
-	/* else fall through */
-      case '?':
-        fprintf(stderr, "command line option error\n");
-        _usage();
+            if (used_option)
+              break;
+            /* else fall through */
+          case '?':
+            fprintf(stderr, "command line option error\n");
+            _usage();
+          }
       }
-    }
 
   index = optind;
   
@@ -933,12 +943,12 @@ _output_mode(void)
 }
 
 /* 
- * _monitor_mode
+ * _log_mode
  *
  * Output up/down info as it occurs
  */
 int
-_monitor_mode(void)
+_log_mode(void)
 {
   hostlist_t upnodes, downnodes;
   const char *func = __FUNCTION__;
@@ -946,6 +956,15 @@ _monitor_mode(void)
   char downnodesbuf[WHATSUP_BUFFERLEN];
   int nodes_init = 0;
   int exit_val = 0;
+  int log_file_fd;
+
+  if (log_file)
+    {
+      if ((log_file_fd = open (log_file, O_WRONLY | O_CREAT)) < 0)
+        err_exit("error opening log_file = %s: %s", log_file, strerror(errno));
+    }
+  else
+    log_file_fd = STDOUT_FILENO;
 
   while (1)
     {
@@ -1005,11 +1024,31 @@ _monitor_mode(void)
 		  time_t t;
 		  struct tm *tt;
 		  char timebuf[WHATSUP_BUFFERLEN];
-  
+                  char writebuf[WHATSUP_BUFFERLEN];
+                  int write_len;
+
 		  t = time(NULL);
 		  tt = localtime(&t);
-		  strftime(timebuf, WHATSUP_BUFFERLEN, "%T", tt);
-		  printf("%s: '%s' UP\n", timebuf, node);
+		  strftime(timebuf, WHATSUP_BUFFERLEN, "%D: %T", tt);
+                  if ((write_len = snprintf(writebuf, 
+                                            WHATSUP_BUFFERLEN,
+                                            "%s: '%s' UP\n", 
+                                            timebuf, 
+                                            node)) < 0)
+                    err_exit("snprintf: %s", strerror(errno));
+
+                  if (log_file)
+                    {
+                      if (fd_write_n (log_file_fd, writebuf, write_len) < 0)
+                        err_exit("fd_write_n: %s", strerror(errno));
+                      if (fsync(log_file_fd) < 0)
+                        err_exit("fsync: %s", strerror(errno));
+                    }
+                  else
+                    {
+                      printf("%s", writebuf);
+                      fflush(stdout);
+                    }
 		}
 	      free(node);
 	    }
@@ -1021,14 +1060,35 @@ _monitor_mode(void)
 		  time_t t;
 		  struct tm *tt;
 		  char timebuf[WHATSUP_BUFFERLEN];
-  
+                  char writebuf[WHATSUP_BUFFERLEN];
+                  int write_len;
+
 		  t = time(NULL);
 		  tt = localtime(&t);
-		  strftime(timebuf, WHATSUP_BUFFERLEN, "%T", tt);
-		  printf("%s: '%s' DOWN\n", timebuf, node);
+		  strftime(timebuf, WHATSUP_BUFFERLEN, "%D: %T", tt);
+                  if ((write_len = snprintf(writebuf, 
+                                            WHATSUP_BUFFERLEN,
+                                            "%s: '%s' DOWN\n", 
+                                            timebuf, 
+                                            node)) < 0)
+                    err_exit("snprintf: %s", strerror(errno));
+
+                  if (log_file)
+                    {
+                      if (fd_write_n (log_file_fd, writebuf, write_len) < 0)
+                        err_exit("fd_write_n: %s", strerror(errno));
+                      if (fsync(log_file_fd) < 0)
+                        err_exit("fsync: %s", strerror(errno));
+                    }
+                  else
+                    {
+                      printf("%s", writebuf);
+                      fflush(stdout);
+                    }
 		}
 	      free(node);
 	    }
+
 
 	  hostlist_destroy(upnodes);
 	  hostlist_destroy(downnodes);
@@ -1047,7 +1107,7 @@ _monitor_mode(void)
 	}
 
       (void)nodeupdown_handle_destroy(handle);
-      sleep(monitor_mode_poll);
+      sleep(log_poll);
     }
 
   /* NOT REACHED */
@@ -1072,8 +1132,8 @@ main(int argc, char *argv[])
 
   _cmdline_parse(argc, argv);
 
-  if (monitor_mode)
-    exit_val = _monitor_mode();
+  if (log_mode)
+    exit_val = _log_mode();
   else
     exit_val = _output_mode();
 
