@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.115 2006-10-17 02:52:01 chu11 Exp $
+ *  $Id: whatsup.c,v 1.116 2006-10-17 03:14:49 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -960,7 +960,7 @@ _log_mode(void)
 
   if (log_file)
     {
-      if ((log_file_fd = open (log_file, O_WRONLY | O_CREAT)) < 0)
+      if ((log_file_fd = open (log_file, O_WRONLY | O_CREAT), 600) < 0)
         err_exit("error opening log_file = %s: %s", log_file, strerror(errno));
     }
   else
