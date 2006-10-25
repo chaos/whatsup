@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.118 2006-10-17 04:54:39 chu11 Exp $
+ *  $Id: whatsup.c,v 1.119 2006-10-25 21:16:08 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -557,18 +557,13 @@ _cmdline_parse(int argc, char **argv)
 
             for (i = 0; i < mod_count; i++)
               {
-                int rv;
-	    
                 if (strchr(mod_options[i], c))
                   {
-                    if ((rv = (*mod_info[i]->handle_option)(c, optarg)) < 0)
+                    if ((*mod_info[i]->handle_option)(c, optarg) < 0)
                       err_exit("%s: handle_option failure", func);
 		
-                    if (rv)
-                      {
-                        used_option = 1;
-                        break;
-                      }
+                    used_option = 1;
+                    break;
                   }
               }
 
@@ -608,15 +603,12 @@ _cmdline_parse(int argc, char **argv)
           char buf[WHATSUP_BUFFERLEN];
           int rv;
           
-          if ((rv = (*mod->get_nodenames)(buf, WHATSUP_BUFFERLEN)) < 0)
+          if ((*mod->get_nodenames)(buf, WHATSUP_BUFFERLEN) < 0)
             continue;
           
-          if (rv)
-            {
-              if (!hostlist_push(inputted_nodes, buf))
-                err_exit("%s: hostlist_push", func);
-              break;            
-            }
+          if (!hostlist_push(inputted_nodes, buf))
+            err_exit("%s: hostlist_push", func);
+          break;            
         }
     }
 }
@@ -740,19 +732,15 @@ _get_nodes(char *buf, int buflen, int up_or_down, int *count)
     {
       char tbuf[WHATSUP_BUFFERLEN];
       struct whatsup_options_module_info *mod = mod_info[i];
-      int rv;
       
-      if ((rv = (*mod->convert_nodenames)(buf, tbuf, WHATSUP_BUFFERLEN)) < 0)
+      if ((*mod->convert_nodenames)(buf, tbuf, WHATSUP_BUFFERLEN) < 0)
 	continue;
       
-      if (rv)
-	{
-	  if (strlen(tbuf) < buflen)
-	    strcpy(buf, tbuf);
-	  else
-	    err_exit("%s: overflow buffer", func);
-	  break;
-	}
+      if (strlen(tbuf) < buflen)
+        strcpy(buf, tbuf);
+      else
+        err_exit("%s: overflow buffer", func);
+      break;
     }
 
   /* can't use nodeupdown_up/down_count, b/c we may be counting the
