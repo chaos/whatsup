@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.119 2006-10-25 21:16:08 chu11 Exp $
+ *  $Id: whatsup.c,v 1.120 2006-10-25 21:56:08 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -186,7 +186,8 @@ _load_options_module(char *module_path)
       || !mod_info[c]->register_option
       || !mod_info[c]->add_long_option
       || !mod_info[c]->handle_option
-      || !mod_info[c]->convert_nodenames)
+      || !mod_info[c]->convert_nodenames
+      || !mod_info[c]->get_nodenames)
     goto cleanup;
   
   module_name = mod_info[c]->options_module_name;

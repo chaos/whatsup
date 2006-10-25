@@ -2,6 +2,9 @@
 
 	* src/whatsup/whatsup.c: Fix return value issues with module
 	options calls.
+
+	* src/whatsup/whatsup.c (_load_options_module): Fix corner case
+	check.
 	
 2006-10-16  Albert Chu  <chu11@llnl.gov>
 
