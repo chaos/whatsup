@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.123 2006-10-26 22:21:56 chu11 Exp $
+ *  $Id: whatsup.c,v 1.124 2006-10-26 22:23:25 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -560,7 +560,10 @@ _cmdline_parse(int argc, char **argv)
                   if (optionsPtr->option_long)
                     {
                       loptions[loptions_len].name = optionsPtr->option_long;
-                      loptions[loptions_len].has_arg = 1;
+                      if (optionsPtr->option_arg)
+                        loptions[loptions_len].has_arg = 1;
+                      else
+                        loptions[loptions_len].has_arg = 0;
                       loptions[loptions_len].flag = NULL;
                       loptions[loptions_len].val = optionsPtr->option;
 
