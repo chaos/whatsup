@@ -1,3 +1,10 @@
+2006-10-26  Albert Chu  <chu11@llnl.gov>
+
+	* src/whatsup/whatsup_options.h, src/whatsup/whatsup.c: Various
+	code cleanup.
+
+	* man/whatsup.1.in: Remove forgotten localism.
+	
 2006-10-25  Albert Chu  <chu11@llnl.gov>
 
 	* src/whatsup/whatsup.c: Fix return value issues with module

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.121 2006-10-26 04:58:09 chu11 Exp $
+ *  $Id: whatsup.c,v 1.122 2006-10-26 22:06:20 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -62,6 +62,7 @@
 #include "nodeupdown.h"
 #include "hostlist.h"
 #include "error.h"
+#include "list.h"
 #include "ltdl.h"
 #include "fd.h"
 
@@ -82,14 +83,13 @@ extern int optind, opterr, optopt;
 #define WHATSUP_FORMATLEN         64
 #define WHATSUP_OPTIONS_LEN       64
 #define WHATSUP_LONG_OPTIONS_LEN  32
-#define WHATSUP_MODULES_LEN       16
 #define WHATSUP_MAXPATHLEN        256
 
 #define WHATSUP_MODULE_SIGNATURE  "whatsup_options_"
-#define WHATSUP_MODULE_INFO_SYM   "options_module_info"
+#define WHATSUP_MODULE_INFO_SYM   "whatsup_module_info"
 #define WHATSUP_MODULE_DEVEL_DIR  WHATSUP_MODULE_BUILDDIR "/.libs"
 
-#define WHATSUP_LOG_POLL      30
+#define WHATSUP_LOG_POLL          30
 
 /* 
  * Whatsup Data
@@ -102,10 +102,9 @@ extern int optind, opterr, optopt;
  * handle - nodeupdown handle
  * inputted_nodes - nodes input via the cmdline or stdin
  * module - a specific backend module to use
- * mod_handles - module handles
- * mod_info - module info structures
- * mod_options - options stored in each module
- * mod_count - number of modules loaded
+ * log_mode - flag to indicate log mode
+ * log_file - file to log to, NULL for stdout
+ * log_poll - logging polling interval in seconds
  */
 static char *hostname = NULL;
 static int port = 0;
@@ -115,13 +114,20 @@ static int count_only_output = 0;
 static nodeupdown_t handle;
 static hostlist_t inputted_nodes = NULL;
 static char *module = NULL;
-static lt_dlhandle mod_handles[WHATSUP_MODULES_LEN];
-static struct whatsup_options_module_info *mod_info[WHATSUP_MODULES_LEN];
-static char mod_options[WHATSUP_MODULES_LEN][WHATSUP_OPTIONS_LEN+1];
-static int mod_count = 0;
 static int log_mode = 0;
 static char *log_file = NULL;
 static int log_poll = WHATSUP_LOG_POLL;
+
+struct whatsup_module_loadinfo 
+{
+  lt_dlhandle handle;
+  struct whatsup_options_module_info *module_info;
+  char options_towatch[WHATSUP_OPTIONS_LEN];
+  char options_processed[WHATSUP_OPTIONS_LEN];
+};
+
+static List modules_list = NULL;
+static ListIterator modules_list_itr = NULL;
 
 /* 
  * Whatsup output data
@@ -141,10 +147,8 @@ static int down_count = -1;
 static void
 _init_whatsup(void)
 {
-  const char *func = __FUNCTION__;
-
   if (!(inputted_nodes = hostlist_create(NULL)))
-    err_exit("%s: hostlist_create()", func);
+    err_exit("%s: hostlist_create", __FUNCTION__);
 }
 
 /* 
@@ -167,46 +171,74 @@ _cleanup_whatsup(void)
 static void
 _load_options_module(char *module_path)
 {
-  int i, c = mod_count;
-  char *module_name;
+  struct whatsup_module_loadinfo *loadinfo;
+  struct whatsup_module_loadinfo *loadinfoPtr;
+  struct whatsup_option *optionsPtr;
+  ListIterator itr = NULL;
 
-  assert(module_path);
+  assert(module_path && modules_list);
 
-  if (c >= WHATSUP_MODULES_LEN)
-    return;
+  if (!(loadinfo = malloc(sizeof(struct whatsup_module_loadinfo))))
+    err_exit("%s: malloc: %s", __FUNCTION__, strerror(errno));
+  memset(loadinfo, '\0', sizeof(struct whatsup_module_loadinfo));
 
-  if (!(mod_handles[c] = lt_dlopen(module_path)))
+  if (!(loadinfo->handle = lt_dlopen(module_path)))
     goto cleanup;
 
-  if (!(mod_info[c] = lt_dlsym(mod_handles[c], WHATSUP_MODULE_INFO_SYM)))
+  if (!(loadinfo->module_info = lt_dlsym(loadinfo->handle, WHATSUP_MODULE_INFO_SYM)))
     goto cleanup;
 
-  if (!mod_info[c]->options_module_name
-      || !mod_info[c]->output_usage
-      || !mod_info[c]->register_option
-      || !mod_info[c]->add_long_option
-      || !mod_info[c]->handle_option
-      || !mod_info[c]->convert_nodenames
-      || !mod_info[c]->get_nodenames)
+  if (!loadinfo->module_info->module_name
+      || !loadinfo->module_info->options
+      || !loadinfo->module_info->setup
+      || !loadinfo->module_info->cleanup
+      || !loadinfo->module_info->process_option
+      || !loadinfo->module_info->convert_nodenames
+      || !loadinfo->module_info->get_nodenames)
     goto cleanup;
   
-  module_name = mod_info[c]->options_module_name;
-  for (i = 0; i < c; i++)
+  optionsPtr = loadinfo->module_info->options;
+  while (optionsPtr->option) 
     {
-      if (!strcmp(mod_info[i]->options_module_name, module_name))
-	goto cleanup;		/* already loaded */
+      if (optionsPtr->option_type != WHATSUP_OPTION_TYPE_CONVERT_NODENAMES
+          && optionsPtr->option_type != WHATSUP_OPTION_TYPE_GET_NODENAMES)
+        goto cleanup;
+      optionsPtr++;
     }
 
-  if ((*mod_info[i]->setup)() < 0)
+  if (list_count(modules_list) > 0) 
+    {
+      char *module_name;
+      
+      if (!(itr = list_iterator_create(modules_list)))
+        err_exit("%s: list_iterator_create: %s", __FUNCTION__, strerror(errno));
+      
+      module_name = loadinfo->module_info->module_name;
+      while ((loadinfoPtr = list_next(itr))) 
+        {
+          if (!strcmp(loadinfoPtr->module_info->module_name, module_name))
+            goto cleanup;           /* module already loaded */
+        }
+    }
+
+  if ((*loadinfo->module_info->setup)() < 0)
     goto cleanup;
-    
-  mod_count++;
+
+  if (!list_append(modules_list, loadinfo))
+    err_exit("%s: list_append: %s", __FUNCTION__, strerror(errno));
+
+  if (itr)
+    list_iterator_destroy(itr);
   return;
 
  cleanup:
-  lt_dlclose(mod_handles[c]);
-  mod_handles[c] = NULL;
-  mod_info[c] = NULL;
+  if (loadinfo) 
+    {
+      if (loadinfo->handle)
+        lt_dlclose(loadinfo->handle);
+    }
+  if (itr)
+    list_iterator_destroy(itr);
   return;
 }
 
@@ -253,6 +285,21 @@ _load_options_modules_in_dir(char *search_dir)
 }
 
 /*  
+ * _delete_whatsup_module_loadinfo
+ *
+ * Destroy loadinfo data
+ */
+static void
+_delete_whatsup_module_loadinfo(void *x)
+{
+  struct whatsup_module_loadinfo *info = (struct whatsup_module_loadinfo *)x;
+
+  (*info->module_info->cleanup)();
+  lt_dlclose(info->handle);
+}
+
+
+/*  
  * _load_options_modules
  *
  * Load whatsup options modules
@@ -260,15 +307,22 @@ _load_options_modules_in_dir(char *search_dir)
 static void
 _load_options_modules(void)
 {
-  const char *func = __FUNCTION__;
-
   if (lt_dlinit() != 0)
-    err_exit("%s: lt_dlinit: %s", func, lt_dlerror());
-
+    err_exit("%s: lt_dlinit: %s", __FUNCTION__, lt_dlerror());
+  
+  if (!(modules_list = list_create((ListDelF)_delete_whatsup_module_loadinfo)))
+    err_exit("%s: list_create: %s", __FUNCTION__, strerror(errno));
+  
 #ifndef NDEBUG
   _load_options_modules_in_dir(WHATSUP_MODULE_DEVEL_DIR);
 #endif /* !NDEBUG */
   _load_options_modules_in_dir(WHATSUP_MODULE_DIR);
+  
+  if (list_count(modules_list) > 0) 
+    {
+      if (!(modules_list_itr = list_iterator_create(modules_list)))
+        err_exit("%s: list_iterator_create: %s", __FUNCTION__, strerror(errno));
+    }
 }
 
 /*  
@@ -279,14 +333,8 @@ _load_options_modules(void)
 static void
 _unload_options_modules(void)
 {
-  int i;
-
-  for (i = 0; i < mod_count; i++)
-    {
-      (*mod_info[i]->cleanup)();
-      lt_dlclose(mod_handles[i]);
-      i++;
-    }
+  list_destroy(modules_list);
+  modules_list = NULL;
   lt_dlexit();
 }
 
@@ -298,9 +346,6 @@ _unload_options_modules(void)
 static void 
 _usage(void) 
 {
-  const char *func = __FUNCTION__;
-  int i;
-
   fprintf(stderr,
 	  "Usage: whatsup [OPTIONS]... [NODES]...\n"
 	  "  -h         --help              Print help and exit\n"
@@ -320,11 +365,49 @@ _usage(void)
           "  -f         --log-file          Specify log file\n"
           "  -e         --log-poll          Specify log polling internval\n");
 
-  for (i = 0; i < mod_count; i++)
+  if (modules_list_itr) 
     {
-      char *module_name = mod_info[i]->options_module_name;
-      if ((*mod_info[i]->output_usage)() < 0)
-        err_exit("%s: %s output_usage error", func, module_name);
+      struct whatsup_module_loadinfo *loadinfoPtr;
+      
+      list_iterator_reset(modules_list_itr);
+      while ((loadinfoPtr = list_next(modules_list_itr))) 
+        {
+          struct whatsup_option *optionsPtr = loadinfoPtr->module_info->options;
+          while (optionsPtr->option) 
+            {
+              if (optionsPtr->option_arg)
+                {
+                  if (optionsPtr->option_long)
+                    fprintf(stderr, 
+                            "  -%c %-7.7s --%-17.17s %s\n",
+                            optionsPtr->option,
+                            optionsPtr->option_arg,
+                            optionsPtr->option_long,
+                            optionsPtr->description);
+                  else
+                    fprintf(stderr, 
+                            "  -%c %-27.27s %s\n",
+                            optionsPtr->option,
+                            optionsPtr->option_arg,
+                            optionsPtr->description);
+                }
+              else 
+                {
+                  if (optionsPtr->option_long)
+                    fprintf(stderr, 
+                            "  -%c         --%-17.17s %s\n",
+                            optionsPtr->option,
+                            optionsPtr->option_long,
+                            optionsPtr->description);
+                  else
+                    fprintf(stderr, 
+                            "  -%c                             %s\n",
+                            optionsPtr->option,
+                            optionsPtr->description);
+                }
+              optionsPtr++;
+            }
+        }
     }
 
   fprintf(stderr, "\n");
@@ -397,9 +480,8 @@ _read_nodes_from_stdin(void)
 static void
 _cmdline_parse(int argc, char **argv) 
 {
-  const char *func = __FUNCTION__;
-  int i, c, index, used_option;
-  char options[WHATSUP_OPTIONS_LEN+1];
+  int c, index, used_option;
+  char soptions[WHATSUP_OPTIONS_LEN+1];
   char *ptr;
 
 #if HAVE_GETOPT_LONG
@@ -429,75 +511,80 @@ _cmdline_parse(int argc, char **argv)
   assert(argv);
 
   /* aegijkrwxyz */
-  memset(options, '\0', WHATSUP_OPTIONS_LEN+1);
-  strncpy(options, "hvo:p:budtqcnsm:lf:e:", WHATSUP_OPTIONS_LEN);
+  memset(soptions, '\0', WHATSUP_OPTIONS_LEN+1);
+  strncpy(soptions, "hvo:p:budtqcnsm:lf:e:", WHATSUP_OPTIONS_LEN);
 
   /* 
    * Load additional option arguments
    */
-  for (i = 0; i < mod_count; i++)
+  if (modules_list_itr) 
     {
-      char *module_name = mod_info[i]->options_module_name;
-      char *c, *options_str;
-
-      if (!(options_str = (*mod_info[i]->options_string)()))
-	err_exit("%s: %s options_string failure", func, module_name);
+      struct whatsup_module_loadinfo *loadinfoPtr;
       
-      c = options_str;
-      while (*c != '\0')
-	{
-#if HAVE_GETOPT_LONG
-          struct option *loption;
-#endif /* HAVE_GETOPT_LONG */
-          /* Don't install this option if it already exists */
-	  if (strchr(options, *c))
-	    continue;
-
-	  if ((*mod_info[i]->register_option)(*c, options) < 0)
-	    err_exit("%s: %s register_option failure", func, module_name);
-
-#if HAVE_GETOPT_LONG
-          loption = &loptions[loptions_len];
-	  if ((*mod_info[i]->add_long_option)(*c, 
-                                              &(loption->name),
-                                              &(loption->has_arg),
-                                              &(loption->flag),
-                                              &(loption->val)) < 0)
-	    err_exit("%s: %s add_long_options failure", func, module_name);
-#endif /* HAVE_GETOPT_LONG */
-
-	  if (strlen(mod_options[i]) < WHATSUP_OPTIONS_LEN)
-	    strncat(mod_options[i], c, 1); /* cheat with strncat */
-
-	  loptions_len++;
-	  loptions[loptions_len].name = NULL;
-	  loptions[loptions_len].has_arg = 0;
-	  loptions[loptions_len].flag = NULL;
-	  loptions[loptions_len].val = 0;
-
-          /* If we're out of space for more options, this is all the
-           * user gets. The -1 is b/c the module may want the option
-           * to take an argument.  In other words, the next
-           * register_option call may copy in two chars (i.e. "a:")
-           * rather than one.
-           */
-	  if (strlen(options) >= (WHATSUP_OPTIONS_LEN - 1))
-	    break;
-
-	  if (loptions_len >= WHATSUP_LONG_OPTIONS_LEN)
-	    break;
+      list_iterator_reset(modules_list_itr);
+      while ((loadinfoPtr = list_next(modules_list_itr))) 
+        {
+          struct whatsup_option *optionsPtr = loadinfoPtr->module_info->options;
           
-          c++;
-	}
+          while (optionsPtr->option) 
+            {
+              char opt = optionsPtr->option;
+              
+              /* run out of space?  Then that's all the user gets 
+               * -1 to account for possible ':'
+               */
+              if (strlen(loadinfoPtr->options_towatch) >= (WHATSUP_OPTIONS_LEN - 1))
+                break;
+              
+              if (!strchr(soptions, optionsPtr->option)) 
+                {
+                  /* run out of space? Then that's all the user gets */
+                  if (strlen(soptions) >= WHATSUP_OPTIONS_LEN)
+                    break;
+                  
+#if HAVE_GETOPT_LONG
+                  if (loptions_len >= WHATSUP_LONG_OPTIONS_LEN)
+                    break;
+#endif /* HAVE_GETOPT_LONG */
+
+                  strncat(loadinfoPtr->options_towatch, &opt, 1);
+                  strncat(soptions, &opt, 1);
+
+                  if (optionsPtr->option_arg) 
+                    {
+                      opt = ':';
+                      strncat(soptions, &opt, 1);
+                    }
+                  
+#if HAVE_GETOPT_LONG
+                  if (optionsPtr->option_long)
+                    {
+                      loptions[loptions_len].name = optionsPtr->option_long;
+                      loptions[loptions_len].has_arg = 1;
+                      loptions[loptions_len].flag = NULL;
+                      loptions[loptions_len].val = optionsPtr->option;
+
+                      loptions_len++;
+                      loptions[loptions_len].name = NULL;
+                      loptions[loptions_len].has_arg = 0;
+                      loptions[loptions_len].flag = NULL;
+                      loptions[loptions_len].val = 0;
+                    }
+#endif /* HAVE_GETOPT_LONG */
+                }
+              
+              optionsPtr++;
+            }
+        }
     }
   
   /* turn off output messages printed by getopt_long */
   opterr = 0;
 
 #if HAVE_GETOPT_LONG
-  while ((c = getopt_long(argc, argv, options, loptions, NULL)) != -1)
+  while ((c = getopt_long(argc, argv, soptions, loptions, NULL)) != -1)
 #else
-    while ((c = getopt(argc, argv, options)) != -1)
+  while ((c = getopt(argc, argv, options)) != -1)
 #endif
       {
         switch(c) 
@@ -556,18 +643,27 @@ _cmdline_parse(int argc, char **argv)
           default:
             used_option = 0;
 
-            for (i = 0; i < mod_count; i++)
+            if (modules_list_itr) 
               {
-                if (strchr(mod_options[i], c))
-                  {
-                    if ((*mod_info[i]->handle_option)(c, optarg) < 0)
-                      err_exit("%s: handle_option failure", func);
-		
-                    used_option = 1;
-                    break;
-                  }
-              }
+                struct whatsup_module_loadinfo *loadinfoPtr;
+                
+                list_iterator_reset(modules_list_itr);
+                while ((loadinfoPtr = list_next(modules_list_itr))) {
+                  char temp;
 
+                  if (strchr(loadinfoPtr->options_towatch, c)) 
+                    {
+                      if ((*loadinfoPtr->module_info->process_option)(c, optarg) < 0)
+                        err_exit("%s: process_option failure", __FUNCTION__);
+                    }
+
+                  temp = c;
+                  strncat(loadinfoPtr->options_processed, &temp, 1);
+                  used_option++;
+                  break;
+                }
+              }
+            
             if (used_option)
               break;
             /* else fall through */
@@ -598,17 +694,36 @@ _cmdline_parse(int argc, char **argv)
   else
     {
       /* get nodenames if desired */
-      for (i = 0; i < mod_count; i++)
+      if (modules_list_itr) 
         {
-          struct whatsup_options_module_info *mod = mod_info[i];
-          char buf[WHATSUP_BUFFERLEN];
-          
-          if ((*mod->get_nodenames)(buf, WHATSUP_BUFFERLEN) < 0)
-            continue;
-          
-          if (!hostlist_push(inputted_nodes, buf))
-            err_exit("%s: hostlist_push", func);
-          break;            
+          struct whatsup_module_loadinfo *loadinfoPtr;
+          int break_flag = 0;
+
+          list_iterator_reset(modules_list_itr);
+
+          while ((loadinfoPtr = list_next(modules_list_itr)) && !break_flag) 
+            {
+              struct whatsup_option *optionsPtr = loadinfoPtr->module_info->options;
+              while (optionsPtr->option) 
+                {
+                  if (optionsPtr->option_type == WHATSUP_OPTION_TYPE_GET_NODENAMES
+                      && strchr(loadinfoPtr->options_processed, optionsPtr->option)) 
+                    {
+                      char buf[WHATSUP_BUFFERLEN];
+                      
+                      if (!(*loadinfoPtr->module_info->get_nodenames)(buf, WHATSUP_BUFFERLEN)) 
+                        {
+                          if (!hostlist_push(inputted_nodes, buf))
+                            err_exit("%s: hostlist_push", __FUNCTION__);
+                          
+                          break_flag++;
+                          break;
+                        }
+                    }
+                  
+                  optionsPtr++;
+                }
+            }
         }
     }
 }
@@ -622,7 +737,6 @@ _cmdline_parse(int argc, char **argv)
 static void 
 _get_input_nodes(char *buf, int buflen, int up_or_down)
 {
-  const char *func = __FUNCTION__;
   hostlist_t hl = NULL;
   hostlist_iterator_t iter = NULL;
   char *node = NULL;
@@ -631,10 +745,10 @@ _get_input_nodes(char *buf, int buflen, int up_or_down)
   assert(up_or_down == WHATSUP_UP_NODES || up_or_down == WHATSUP_DOWN_NODES);
 
   if (!(hl = hostlist_create(NULL)))
-    err_exit("%s: hostlist_create()", func);
+    err_exit("%s: hostlist_create()", __FUNCTION__);
 
   if (!(iter = hostlist_iterator_create(inputted_nodes)))
-    err_exit("%s: hostlist_iterator_create()", func);
+    err_exit("%s: hostlist_iterator_create()", __FUNCTION__);
 
   while ((node = hostlist_next(iter))) 
     {
@@ -653,16 +767,16 @@ _get_input_nodes(char *buf, int buflen, int up_or_down)
             {
               char *msg = nodeupdown_errormsg(handle);
               if (up_or_down == WHATSUP_UP_NODES)
-                err_exit("%s: nodeupdown_is_node_up(): %s", func, msg);
+                err_exit("%s: nodeupdown_is_node_up(): %s", __FUNCTION__, msg);
               else
-                err_exit("%s: nodeupdown_is_node_down(): %s", func, msg);
+                err_exit("%s: nodeupdown_is_node_down(): %s", __FUNCTION__, msg);
             }
         }
 
       if (rv) 
         {
           if (!hostlist_push_host(hl, node))
-            err_exit("%s: hostlist_push_host()", func);
+            err_exit("%s: hostlist_push_host()", __FUNCTION__);
         }
 
       free(node);
@@ -671,7 +785,7 @@ _get_input_nodes(char *buf, int buflen, int up_or_down)
   hostlist_sort(hl);
   
   if (hostlist_ranged_string(hl, buflen, buf) < 0)
-    err_exit("%s: hostlist_ranged_string()", func);
+    err_exit("%s: hostlist_ranged_string()", __FUNCTION__);
   
   hostlist_iterator_destroy(iter);
   hostlist_destroy(hl);
@@ -685,7 +799,6 @@ _get_input_nodes(char *buf, int buflen, int up_or_down)
 static void
 _get_all_nodes(char *buf, int buflen, int up_or_down)
 {
-  const char *func = __FUNCTION__;
   int rv;
 
   assert(buf && buflen > 0);
@@ -700,9 +813,9 @@ _get_all_nodes(char *buf, int buflen, int up_or_down)
     {
       char *msg = nodeupdown_errormsg(handle);
       if (up_or_down == WHATSUP_UP_NODES) 
-        err_exit("%s: nodeupdown_get_up_nodes_string(): %s", func, msg);
+        err_exit("%s: nodeupdown_get_up_nodes_string(): %s", __FUNCTION__, msg);
       else
-        err_exit("%s: nodeupdown_get_down_nodes_string(): %s", func, msg);
+        err_exit("%s: nodeupdown_get_down_nodes_string(): %s", __FUNCTION__, msg);
     }
 }
 
@@ -715,9 +828,7 @@ _get_all_nodes(char *buf, int buflen, int up_or_down)
 static void 
 _get_nodes(char *buf, int buflen, int up_or_down, int *count) 
 {
-  const char *func = __FUNCTION__;
   hostlist_t hl = NULL;
-  int i;
   
   assert(buf && buflen > 0 && count);
   assert(up_or_down == WHATSUP_UP_NODES || up_or_down == WHATSUP_DOWN_NODES);
@@ -726,28 +837,47 @@ _get_nodes(char *buf, int buflen, int up_or_down, int *count)
     _get_input_nodes(buf, buflen, up_or_down);
   else
     _get_all_nodes(buf, buflen, up_or_down);
-
+  
   /* convert the nodenames if desired */
-  for (i = 0; i < mod_count; i++)
+  if (modules_list_itr) 
     {
-      char tbuf[WHATSUP_BUFFERLEN];
-      struct whatsup_options_module_info *mod = mod_info[i];
+      struct whatsup_module_loadinfo *loadinfoPtr;
+      int break_flag = 0;
       
-      if ((*mod->convert_nodenames)(buf, tbuf, WHATSUP_BUFFERLEN) < 0)
-	continue;
+      list_iterator_reset(modules_list_itr);
       
-      if (strlen(tbuf) < buflen)
-        strcpy(buf, tbuf);
-      else
-        err_exit("%s: overflow buffer", func);
-      break;
+      while ((loadinfoPtr = list_next(modules_list_itr)) && !break_flag) 
+        {
+          struct whatsup_option *optionsPtr = loadinfoPtr->module_info->options;
+          while (optionsPtr->option) 
+            {
+              if (optionsPtr->option_type == WHATSUP_OPTION_TYPE_CONVERT_NODENAMES
+                  && strchr(loadinfoPtr->options_processed, optionsPtr->option)) 
+                {
+                  char tbuf[WHATSUP_BUFFERLEN];
+                  
+                  if (!(*loadinfoPtr->module_info->convert_nodenames)(buf, tbuf, WHATSUP_BUFFERLEN)) 
+                    {
+                      if (strlen(tbuf) < buflen)
+                        strcpy(buf, tbuf);
+                      else
+                        err_exit("%s: overflow buffer", __FUNCTION__);
+                      
+                      break_flag++;
+                      break;
+                    }
+                }
+              
+              optionsPtr++;
+            }
+        }
     }
-
+  
   /* can't use nodeupdown_up/down_count, b/c we may be counting the
    * nodes specified by the user on the cmdline
    */
   if (!(hl = hostlist_create(buf)))
-    err_exit("%s: hostlist_create()", func);
+    err_exit("%s: hostlist_create()", __FUNCTION__);
   
   *count = hostlist_count(hl);
 
@@ -762,8 +892,6 @@ _get_nodes(char *buf, int buflen, int up_or_down, int *count)
 static void
 _output_nodes(char *nodebuf) 
 {
-  const char *func = __FUNCTION__;
-
   assert(nodebuf);
 
   if (!output_type)
@@ -778,10 +906,10 @@ _output_nodes(char *nodebuf)
       memset(tbuf, '\0', WHATSUP_BUFFERLEN);
     
       if (!(hl = hostlist_create(nodebuf)))
-        err_exit("%s: hostlist_create() error", func);
+        err_exit("%s: hostlist_create() error", __FUNCTION__);
       
       if (hostlist_deranged_string(hl, WHATSUP_BUFFERLEN, tbuf) < 0)
-        err_exit("%s: hostlist_deranged_string() error", func);
+        err_exit("%s: hostlist_deranged_string() error", __FUNCTION__);
       
       /* convert commas to appropriate break types */
       if (output_type != ',') 
@@ -852,11 +980,10 @@ _create_formats(char *endstr)
 int
 _output_mode(void)
 {
-  const char *func = __FUNCTION__;
   int exit_val;
 
   if (!(handle = nodeupdown_handle_create()))
-    err_exit("%s: nodeupdown_handle_create()", func);
+    err_exit("%s: nodeupdown_handle_create()", __FUNCTION__);
 
   if (nodeupdown_load_data(handle, hostname, port, 0, module) < 0) 
     {
@@ -873,7 +1000,7 @@ _output_mode(void)
       else if (errnum == NODEUPDOWN_ERR_HOSTNAME)
         err_exit("Invalid hostname");
       else
-        err_exit("%s: nodeupdown_load_data(): %s", func, msg);
+        err_exit("%s: nodeupdown_load_data(): %s", __FUNCTION__, msg);
     }
   
   _get_nodes(up_nodes, WHATSUP_BUFFERLEN, WHATSUP_UP_NODES, &up_count);
@@ -943,7 +1070,6 @@ int
 _log_mode(void)
 {
   hostlist_t upnodes, downnodes;
-  const char *func = __FUNCTION__;
   char upnodesbuf[WHATSUP_BUFFERLEN];
   char downnodesbuf[WHATSUP_BUFFERLEN];
   int nodes_init = 0;
@@ -961,7 +1087,7 @@ _log_mode(void)
   while (1)
     {
       if (!(handle = nodeupdown_handle_create()))
-	err_exit("%s: nodeupdown_handle_create()", func);
+	err_exit("%s: nodeupdown_handle_create()", __FUNCTION__);
 
       if (nodeupdown_load_data(handle, hostname, port, 0, module) < 0) 
 	{
@@ -978,17 +1104,17 @@ _log_mode(void)
 	  else if (errnum == NODEUPDOWN_ERR_HOSTNAME)
 	    err_exit("Invalid hostname");
 	  else
-	    err_exit("%s: nodeupdown_load_data(): %s", func, msg);
+	    err_exit("%s: nodeupdown_load_data(): %s", __FUNCTION__, msg);
 	}
 
       memset(upnodesbuf, '\0', WHATSUP_BUFFERLEN);
       memset(downnodesbuf, '\0', WHATSUP_BUFFERLEN);
 
       if (nodeupdown_get_up_nodes_string(handle, upnodesbuf, WHATSUP_BUFFERLEN) < 0)
-        err_exit("%s: nodeupdown_get_up_nodes_string(): %s", func, nodeupdown_errormsg(handle));
+        err_exit("%s: nodeupdown_get_up_nodes_string(): %s", __FUNCTION__, nodeupdown_errormsg(handle));
 
       if (nodeupdown_get_down_nodes_string(handle, downnodesbuf, WHATSUP_BUFFERLEN) < 0)
-        err_exit("%s: nodeupdown_get_down_nodes_string(): %s", func, nodeupdown_errormsg(handle));
+        err_exit("%s: nodeupdown_get_down_nodes_string(): %s", __FUNCTION__, nodeupdown_errormsg(handle));
 
       /* Don't output the first time through */
       if (nodes_init)
@@ -998,16 +1124,16 @@ _log_mode(void)
 	  char *node;
 
 	  if (!(newupnodes = hostlist_create(upnodesbuf)))
-	    err_exit("%s: hostlist_create()", func);
+	    err_exit("%s: hostlist_create()", __FUNCTION__);
 	  
 	  if (!(newdownnodes = hostlist_create(downnodesbuf)))
-	    err_exit("%s: hostlist_create()", func);
+	    err_exit("%s: hostlist_create()", __FUNCTION__);
 
 	  if (!(upitr = hostlist_iterator_create(newupnodes)))
-	    err_exit("%s: hostlist_iterator_create()", func);
+	    err_exit("%s: hostlist_iterator_create()", __FUNCTION__);
 
 	  if (!(downitr = hostlist_iterator_create(newdownnodes)))
-	    err_exit("%s: hostlist_iterator_create()", func);
+	    err_exit("%s: hostlist_iterator_create()", __FUNCTION__);
 
 	  while ((node = hostlist_next(upitr)))
 	    {
@@ -1090,10 +1216,10 @@ _log_mode(void)
       else
 	{
 	  if (!(upnodes = hostlist_create(upnodesbuf)))
-	    err_exit("%s: hostlist_create()", func);
+	    err_exit("%s: hostlist_create()", __FUNCTION__);
 
 	  if (!(downnodes = hostlist_create(downnodesbuf)))
-	    err_exit("%s: hostlist_create()", func);
+	    err_exit("%s: hostlist_create()", __FUNCTION__);
   
 	  nodes_init++;
 	}

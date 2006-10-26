@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup_options.h,v 1.9 2006-10-15 16:17:21 chu11 Exp $
+ *  $Id: whatsup_options.h,v 1.10 2006-10-26 22:06:21 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -27,9 +27,21 @@
 #ifndef _WHATSUP_OPTIONS_H
 #define _WHATSUP_OPTIONS_H
  
-#if HAVE_CONFIG_H
-#include "config.h"
-#endif /* HAVE_CONFIG_H */
+#define WHATSUP_OPTION_TYPE_GET_NODENAMES     0
+#define WHATSUP_OPTION_TYPE_CONVERT_NODENAMES 1
+
+/*
+ * struct whatsup_option
+ *
+ * Describes a whatsup module option
+ */
+struct whatsup_option {
+  char    option;               /* option character */
+  char   *option_arg;           /* option argument description if option takes one */
+  char   *option_long;          /* optional long option */
+  char   *description;          /* description of option */
+  int     option_type;          /* which function to call */
+};
 
 /*
  * Whatsup_options_setup
@@ -49,61 +61,24 @@ typedef int (*Whatsup_options_setup)(void);
  */
 typedef int (*Whatsup_options_cleanup)(void);
 
-/*
- * Whatsup_options_output_usage
- *
- * Output additional usage lines for options specified by this module
- *
- * Return 0 on success, -1 on error.
- */
-typedef int (*Whatsup_options_output_usage)(void);
-
-/*
- * Whatsup_options_options_string
- *
- * Return a string of the characters this module would like to
- * register.  The string only contains characters, none of the special
- * characters such as ':' that can be passed to getopt().
- *
- * Returns string on success, NULL on error.
- */
-typedef char *(*Whatsup_options_options_string)(void);
-
-/*
- * Whatsup_options_register_option
- *
- * Registers an option in the module and updates the options array
- * appropriately.  Module is responsible for copying both the
- * character and any additional characters (i.e. ':' for an argument)
- * into the options arrays.
- *
- * Returns 0 on success, -1 on error
- */
-typedef int (*Whatsup_options_register_option)(char c, char *options);
-
-/*
- * Whatsup_options_add_long_option
- *
- * If long options are supported, add the long options values
- * appropriately.
- *
- * Returns 0 on success, -1 on error
- */
-typedef int (*Whatsup_options_add_long_option)(char c,
-                                               const char **name,
-                                               int *has_arg,
-                                               int **flag,
-                                               int *val);
-
 /*  
- * Whatsup_options_handle_option
+ * Whatsup_options_process_option
  *
  * Handle the option 'c' and possibly the option argument
  * appropriately for a particular module.
  *
  * Returns 0 on success, -1 on error
  */
-typedef int (*Whatsup_options_handle_option)(char c, char *optarg);
+typedef int (*Whatsup_options_process_option)(char c, char *optarg);
+
+/* 
+ * Whatsup_options_get_nodenames
+ *
+ * Retrieve nodenames specified by the user
+ *
+ * Returns 0 on success, -1 on error.
+ */
+typedef int (*Whatsup_options_get_nodenames)(char *buf, int buflen);
 
 /* 
  * Whatsup_options_convert_nodenames
@@ -116,15 +91,6 @@ typedef int (*Whatsup_options_handle_option)(char c, char *optarg);
 typedef int (*Whatsup_options_convert_nodenames)(char *nodes, char *buf, int buflen);
 
 /* 
- * Whatsup_options_get_nodenames
- *
- * Retrieve nodenames specified by the user
- *
- * Returns 0 on success, -1 on error.
- */
-typedef int (*Whatsup_options_get_nodenames)(char *buf, int buflen);
-
-/* 
  * struct whatsup_options_module_info
  * 
  * contains options module information and operations.  Required to be
@@ -132,16 +98,13 @@ typedef int (*Whatsup_options_get_nodenames)(char *buf, int buflen);
  */
 struct whatsup_options_module_info
 {
-  char *options_module_name;
+  char *module_name;
+  struct whatsup_option *options;
   Whatsup_options_setup setup;
   Whatsup_options_cleanup cleanup;
-  Whatsup_options_output_usage output_usage;
-  Whatsup_options_options_string options_string;
-  Whatsup_options_register_option register_option;
-  Whatsup_options_add_long_option add_long_option;
-  Whatsup_options_handle_option handle_option;
-  Whatsup_options_convert_nodenames convert_nodenames;
+  Whatsup_options_process_option process_option;
   Whatsup_options_get_nodenames get_nodenames;
+  Whatsup_options_convert_nodenames convert_nodenames;
 };
 
 #endif /* _WHATSUP_OPTIONS_H */
