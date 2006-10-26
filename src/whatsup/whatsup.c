@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.122 2006-10-26 22:06:20 chu11 Exp $
+ *  $Id: whatsup.c,v 1.123 2006-10-26 22:21:56 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -530,16 +530,16 @@ _cmdline_parse(int argc, char **argv)
             {
               char opt = optionsPtr->option;
               
-              /* run out of space?  Then that's all the user gets 
-               * -1 to account for possible ':'
-               */
-              if (strlen(loadinfoPtr->options_towatch) >= (WHATSUP_OPTIONS_LEN - 1))
+              /* run out of space?  Then that's all the user gets */
+              if (strlen(loadinfoPtr->options_towatch) >= WHATSUP_OPTIONS_LEN)
                 break;
               
               if (!strchr(soptions, optionsPtr->option)) 
                 {
-                  /* run out of space? Then that's all the user gets */
-                  if (strlen(soptions) >= WHATSUP_OPTIONS_LEN)
+                  /* run out of space? Then that's all the user gets 
+                   * -1 to account for possible ':'
+                   */
+                  if (strlen(soptions) >= (WHATSUP_OPTIONS_LEN - 1))
                     break;
                   
 #if HAVE_GETOPT_LONG
