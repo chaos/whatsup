@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.124 2006-10-26 22:23:25 chu11 Exp $
+ *  $Id: whatsup.c,v 1.125 2006-10-26 22:33:57 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -651,20 +651,21 @@ _cmdline_parse(int argc, char **argv)
                 struct whatsup_module_loadinfo *loadinfoPtr;
                 
                 list_iterator_reset(modules_list_itr);
-                while ((loadinfoPtr = list_next(modules_list_itr))) {
-                  char temp;
-
-                  if (strchr(loadinfoPtr->options_towatch, c)) 
-                    {
-                      if ((*loadinfoPtr->module_info->process_option)(c, optarg) < 0)
-                        err_exit("%s: process_option failure", __FUNCTION__);
-                    }
-
-                  temp = c;
-                  strncat(loadinfoPtr->options_processed, &temp, 1);
-                  used_option++;
-                  break;
-                }
+                while ((loadinfoPtr = list_next(modules_list_itr))) 
+                  {
+                    char temp;
+                    
+                    if (strchr(loadinfoPtr->options_towatch, c)) 
+                      {
+                        if ((*loadinfoPtr->module_info->process_option)(c, optarg) < 0)
+                          err_exit("%s: process_option failure", __FUNCTION__);
+                      }
+                    
+                    temp = c;
+                    strncat(loadinfoPtr->options_processed, &temp, 1);
+                    used_option++;
+                    break;
+                  }
               }
             
             if (used_option)
@@ -685,10 +686,11 @@ _cmdline_parse(int argc, char **argv)
         _read_nodes_from_stdin();
       else 
         {
-          while (index < argc) {
-            _push_inputted_nodes(argv[index]);
-            index++;
-          }
+          while (index < argc) 
+            {
+              _push_inputted_nodes(argv[index]);
+              index++;
+            }
         } 
       
       /* remove any duplicate nodes listed */
