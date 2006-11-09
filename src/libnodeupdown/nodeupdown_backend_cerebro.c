@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_cerebro.c,v 1.18 2006-08-30 17:10:00 chu11 Exp $
+ *  $Id: nodeupdown_backend_cerebro.c,v 1.18.2.1 2006-11-09 05:40:55 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -260,7 +260,11 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
           goto cleanup;
         }
 
+#ifdef CEREBRO_METRIC_VALUE_TYPE_U_INT32
       if (mtype != CEREBRO_METRIC_VALUE_TYPE_U_INT32)
+#else  /* !CEREBRO_METRIC_VALUE_TYPE_U_INT32 */
+      if (mtype != CEREBRO_DATA_VALUE_TYPE_U_INT32)
+#endif /* !CEREBRO_METRIC_VALUE_TYPE_U_INT32 */
         {
 #ifndef NDEBUG
 	  fprintf(stderr, "cerebro_nodelist_iterator_metric_value: invalid mtype: %u\n", mtype); 

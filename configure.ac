@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.65 2006-08-30 17:10:00 chu11 Exp $
+## $Id: configure.ac,v 1.65.2.1 2006-11-09 05:40:54 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -90,6 +90,7 @@ AC_PERL_DESTDIR
 #
 AC_CEREBRO
 AM_CONDITIONAL(WITH_CEREBRO, [test "$ac_with_cerebro" = "yes"])
+AM_CONDITIONAL(WITH_CEREBRO_EVENT, [test "$ac_with_cerebro_event" = "yes"])
 
 #
 # Check for ganglia build

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup_options.h,v 1.10 2006-10-26 22:06:21 chu11 Exp $
+ *  $Id: whatsup_options.h,v 1.10.2.1 2006-11-09 05:40:55 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -29,6 +29,7 @@
  
 #define WHATSUP_OPTION_TYPE_GET_NODENAMES     0
 #define WHATSUP_OPTION_TYPE_CONVERT_NODENAMES 1
+#define WHATSUP_OPTION_TYPE_MONITOR           2
 
 /*
  * struct whatsup_option
@@ -91,6 +92,15 @@ typedef int (*Whatsup_options_get_nodenames)(char *buf, int buflen);
 typedef int (*Whatsup_options_convert_nodenames)(char *nodes, char *buf, int buflen);
 
 /* 
+ * Whatsup_options_monitor
+ *
+ * Monitor up/down node status.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+typedef int (*Whatsup_options_monitor)(void);
+
+/* 
  * struct whatsup_options_module_info
  * 
  * contains options module information and operations.  Required to be
@@ -105,6 +115,7 @@ struct whatsup_options_module_info
   Whatsup_options_process_option process_option;
   Whatsup_options_get_nodenames get_nodenames;
   Whatsup_options_convert_nodenames convert_nodenames;
+  Whatsup_options_monitor monitor;
 };
 
 #endif /* _WHATSUP_OPTIONS_H */

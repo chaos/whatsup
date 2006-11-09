@@ -1,3 +1,18 @@
+2006-XX-XX  Albert Chu  <chu11@llnl.gov>
+
+	* config/ac_cerebro.m4, configure.ac: Add checks for cerebro event
+	monitoring.
+
+	* src/whatsup/whatsup.c: Re-adjust code so options modules need to
+	implement all functions.
+
+	* src/whatsup/whatsup_options.h, src/whatsup/whatsup.c (main):
+	Support monitor option.
+
+	* src/whatsup/whatsup_options_cerebro_monitor.c: New file.
+
+	* src/whatsup/Makefile.am: Support new files.
+	
 2006-10-26  Albert Chu  <chu11@llnl.gov>
 
 	* src/whatsup/whatsup_options.h, src/whatsup/whatsup.c: Various
