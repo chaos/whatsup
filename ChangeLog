@@ -12,6 +12,8 @@
 	* src/whatsup/whatsup_options_cerebro_monitor.c: New file.
 
 	* src/whatsup/Makefile.am: Support new files.
+
+	* man/whatsup.1.in: Update appropriately.
 	
 2006-10-26  Albert Chu  <chu11@llnl.gov>
 
