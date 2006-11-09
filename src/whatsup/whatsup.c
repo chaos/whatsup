@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.125.2.1 2006-11-09 05:40:55 chu11 Exp $
+ *  $Id: whatsup.c,v 1.125.2.2 2006-11-09 06:58:55 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -203,11 +203,13 @@ _load_options_module(char *module_path)
           && optionsPtr->option_type != WHATSUP_OPTION_TYPE_GET_NODENAMES
           && optionsPtr->option_type != WHATSUP_OPTION_TYPE_MONITOR)
         goto cleanup;
+
+      if (optionsPtr->option_type == WHATSUP_OPTION_TYPE_MONITOR)
+        monitor_option_exists++;
+      
       optionsPtr++;
     }
 
-  if (optionsPtr->option_type == WHATSUP_OPTION_TYPE_MONITOR)
-    monitor_option_exists++;
 
   if (list_count(modules_list) > 0) 
     {
@@ -1280,7 +1282,7 @@ main(int argc, char *argv[])
                    * the code could be buggy, so we will still
                    * break out if need be.
                    */
-                  if (((*loadinfoPtr->module_info->monitor)()) < 0)
+                  if (((*loadinfoPtr->module_info->monitor)(hostname, port)) < 0)
                     err_exit("monitor: %s", strerror(errno));
 
                   break_flag++;
