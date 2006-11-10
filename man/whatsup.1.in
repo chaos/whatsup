@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: whatsup.1.in,v 1.25 2006-10-26 22:06:20 chu11 Exp $
+\."$Id: whatsup.1.in,v 1.26 2006-11-10 00:09:15 chu11 Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -118,6 +118,11 @@ stdout.
 Specify the length in seconds the log mode of
 .B whatsup
 should regularly poll.  Default is 30 seconds.
+.if @MANPAGE_CEREBRO_EVENT@ \{
+.TP
+.B \-z, \-\-monitor
+Monitor up-down state changes through event monitoring.
+\}
 .LP
 .SH HOST RANGES
 As noted in sections above,

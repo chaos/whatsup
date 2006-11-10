@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.125 2006-10-26 22:33:57 chu11 Exp $
+ *  $Id: whatsup.c,v 1.126 2006-11-10 00:09:16 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -117,6 +117,7 @@ static char *module = NULL;
 static int log_mode = 0;
 static char *log_file = NULL;
 static int log_poll = WHATSUP_LOG_POLL;
+static int monitor_option_exists = 0;
 
 struct whatsup_module_loadinfo 
 {
@@ -192,19 +193,23 @@ _load_options_module(char *module_path)
       || !loadinfo->module_info->options
       || !loadinfo->module_info->setup
       || !loadinfo->module_info->cleanup
-      || !loadinfo->module_info->process_option
-      || !loadinfo->module_info->convert_nodenames
-      || !loadinfo->module_info->get_nodenames)
+      || !loadinfo->module_info->process_option)
     goto cleanup;
   
   optionsPtr = loadinfo->module_info->options;
   while (optionsPtr->option) 
     {
       if (optionsPtr->option_type != WHATSUP_OPTION_TYPE_CONVERT_NODENAMES
-          && optionsPtr->option_type != WHATSUP_OPTION_TYPE_GET_NODENAMES)
+          && optionsPtr->option_type != WHATSUP_OPTION_TYPE_GET_NODENAMES
+          && optionsPtr->option_type != WHATSUP_OPTION_TYPE_MONITOR)
         goto cleanup;
+
+      if (optionsPtr->option_type == WHATSUP_OPTION_TYPE_MONITOR)
+        monitor_option_exists++;
+      
       optionsPtr++;
     }
+
 
   if (list_count(modules_list) > 0) 
     {
@@ -712,7 +717,8 @@ _cmdline_parse(int argc, char **argv)
               while (optionsPtr->option) 
                 {
                   if (optionsPtr->option_type == WHATSUP_OPTION_TYPE_GET_NODENAMES
-                      && strchr(loadinfoPtr->options_processed, optionsPtr->option)) 
+                      && strchr(loadinfoPtr->options_processed, optionsPtr->option)
+                      && loadinfoPtr->module_info->get_nodenames)
                     {
                       char buf[WHATSUP_BUFFERLEN];
                       
@@ -857,7 +863,8 @@ _get_nodes(char *buf, int buflen, int up_or_down, int *count)
           while (optionsPtr->option) 
             {
               if (optionsPtr->option_type == WHATSUP_OPTION_TYPE_CONVERT_NODENAMES
-                  && strchr(loadinfoPtr->options_processed, optionsPtr->option)) 
+                  && strchr(loadinfoPtr->options_processed, optionsPtr->option)
+                  && loadinfoPtr->module_info->convert_nodenames)
                 {
                   char tbuf[WHATSUP_BUFFERLEN];
                   
@@ -1255,6 +1262,37 @@ main(int argc, char *argv[])
 
   _cmdline_parse(argc, argv);
 
+  /* See if we're going to enter monitor mode */
+  if (monitor_option_exists) 
+    {
+      struct whatsup_module_loadinfo *loadinfoPtr;
+      int break_flag = 0;
+
+      list_iterator_reset(modules_list_itr);
+      while ((loadinfoPtr = list_next(modules_list_itr)) && !break_flag)
+        {
+          struct whatsup_option *optionsPtr = loadinfoPtr->module_info->options;
+          while (optionsPtr->option) 
+            {
+              if (optionsPtr->option_type == WHATSUP_OPTION_TYPE_MONITOR
+                  && strchr(loadinfoPtr->options_processed, optionsPtr->option)
+                  && loadinfoPtr->module_info->monitor)
+                {
+                  /* We should never return from this call, but
+                   * the code could be buggy, so we will still
+                   * break out if need be.
+                   */
+                  if (((*loadinfoPtr->module_info->monitor)(hostname, port)) < 0)
+                    err_exit("monitor: %s", strerror(errno));
+
+                  break_flag++;
+                  break;
+                }
+              optionsPtr++;
+            }
+        }
+    }
+  
   if (log_mode)
     exit_val = _log_mode();
   else

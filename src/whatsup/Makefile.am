@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.25 2006-01-18 21:15:43 chu11 Exp $
+## $Id: Makefile.am,v 1.26 2006-11-10 00:09:16 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -29,8 +29,18 @@ whatsup_LDADD    = ../libcommon/libcommon.la \
 
 MODULE_FLAGS = -module -avoid-version
 
+if WITH_CEREBRO_EVENT
+CEREBRO_MONITOR_OPTIONS_MODULE = whatsup_options_cerebro_monitor.la
+endif
+
+
 whatsupmodulelibdir = $(WHATSUP_MODULE_DIR)
-whatsupmodulelib_LTLIBRARIES = 
+whatsupmodulelib_LTLIBRARIES = $(CEREBRO_MONITOR_OPTIONS_MODULE)
+
+whatsup_options_cerebro_monitor_la_SOURCES = whatsup_options_cerebro_monitor.c
+whatsup_options_cerebro_monitor_la_LDFLAGS = $(MODULE_FLAGS) $(CEREBRO_LIBS)
+whatsup_options_cerebro_monitor_la_CFLAGS  = -I$(srcdir)/../libcommon
+whatsup_options_cerebro_monitor_la_LIBADD  = ../libcommon/libcommon.la
 
 ../libcommon/libcommon.la: force-dependency-check
 	@cd `dirname $@` && make `basename $@`
