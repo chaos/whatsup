@@ -190,7 +190,7 @@ rm -rf "$RPM_BUILD_ROOT"
 %if %{?_with_cerebro:1}%{!?_with_cerebro:0}
 %files options-cerebro-monitor
 %defattr(-,root,root)
-%{_libdir}/whatsup/*cerebro.*
+%{_libdir}/whatsup/*cerebro_monitor.*
 %endif
 
 %if %{?_with_pingd:1}%{!?_with_pingd:0}
