@@ -1,3 +1,7 @@
+2006-12-19  Albert Chu  <chu11@llnl.gov>
+
+	* whatsup.spec.in: Support cerebro monitor module rpm.
+	
 2006-11-09  Albert Chu  <chu11@llnl.gov>
 
 	* Changes from branch new_cerebro_port_branch (tag

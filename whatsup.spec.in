@@ -61,6 +61,14 @@ Requires: whatsup
 %description clusterlist-hostsfile
 Hostsfile clusterlist module
 
+%package options-cerebro-monitor
+Summary: whatsup cerebro-monitor options module
+Group: System Environment/Base
+Requires: whatsup
+Requires: cerebro-monitor
+%description options-cerebro-monitor
+Cerebro Monitor options module
+
 %package pingd
 Summary: whasup pingd daemon
 Group: System Environment/Base
@@ -177,6 +185,12 @@ rm -rf "$RPM_BUILD_ROOT"
 %files clusterlist-hostsfile
 %defattr(-,root,root)
 %{_libdir}/nodeupdown/*hostsfile.*
+%endif
+
+%if %{?_with_cerebro:1}%{!?_with_cerebro:0}
+%files options-cerebro-monitor
+%defattr(-,root,root)
+%{_libdir}/whatsup/*cerebro.*
 %endif
 
 %if %{?_with_pingd:1}%{!?_with_pingd:0}
