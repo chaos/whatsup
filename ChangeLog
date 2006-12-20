@@ -6,6 +6,9 @@
 
 	* NEWS: updated.
 
+	* man/whatsup.1.in, src/whatsup/whatsup_options_cerebro_monitor.c:
+	Change -z option to -M option.
+
 	* tagged whatsup-1-6-1
 	
 2006-11-09  Albert Chu  <chu11@llnl.gov>
