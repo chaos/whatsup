@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup_options_cerebro_monitor.c,v 1.4 2006-12-20 00:57:15 chu11 Exp $
+ *  $Id: whatsup_options_cerebro_monitor.c,v 1.5 2006-12-20 22:31:05 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -208,7 +208,7 @@ cerebro_monitor_options_monitor(const char *hostname, int port)
                   exit(1);
                 }
               
-              strftime(tbuf, CEREBRO_MONITOR_BUFLEN, "%F %I:%M:%S%P", tm);
+              strftime(tbuf, CEREBRO_MONITOR_BUFLEN, "%F %H:%M:%S", tm);
               
               if (*stateptr)
                 statestr = CEREBRO_STATE_UP;
@@ -216,7 +216,7 @@ cerebro_monitor_options_monitor(const char *hostname, int port)
                 statestr = CEREBRO_STATE_DOWN;
 
               fprintf(stdout, 
-                      "%s(%s): %s\n", 
+                      "%s (%s): %s\n", 
                       nodename,
                       tbuf, 
                       statestr);
