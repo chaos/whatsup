@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup_options_cerebro_monitor.c,v 1.3 2006-12-20 00:12:08 chu11 Exp $
+ *  $Id: whatsup_options_cerebro_monitor.c,v 1.4 2006-12-20 00:57:15 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -66,7 +66,7 @@ struct whatsup_option cerebro_monitor_options[] = {
   }
 };
 
-static int cerebro_monitor_option_z_registered = 0;
+static int cerebro_monitor_option_M_registered = 0;
 
 #define CEREBRO_EVENT_UPDOWN    "updown"
 #define CEREBRO_MONITOR_BUFLEN  4096
@@ -103,10 +103,10 @@ cerebro_monitor_options_cleanup(void)
 int
 cerebro_monitor_options_process_option(char c, char *optarg)
 {
-  if (c != 'z')
+  if (c != 'M')
     return -1;
 
-  cerebro_monitor_option_z_registered++;
+  cerebro_monitor_option_M_registered++;
   return 0;
 }
 
