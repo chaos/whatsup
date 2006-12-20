@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.126 2006-11-10 00:09:16 chu11 Exp $
+ *  $Id: whatsup.c,v 1.127 2006-12-20 18:15:27 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -664,12 +664,12 @@ _cmdline_parse(int argc, char **argv)
                       {
                         if ((*loadinfoPtr->module_info->process_option)(c, optarg) < 0)
                           err_exit("%s: process_option failure", __FUNCTION__);
+
+                        temp = c;
+                        strncat(loadinfoPtr->options_processed, &temp, 1);
+                        used_option++;
+                        break;
                       }
-                    
-                    temp = c;
-                    strncat(loadinfoPtr->options_processed, &temp, 1);
-                    used_option++;
-                    break;
                   }
               }
             
