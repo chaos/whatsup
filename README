@@ -60,6 +60,17 @@ all nodes in the cluster.
 Hostsfile - Uses a file that lists the hostname of every node in the
 cluster on a separate line.
 
+Whatsup Options:
+----------------
+
+A few additional options may be available for the tool Whatsup dependent
+on your environment and the modules installed.  The following are the
+currently supported options modules to Whatsup:
+
+cerebro-monitor: Supports the -M or --monitor option.  Will monitor
+and output all changes in state to cluster nodes through the cerebro
+'updown' event.
+
 Install:
 --------
 
