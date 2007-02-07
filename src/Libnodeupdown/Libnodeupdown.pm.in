@@ -1,5 +1,5 @@
 #############################################################################
-#  $Id: Libnodeupdown.pm.in,v 1.14 2007-02-07 17:01:22 chu11 Exp $
+#  $Id: Libnodeupdown.pm.in,v 1.15 2007-02-07 18:45:14 chu11 Exp $
 #############################################################################
 #  Copyright (C) 2003 The Regents of the University of California.
 #  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -42,6 +42,7 @@ bootstrap Libnodeupdown $VERSION;
 
 # Fix so nodeupdown modules can find symbols 
 # in libnodeupdown.so
+# See DynaLoader perldoc
 sub dl_load_flags { 0x01 };
 
 1;
