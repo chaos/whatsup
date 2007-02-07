@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.127 2006-12-20 18:15:27 chu11 Exp $
+ *  $Id: whatsup.c,v 1.128 2007-02-07 00:30:41 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -366,7 +366,7 @@ _usage(void)
 	  "  -n         --newline           Output in newline separated list\n"
 	  "  -s         --space             Output in space separated list\n"
           "  -m         --module            Specify backend module\n"
-          "  -l         --log               Output up/dog state log\n"
+          "  -l         --log               Output up/down state log\n"
           "  -f         --log-file          Specify log file\n"
           "  -e         --log-poll          Specify log polling internval\n");
 
