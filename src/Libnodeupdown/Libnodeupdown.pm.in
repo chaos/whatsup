@@ -1,5 +1,5 @@
 #############################################################################
-#  $Id: Libnodeupdown.pm.in,v 1.13 2005-05-17 17:04:23 achu Exp $
+#  $Id: Libnodeupdown.pm.in,v 1.14 2007-02-07 17:01:22 chu11 Exp $
 #############################################################################
 #  Copyright (C) 2003 The Regents of the University of California.
 #  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -39,6 +39,10 @@ our @ISA = qw(Exporter DynaLoader);
 our $VERSION = '@PERLNODEUPDOWN_VERSION@';
 
 bootstrap Libnodeupdown $VERSION;
+
+# Fix so nodeupdown modules can find symbols 
+# in libnodeupdown.so
+sub dl_load_flags { 0x01 };
 
 1;
 
