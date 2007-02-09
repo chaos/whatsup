@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_cerebro.c,v 1.19 2006-11-10 00:09:15 chu11 Exp $
+ *  $Id: nodeupdown_backend_cerebro.c,v 1.20 2007-02-09 05:11:33 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -92,6 +92,17 @@ cerebro_backend_default_timeout_len(nodeupdown_t handle)
 {
   /* Let libcerebro or the cerebro metric server pick the default */
   return 0;
+}
+
+/* 
+ * cerebro_backend_preferred_clusterlist_module
+ *
+ * cerebro backend preferred_clusterlist_module function
+ */
+static char *
+cerebro_backend_preferred_clusterlist_module(nodeupdown_t handle)
+{
+  return NULL;
 }
 
 /*
@@ -331,6 +342,7 @@ struct nodeupdown_backend_module_info backend_module_info =
     &cerebro_backend_default_hostname,
     &cerebro_backend_default_port,
     &cerebro_backend_default_timeout_len,
+    &cerebro_backend_preferred_clusterlist_module,
     &cerebro_backend_setup,
     &cerebro_backend_cleanup,
     &cerebro_backend_get_updown_data

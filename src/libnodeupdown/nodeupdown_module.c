@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.c,v 1.24 2006-08-30 17:10:00 chu11 Exp $
+ *  $Id: nodeupdown_module.c,v 1.25 2007-02-09 05:11:33 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -81,6 +81,7 @@ static char *config_modules[] = {
 #define CONFIG_MODULE_INFO_SYM       "config_module_info"
 
 #define BACKEND_MODULE_BUFLEN        1024
+#define CLUSTERLIST_MODULE_BUFLEN    1024
 
 static lt_dlhandle backend_module_dl_handle = NULL;
 static lt_dlhandle clusterlist_module_dl_handle = NULL;
@@ -96,6 +97,7 @@ extern struct nodeupdown_clusterlist_module_info default_clusterlist_module_info
 
 extern struct nodeupdown_config_module_info default_config_module_info;
 
+/* externed from outside this file */
 int clusterlist_module_found = 0;
 
 /* 
@@ -350,6 +352,7 @@ _backend_module_callback(nodeupdown_t handle, void *dl_handle, void *module_info
       || !backend_module_info->default_hostname
       || !backend_module_info->default_port
       || !backend_module_info->default_timeout_len
+      || !backend_module_info->preferred_clusterlist_module
       || !backend_module_info->setup
       || !backend_module_info->cleanup
       || !backend_module_info->get_updown_data)
@@ -467,6 +470,17 @@ backend_module_default_timeout_len(nodeupdown_t handle)
   return (*backend_module_info->default_timeout_len)(handle);
 }
 
+char *
+backend_module_preferred_clusterlist_module(nodeupdown_t handle)
+{
+  if (!backend_module_info)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
+  return (*backend_module_info->preferred_clusterlist_module)(handle);
+}
+
 int 
 backend_module_setup(nodeupdown_t handle)
 {
@@ -543,10 +557,47 @@ _clusterlist_module_callback(nodeupdown_t handle, void *dl_handle, void *module_
 }
 
 int
-clusterlist_module_load(nodeupdown_t handle)
+clusterlist_module_load(nodeupdown_t handle, char *module)
 {
   int rv;
   
+  if (module)
+    {
+      char *temp_clusterlist_modules[2];
+      char modulebuf[CLUSTERLIST_MODULE_BUFLEN];
+      int len;
+      
+      len = snprintf(modulebuf, 
+                     CLUSTERLIST_MODULE_BUFLEN, 
+                     "nodeupdown_clusterlist_%s.so",
+                     module);
+
+      if (len < 0 || len >= CLUSTERLIST_MODULE_BUFLEN)
+        {
+          handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
+          return -1;
+        }
+
+      temp_clusterlist_modules[0] = modulebuf;
+      temp_clusterlist_modules[1] = NULL;
+
+      if ((rv = _find_module(handle,
+                             temp_clusterlist_modules,
+                             CLUSTERLIST_MODULE_SIGNATURE,
+                             _clusterlist_module_callback,
+                             CLUSTERLIST_MODULE_INFO_SYM)) < 0)
+        return -1;
+
+      if (!rv)
+        {
+          handle->errnum = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
+          return -1;
+        }
+
+      clusterlist_module_found++;
+      return 0;
+    }
+
   if ((rv = _find_module(handle,
                          clusterlist_modules,
                          CLUSTERLIST_MODULE_SIGNATURE,
@@ -559,7 +610,7 @@ clusterlist_module_load(nodeupdown_t handle)
       clusterlist_module_found++;
       return 0;
     }
-
+  
   clusterlist_module_info = &default_clusterlist_module_info;
   return 0;
 }

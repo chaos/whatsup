@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_pingd.c,v 1.3 2006-09-01 17:00:50 chu11 Exp $
+ *  $Id: nodeupdown_backend_pingd.c,v 1.4 2007-02-09 05:11:33 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -107,6 +107,17 @@ pingd_backend_default_timeout_len(nodeupdown_t handle)
   return PINGD_BACKEND_DEFAULT_TIMEOUT_LEN;
 }
 
+/* 
+ * pingd_backend_preferred_clusterlist_module
+ *
+ * pingd backend preferred_clusterlist_module function
+ */
+static char *
+pingd_backend_preferred_clusterlist_module(nodeupdown_t handle)
+{
+  return NULL;
+}
+
 /*
  * pingd_backend_setup
  *
@@ -209,6 +220,7 @@ struct nodeupdown_backend_module_info backend_module_info =
     &pingd_backend_default_hostname,
     &pingd_backend_default_port,
     &pingd_backend_default_timeout_len,
+    &pingd_backend_preferred_clusterlist_module,
     &pingd_backend_setup,
     &pingd_backend_cleanup,
     &pingd_backend_get_updown_data

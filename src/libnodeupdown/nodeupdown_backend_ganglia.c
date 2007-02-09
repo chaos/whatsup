@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_ganglia.c,v 1.27 2006-09-01 17:00:50 chu11 Exp $
+ *  $Id: nodeupdown_backend_ganglia.c,v 1.28 2007-02-09 05:11:33 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -111,6 +111,17 @@ static int
 ganglia_backend_default_timeout_len(nodeupdown_t handle)
 {
   return GANGLIA_BACKEND_DEFAULT_TIMEOUT_LEN;
+}
+
+/* 
+ * ganglia_backend_preferred_clusterlist_module
+ *
+ * ganglia backend preferred_clusterlist_module function
+ */
+static char *
+ganglia_backend_preferred_clusterlist_module(nodeupdown_t handle)
+{
+  return NULL;
 }
 
 /*
@@ -280,6 +291,7 @@ struct nodeupdown_backend_module_info backend_module_info =
     &ganglia_backend_default_hostname,
     &ganglia_backend_default_port,
     &ganglia_backend_default_timeout_len,
+    &ganglia_backend_preferred_clusterlist_module,
     &ganglia_backend_setup,
     &ganglia_backend_cleanup,
     &ganglia_backend_get_updown_data

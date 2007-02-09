@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.h,v 1.13 2006-08-29 17:30:14 chu11 Exp $
+ *  $Id: nodeupdown_module.h,v 1.14 2007-02-09 05:11:33 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -77,6 +77,13 @@ int backend_module_default_port(nodeupdown_t handle);
 int backend_module_default_timeout_len(nodeupdown_t handle);
 
 /* 
+ * backend_module_preferred_clusterlist_module
+ *
+ * call backend module preferred_clusterlist_module function
+ */
+char *backend_module_preferred_clusterlist_module(nodeupdown_t handle);
+
+/* 
  * backend_module_setup
  *
  * call backend module setup function
@@ -109,7 +116,7 @@ int backend_module_get_updown_data(nodeupdown_t handle,
  *
  * Returns 0 on success, -1 on error
  */
-int clusterlist_module_load(nodeupdown_t handle);
+int clusterlist_module_load(nodeupdown_t handle, char *module);
  
 /*
  * clusterlist_module_unload

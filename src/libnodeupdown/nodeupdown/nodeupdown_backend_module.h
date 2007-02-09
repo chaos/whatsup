@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_module.h,v 1.7 2005-08-05 15:52:17 achu Exp $
+ *  $Id: nodeupdown_backend_module.h,v 1.8 2007-02-09 05:11:33 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -50,6 +50,13 @@ typedef int (*Nodeupdown_backend_default_port)(nodeupdown_t);
  */
 typedef int (*Nodeupdown_backend_default_timeout_len)(nodeupdown_t);
 
+/* 
+ * Nodeupdown_backend_preferred_clusterlist_module
+ *
+ * Return preferred clusterlist module name or NULL if none
+ */
+typedef char *(*Nodeupdown_backend_preferred_clusterlist_module)(nodeupdown_t);
+
 /*
  * Nodeupdown_backend_setup
  *
@@ -93,6 +100,7 @@ struct nodeupdown_backend_module_info
   Nodeupdown_backend_default_hostname default_hostname;
   Nodeupdown_backend_default_port default_port;
   Nodeupdown_backend_default_timeout_len default_timeout_len;
+  Nodeupdown_backend_preferred_clusterlist_module preferred_clusterlist_module;
   Nodeupdown_backend_setup setup;
   Nodeupdown_backend_cleanup cleanup;
   Nodeupdown_backend_get_updown_data get_updown_data;

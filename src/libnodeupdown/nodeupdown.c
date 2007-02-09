@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.153 2006-08-29 17:30:14 chu11 Exp $
+ *  $Id: nodeupdown.c,v 1.154 2007-02-09 05:11:33 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -315,6 +315,7 @@ nodeupdown_load_data(nodeupdown_t handle,
 {
   struct nodeupdown_config conffile_config;
   struct nodeupdown_config module_config;
+  char *preferred_clusterlist_module;
 
   if (_unloaded_handle_error_check(handle) < 0)
     goto cleanup;
@@ -344,10 +345,12 @@ nodeupdown_load_data(nodeupdown_t handle,
   if (backend_module_setup(handle) < 0)
     goto cleanup;
 
+  preferred_clusterlist_module = backend_module_preferred_clusterlist_module(handle);
+
   /* 
    * Load clusterlist module
    */
-  if (clusterlist_module_load(handle) < 0)
+  if (clusterlist_module_load(handle, preferred_clusterlist_module) < 0)
     goto cleanup;
   
   if (clusterlist_module_setup(handle) < 0)

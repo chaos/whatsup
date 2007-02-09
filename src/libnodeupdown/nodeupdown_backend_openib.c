@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_openib.c,v 1.1 2006-08-30 17:38:27 chu11 Exp $
+ *  $Id: nodeupdown_backend_openib.c,v 1.2 2007-02-09 05:11:33 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -88,6 +88,17 @@ static int
 openib_backend_default_timeout_len(nodeupdown_t handle)
 {
   return OPENIB_BACKEND_DEFAULT_TIMEOUT_LEN;
+}
+
+/* 
+ * openib_backend_preferred_clusterlist_module
+ *
+ * openib backend preferred_clusterlist_module function
+ */
+static char *
+openib_backend_preferred_clusterlist_module(nodeupdown_t handle)
+{
+  return NULL;
 }
 
 /*
@@ -320,6 +331,7 @@ struct nodeupdown_backend_module_info backend_module_info =
     &openib_backend_default_hostname,
     &openib_backend_default_port,
     &openib_backend_default_timeout_len,
+    &openib_backend_preferred_clusterlist_module,
     &openib_backend_setup,
     &openib_backend_cleanup,
     &openib_backend_get_updown_data
