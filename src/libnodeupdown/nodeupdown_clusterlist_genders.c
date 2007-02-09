@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_genders.c,v 1.25 2006-08-30 17:16:50 chu11 Exp $
+ *  $Id: nodeupdown_clusterlist_genders.c,v 1.26 2007-02-09 05:51:16 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -55,7 +55,7 @@ genders_clusterlist_setup(nodeupdown_t handle)
 {
   int rv;
 
-  rv = genders_util_setup(handle, &genders_handle);
+  rv = genders_util_setup(handle, &genders_handle, NULL);
   if (rv < 0)
     nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
   return rv;

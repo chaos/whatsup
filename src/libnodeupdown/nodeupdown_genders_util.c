@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_genders_util.c,v 1.7 2005-07-02 00:06:47 achu Exp $
+ *  $Id: nodeupdown_genders_util.c,v 1.8 2007-02-09 05:51:16 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -40,7 +40,9 @@
 #include "nodeupdown/nodeupdown_devel.h"
 
 int 
-genders_util_setup(nodeupdown_t handle, genders_t *genders_handle)
+genders_util_setup(nodeupdown_t handle, 
+                   genders_t *genders_handle,
+                   char *filename)
 {
   if (!(*genders_handle = genders_handle_create()))
     {
@@ -48,7 +50,7 @@ genders_util_setup(nodeupdown_t handle, genders_t *genders_handle)
       goto cleanup;
     }
 
-  if (genders_load_data(*genders_handle, NULL) < 0)
+  if (genders_load_data(*genders_handle, filename) < 0)
     {
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
       goto cleanup;

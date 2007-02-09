@@ -10,6 +10,13 @@
 	src/libnodeupdown/nodeupdown_module.c: Support preferred
 	clusterlist module defined by backend module.
 
+	* src/libnodeupdown/nodeupdown_genders_util.c
+	(genders_util_setup): Add filename parameter.
+
+	* src/libnodeupdown/nodeupdown_clusterlist_genders.c
+	(genders_clusterlist_setup): Adjust for function change
+	appropriately.
+
 2007-02-07  Albert Chu  <chu11@llnl.gov>
 
 	* src/Libnodeupdown/Libnodeupdown.pm.in: Fix dynamic loading issue
