@@ -1,3 +1,7 @@
+2007-02-09  Albert Chu  <chu11@llnl.gov>
+
+	* whatsup.spec.in: Fix dependency typo.
+	
 2007-02-08  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown/nodeupdown_backend_module.h,

@@ -65,7 +65,7 @@ Hostsfile clusterlist module
 Summary: whatsup cerebro-monitor options module
 Group: System Environment/Base
 Requires: whatsup
-Requires: cerebro-monitor
+Requires: cerebro
 %description options-cerebro-monitor
 Cerebro Monitor options module
 
