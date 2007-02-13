@@ -1,3 +1,8 @@
+2007-02-13  Albert Chu  <chu11@llnl.gov>
+
+	* src/libnodeupdown/nodeupdown_backend_pingd.c
+	(pingd_backend_get_updown_data): Fix comment typo.
+	
 2007-02-09  Albert Chu  <chu11@llnl.gov>
 
 	* whatsup.spec.in: Fix dependency typo.
