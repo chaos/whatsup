@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: pingd.conf.5.in,v 1.1 2006-07-07 21:00:48 chu11 Exp $
+\."$Id: pingd.conf.5.in,v 1.2 2007-02-15 05:53:20 chu11 Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -54,8 +54,8 @@ Specify the alternate default port the pingd server should listen
 for requests off of.  Default is 9125.
 .TP 
 .I host string
-Specify a host the pingd daemon whould regularly ping.  Can be specify
-as many times as necessary.
+Specify a host the pingd daemon whould regularly ping.  Can be
+specified as many times as necessary.
 .SH "FILES"
 @PINGD_CONF_FILE@
 .SH "SEE ALSO"
