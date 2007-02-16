@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: nodeupdown.conf.5.in,v 1.16 2005-05-02 23:00:28 achu Exp $
+\."$Id: nodeupdown.conf.5.in,v 1.17 2007-02-16 16:55:21 chu11 Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -26,8 +26,7 @@
 
 .TH NODEUPDOWN.CONF 5 "November 2003" "LLNL" "LIBNODEUPDOWN"
 .SH NAME
-nodeupdown.conf \- specify alternate default values for the nodeupdown
-                   library
+nodeupdown.conf \- specify alternate default values for the nodeupdown library
 .SH DESCRIPTION
 
 Through a configuration file, system administrators may override the
