@@ -1,3 +1,7 @@
+2007-03-16  Albert Chu  <chu11@llnl.gov>
+
+	* man/whatsup.1.in: Fix typo of -l option to -e option.
+	
 2007-02-16  Albert Chu  <chu11@llnl.gov>
 
 	* man/nodeupdown.conf.5.in: Fix typo.

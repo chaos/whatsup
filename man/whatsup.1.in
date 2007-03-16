@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: whatsup.1.in,v 1.27 2006-12-20 00:12:08 chu11 Exp $
+\."$Id: whatsup.1.in,v 1.28 2007-03-16 21:21:31 chu11 Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -114,7 +114,7 @@ Specify the log file
 should output logging information to.  If not specified, defaults to
 stdout.
 .TP
-.B \-l, \-\-log-poll
+.B \-e, \-\-log-poll
 Specify the length in seconds the log mode of
 .B whatsup
 should regularly poll.  Default is 30 seconds.
