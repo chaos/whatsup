@@ -1,3 +1,8 @@
+2007-04-02  Albert Chu  <chu11@llnl.gov>
+
+	* src/libcommon/conffile.h, src/libcommon/conffile.c
+	(conffile_line_number): New function.
+	
 2007-03-16  Albert Chu  <chu11@llnl.gov>
 
 	* man/whatsup.1.in: Fix typo of -l option to -e option.

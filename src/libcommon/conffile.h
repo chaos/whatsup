@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.h,v 1.15 2005-05-02 17:42:54 achu Exp $
+ *  $Id: conffile.h,v 1.16 2007-04-02 13:45:51 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -360,6 +360,13 @@ int conffile_errmsg(conffile_t cf, char *buf, int buflen);
  * success, -1 if errnum is out of range.
  */   
 int conffile_seterrnum(conffile_t cf, int errnum);
+
+/* conffile_line_number
+ *
+ * Returns line number currently being parsed, -1 on error.  Useful
+ * for error output messages in callback functions.
+ */
+int conffile_line_number(conffile_t cf);
 
 /* conffile_parse
  *

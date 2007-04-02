@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.24 2006-06-19 19:35:05 chu11 Exp $
+ *  $Id: conffile.c,v 1.25 2007-04-02 13:45:51 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -198,6 +198,15 @@ conffile_seterrnum(conffile_t cf, int errnum)
     cf->errnum = errnum;
     return 0;
 }
+
+int
+conffile_line_number(conffile_t cf)
+{
+    if (cf == NULL || cf->magic != CONFFILE_MAGIC)
+        return -1;
+
+    return cf->line_num;
+} 
 
 static int
 _setup(conffile_t cf,
