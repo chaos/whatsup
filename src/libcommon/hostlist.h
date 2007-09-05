@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: hostlist.h,v 1.5 2005-01-11 00:14:21 achu Exp $
+ *  $Id: hostlist.h,v 1.6 2007-09-05 17:35:16 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2002 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -21,7 +21,7 @@
  *  
  *  You should have received a copy of the GNU General Public License along
  *  with SLURM; if not, write to the Free Software Foundation, Inc.,
- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+ *  51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.
 \*****************************************************************************/
 
 #ifndef _HOSTLIST_H
