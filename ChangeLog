@@ -2,6 +2,8 @@
 
 	* src/whatsup/whatsup.c (_usage): Fix usage typo found by Py
 	Watson (watson30 at llnl dot gov).
+
+	* Fix FSF address throughout.
 	
 2007-04-02  Albert Chu  <chu11@llnl.gov>
 
