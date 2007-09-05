@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.128 2007-02-07 00:30:41 chu11 Exp $
+ *  $Id: whatsup.c,v 1.129 2007-09-05 17:19:31 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -368,7 +368,7 @@ _usage(void)
           "  -m         --module            Specify backend module\n"
           "  -l         --log               Output up/down state log\n"
           "  -f         --log-file          Specify log file\n"
-          "  -e         --log-poll          Specify log polling internval\n");
+          "  -e         --log-poll          Specify log polling interval\n");
 
   if (modules_list_itr) 
     {
