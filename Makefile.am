@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.9 2006-07-07 21:00:48 chu11 Exp $
+## $Id: Makefile.am,v 1.10 2007-09-10 23:08:04 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -10,4 +10,4 @@ DISTCHECK_CONFIGURE_FLAGS = --with-perl-install-destdir=$$dc_install_base
 
 SUBDIRS = src man etc
 
-EXTRA_DIST = META DISCLAIMER README.expat
+EXTRA_DIST = META DISCLAIMER README.expat whatsup.spec

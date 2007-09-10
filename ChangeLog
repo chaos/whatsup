@@ -1,3 +1,7 @@
+2007-09-10  Albert Chu  <chu11@llnl.gov>
+
+	* Makefile.am: Add whatsup.spec to dist.
+	
 2007-09-05  Albert Chu  <chu11@llnl.gov>
 
 	* src/whatsup/whatsup.c (_usage): Fix usage typo found by Py
