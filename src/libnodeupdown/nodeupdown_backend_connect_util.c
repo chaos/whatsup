@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_connect_util.c,v 1.2 2007-09-05 17:29:25 chu11 Exp $
+ *  $Id: nodeupdown_backend_connect_util.c,v 1.3 2007-09-13 23:42:58 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -142,7 +142,8 @@ _low_timeout_connect(nodeupdown_t handle,
         {
           if (FD_ISSET(fd, &rset) || FD_ISSET(fd, &wset))
             {
-              int len, error;
+              unsigned int len;
+              int error;
 
               len = sizeof(int);
 

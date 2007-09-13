@@ -4,8 +4,8 @@ Release: @RELEASE@
 Summary: whatsup node up/down detection utility
 Group: Applications/Communications
 License: GPL
-Source: @PROJECT@-@VERSION@-@RELEASE@.tgz
-BuildRoot: %{_tmppath}/@PROJECT@-@VERSION@-@RELEASE@
+Source: @PROJECT@-@VERSION@.tar.gz
+BuildRoot: %{_tmppath}/@PROJECT@-@VERSION@
 
 %description
 Whatsup is a cluster node up/down detection utility.
@@ -109,7 +109,7 @@ if [ $1 -ge 1 ]; then
 fi
 
 %prep
-%setup -q -n @PROJECT@-@VERSION@-@RELEASE@
+%setup -q
 
 %build
 %configure --program-prefix=%{?_program_prefix:%{_program_prefix}} \

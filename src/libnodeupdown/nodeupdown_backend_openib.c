@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_openib.c,v 1.3 2007-09-05 17:29:25 chu11 Exp $
+ *  $Id: nodeupdown_backend_openib.c,v 1.4 2007-09-13 23:42:58 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -316,7 +316,7 @@ openib_backend_get_updown_data(nodeupdown_t nodeupdown_handle,
 		node_record = osmv_get_query_node_rec(_openib_result.p_result_madw, i);
 		p_ni = &(node_record->node_info);
 		if (p_ni->node_type == IB_NODE_TYPE_CA) {
-			nodeupdown_add_up_node(nodeupdown_handle, node_record->node_desc.description);
+                  nodeupdown_add_up_node(nodeupdown_handle, (char *)node_record->node_desc.description);
 		}
 	}
 	_return_mad();

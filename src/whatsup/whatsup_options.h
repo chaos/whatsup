@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup_options.h,v 1.12 2007-09-05 17:29:16 chu11 Exp $
+ *  $Id: whatsup_options.h,v 1.13 2007-09-13 23:42:58 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -98,7 +98,7 @@ typedef int (*Whatsup_options_convert_nodenames)(char *nodes, char *buf, int buf
  *
  * Returns 0 on success, -1 on error.
  */
-typedef int (*Whatsup_options_monitor)(char *hostname, int port);
+typedef int (*Whatsup_options_monitor)(const char *hostname, int port);
 
 /* 
  * struct whatsup_options_module_info

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_module.c,v 1.26 2007-09-05 17:29:25 chu11 Exp $
+ *  $Id: nodeupdown_module.c,v 1.27 2007-09-13 23:42:58 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -476,7 +476,7 @@ backend_module_preferred_clusterlist_module(nodeupdown_t handle)
   if (!backend_module_info)
     {
       handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      return -1;
+      return NULL;
     }
   return (*backend_module_info->preferred_clusterlist_module)(handle);
 }
