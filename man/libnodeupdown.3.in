@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: libnodeupdown.3.in,v 1.25 2007-09-05 17:29:36 chu11 Exp $
+\."$Id: libnodeupdown.3.in,v 1.26 2007-09-13 23:01:28 chu11 Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -60,6 +60,8 @@ or down
 .BI "int nodeupdown_up_count(nodeupdown_t handle);"
 .sp
 .BI "int nodeupdown_down_count(nodeupdown_t handle);"
+.sp
+.BI "int nodeupdown_last_up_time(nodeupdown_t handle, const char *node, unsigned int *last_up_time);"
 .sp
 .BI "int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list);"
 .sp
@@ -145,6 +147,8 @@ nodeupdown_get_up_nodes_string(3),
 nodeupdown_get_down_nodes_string(3), nodeupdown_get_up_nodes_list(3),
 nodeupdown_get_down_nodes_list(3), nodeupdown_is_node_up(3),
 nodeupdown_is_node_down(3), nodeupdown_up_count(3),
-nodeupdown_down_count(3), nodeupdown_nodelist_create(3),
+nodeupdown_down_count(3), 
+nodeupdown_last_up_time(3),
+nodeupdown_nodelist_create(3),
 nodeupdown_nodelist_clear(3), nodeupdown_nodelist_destroy(3),
 nodeupdown.conf(5)

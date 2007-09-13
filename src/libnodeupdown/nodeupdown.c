@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.155 2007-09-05 17:29:25 chu11 Exp $
+ *  $Id: nodeupdown.c,v 1.156 2007-09-13 23:01:29 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -45,6 +45,7 @@
 #include "nodeupdown/nodeupdown_constants.h"
 
 #include "conffile.h"
+#include "hash.h"
 #include "hostlist.h"
 #include "list.h"
 #include "ltdl.h"
@@ -70,6 +71,7 @@ static char * nodeupdown_errmsg[] =
     "null pointer reached in list",
     "out of memory",
     "node not found",
+    "not supported",
     "internal backend module error",
     "internal clusterlist module error",
     "internal config module error",
@@ -150,6 +152,7 @@ _initialize_handle(nodeupdown_t handle)
   handle->up_nodes = NULL;
   handle->down_nodes = NULL;
   handle->numnodes = 0;
+  handle->last_up_times = NULL;
 }
 
 nodeupdown_t 
@@ -181,6 +184,7 @@ _free_handle_data(nodeupdown_t handle)
   config_module_unload(handle);
   hostlist_destroy(handle->up_nodes);
   hostlist_destroy(handle->down_nodes);
+  hash_destroy(handle->last_up_times);
   _initialize_handle(handle);
   lt_dlexit();
 }
@@ -199,6 +203,23 @@ nodeupdown_handle_destroy(nodeupdown_t handle)
   free(handle);
   return 0;
 }  
+
+/* 
+ * _destroy_last_up_time
+ *
+ * callback for hash_destroy to destroy last_up_time structure.
+ */
+static void
+_destroy_last_up_time(void *x)
+{
+  struct last_up_time *lut;
+  
+  lut = (struct last_up_time *)x;
+
+  if (lut->node)
+    free(lut->node);
+  free(lut);
+}
 
 /* 
  * _cb_hostnames
@@ -375,6 +396,15 @@ nodeupdown_load_data(nodeupdown_t handle,
     }
 
   if (!(handle->down_nodes = hostlist_create(NULL))) 
+    {
+      handle->errnum = NODEUPDOWN_ERR_OUTMEM;
+      goto cleanup;
+    }
+
+  if (!(handle->last_up_times = hash_create(NODEUPDOWN_LAST_UP_TIMES_SIZE,
+                                            (hash_key_f)hash_key_string,
+                                            (hash_cmp_f)strcmp,
+                                            (hash_del_f)_destroy_last_up_time)))
     {
       handle->errnum = NODEUPDOWN_ERR_OUTMEM;
       goto cleanup;
@@ -806,6 +836,39 @@ int
 nodeupdown_down_count(nodeupdown_t handle) 
 {
   return _node_count(handle, NODEUPDOWN_DOWN_NODES);
+}
+
+int 
+nodeupdown_last_up_time(nodeupdown_t handle, 
+                        const char *node,
+                        unsigned int *last_up_time)
+{
+  struct last_up_time *lut;
+
+  if (_loaded_handle_error_check(handle) < 0)
+    return -1;
+  
+  if (!node || !last_up_time) 
+    {
+      handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
+      return -1;
+    }
+
+  if (hash_is_empty(handle->last_up_times))
+    {
+      handle->errnum = NODEUPDOWN_ERR_NOTSUPPORTED;
+      return -1;
+    }
+  
+  if (!(lut = hash_find(handle->last_up_times, node)))
+    {
+      handle->errnum = NODEUPDOWN_ERR_NOTFOUND;
+      return -1;
+    }
+
+  *last_up_time = lut->last_up_time;
+  handle->errnum = NODEUPDOWN_ERR_SUCCESS;
+  return 0;
 }
 
 int 

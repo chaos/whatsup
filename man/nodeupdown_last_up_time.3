@@ -1,0 +1,74 @@
+\."#############################################################################
+\."$Id: nodeupdown_last_up_time.3,v 1.1 2007-09-13 23:01:28 chu11 Exp $
+\."#############################################################################
+\."  Copyright (C) 2003 The Regents of the University of California.
+\."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
+\."  Written by Albert Chu <chu11@llnl.gov>
+\."  UCRL-CODE-155699
+\."  
+\."  This file is part of Whatsup, tools and libraries for determining up and
+\."  down nodes in a cluster.  For details, see http://www.llnl.gov/linux/.
+\."
+\."  Whatsup is free software; you can redistribute it and/or modify it under
+\."  the terms of the GNU General Public License as published by the Free
+\."  Software Foundation; either version 2 of the License, or (at your option)
+\."  any later version.
+\."  
+\."  Whatsup is distributed in the hope that it will be useful, but WITHOUT 
+\."  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+\."  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+\."  for more details.
+\."  
+\."  You should have received a copy of the GNU General Public License along
+\."  with Whatsup; if not, write to the Free Software Foundation, Inc.,
+\."  51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.
+\."############################################################################
+.TH NODEUPDOWN_LAST_UP_TIME 3 "September 2007" "LLNL" "LIBNODEUPDOWN"
+.SH NAME
+nodeupdown_last_up_time \- retrieve time since epoch of the last known
+up time for a node.
+.SH SYNOPSIS
+.B #include <nodeupdown.h>
+.sp
+.BI "int nodeupdown_last_up_time(nodeupdown_t handle, const char *node, unsigned int *last_up_time);"
+.br
+.SH DESCRIPTION
+\fBnodeupdown_last_up_time()\fR returns the last known time since
+epoch \fInode\fR was up.  The value is stored in \fIlast_up_time\fR.
+
+.br
+.SH RETURN VALUES
+On success, 0 is returned.  On error, -1 is returned, and an error
+code is returned in \fIhandle\fR.  The error code can be retrieved via
+.BR nodeupdown_errnum (3)
+, and a description of the error code can be retrieved via
+.BR nodeupdown_strerror (3).
+Error codes are defined in nodeupdown.h.
+.br
+.SH ERRORS
+.TP
+.B NODEUPDOWN_ERR_NULLHANDLE
+The handle parameter is NULL.  The nodeupdown handle must be created
+with
+.BR nodeupdown_handle_create (3).
+.TP
+.B NODEUPDOWN_ERR_NOTLOADED
+.BR nodeupdown_load_data (3)
+has not been called and no data has been retrieved.
+.TP
+.B NODEUPDOWN_ERR_NOTFOUND
+The node pointed to by \fInode\fR is not known.
+.TP
+.B NODEUPDOWN_ERR_NOTSUPPORTED
+This feature is not supported by the local nodeupdown configuration.
+.TP
+.B NODEUPDOWN_ERR_MAGIC 
+\fIhandle\fR has an incorrect magic number.  \fIhandle\fR does not
+point to a nodeupdown handle or \fIhandle\fR has been destroyed by
+.BR nodeupdown_handle_destroy (3).
+.br
+.SH FILES
+/usr/include/nodeupdown.h
+.SH SEE ALSO
+libnodeupdown(3), nodeupdown_handle_create(3),
+nodeupdown_load_data(3), nodeupdown_errnum(3), nodeupdown_strerror(3)

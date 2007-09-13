@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_devel.c,v 1.7 2007-09-05 17:29:25 chu11 Exp $
+ *  $Id: nodeupdown_devel.c,v 1.8 2007-09-13 23:01:30 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -128,6 +128,55 @@ int
 nodeupdown_add_down_node(nodeupdown_t handle, const char *node)
 {
   return _add_node(handle, node, NODEUPDOWN_DOWN_NODES);
+}
+
+int 
+nodeupdown_add_last_up_time(nodeupdown_t handle, 
+                            const char *node, 
+                            unsigned int last_up_time)
+{
+  struct last_up_time *lut;
+
+  if (_setup_handle_error_check(handle) < 0)
+    return -1;
+
+  if (!node)
+    {
+      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
+      return -1;
+    }
+
+  if (!(lut = malloc(sizeof(struct last_up_time))))
+    {
+      handle->errnum = NODEUPDOWN_ERR_OUTMEM;
+      goto cleanup;
+    }
+  
+  if (!(lut->node = strdup(node)))
+    {
+      handle->errnum = NODEUPDOWN_ERR_OUTMEM;
+      goto cleanup;
+    }
+  lut->last_up_time = last_up_time;
+
+  if (!hash_insert(handle->last_up_times,
+                   lut->node,
+                   lut))
+    {
+      handle->errnum = NODEUPDOWN_ERR_OUTMEM;
+      goto cleanup;
+    }
+
+  return 0;
+  
+ cleanup:
+  if (lut)
+    {
+      if (lut->node)
+        free(lut->node);
+      free(lut);
+    }
+  return -1;
 }
 
 int

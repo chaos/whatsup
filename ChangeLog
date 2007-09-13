@@ -1,3 +1,15 @@
+2007-09-13  Albert Chu  <chu11@llnl.gov>
+
+	* src/libnodeupdown: Add nodeupdown_last_up_time support.
+
+	* src/whatsup: Add -r support.
+
+	* man/: Update manpages appropriately.
+
+	* man/nodeupdown_last_up_time.3: New file.
+
+	* configure.ac: Update libnodeupdown version.
+
 2007-09-12  Albert Chu  <chu11@llnl.gov>
 
 	* whatsup/src/whatsup/whatsup_options_cerebro_monitor.c: Fix

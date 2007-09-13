@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_api.h,v 1.5 2007-09-05 17:29:25 chu11 Exp $
+ *  $Id: nodeupdown_api.h,v 1.6 2007-09-13 23:01:29 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -29,6 +29,7 @@
 
 #include "nodeupdown.h"
 #include "hostlist.h"
+#include "hash.h"
 
 #define NODEUPDOWN_MAGIC_NUM           0xfeedbeef
 
@@ -38,6 +39,19 @@
 #define NODEUPDOWN_LOAD_STATE_UNLOADED 0
 #define NODEUPDOWN_LOAD_STATE_SETUP    1
 #define NODEUPDOWN_LOAD_STATE_LOADED   2
+
+#define NODEUPDOWN_LAST_UP_TIMES_SIZE  2048
+
+/* 
+ * struct last_up_time
+ *
+ * store node string and node last up time
+ */
+struct last_up_time {
+  char *node;
+  unsigned int last_up_time;
+};
+
 /* 
  * struct nodeupdown
  *
@@ -49,6 +63,7 @@ struct nodeupdown {
   int load_state;
   hostlist_t up_nodes;
   hostlist_t down_nodes;
+  hash_t last_up_times;
   int numnodes;
 };
 

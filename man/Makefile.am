@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.15 2006-07-10 23:51:22 chu11 Exp $
+## $Id: Makefile.am,v 1.16 2007-09-13 23:01:28 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -24,6 +24,7 @@ man3_MANS = \
 	nodeupdown_is_node_down.3 \
 	nodeupdown_up_count.3 \
 	nodeupdown_down_count.3 \
+	nodeupdown_last_up_time.3 \
 	nodeupdown_nodelist_create.3 \
 	nodeupdown_nodelist_clear.3 \
 	nodeupdown_nodelist_destroy.3 \

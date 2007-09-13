@@ -1,5 +1,5 @@
 \."#############################################################################
-\."$Id: whatsup.1.in,v 1.29 2007-09-05 17:29:36 chu11 Exp $
+\."$Id: whatsup.1.in,v 1.30 2007-09-13 23:01:29 chu11 Exp $
 \."#############################################################################
 \."  Copyright (C) 2003 The Regents of the University of California.
 \."  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -99,6 +99,10 @@ List nodes in space separated list
 .TP
 .B \-m, \-\-module
 Use a specific backend module for up-down calculations.
+.TP
+.B \-r, \-\-last-up-time
+Output last known up time of nodes and their current up or down
+state. This option may not be available on some configurations.
 .TP
 .B \-l, \-\-log
 Enter 

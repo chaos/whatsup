@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.h,v 1.41 2007-09-05 17:29:25 chu11 Exp $
+ *  $Id: nodeupdown.h,v 1.42 2007-09-13 23:01:29 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -45,15 +45,16 @@
 #define NODEUPDOWN_ERR_NULLPTR               9
 #define NODEUPDOWN_ERR_OUTMEM               10
 #define NODEUPDOWN_ERR_NOTFOUND             11
-#define NODEUPDOWN_ERR_BACKEND_MODULE       12
-#define NODEUPDOWN_ERR_CLUSTERLIST_MODULE   13
-#define NODEUPDOWN_ERR_CONFIG_MODULE        14
-#define NODEUPDOWN_ERR_CONF_PARSE           15
-#define NODEUPDOWN_ERR_CONF_INPUT           16
-#define NODEUPDOWN_ERR_CONF_INTERNAL        17
-#define NODEUPDOWN_ERR_MAGIC                18
-#define NODEUPDOWN_ERR_INTERNAL             19
-#define NODEUPDOWN_ERR_ERRNUMRANGE          20
+#define NODEUPDOWN_ERR_NOTSUPPORTED         12
+#define NODEUPDOWN_ERR_BACKEND_MODULE       13
+#define NODEUPDOWN_ERR_CLUSTERLIST_MODULE   14
+#define NODEUPDOWN_ERR_CONFIG_MODULE        15
+#define NODEUPDOWN_ERR_CONF_PARSE           16
+#define NODEUPDOWN_ERR_CONF_INPUT           17
+#define NODEUPDOWN_ERR_CONF_INTERNAL        18
+#define NODEUPDOWN_ERR_MAGIC                19
+#define NODEUPDOWN_ERR_INTERNAL             20
+#define NODEUPDOWN_ERR_ERRNUMRANGE          21
 
 typedef struct nodeupdown *nodeupdown_t;
 
@@ -198,6 +199,19 @@ int nodeupdown_up_count(nodeupdown_t handle);
  * Returns number of nodes that are down, -1 on error
  */
 int nodeupdown_down_count(nodeupdown_t handle);
+
+/*
+ * nodeupdown_last_up_time
+ *
+ * Retrieve time since epoch of the last known up time for a node.
+ * May not be available from all backend modules supported by
+ * nodeupdown.
+ *
+ * Returns 0 on success, -1 on error
+ */
+int nodeupdown_last_up_time(nodeupdown_t handle, 
+                            const char *node,
+                            unsigned int *last_up_time);
 
 /* 
  * nodeupdown_nodelist_create

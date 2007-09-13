@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_cerebro.c,v 1.21 2007-09-05 17:29:25 chu11 Exp $
+ *  $Id: nodeupdown_backend_cerebro.c,v 1.22 2007-09-13 23:01:30 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -305,6 +305,9 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
           if (nodeupdown_add_down_node(handle, nodename) < 0)
             goto cleanup;
         }
+
+      if (nodeupdown_add_last_up_time(handle, nodename, mtime) < 0)
+        goto cleanup;
 
       if (cerebro_nodelist_iterator_next(itr) < 0)
         {

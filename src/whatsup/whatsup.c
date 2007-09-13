@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.130 2007-09-05 17:29:16 chu11 Exp $
+ *  $Id: whatsup.c,v 1.131 2007-09-13 23:01:31 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -114,6 +114,7 @@ static int count_only_output = 0;
 static nodeupdown_t handle;
 static hostlist_t inputted_nodes = NULL;
 static char *module = NULL;
+static int last_up_time = 0;
 static int log_mode = 0;
 static char *log_file = NULL;
 static int log_poll = WHATSUP_LOG_POLL;
@@ -366,6 +367,7 @@ _usage(void)
 	  "  -n         --newline           Output in newline separated list\n"
 	  "  -s         --space             Output in space separated list\n"
           "  -m         --module            Specify backend module\n"
+          "  -r         --last-up-time      Output last known up time of nodes\n"
           "  -l         --log               Output up/down state log\n"
           "  -f         --log-file          Specify log file\n"
           "  -e         --log-poll          Specify log polling interval\n");
@@ -505,6 +507,7 @@ _cmdline_parse(int argc, char **argv)
       {"newline",      0, NULL, 'n'},
       {"space",        0, NULL, 's'},
       {"module",       1, NULL, 'm'},
+      {"last-up-time", 0, NULL, 'r'},
       {"log",          0, NULL, 'l'},
       {"log-file",     1, NULL, 'f'}, 
       {"log-poll",     1, NULL, 'e'},
@@ -517,7 +520,7 @@ _cmdline_parse(int argc, char **argv)
 
   /* aegijkrwxyz */
   memset(soptions, '\0', WHATSUP_OPTIONS_LEN+1);
-  strncpy(soptions, "hvo:p:budtqcnsm:lf:e:", WHATSUP_OPTIONS_LEN);
+  strncpy(soptions, "hvo:p:budtqcnsrm:lf:e:", WHATSUP_OPTIONS_LEN);
 
   /* 
    * Load additional option arguments
@@ -635,6 +638,9 @@ _cmdline_parse(int argc, char **argv)
             break;
           case 'm':
             module = optarg;
+            break;
+          case 'r':
+            last_up_time++;
             break;
           case 'l':
             log_mode++;
@@ -897,6 +903,76 @@ _get_nodes(char *buf, int buflen, int up_or_down, int *count)
 }
 
 /* 
+ * _output_last_up_time_nodes
+ *
+ * output nodes in last_up_time format
+ */
+static void
+_output_last_up_time_nodes(char *nodebuf, int up_or_down) 
+{
+  char tbuf[WHATSUP_BUFFERLEN];
+  hostlist_t hl = NULL;
+  hostlist_iterator_t itr;
+  char *node;
+
+  assert(nodebuf);
+
+  if (!(hl = hostlist_create(nodebuf)))
+    err_exit("%s: hostlist_create() error", __FUNCTION__);
+      
+  if (!(itr = hostlist_iterator_create(hl)))
+    err_exit("%s: hostlist_iterator_create error", __FUNCTION__);
+  
+  while ((node = hostlist_next(itr)))
+    {
+      unsigned int last_up_time;
+      time_t t;
+      struct tm *tm;
+      int errnum;
+      
+      if (nodeupdown_last_up_time(handle,
+                                  node,
+                                  &last_up_time) < 0)
+        {
+          errnum = nodeupdown_errnum(handle);
+          char *msg = nodeupdown_errormsg(handle);
+          if (errnum == NODEUPDOWN_ERR_NOTSUPPORTED)
+            err_exit("last_up_time not supported");
+          
+          if (errnum != NODEUPDOWN_ERR_NOTFOUND)
+            err_exit("%s: nodeupdown_last_up_time: %s", 
+                     __FUNCTION__, msg);
+        }
+      
+      if (errnum != NODEUPDOWN_ERR_NOTFOUND)
+        {
+          memset(tbuf, '\0', WHATSUP_BUFFERLEN);
+          
+          t = last_up_time;
+          tm = localtime(&t);
+          strftime(tbuf, WHATSUP_BUFFERLEN, "%Y/%m/%d %T", tm);
+          
+          if (up_or_down == WHATSUP_UP_NODES)
+            fprintf(stdout,"%s %s UP\n", tbuf, node);
+          else
+            fprintf(stdout,"%s %s DOWN\n", tbuf, node);
+        }
+      else
+        {
+          if (up_or_down == WHATSUP_UP_NODES)
+            fprintf(stdout, "Unknown %s UP\n", node);
+          else
+            fprintf(stdout, "Unknown %s DOWN\n", node);
+        }
+      
+      free(node);
+    }
+  
+  hostlist_iterator_destroy(itr);
+  hostlist_destroy(hl);
+}
+
+/* 
  * _output_nodes
  * 
  * output the nodes specified in the nodebuf to stdout
@@ -913,13 +989,13 @@ _output_nodes(char *nodebuf)
       char tbuf[WHATSUP_BUFFERLEN];
       hostlist_t hl = NULL;
       char *ptr;
-
+ 
       /* output nodes separated by some break type */
       memset(tbuf, '\0', WHATSUP_BUFFERLEN);
-    
+
       if (!(hl = hostlist_create(nodebuf)))
         err_exit("%s: hostlist_create() error", __FUNCTION__);
-      
+          
       if (hostlist_deranged_string(hl, WHATSUP_BUFFERLEN, tbuf) < 0)
         err_exit("%s: hostlist_deranged_string() error", __FUNCTION__);
       
@@ -929,11 +1005,11 @@ _output_nodes(char *nodebuf)
           while ((ptr = strchr(tbuf, ',')))
             *ptr = (char)output_type;
         }
-
+      
       /* start on the next line if its a newline separator */
       if (updown_output == WHATSUP_UP_AND_DOWN && output_type == '\n')
         fprintf(stdout, "\n");
-
+      
       fprintf(stdout,"%s\n", tbuf);
       hostlist_destroy(hl);
     }
@@ -1018,7 +1094,12 @@ _output_mode(void)
   _get_nodes(up_nodes, WHATSUP_BUFFERLEN, WHATSUP_UP_NODES, &up_count);
   _get_nodes(down_nodes, WHATSUP_BUFFERLEN, WHATSUP_DOWN_NODES, &down_count);
   
-  if (count_only_output) 
+  if (last_up_time)
+    {
+      _output_last_up_time_nodes(up_nodes, WHATSUP_UP_NODES);
+      _output_last_up_time_nodes(down_nodes, WHATSUP_DOWN_NODES);
+    }
+  else if (count_only_output) 
     {
       if (updown_output == WHATSUP_UP_AND_DOWN) 
         {

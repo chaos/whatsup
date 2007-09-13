@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_devel.h,v 1.3 2007-09-05 17:29:26 chu11 Exp $
+ *  $Id: nodeupdown_devel.h,v 1.4 2007-09-13 23:01:31 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -46,6 +46,17 @@ int nodeupdown_add_up_node(nodeupdown_t handle, const char *node);
  * Returns 0 on success, -1 on error
  */
 int nodeupdown_add_down_node(nodeupdown_t handle, const char *node);
+
+/* 
+ * nodeupdown_add_last_up_time
+ *
+ * Add node time into the handle
+ *
+ * Returns 0 on success, -1 on error
+ */
+int nodeupdown_add_last_up_time(nodeupdown_t handle, 
+                                const char *node,
+                                unsigned int last_up_time);
 
 /*
  * nodeupdown_not_discovered_check
