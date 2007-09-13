@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup_options_cerebro_monitor.c,v 1.6 2007-09-05 17:29:16 chu11 Exp $
+ *  $Id: whatsup_options_cerebro_monitor.c,v 1.7 2007-09-13 00:20:57 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2003 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
@@ -54,7 +54,7 @@ struct whatsup_option cerebro_monitor_options[] = {
     'M',
     NULL,
     "monitor",
-    "Monitor up-down stage changes through event monitoring",
+    "Monitor up-down state changes through event monitoring",
     WHATSUP_OPTION_TYPE_MONITOR
   },
   {
