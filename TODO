@@ -8,5 +8,4 @@
 - Need to rename project?
   - whazzup
 - Symbol issloading uew wih Nodeupdown
-- pick specific/alternate clusterlist per backend module
-  - i.e. openib, pick only ib nodes
+- mechanism to determine time of last state change
