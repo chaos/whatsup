@@ -1,3 +1,11 @@
+2007-10-16  Albert Chu  <chu11@llnl.gov>
+
+	* DISCLAIMER.UC: New file.
+
+	* DISCALIMER: Updated with new copyright.
+
+	* Fixed copyright and FSF address globally.
+	
 2007-09-13  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown: Add nodeupdown_last_up_time support.

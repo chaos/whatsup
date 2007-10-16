@@ -1,7 +1,8 @@
 /*****************************************************************************\
- *  $Id: whatsup_options.h,v 1.13 2007-09-13 23:42:58 chu11 Exp $
+ *  $Id: whatsup_options.h,v 1.14 2007-10-16 23:55:23 chu11 Exp $
  *****************************************************************************
- *  Copyright (C) 2003 The Regents of the University of California.
+ *  Copyright (C) 2007 Lawrence Livermore National Security, LLC.
+ *  Copyright (C) 2003-2007 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
  *  Written by Albert Chu <chu11@llnl.gov>
  *  UCRL-CODE-155699
@@ -20,8 +21,7 @@
  *  for more details.
  *
  *  You should have received a copy of the GNU General Public License along
- *  with Whatsup; if not, write to the Free Software Foundation, Inc.,
- *  51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.
+ *  with Whatsup.  If not, see <http://www.gnu.org/licenses/>.
 \*****************************************************************************/
 
 #ifndef _WHATSUP_OPTIONS_H
