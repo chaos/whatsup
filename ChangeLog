@@ -5,6 +5,10 @@
 	* DISCALIMER: Updated with new copyright.
 
 	* Fixed copyright and FSF address globally.
+
+	* config/Make-rpm.mk: Remove localism.
+
+	* Makefile.am: Remove use of Make-rpm.mk.
 	
 2007-09-13  Albert Chu  <chu11@llnl.gov>
 
