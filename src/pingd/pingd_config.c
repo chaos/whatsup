@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd_config.c,v 1.10 2008-01-29 04:08:16 chu11 Exp $
+ *  $Id: pingd_config.c,v 1.11 2008-01-29 14:19:13 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -432,7 +432,8 @@ _load_unknown_modules(void)
     }
 
  cleanup:
-  closedir(dir);
+  if (dir)
+    closedir(dir);
   return rv; 
 }
 
