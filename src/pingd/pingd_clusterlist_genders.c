@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd_clusterlist_genders.c,v 1.4 2007-10-16 23:55:23 chu11 Exp $
+ *  $Id: pingd_clusterlist_genders.c,v 1.5 2008-01-29 03:19:47 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -58,8 +58,6 @@ static genders_t gh = NULL;
 static int
 genders_setup(void)
 {
-  int rv;
-
   if (gh)
     {
       ERR_DEBUG(("gh non-null"));
@@ -86,7 +84,7 @@ genders_setup(void)
         }
     }
 
-  return rv;
+  return 0;
 
  cleanup:
   if (gh)

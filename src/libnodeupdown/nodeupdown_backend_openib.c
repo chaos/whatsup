@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_openib.c,v 1.5 2007-10-16 23:55:22 chu11 Exp $
+ *  $Id: nodeupdown_backend_openib.c,v 1.6 2008-01-29 03:19:47 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -57,7 +57,6 @@ static osmv_query_res_t   _openib_result;
 static osm_log_t          _openib_log_osm;
 static osm_mad_pool_t     _openib_mad_pool;
 static osm_vendor_t      *_openib_vendor = NULL;
-
 
 /*
  * openib_backend_default_hostname

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd_config.c,v 1.8 2007-10-16 23:55:23 chu11 Exp $
+ *  $Id: pingd_config.c,v 1.9 2008-01-29 03:19:47 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -400,7 +400,7 @@ static int
 _load_unknown_modules(void)
 {
   struct dirent *dirent;
-  DIR *dir;
+  DIR *dir = NULL;
   int rv = -1;
 
   if (!(dir = opendir(PINGD_MODULE_DIR)))

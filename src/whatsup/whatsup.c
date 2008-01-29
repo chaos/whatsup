@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.132 2007-10-16 23:55:23 chu11 Exp $
+ *  $Id: whatsup.c,v 1.133 2008-01-29 03:19:47 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -173,7 +173,7 @@ _cleanup_whatsup(void)
 static void
 _load_options_module(char *module_path)
 {
-  struct whatsup_module_loadinfo *loadinfo;
+  struct whatsup_module_loadinfo *loadinfo = NULL;
   struct whatsup_module_loadinfo *loadinfoPtr;
   struct whatsup_option *optionsPtr;
   ListIterator itr = NULL;
