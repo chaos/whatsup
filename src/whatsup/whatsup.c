@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: whatsup.c,v 1.133 2008-01-29 03:19:47 chu11 Exp $
+ *  $Id: whatsup.c,v 1.134 2008-01-29 04:08:16 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -211,7 +211,6 @@ _load_options_module(char *module_path)
       optionsPtr++;
     }
 
-
   if (list_count(modules_list) > 0) 
     {
       char *module_name;
@@ -288,6 +287,8 @@ _load_options_modules_in_dir(char *search_dir)
 	  _load_options_module(filebuf);
         }
     }
+
+  closedir(dir);
 }
 
 /*  

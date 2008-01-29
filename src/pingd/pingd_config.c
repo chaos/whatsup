@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd_config.c,v 1.9 2008-01-29 03:19:47 chu11 Exp $
+ *  $Id: pingd_config.c,v 1.10 2008-01-29 04:08:16 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -406,10 +406,8 @@ _load_unknown_modules(void)
   if (!(dir = opendir(PINGD_MODULE_DIR)))
     {
       if (errno != ENOENT)
-        {
-          ERR_EXIT(("opendir: %s", strerror(errno)));
-          goto cleanup;
-        }
+        ERR_EXIT(("opendir: %s", strerror(errno)));
+      goto cleanup;
     }
 
   while ((dirent = readdir(dir)))
