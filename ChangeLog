@@ -1,5 +1,10 @@
 2008-01-29  Albert Chu  <chu11@llnl.gov>
 
+        * src/libcommon/hostlist.h, src/libcommon/hostlist.c: Update to
+        new libs.
+	
+2008-01-29  Albert Chu  <chu11@llnl.gov>
+
 	* Minor bug fixes.
 	
 2007-10-18  Albert Chu  <chu11@llnl.gov>
