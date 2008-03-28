@@ -1,7 +1,7 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_devel.h,v 1.5 2007-10-16 23:55:23 chu11 Exp $
+ *  $Id: nodeupdown_devel.h,v 1.6 2008-03-28 17:06:38 chu11 Exp $
  *****************************************************************************
- *  Copyright (C) 2007 Lawrence Livermore National Security, LLC.
+ *  Copyright (C) 2007-2008 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
  *  Written by Albert Chu <chu11@llnl.gov>

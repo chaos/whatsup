@@ -2,6 +2,8 @@
 
         * man/: Fix nroff syntax errors.
 	
+	* update copyrights in a lot of places
+
 2008-01-29  Albert Chu  <chu11@llnl.gov>
 
         * src/libcommon/hostlist.h, src/libcommon/hostlist.c: Update to
