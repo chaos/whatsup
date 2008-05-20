@@ -1,3 +1,7 @@
+2008-05-20  Albert Chu  <chu11@llnl.gov>
+
+	* src/libcommon/conffile.c: Support hex for OPTION_TYPE_INT.
+	
 2008-03-28  Albert Chu  <chu11@llnl.gov>
 
         * man/: Fix nroff syntax errors.

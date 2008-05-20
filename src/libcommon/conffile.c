@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.28 2008-03-28 17:06:37 chu11 Exp $
+ *  $Id: conffile.c,v 1.29 2008-05-20 21:34:01 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2008 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -613,7 +613,7 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
             data.boolval = 0;
     }
     else if (option->option_type == CONFFILE_OPTION_INT) {
-        data.intval = strtol(args[0], &ptr, 10);
+        data.intval = strtol(args[0], &ptr, 0);
         if ((args[0] + strlen(args[0])) != ptr) {
             cf->errnum = CONFFILE_ERR_PARSE_ARG_INVALID;
             return -1;
@@ -633,7 +633,7 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
     else if (option->option_type == CONFFILE_OPTION_LIST_INT) {
         int i;
         for (i = 0; i < numargs; i++) {
-            data.intlist[i] = strtol(args[i], &ptr, 10);
+            data.intlist[i] = strtol(args[i], &ptr, 0);
             if ((args[i] + strlen(args[i])) != ptr) {
                 cf->errnum = CONFFILE_ERR_PARSE_ARG_INVALID;
                 return -1;
