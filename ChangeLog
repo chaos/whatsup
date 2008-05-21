@@ -1,3 +1,7 @@
+2008-05-21  Albert Chu  <chu11@llnl.gov>
+
+	* src/libcommon/conffile.c: Fix compile warning.
+	
 2008-05-20  Albert Chu  <chu11@llnl.gov>
 
 	* src/libcommon/conffile.c: Support hex for OPTION_TYPE_INT.  Do

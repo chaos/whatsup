@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.30 2008-05-21 04:31:06 chu11 Exp $
+ *  $Id: conffile.c,v 1.31 2008-05-21 18:13:43 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2008 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -690,7 +690,7 @@ conffile_parse(conffile_t cf,
                int app_data,
                int flags)
 {
-    int i, j, temp, len = 0, retval = -1;
+    int i, temp, len = 0, retval = -1;
     char linebuf[CONFFILE_MAX_LINELEN];
 
     if (cf == NULL || cf->magic != CONFFILE_MAGIC)
