@@ -1,6 +1,7 @@
 2008-05-20  Albert Chu  <chu11@llnl.gov>
 
-	* src/libcommon/conffile.c: Support hex for OPTION_TYPE_INT.
+	* src/libcommon/conffile.c: Support hex for OPTION_TYPE_INT.  Do
+	not require count_ptr to each be different.
 	
 2008-03-28  Albert Chu  <chu11@llnl.gov>
 
