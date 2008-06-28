@@ -1,3 +1,9 @@
+2008-06-28  Albert Chu  <chu11@llnl.gov>
+	
+	* NEWS: updated.
+
+	* tagged whatsup-1-8-1
+
 2008-05-21  Albert Chu  <chu11@llnl.gov>
 
 	* src/libcommon/conffile.c: Fix compile warning.

@@ -2,6 +2,10 @@ This file describes changes in recent versions of whatsup. It
 primarily documents those changes that are of interest to users
 and admins.
 
+Changes in whatsup-1.8-1
+===========================
+- Various minor bug fixes.
+
 Changes in whatsup-1.7-1
 ===========================
 - Add libnodeupdown nodeupdown_last_up_time() function.
@@ -54,4 +58,4 @@ Changes in whatsup-1.2-1
 ===========================
  -- started NEWS file.
 
-$Id: NEWS,v 1.13 2007-09-13 23:42:57 chu11 Exp $
+$Id: NEWS,v 1.14 2008-06-28 18:08:41 chu11 Exp $
