@@ -1,3 +1,7 @@
+2008-07-11  Albert Chu  <chu11@llnl.gov>
+
+	* src/libcommon/hostlist.c: Update to newest lib.
+
 2008-06-28  Albert Chu  <chu11@llnl.gov>
 	
 	* NEWS: updated.
