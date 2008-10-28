@@ -1,3 +1,7 @@
+2008-10-27  Mahmoud Hanafi <hanafim@users.sourceforge.net>
+
+	* whatsup.spec.in: Fix sles10 build issue.
+	
 2008-07-11  Albert Chu  <chu11@llnl.gov>
 
 	* src/libcommon/hostlist.c: Update to newest lib.
