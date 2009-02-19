@@ -1,3 +1,9 @@
+2000-02-19  Albert Chu  <chu11@llnl.gov>
+	
+	* NEWS: updated.
+
+	* tagged whatsup-1-8-2
+
 2009-02-18  Albert Chu  <chu11@llnl.gov>
 
 	* config/ac_perl_extensions.m4: New file.
