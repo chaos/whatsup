@@ -108,6 +108,8 @@ if [ $1 -ge 1 ]; then
    fi
 fi
 
+%{!?_with_perl_extensions: %{!?_without_perl_extensions: %define _with_perl_extensions --with-perl-extensions}}
+
 %prep
 %setup -q
 
@@ -125,7 +127,9 @@ fi
            %{?_with_genders} \
            %{?_without_genders} \
            %{?_with_hostsfile} \
-           %{?_without_hostsfile}
+           %{?_without_hostsfile} \
+           %{?_with_perl_extensions} \
+           %{?_without_perl_extensions}
 make
 
 %install
@@ -146,10 +150,12 @@ rm -rf "$RPM_BUILD_ROOT"
 %dir %{_libdir}/nodeupdown
 %dir %{_libdir}/whatsup
 %{_libdir}/libnodeupdown.*
-%{_perldir}/*
 %{_mandir}/man1/*
 %{_mandir}/man3/*
 %{_mandir}/man5/nodeupdown*
+%if %{?_with_perl_extensions:1}%{!?_with_perl_extensions:0}
+%{_perldir}/*
+%endif
 
 %if %{?_with_ganglia:1}%{!?_with_ganglia:0}
 %files backend-ganglia

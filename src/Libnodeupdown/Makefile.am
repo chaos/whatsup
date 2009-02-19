@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.19 2006-07-17 22:30:27 chu11 Exp $
+## $Id: Makefile.am,v 1.20 2009-02-19 01:12:56 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -25,6 +25,7 @@ MAKEMAKERFLAGS = INSTALLDIRS=site \
 		 MAKEFILE=Makefile.xs \
 		 FIRST_MAKEFILE=Makefile.xs 
 
+if WITH_PERL_EXTENSIONS
 all: Makefile.xs
 	$(MAKE) -f Makefile.xs
 
@@ -65,5 +66,6 @@ clean:
 	rm -f *.o
 	rm -f Makefile.xs
 	rm -f Makefile.xs.old
+endif
 
 EXTRA_DIST = Libnodeupdown.pm Libnodeupdown.xs Makefile.PL typemap
