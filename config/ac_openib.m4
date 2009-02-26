@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: ac_openib.m4,v 1.1 2006-08-30 17:10:00 chu11 Exp $
+## $Id: ac_openib.m4,v 1.2 2009-02-26 00:14:38 chu11 Exp $
 ##*****************************************************************************
 
 AC_DEFUN([AC_OPENIB],
@@ -32,6 +32,42 @@ AC_DEFUN([AC_OPENIB],
   else
      MANPAGE_OPENIB=0
      ac_with_openib=no
+  fi
+
+  if test "$ac_with_openib" = "yes"; then
+    SAVE_LIBS=$LIBS
+    LIBS="$LIBS -lopensm -losmcomp -losmvendor"
+    SAVE_CFLAGS=$CFLAGS
+    CFLAGS="$CFLAGS -DOSM_VENDOR_INTF_OPENIB -I/usr/include/infiniband"
+    AC_TRY_LINK(
+    [
+        #include <opensm/osm_mad_pool.h>
+    ],
+    [
+        osm_mad_pool_t mad_pool;
+        osm_log_t log;
+        osm_mad_pool_init(&mad_pool, &log);
+    ],
+    [ac_osm_mad_pool_init=two], [
+        AC_TRY_LINK(
+        [
+            #include <opensm/osm_mad_pool.h>
+        ],
+        [
+            osm_mad_pool_t mad_pool;
+            osm_mad_pool_init(&mad_pool);
+        ],
+        [ac_osm_mad_pool_init=one],
+        [ac_osm_mad_pool_init=no])
+    ])
+
+    if test "x${ac_osm_mad_pool_init}" = "xtwo"; then
+       AC_DEFINE(HAVE_FUNC_OSM_MAD_POOL_INIT_2, [], [Define osm_mad_pool_init with 2 args])
+    elif test "x${ac_osm_mad_pool_init}" = "xone"; then
+       AC_DEFINE(HAVE_FUNC_OSM_MAD_POOL_INIT_1, [], [Define osm_mad_pool_init with 1 args])
+    fi
+    LIBS=$SAVE_LIBS
+    CFLAGS=$SAVE_CFLAGS
   fi
 
   AC_SUBST(MANPAGE_OPENIB)

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_openib.c,v 1.7 2008-03-28 17:06:37 chu11 Exp $
+ *  $Id: nodeupdown_backend_openib.c,v 1.8 2009-02-26 00:14:38 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2008 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -174,7 +174,11 @@ _get_bind_handle(nodeupdown_t nodeupdown_handle, osm_bind_handle_t *handle)
 
         _openib_vendor = osm_vendor_new(&_openib_log_osm, 100);
 	osm_mad_pool_construct(&_openib_mad_pool);
+#ifdef HAVE_FUNC_OSM_MAD_POOL_INIT_2
 	if ((status = osm_mad_pool_init(&_openib_mad_pool, &_openib_log_osm)) != IB_SUCCESS) {
+#else
+	if ((status = osm_mad_pool_init(&_openib_mad_pool)) != IB_SUCCESS) {
+#endif
 #ifndef NDEBUG
 		fprintf(stderr, "Failed to init mad pool: %s\n",
 			ib_get_err_str(status));
