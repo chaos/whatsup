@@ -1,3 +1,9 @@
+2000-02-26  Albert Chu  <chu11@llnl.gov>
+	
+	* NEWS: updated.
+
+	* tagged whatsup-1-9-1
+
 2000-02-25  Albert Chu  <chu11@llnl.gov>
 
 	* config/ac_openib.m4,

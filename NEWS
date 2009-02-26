@@ -2,6 +2,11 @@ This file describes changes in recent versions of whatsup. It
 primarily documents those changes that are of interest to users
 and admins.
 
+Changes in whatsup-1.9-1
+=========================
+ -- Support different APIs to osm_mad_pool_init() for openib backend
+    module.
+
 Changes in whatsup-1.8-2
 =========================
  -- Support building without perl extensions.
@@ -62,4 +67,4 @@ Changes in whatsup-1.2-1
 ===========================
  -- started NEWS file.
 
-$Id: NEWS,v 1.15 2009-02-19 16:48:28 chu11 Exp $
+$Id: NEWS,v 1.16 2009-02-26 17:50:09 chu11 Exp $
