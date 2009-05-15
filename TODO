@@ -9,3 +9,6 @@
   - whazzup
 - Symbol issloading uew wih Nodeupdown
 - mechanism to determine time of last state change
+- cleanup/fix conffile lib
+  - list lens should be unsigned
+  - uints instead of just ints
