@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.32 2009-05-15 20:49:20 chu11 Exp $
+ *  $Id: conffile.c,v 1.33 2009-05-15 20:55:11 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2008 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -212,12 +212,12 @@ static int
 _setup(conffile_t cf,
        const char *filename,
        struct conffile_option *options,
-       int options_len,
+       unsigned int options_len,
        void *app_ptr,
        int app_data,
-       int flags)
+       unsigned int flags)
 {
-    int i;
+    unsigned int i;
     
     /* If it doesn't exist for real or can't be read, we consider it
      * non-existant 
@@ -689,13 +689,14 @@ int
 conffile_parse(conffile_t cf,
                const char *filename,
                struct conffile_option *options,
-               int options_len,
+               unsigned int options_len,
                void *app_ptr,
                int app_data,
-               int flags)
+               unsigned int flags)
 {
-    int i, temp, len = 0, retval = -1;
+    int len = 0, retval = -1;
     char linebuf[CONFFILE_MAX_LINELEN];
+    unsigned int i, temp;
 
     if (cf == NULL || cf->magic != CONFFILE_MAGIC)
         return -1;

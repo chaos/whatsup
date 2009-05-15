@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.h,v 1.20 2009-05-15 20:49:20 chu11 Exp $
+ *  $Id: conffile.h,v 1.21 2009-05-15 20:55:11 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2008 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -373,10 +373,13 @@ int conffile_line_number(conffile_t cf);
  * Parse a configuration file.  
  * Returns 0 on success, -1 on error.
  */
-int conffile_parse(conffile_t cf, const char *filename,
+int conffile_parse(conffile_t cf,
+                   const char *filename,
                    struct conffile_option *options,
-                   int options_len, void *app_ptr, int app_data,
-                   int flags);
+                   unsigned int options_len,
+                   void *app_ptr,
+                   int app_data,
+                   unsigned int flags);
 
 /* conffile_empty
  *
