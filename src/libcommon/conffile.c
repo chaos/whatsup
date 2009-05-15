@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.33 2009-05-15 20:55:11 chu11 Exp $
+ *  $Id: conffile.c,v 1.34 2009-05-15 21:14:05 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2008 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -42,6 +42,7 @@
 #endif /* HAVE_FCNTL_H */
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <limits.h>
 
 #include "conffile.h"
 #include "fd.h"
@@ -68,29 +69,29 @@ struct conffile {
     int errnum;
     int fd;
     struct conffile_option *options;
-    int options_len;
+    unsigned int options_len;
     void *app_ptr;
     int app_data;
-    int flags;
-    int line_num;
-    int line_count;
+    unsigned int flags;
+    unsigned int line_num;
+    unsigned int line_count;
     int end_of_file;
     char optionname[CONFFILE_MAX_OPTIONNAMELEN];
 };
 
 static char *_errmsg[] = {
     "success",
-    "unknown configuration option \"%s\" on line %d",
+    "unknown configuration option \"%s\" on line %u",
     "configuration option \"%s\" listed too many times",
     "configuration option \"%s\" listed too few times",
-    "overflow line length on line %d",
-    "overflow option name length on line %d",
-    "overflow arg length on line %d",
-    "missing argument for option \"%s\" on line %d",
-    "too many arguments listed for option \"%s\" on line %d",
-    "invalid argument listed for option \"%s\" on line %d",
-    "quotation marks used improperly on line %d",
-    "continuation character '\\' used improperly on line %d",
+    "overflow line length on line %u",
+    "overflow option name length on line %u",
+    "overflow arg length on line %u",
+    "missing argument for option \"%s\" on line %u",
+    "too many arguments listed for option \"%s\" on line %u",
+    "invalid argument listed for option \"%s\" on line %u",
+    "quotation marks used improperly on line %u",
+    "continuation character '\\' used improperly on line %u",
     "callback function generated error",
     "configuration file does not exist",
     "configuration file cannot be opened",
@@ -204,6 +205,12 @@ conffile_line_number(conffile_t cf)
 {
     if (cf == NULL || cf->magic != CONFFILE_MAGIC)
         return -1;
+
+    if (cf->line_num > INT_MAX)
+      {
+        cf->errnum = CONFFILE_ERR_INTERNAL;
+        return -1;
+      }
 
     return cf->line_num;
 } 
