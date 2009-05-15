@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.h,v 1.19 2008-03-28 17:06:37 chu11 Exp $
+ *  $Id: conffile.h,v 1.20 2009-05-15 20:49:20 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2008 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -219,11 +219,11 @@ struct conffile_data {
     double doubleval;
     char string[CONFFILE_MAX_ARGLEN];
     int intlist[CONFFILE_MAX_ARGS];
-    int intlist_len;
+    unsigned int intlist_len;
     double doublelist[CONFFILE_MAX_ARGS];
-    int doublelist_len;
+    unsigned int doublelist_len;
     char stringlist[CONFFILE_MAX_ARGS][CONFFILE_MAX_ARGLEN];
-    int stringlist_len;
+    unsigned int stringlist_len;
 };
 
 /* conffile_option_func

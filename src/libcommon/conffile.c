@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.31 2008-05-21 18:13:43 chu11 Exp $
+ *  $Id: conffile.c,v 1.32 2009-05-15 20:49:20 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2008 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -400,9 +400,12 @@ _move_past_whitespace(conffile_t cf, char *linebuf)
 int
 _parse_args(conffile_t cf, 
             char *linebuf, 
-            char args[CONFFILE_MAX_ARGS][CONFFILE_MAX_ARGLEN])
+            char args[CONFFILE_MAX_ARGS][CONFFILE_MAX_ARGLEN],
+            unsigned int *numargs)
 {
-    int quote_flag, numargs = 0;
+    int quote_flag;
+
+    (*numargs) = 0;
 
     while (1) {
         int arglen = 0;
@@ -421,7 +424,7 @@ _parse_args(conffile_t cf,
             break;
         
         quote_flag = 0;
-        memset(args[numargs], '\0', CONFFILE_MAX_ARGLEN);
+        memset(args[(*numargs)], '\0', CONFFILE_MAX_ARGLEN);
         while (*linebuf != '\0' 
                && (quote_flag == 1 || !isspace(*linebuf))) {
 
@@ -445,7 +448,7 @@ _parse_args(conffile_t cf,
                 }
             }
 
-            args[numargs][arglen] = *linebuf;
+            args[(*numargs)][arglen] = *linebuf;
             linebuf++;
             arglen++;
 
@@ -462,22 +465,23 @@ _parse_args(conffile_t cf,
             return -1;
         }
 
-        numargs++;
+        (*numargs)++;
                                 
         if (*linebuf == '\0')
             break;
     }
 
-    return numargs;
+    return 0;
 }
 
 static int
 _parseline(conffile_t cf, char *linebuf, int linebuflen)
 {
-    int i, optionlen, rv, numargs = 0;
+    int i, optionlen, rv;
     char args[CONFFILE_MAX_ARGS][CONFFILE_MAX_ARGLEN];
     struct conffile_option *option = NULL;
     struct conffile_data data;
+    unsigned int numargs = 0;
     char *ptr;
 
     memset(&data, '\0', sizeof(struct conffile_data));
@@ -534,7 +538,7 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
     }
 
     if ((linebuf = _move_past_whitespace(cf, linebuf)) != NULL) {
-        if ((numargs = _parse_args(cf, linebuf, args)) < 0)
+        if (_parse_args(cf, linebuf, args, &numargs) < 0)
             return -1;
     }
 

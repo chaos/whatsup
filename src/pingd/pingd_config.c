@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd_config.c,v 1.12 2008-03-28 17:06:38 chu11 Exp $
+ *  $Id: pingd_config.c,v 1.13 2009-05-15 20:49:21 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2008 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -228,7 +228,7 @@ _config_file_parse(void)
       },
     };
   conffile_t cf = NULL;
-  int num;
+  unsigned int num;
 
   if (!(cf = conffile_handle_create()))
     {
