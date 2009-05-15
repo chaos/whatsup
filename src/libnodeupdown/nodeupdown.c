@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown.c,v 1.159 2009-05-15 20:55:11 chu11 Exp $
+ *  $Id: nodeupdown.c,v 1.160 2009-05-15 21:20:00 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2008 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -296,8 +296,7 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_config *conf)
        conffile_empty, 0, 0, NULL, NULL, 0},
     };
   conffile_t cf = NULL;
-  unsigned int num;
-  int rv = -1;
+  int num, rv = -1;
   
   if (!(cf = conffile_handle_create())) 
     {

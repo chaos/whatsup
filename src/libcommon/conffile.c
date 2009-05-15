@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.34 2009-05-15 21:14:05 chu11 Exp $
+ *  $Id: conffile.c,v 1.35 2009-05-15 21:20:00 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2008 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -42,7 +42,6 @@
 #endif /* HAVE_FCNTL_H */
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <limits.h>
 
 #include "conffile.h"
 #include "fd.h"
@@ -69,29 +68,29 @@ struct conffile {
     int errnum;
     int fd;
     struct conffile_option *options;
-    unsigned int options_len;
+    int options_len;
     void *app_ptr;
     int app_data;
-    unsigned int flags;
-    unsigned int line_num;
-    unsigned int line_count;
+    int flags;
+    int line_num;
+    int line_count;
     int end_of_file;
     char optionname[CONFFILE_MAX_OPTIONNAMELEN];
 };
 
 static char *_errmsg[] = {
     "success",
-    "unknown configuration option \"%s\" on line %u",
+    "unknown configuration option \"%s\" on line %d",
     "configuration option \"%s\" listed too many times",
     "configuration option \"%s\" listed too few times",
-    "overflow line length on line %u",
-    "overflow option name length on line %u",
-    "overflow arg length on line %u",
-    "missing argument for option \"%s\" on line %u",
-    "too many arguments listed for option \"%s\" on line %u",
-    "invalid argument listed for option \"%s\" on line %u",
-    "quotation marks used improperly on line %u",
-    "continuation character '\\' used improperly on line %u",
+    "overflow line length on line %d",
+    "overflow option name length on line %d",
+    "overflow arg length on line %d",
+    "missing argument for option \"%s\" on line %d",
+    "too many arguments listed for option \"%s\" on line %d",
+    "invalid argument listed for option \"%s\" on line %d",
+    "quotation marks used improperly on line %d",
+    "continuation character '\\' used improperly on line %d",
     "callback function generated error",
     "configuration file does not exist",
     "configuration file cannot be opened",
@@ -206,12 +205,6 @@ conffile_line_number(conffile_t cf)
     if (cf == NULL || cf->magic != CONFFILE_MAGIC)
         return -1;
 
-    if (cf->line_num > INT_MAX)
-      {
-        cf->errnum = CONFFILE_ERR_INTERNAL;
-        return -1;
-      }
-
     return cf->line_num;
 } 
 
@@ -219,12 +212,12 @@ static int
 _setup(conffile_t cf,
        const char *filename,
        struct conffile_option *options,
-       unsigned int options_len,
+       int options_len,
        void *app_ptr,
        int app_data,
-       unsigned int flags)
+       int flags)
 {
-    unsigned int i;
+    int i;
     
     /* If it doesn't exist for real or can't be read, we consider it
      * non-existant 
@@ -407,12 +400,9 @@ _move_past_whitespace(conffile_t cf, char *linebuf)
 int
 _parse_args(conffile_t cf, 
             char *linebuf, 
-            char args[CONFFILE_MAX_ARGS][CONFFILE_MAX_ARGLEN],
-            unsigned int *numargs)
+            char args[CONFFILE_MAX_ARGS][CONFFILE_MAX_ARGLEN])
 {
-    int quote_flag;
-
-    (*numargs) = 0;
+    int quote_flag, numargs = 0;
 
     while (1) {
         int arglen = 0;
@@ -431,7 +421,7 @@ _parse_args(conffile_t cf,
             break;
         
         quote_flag = 0;
-        memset(args[(*numargs)], '\0', CONFFILE_MAX_ARGLEN);
+        memset(args[numargs], '\0', CONFFILE_MAX_ARGLEN);
         while (*linebuf != '\0' 
                && (quote_flag == 1 || !isspace(*linebuf))) {
 
@@ -455,7 +445,7 @@ _parse_args(conffile_t cf,
                 }
             }
 
-            args[(*numargs)][arglen] = *linebuf;
+            args[numargs][arglen] = *linebuf;
             linebuf++;
             arglen++;
 
@@ -472,23 +462,22 @@ _parse_args(conffile_t cf,
             return -1;
         }
 
-        (*numargs)++;
+        numargs++;
                                 
         if (*linebuf == '\0')
             break;
     }
 
-    return 0;
+    return numargs;
 }
 
 static int
 _parseline(conffile_t cf, char *linebuf, int linebuflen)
 {
-    int i, optionlen, rv;
+    int i, optionlen, rv, numargs = 0;
     char args[CONFFILE_MAX_ARGS][CONFFILE_MAX_ARGLEN];
     struct conffile_option *option = NULL;
     struct conffile_data data;
-    unsigned int numargs = 0;
     char *ptr;
 
     memset(&data, '\0', sizeof(struct conffile_data));
@@ -545,7 +534,7 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
     }
 
     if ((linebuf = _move_past_whitespace(cf, linebuf)) != NULL) {
-        if (_parse_args(cf, linebuf, args, &numargs) < 0)
+        if ((numargs = _parse_args(cf, linebuf, args)) < 0)
             return -1;
     }
 
@@ -696,14 +685,13 @@ int
 conffile_parse(conffile_t cf,
                const char *filename,
                struct conffile_option *options,
-               unsigned int options_len,
+               int options_len,
                void *app_ptr,
                int app_data,
-               unsigned int flags)
+               int flags)
 {
-    int len = 0, retval = -1;
+    int i, temp, len = 0, retval = -1;
     char linebuf[CONFFILE_MAX_LINELEN];
-    unsigned int i, temp;
 
     if (cf == NULL || cf->magic != CONFFILE_MAGIC)
         return -1;

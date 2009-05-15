@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.h,v 1.21 2009-05-15 20:55:11 chu11 Exp $
+ *  $Id: conffile.h,v 1.22 2009-05-15 21:20:00 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2008 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -219,11 +219,11 @@ struct conffile_data {
     double doubleval;
     char string[CONFFILE_MAX_ARGLEN];
     int intlist[CONFFILE_MAX_ARGS];
-    unsigned int intlist_len;
+    int intlist_len;
     double doublelist[CONFFILE_MAX_ARGS];
-    unsigned int doublelist_len;
+    int doublelist_len;
     char stringlist[CONFFILE_MAX_ARGS][CONFFILE_MAX_ARGLEN];
-    unsigned int stringlist_len;
+    int stringlist_len;
 };
 
 /* conffile_option_func
@@ -373,13 +373,10 @@ int conffile_line_number(conffile_t cf);
  * Parse a configuration file.  
  * Returns 0 on success, -1 on error.
  */
-int conffile_parse(conffile_t cf,
-                   const char *filename,
+int conffile_parse(conffile_t cf, const char *filename,
                    struct conffile_option *options,
-                   unsigned int options_len,
-                   void *app_ptr,
-                   int app_data,
-                   unsigned int flags);
+                   int options_len, void *app_ptr, int app_data,
+                   int flags);
 
 /* conffile_empty
  *
