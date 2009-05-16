@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_pingd.c,v 1.8 2008-03-28 17:06:37 chu11 Exp $
+ *  $Id: nodeupdown_backend_pingd.c,v 1.9 2009-05-16 01:21:39 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2008 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -210,6 +210,7 @@ pingd_backend_get_updown_data(nodeupdown_t handle,
 
   rv = 0;
  cleanup:
+  /* ignore potential error, just return error or result */
   close(fd);
   return rv;
 }

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd_clusterlist_hostsfile.c,v 1.5 2008-03-28 17:06:38 chu11 Exp $
+ *  $Id: pingd_clusterlist_hostsfile.c,v 1.6 2009-05-16 01:21:39 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2008 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -293,10 +293,12 @@ hostsfile_setup(void)
   if (len < 0)
     goto cleanup;
 
+  /* ignore potential error, just return result */
   close(fd);
   return 0;
 
  cleanup:
+  /* ignore potential error, just return result */
   close(fd);
   if (hosts)
     list_destroy(hosts);

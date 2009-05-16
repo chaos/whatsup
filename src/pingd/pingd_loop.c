@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd_loop.c,v 1.8 2008-03-28 17:06:38 chu11 Exp $
+ *  $Id: pingd_loop.c,v 1.9 2009-05-16 01:21:39 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2008 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -432,6 +432,7 @@ _send_ping_data(void)
     }
 
   list_iterator_destroy(itr);
+  /* ignore potential error, we're done writing, who cares */
   close(rhost_fd);
 }
 

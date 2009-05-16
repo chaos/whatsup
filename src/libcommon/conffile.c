@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.c,v 1.35 2009-05-15 21:20:00 chu11 Exp $
+ *  $Id: conffile.c,v 1.36 2009-05-16 01:21:39 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2008 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -760,7 +760,8 @@ conffile_parse(conffile_t cf,
     cf->errnum = CONFFILE_ERR_SUCCESS;
     retval = 0;
 
- cleanup:
+ cleanup:x
+    /* ignore potential error, just return result to user */
     close(cf->fd);
     return retval;
 }
