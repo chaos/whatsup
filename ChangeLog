@@ -2,6 +2,8 @@
 
         * src/Nodeupdown/Makefile.am: Fix portability bug.
 
+	* src/Libnodeupdown/Makefile.am: Fix portability bug.
+
 	* tagged whatsup-1-9-2
 
 2009-05-15  Albert Chu  <chu11@llnl.gov>
