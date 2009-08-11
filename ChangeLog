@@ -1,3 +1,7 @@
+2009-08-11  Albert Chu  <chu11@llnl.gov>
+
+        * src/Nodeupdown/Makefile.am: Fix portability bug.
+
 2009-05-15  Albert Chu  <chu11@llnl.gov>
 
         * Add comments for clarification.
