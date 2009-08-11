@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.15 2009-08-11 21:51:41 chu11 Exp $
+## $Id: Makefile.am,v 1.16 2009-08-11 22:07:07 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -11,14 +11,14 @@ NODEUPDOWNPMFILES = Nodeupdown.pm
 NODEUPDOWNPMFILESdir = $(INSTALLSITEARCH)
 NODEUPDOWNPMFILES_DATA = $(NODEUPDOWNPMFILES)
  
-Nodeupdown.3pm:
+Nodeupdown.$(PERLMAN3EXT):
 # Hacks to make distcheck work
 	if ! test -a Nodeupdown.pm; then \
 		cp $(srcdir)/Nodeupdown.pm .; \
 	fi
-	$(POD2MAN) Nodeupdown.pm Nodeupdown.3pm
+	$(POD2MAN) Nodeupdown.pm Nodeupdown.$(PERLMAN3EXT)
  
-man3_MANS = Nodeupdown.3pm
+man3_MANS = Nodeupdown.$(PERLMAN3EXT)
  
 install-data-hook:
 	chmod 444 $(DESTDIR)/$(INSTALLSITEARCH)/Nodeupdown.pm

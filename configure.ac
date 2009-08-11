@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: configure.ac,v 1.69 2009-02-19 01:12:56 chu11 Exp $
+## $Id: configure.ac,v 1.70 2009-08-11 22:07:07 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with autoconf to produce a configure script.
 ##*****************************************************************************
@@ -124,6 +124,12 @@ AM_CONDITIONAL(WITH_OPENIB, [test "$ac_with_openib" = "yes"])
 AC_HOSTSFILE
 AC_HOSTSFILE_PATH
 AM_CONDITIONAL(WITH_HOSTSFILE, [test "$ac_with_hostsfile" = "yes"])
+
+#
+# Determine Perl section-3 man page extension
+#
+PERLMAN3EXT=`$PERL -MConfig -e 'print $Config{man3ext}'`
+AC_SUBST([PERLMAN3EXT])
 
 ##
 # Checks for typedefs, structures, and compiler characteristics.

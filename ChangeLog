@@ -4,6 +4,8 @@
 
 	* src/Libnodeupdown/Makefile.am: Fix portability bug.
 
+	* configure.ac: Deal with manpage portability.
+
 	* tagged whatsup-1-9-2
 
 2009-05-15  Albert Chu  <chu11@llnl.gov>
