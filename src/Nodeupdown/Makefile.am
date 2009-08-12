@@ -1,14 +1,14 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.16 2009-08-11 22:07:07 chu11 Exp $
+## $Id: Makefile.am,v 1.17 2009-08-12 21:59:47 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
 
-INSTALLSITEARCH=`perl -e 'use Config; $$T=$$Config{installsitearch}; print $$T;'`
- 
+INSTALLSITEARCH=`$(PERL) -e 'use Config; $$T=$$Config{installsitearch}; $$T=~/^\Q$$Config{siteprefix}\E\/(.+)/; print $$1;'`
+
 if WITH_PERL_EXTENSIONS
 NODEUPDOWNPMFILES = Nodeupdown.pm
-NODEUPDOWNPMFILESdir = $(INSTALLSITEARCH)
+NODEUPDOWNPMFILESdir = $(prefix)/$(INSTALLSITEARCH)
 NODEUPDOWNPMFILES_DATA = $(NODEUPDOWNPMFILES)
  
 Nodeupdown.$(PERLMAN3EXT):
@@ -21,7 +21,7 @@ Nodeupdown.$(PERLMAN3EXT):
 man3_MANS = Nodeupdown.$(PERLMAN3EXT)
  
 install-data-hook:
-	chmod 444 $(DESTDIR)/$(INSTALLSITEARCH)/Nodeupdown.pm
+	chmod 444 $(DESTDIR)/$(prefix)/$(INSTALLSITEARCH)/Nodeupdown.pm
 endif
  
 EXTRA_DIST = Nodeupdown.pm

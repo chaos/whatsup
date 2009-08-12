@@ -1,3 +1,7 @@
+2009-08-12  Albert Chu  <chu11@llnl.gov>
+
+	* src/Nodeupdown/Makefile.am: Revert some changes.
+
 2009-08-11  Albert Chu  <chu11@llnl.gov>
 
         * src/Nodeupdown/Makefile.am: Fix portability bug.
@@ -5,8 +9,6 @@
 	* src/Libnodeupdown/Makefile.am: Fix portability bug.
 
 	* configure.ac: Deal with manpage portability.
-
-	* tagged whatsup-1-9-2
 
 2009-05-15  Albert Chu  <chu11@llnl.gov>
 
