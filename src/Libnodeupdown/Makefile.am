@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.21 2009-08-11 22:03:09 chu11 Exp $
+## $Id: Makefile.am,v 1.22 2009-08-12 23:43:00 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
@@ -19,8 +19,7 @@ PERL_LIBS = "-L../libnodeupdown/.libs -lnodeupdown"
 
 MAKEMAKERFLAGS = INSTALLDIRS=site \
 		 DESTDIR=$(PERL_DESTDIR) \
-		 SITEPREFIX=$(prefix) \
-		 INSTALLSITEMAN3DIR=$(mandir)/man3 \
+		 PREFIX=$(prefix) \
 		 INC=$(PERL_INC) \
 		 LIBS=$(PERL_LIBS) \
 		 MAKEFILE=Makefile.xs \
