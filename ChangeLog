@@ -1,3 +1,9 @@
+2009-10-09  Albert Chu  <chu11@llnl.gov>
+
+	* whatsup.spec.in: Add appropriate build requires.
+
+	* tagged whatsup-1-9-2
+
 2009-08-12  Albert Chu  <chu11@llnl.gov>
 
 	* src/Nodeupdown/Makefile.am: Revert some changes.

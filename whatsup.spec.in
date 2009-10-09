@@ -5,6 +5,7 @@ Summary: whatsup node up/down detection utility
 Group: Applications/Communications
 License: GPL
 Source: @PROJECT@-@VERSION@.tar.gz
+BuildRequires: perl(ExtUtils::MakeMaker)
 BuildRoot: %{_tmppath}/@PROJECT@-@VERSION@
 
 %description
