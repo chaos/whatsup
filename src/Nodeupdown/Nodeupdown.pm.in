@@ -1,5 +1,5 @@
 #############################################################################
-#  $Id: Nodeupdown.pm.in,v 1.7 2008-03-28 17:06:37 chu11 Exp $
+#  $Id: Nodeupdown.pm.in,v 1.8 2009-11-04 18:56:27 chu11 Exp $
 #############################################################################
 #  Copyright (C) 2007-2008 Lawrence Livermore National Security, LLC.
 #  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -376,7 +376,7 @@ Returns the number of down nodes.
 
 Please be careful with the semantics of B<are_up()> and B<are_down()>.
 Just because a node is not up, does not mean it is down.  For example,
-if an improper node name is used (i.e. $obj->are_up("foobar"),
+if an improper node name is used (e.g. $obj->are_up("foobar"),
 $obj->are_down("foobar")), both B<are_up()> and B<are_down()> will
 fail.
 
