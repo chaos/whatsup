@@ -2,6 +2,8 @@
 
 	* src/libcommon/conffile.h, src/libcommon/conffile.c: Support
 	config options w/o a limit.
+
+	* Update copyright globally.
 	
 2009-11-04  Albert Chu  <chu11@llnl.gov>
 

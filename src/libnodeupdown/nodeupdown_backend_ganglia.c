@@ -1,7 +1,7 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_backend_ganglia.c,v 1.32 2009-05-16 01:21:39 chu11 Exp $
+ *  $Id: nodeupdown_backend_ganglia.c,v 1.33 2010-02-02 00:01:58 chu11 Exp $
  *****************************************************************************
- *  Copyright (C) 2007-2008 Lawrence Livermore National Security, LLC.
+ *  Copyright (C) 2007-2010 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
  *  Written by Albert Chu <chu11@llnl.gov>
