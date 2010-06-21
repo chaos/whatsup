@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd_loop.c,v 1.11 2010-06-21 20:35:24 chu11 Exp $
+ *  $Id: pingd_loop.c,v 1.12 2010-06-21 23:49:36 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2010 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -100,6 +100,8 @@ static void
 _fds_setup(void)
 {
   struct sockaddr_in addr;
+  unsigned int optlen;
+  int optval = 1;
   int i;
 
   assert(!fds);
@@ -132,6 +134,12 @@ _fds_setup(void)
   if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     ERR_EXIT(("socket: %s", strerror(errno)));
   
+  /* For quick start/restart */
+  optval = 1;
+  optlen = sizeof(optval);
+  if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &optval, optlen) < 0)
+    ERR_EXIT(("setsockopt: %s", strerror(errno)));
+
   memset(&addr, '\0', sizeof(struct sockaddr_in));
   addr.sin_family = AF_INET;
   addr.sin_port = htons(conf.pingd_server_port);
