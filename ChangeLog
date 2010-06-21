@@ -1,3 +1,8 @@
+2010-06-21  Albert Chu  <chu11@llnl.gov>
+
+	* src/pinged/pingd_loop.c (_receive_ping): Remove left over debug
+	statement.
+	
 2010-02-01  Albert Chu  <chu11@llnl.gov>
 
 	* src/libcommon/conffile.h, src/libcommon/conffile.c: Support

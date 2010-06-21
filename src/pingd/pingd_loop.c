@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd_loop.c,v 1.10 2010-02-02 00:01:59 chu11 Exp $
+ *  $Id: pingd_loop.c,v 1.11 2010-06-21 20:35:24 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2010 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -369,8 +369,6 @@ _receive_ping(int fd)
 
   if ((len = recvfrom(fd, buf, PINGD_BUFLEN, 0, (struct sockaddr *)&from, &fromlen)) < 0)
     ERR_EXIT(("recvfrom: %s", strerror(errno)));
-
-  printf("%s:%d\n", __FUNCTION__, __LINE__);
 
   if (!(tmpstr = inet_ntoa(from.sin_addr)))
     ERR_EXIT(("inet_ntoa: %s", strerror(errno))); /* strerror? */
