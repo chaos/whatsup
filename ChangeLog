@@ -1,3 +1,11 @@
+2010-06-22  Albert Chu  <chu11@llnl.gov>
+
+	* src/libnodeupdown/nodeupdown_clusterlist_hostsfile.c
+	(hostsfile_clusterlist_setup): If hostsfile not found, exit
+	cleanly.
+	
+	* tagged whatsup-1-10-1
+
 2010-06-21  Albert Chu  <chu11@llnl.gov>
 
 	* src/pingd/pingd_loop.c (_receive_ping): Remove left over debug

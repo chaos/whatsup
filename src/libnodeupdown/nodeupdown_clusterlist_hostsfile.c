@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.28 2010-02-02 00:01:58 chu11 Exp $
+ *  $Id: nodeupdown_clusterlist_hostsfile.c,v 1.29 2010-06-22 19:48:25 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2010 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -211,6 +211,11 @@ hostsfile_clusterlist_setup(nodeupdown_t handle)
 #ifndef NDEBUG
       fprintf(stderr, "open: %s\n", strerror(errno));
 #endif /* NDEBUG */
+
+      /* no nodes, just get out */
+      if (errno == ENOENT)
+        goto out;
+
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       goto cleanup;
     }
@@ -270,6 +275,7 @@ hostsfile_clusterlist_setup(nodeupdown_t handle)
         }
     }
                                                                                      
+ out:
   /* ignore potential error, just return result */
   close(fd);
   return 0;
@@ -325,6 +331,10 @@ hostsfile_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node)
   char *nodePtr = NULL;
   void *ptr;
   
+  /* Have to assume it is */
+  if (!list_count(hosts))
+    return 1;
+
   /* Shorten hostname if necessary */
   if (strchr(node, '.'))
     {
