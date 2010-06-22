@@ -5,6 +5,11 @@
 
 	* src/pingd/pingd_loop.c (_fds_setup): Set SO_REUSEADDR on server
 	socket to support quick server restarts.
+
+	* config/ac_hostsfile.m4: Fix substitution bug.
+
+	* man/whatsup.1.in: Note in manpage that libnodeupdown
+	configuration may be necessary.
 	
 2010-02-01  Albert Chu  <chu11@llnl.gov>
 

@@ -1,5 +1,5 @@
 ##*****************************************************************************
-## $Id: ac_hostsfile.m4,v 1.6 2006-07-10 17:43:55 chu11 Exp $
+## $Id: ac_hostsfile.m4,v 1.7 2010-06-22 00:24:40 chu11 Exp $
 ##*****************************************************************************
 
 AC_DEFUN([AC_HOSTSFILE],
@@ -43,13 +43,17 @@ AC_DEFUN([AC_HOSTSFILE_PATH],
   )
   AC_MSG_RESULT([$CLUSTERLIST_HOSTSFILE_DEFAULT])
  
+  NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT=$CLUSTERLIST_HOSTSFILE_DEFAULT
+
   AC_DEFINE_UNQUOTED([NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT],
-                     ["$CLUSTERLIST_HOSTSFILE_DEFAULT"],
+                     ["$NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT"],
                      [Define default hostsfile clusterlist.])
   AC_SUBST(NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT)
 
+  PINGD_CLUSTERLIST_HOSTSFILE_DEFAULT=$CLUSTERLIST_HOSTSFILE_DEFAULT
+
   AC_DEFINE_UNQUOTED([PINGD_CLUSTERLIST_HOSTSFILE_DEFAULT],
-                     ["$CLUSTERLIST_HOSTSFILE_DEFAULT"],
+                     ["$PINGD_CLUSTERLIST_HOSTSFILE_DEFAULT"],
                      [Define default hostsfile clusterlist.])
   AC_SUBST(PINGD_CLUSTERLIST_HOSTSFILE_DEFAULT)
 ])

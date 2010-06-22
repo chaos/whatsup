@@ -1,5 +1,5 @@
 .\"#############################################################################
-.\"$Id: whatsup.1.in,v 1.34 2010-02-02 00:01:53 chu11 Exp $
+.\"$Id: whatsup.1.in,v 1.35 2010-06-22 00:24:40 chu11 Exp $
 .\"#############################################################################
 .\"  Copyright (C) 2007-2010 Lawrence Livermore National Security, LLC.
 .\"  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -36,7 +36,10 @@ lists which nodes are currently up or down in a cluster.  It
 determines which nodes are up or down based on information provided
 by the 
 .B nodeupdown(3)
-library.
+library.  Configuration of backend components or clusterlists for the
+.B nodeupdown(3)
+library may be needed.  Please see
+.B libnodeupdown(3).
 
 .B whatsup
 will check on the status of every node in the cluster unless specific
