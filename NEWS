@@ -2,6 +2,14 @@ This file describes changes in recent versions of whatsup. It
 primarily documents those changes that are of interest to users
 and admins.
 
+Changes in whatsup-1.10-1
+=========================
+ -- Support quick restarts on pingd server.
+ -- Add documentation on configuration requirements.
+ -- Fix manpage typos.
+ -- If hostsfile is not found, assume default behavior instead of
+    returning error.
+
 Changes in whatsup-1.9-2
 =========================
  -- Fix FC11/RHEL6 portability bugs.
@@ -71,4 +79,4 @@ Changes in whatsup-1.2-1
 ===========================
  -- started NEWS file.
 
-$Id: NEWS,v 1.17 2009-08-11 21:51:59 chu11 Exp $
+$Id: NEWS,v 1.18 2010-06-22 20:04:20 chu11 Exp $
