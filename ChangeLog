@@ -3,6 +3,8 @@
 	* src/pingd/pingd_config.c (_usage): Fix typo.
 
 	* src/pingd/pingd_config.c (_cmdline_parse): Fix error message text.
+
+	* src/pingd/pingd_loop.c: Fix comments.
 	
 2010-06-22  Albert Chu  <chu11@llnl.gov>
 

@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd_loop.c,v 1.12 2010-06-21 23:49:36 chu11 Exp $
+ *  $Id: pingd_loop.c,v 1.13 2010-06-28 22:50:07 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2010 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -206,6 +206,7 @@ _nodes_setup(void)
       if (!(tmpstr = inet_ntoa(info->destaddr.sin_addr)))
         ERR_EXIT(("inet_ntoa: %s", strerror(errno))); /* strerror? */
 
+      /* 'ip' memleaks, but we ignore it, let it last forever until process crashes */
       if (!(ip = strdup(tmpstr)))
         ERR_EXIT(("strdup: %s", strerror(errno)));
         
@@ -373,7 +374,7 @@ _receive_ping(int fd)
 
   /* We're happy as long as we receive something.  We don't bother
    * checking sequence numbers or anything like that.
-  */
+   */
 
   if ((len = recvfrom(fd, buf, PINGD_BUFLEN, 0, (struct sockaddr *)&from, &fromlen)) < 0)
     ERR_EXIT(("recvfrom: %s", strerror(errno)));
