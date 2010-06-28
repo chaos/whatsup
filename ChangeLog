@@ -1,6 +1,8 @@
 2010-06-28  Albert Chu  <chu11@llnl.gov>
 
 	* src/pingd/pingd_config.c (_usage): Fix typo.
+
+	* src/pingd/pingd_config.c (_cmdline_parse): Fix error message typo.
 	
 2010-06-22  Albert Chu  <chu11@llnl.gov>
 
