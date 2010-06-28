@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd_config.c,v 1.17 2010-06-28 21:24:09 chu11 Exp $
+ *  $Id: pingd_config.c,v 1.18 2010-06-28 21:28:55 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2010 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -156,7 +156,7 @@ _cmdline_parse(int argc, char **argv)
 #endif /* NDEBUG */
         case '?':
         default:
-          ERR_EXIT(("unknown command line option specified"));
+          ERR_EXIT(("unknown command line option '%c'", optopt));
         }          
     }
 }
