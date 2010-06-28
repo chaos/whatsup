@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd_config.c,v 1.15 2010-02-02 00:01:59 chu11 Exp $
+ *  $Id: pingd_config.c,v 1.16 2010-06-28 21:08:50 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2010 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -84,7 +84,7 @@ _config_default(void)
 static void
 _usage(void)
 {
-  fprintf(stderr, "Usage: cerebrod [OPTIONS]\n"
+  fprintf(stderr, "Usage: pingd [OPTIONS]\n"
           "-h    --help          Output Help\n"
           "-v    --version       Output Version\n");
 #ifndef NDEBUG

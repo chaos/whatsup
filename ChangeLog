@@ -1,3 +1,7 @@
+2010-06-28  Albert Chu  <chu11@llnl.gov>
+
+	* src/pingd/pingd_config.c (_usage): Fix typo.
+	
 2010-06-22  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown_clusterlist_hostsfile.c
