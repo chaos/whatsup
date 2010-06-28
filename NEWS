@@ -2,6 +2,10 @@ This file describes changes in recent versions of whatsup. It
 primarily documents those changes that are of interest to users
 and admins.
 
+Changes in whatsup-1.11-1
+=========================
+ -- Fix various minor typos and errors.
+
 Changes in whatsup-1.10-1
 =========================
  -- Support quick restarts on pingd server.
@@ -79,4 +83,4 @@ Changes in whatsup-1.2-1
 ===========================
  -- started NEWS file.
 
-$Id: NEWS,v 1.18 2010-06-22 20:04:20 chu11 Exp $
+$Id: NEWS,v 1.19 2010-06-28 21:29:22 chu11 Exp $
