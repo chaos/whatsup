@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: pingd_loop.c,v 1.13 2010-06-28 22:50:07 chu11 Exp $
+ *  $Id: pingd_loop.c,v 1.14 2010-06-29 18:06:06 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2010 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -71,7 +71,6 @@
 #include "timeval.h"
 
 #define PINGD_BUFLEN           1024
-#define PINGD_NODES_PER_SOCKET 8
 #define PINGD_SERVER_BACKLOG   5
 
 extern struct pingd_config conf;
@@ -81,17 +80,15 @@ static struct timeval pingd_next_send;
 struct pingd_info
 {
   char *hostname;
-  int fd;
   struct sockaddr_in destaddr;
   uint16_t sequence_number;
   struct timeval last_received;
 };
 
-int *fds = NULL;
-unsigned int fds_count = 0;
 List nodes = NULL;
 unsigned int nodes_count = 0;
 hash_t nodes_index = NULL;
+int ping_fd = 0;
 int server_fd = 0;
 
 extern int h_errno;
@@ -102,34 +99,24 @@ _fds_setup(void)
   struct sockaddr_in addr;
   unsigned int optlen;
   int optval = 1;
-  int i;
 
-  assert(!fds);
-  assert(!fds_count);
   assert(!nodes_count);
+  assert(!ping_fd);
   assert(!server_fd);
 
   nodes_count = hostlist_count(conf.hosts);
-  fds_count = nodes_count/PINGD_NODES_PER_SOCKET;
-  if (nodes_count % PINGD_NODES_PER_SOCKET)
-    fds_count++;
 
-  if (!(fds = (int *)malloc(fds_count * sizeof(int))))
-    ERR_EXIT(("malloc: %s", strerror(errno)));
+  if ((ping_fd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0)
+    ERR_EXIT(("socket: %s", strerror(errno)));
 
-  for (i = 0; i < fds_count; i++)
-    {
-      if ((fds[i] = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0)
-        ERR_EXIT(("socket: %s", strerror(errno)));
+  memset(&addr, '\0', sizeof(struct sockaddr_in));
+  addr.sin_family = AF_INET;
+  addr.sin_port = htons(0);
+  addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-      memset(&addr, '\0', sizeof(struct sockaddr_in));
-      addr.sin_family = AF_INET;
-      addr.sin_port = htons(0);
-      addr.sin_addr.s_addr = htonl(INADDR_ANY);
-
-      if (bind(fds[i], (struct sockaddr *)&addr, sizeof(struct sockaddr_in)) < 0)
-        ERR_EXIT(("bind: %s", strerror(errno)));
-    }
+  /* probably unnecessary */
+  if (bind(ping_fd, (struct sockaddr *)&addr, sizeof(struct sockaddr_in)) < 0)
+    ERR_EXIT(("bind: %s", strerror(errno)));
 
   if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     ERR_EXIT(("socket: %s", strerror(errno)));
@@ -159,8 +146,6 @@ _nodes_setup(void)
   char *host = NULL;
   int i = 0;
 
-  assert(fds);
-  assert(fds_count);
   assert(!nodes);
   assert(nodes_count);
   assert(!nodes_index);
@@ -183,15 +168,13 @@ _nodes_setup(void)
       struct hostent *h;
       char *tmpstr;
       char *ip;
-
+      
       if (!(info = (struct pingd_info *)malloc(sizeof(struct pingd_info))))
         ERR_EXIT(("malloc: %s", strerror(errno)));
       memset(info, '\0', sizeof(struct pingd_info));
 
       if (!(info->hostname = strdup(host)))
         ERR_EXIT(("strdup: %s", strerror(errno)));
-
-      info->fd = fds[i/PINGD_NODES_PER_SOCKET];
       
       if (!(h = gethostbyname(host)))
         ERR_EXIT(("gethostbyname: %s", hstrerror(h_errno)));
@@ -331,7 +314,7 @@ _pingd_send_pings(void)
       if ((len = _icmp_ping_build(info, buf, PINGD_BUFLEN)) < 0)
         ERR_EXIT(("_icmp_ping_build: %s", strerror(errno)));
 
-      if (sendto(info->fd, buf, len, 0, (struct sockaddr *)&(info->destaddr), sizeof(struct sockaddr_in)) < 0)
+      if (sendto(ping_fd, buf, len, 0, (struct sockaddr *)&(info->destaddr), sizeof(struct sockaddr_in)) < 0)
         ERR_EXIT(("sendto: %s", strerror(errno)));
 
 #ifndef NDEBUG
@@ -346,24 +329,18 @@ _pingd_send_pings(void)
 static void
 _setup_pfds(struct pollfd *pfds)
 {
-  int i;
-
   assert(pfds);
 
-  for (i = 0; i < fds_count; i++)
-    {
-      pfds[i].fd = fds[i];
-      pfds[i].events = POLLIN;
-      pfds[i].revents = 0;
-    }
-
-  pfds[fds_count].fd = server_fd;
-  pfds[fds_count].events = POLLIN;
-  pfds[fds_count].revents = 0;
+  pfds[0].fd = ping_fd;
+  pfds[0].events = POLLIN;
+  pfds[0].revents = 0;
+  pfds[1].fd = server_fd;
+  pfds[1].events = POLLIN;
+  pfds[1].revents = 0;
 }
 
 static void
-_receive_ping(int fd)
+_receive_ping(void)
 {
   struct sockaddr_in from;
   struct pingd_info *info;
@@ -376,7 +353,7 @@ _receive_ping(int fd)
    * checking sequence numbers or anything like that.
    */
 
-  if ((len = recvfrom(fd, buf, PINGD_BUFLEN, 0, (struct sockaddr *)&from, &fromlen)) < 0)
+  if ((len = recvfrom(ping_fd, buf, PINGD_BUFLEN, 0, (struct sockaddr *)&from, &fromlen)) < 0)
     ERR_EXIT(("recvfrom: %s", strerror(errno)));
 
   if (!(tmpstr = inet_ntoa(from.sin_addr)))
@@ -446,16 +423,11 @@ _send_ping_data(void)
 void 
 pingd_loop(void)
 {
-  struct pollfd *pfds = NULL;
-  int i;
+  struct pollfd pfds[2];
 
   _pingd_setup();
 
   assert(nodes_count);
-
-  /* +1 fd for the server fd */
-  if (!(pfds = (struct pollfd *)malloc((fds_count + 1)*sizeof(struct pollfd))))
-    ERR_EXIT(("malloc: %s", strerror(errno)));
 
   while (1)
     {
@@ -481,18 +453,15 @@ pingd_loop(void)
       timeval_sub(&pingd_next_send, &now, &timeout);
       timeval_millisecond_calc(&timeout, &timeout_ms);
 
-      if ((num = poll(pfds, fds_count + 1, timeout_ms)) < 0)
+      if ((num = poll(pfds, 2, timeout_ms)) < 0)
         ERR_EXIT(("poll: %s", strerror(errno)));
       
       if (num)
         {
-          for (i = 0; i < fds_count; i++)
-            {
-              if (pfds[i].revents & POLLIN)
-                _receive_ping(fds[i]);
-            }
+          if (pfds[0].revents & POLLIN)
+            _receive_ping();
 
-          if (pfds[fds_count].revents & POLLIN)
+          if (pfds[1].revents & POLLIN)
             _send_ping_data();
         }
     }

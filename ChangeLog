@@ -1,3 +1,9 @@
+2010-06-29  Albert Chu  <chu11@llnl.gov>
+
+	* src/pingd/pingd_loop.c: Re-architect to use just 1 fd.  Multiple
+	fds unnecessary for ICMP pings, b/c most kernels will send
+	responses to all fds.
+	
 2010-06-28  Albert Chu  <chu11@llnl.gov>
 
 	* src/pingd/pingd_config.c (_usage): Fix typo.
