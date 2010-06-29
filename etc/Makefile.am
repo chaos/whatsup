@@ -1,10 +1,10 @@
 ##*****************************************************************************
-## $Id: Makefile.am,v 1.4 2010-06-29 21:03:53 chu11 Exp $
+## $Id: Makefile.am,v 1.5 2010-06-29 21:16:07 chu11 Exp $
 ##*****************************************************************************
 ## Process this file with automake to produce Makefile.in.
 ##*****************************************************************************
 
-EXTRA_DIST = whatsup-pingd pingd.conf
+EXTRA_DIST = whatsup-pingd nodeupdown.conf pingd.conf
  
 install-data-local:
 if WITH_PINGD
