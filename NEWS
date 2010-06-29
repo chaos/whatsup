@@ -5,6 +5,7 @@ and admins.
 Changes in whatsup-1.11-1
 =========================
  -- Re-architect pingd daemon.
+ -- Add /etc/nodeupdown.conf and /etc/pingd.conf templates.
  -- Fix various minor typos and errors.
 
 Changes in whatsup-1.10-1
@@ -84,4 +85,4 @@ Changes in whatsup-1.2-1
 ===========================
  -- started NEWS file.
 
-$Id: NEWS,v 1.20 2010-06-29 18:06:06 chu11 Exp $
+$Id: NEWS,v 1.21 2010-06-29 21:03:53 chu11 Exp $

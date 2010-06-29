@@ -4,9 +4,9 @@
 	fds unnecessary for ICMP pings, b/c most kernels will send
 	responses to all fds.
 
-	* etc/pingd.conf: New file.
+	* etc/pingd.conf, etc/nodeupdown.conf: New files.
 
-	* freeipmi.spec.in: Add pingd.conf file.
+	* freeipmi.spec.in: Add pingd.conf and nodeupdown.conf files.
 	
 2010-06-28  Albert Chu  <chu11@llnl.gov>
 
