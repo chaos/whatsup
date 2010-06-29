@@ -205,6 +205,7 @@ rm -rf "$RPM_BUILD_ROOT"
 %files pingd
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/init.d/whatsup-pingd
+%config(noreplace) %{_sysconfdir}/pingd.conf
 %{_sbindir}/pingd
 %dir %{_libdir}/pingd
 %{_mandir}/man5/pingd*
