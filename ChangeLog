@@ -1,6 +1,8 @@
 2010-08-16  Albert Chu  <chu11@llnl.gov>
 
 	* etc/Makefile.am: Fix autoconf/automake corner case.
+
+	* src/whatsup/whatsup.c: Fix invalid call to open().
 	
 2010-07-07  Albert Chu  <chu11@llnl.gov>
 

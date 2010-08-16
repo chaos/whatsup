@@ -1172,7 +1172,7 @@ _log_mode(void)
 
   if (log_file)
     {
-      if ((log_file_fd = open (log_file, O_WRONLY | O_CREAT), 600) < 0)
+      if ((log_file_fd = open (log_file, O_WRONLY | O_CREAT, 600)) < 0)
         err_exit("error opening log_file = %s: %s", log_file, strerror(errno));
     }
   else
