@@ -1,3 +1,7 @@
+2010-08-16  Albert Chu  <chu11@llnl.gov>
+
+	* etc/Makefile.am: Fix autoconf/automake corner case.
+	
 2010-07-07  Albert Chu  <chu11@llnl.gov>
 
 	* tagged whatsup-1-11-1
