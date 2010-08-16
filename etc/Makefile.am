@@ -8,12 +8,16 @@ EXTRA_DIST = whatsup-pingd nodeupdown.conf pingd.conf
  
 install-data-local:
 	$(INSTALL) -m 755 -d $(DESTDIR)$(sysconfdir)
-	$(INSTALL) -m 755 -d $(DESTDIR)$(sysconfdir)/init.d
 	$(INSTALL) -m 755 $(srcdir)/nodeupdown.conf $(DESTDIR)$(sysconfdir)
+if WITH_PINGD
+	$(INSTALL) -m 755 -d $(DESTDIR)$(sysconfdir)/init.d
 	$(INSTALL) -m 755 $(srcdir)/pingd.conf $(DESTDIR)$(sysconfdir)
 	$(INSTALL) -m 755 $(srcdir)/whatsup-pingd $(DESTDIR)$(sysconfdir)/init.d/whatsup-pingd
+endif
 
 uninstall-local:
+	$(RM) -f $(DESTDIR)/$(sysconfdir)/nodeupdown.conf
+if WITH_PINGD
 	$(RM) -f $(DESTDIR)/$(sysconfdir)/init.d/whatsup-pingd
 	$(RM) -f $(DESTDIR)/$(sysconfdir)/pingd.conf
-	$(RM) -f $(DESTDIR)/$(sysconfdir)/nodeupdown.conf
+endif
