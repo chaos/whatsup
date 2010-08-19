@@ -1,3 +1,7 @@
+2010-08-19  Albert Chu  <chu11@llnl.gov>
+
+	* whatsup.spec.in: Update for build on RHEL6.
+
 2010-08-16  Albert Chu  <chu11@llnl.gov>
 
 	* etc/Makefile.am: Fix autoconf/automake corner case.
