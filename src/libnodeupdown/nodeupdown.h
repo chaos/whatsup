@@ -27,6 +27,10 @@
 #ifndef _NODEUPDOWN_H
 #define _NODEUPDOWN_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 
 /*
@@ -239,5 +243,9 @@ int nodeupdown_nodelist_clear(nodeupdown_t handle, char **list);
  * Returns 0 on success, -1 on error
  */
 int nodeupdown_nodelist_destroy(nodeupdown_t handle, char **list);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _NODEUPDOWN_H */
