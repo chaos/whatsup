@@ -113,11 +113,14 @@ nodeupdown_backend_ganglia_la_SOURCES = \
 	nodeupdown_backend_connect_util.c
 nodeupdown_backend_ganglia_la_LDFLAGS = \
 	$(MODULE_FLAGS) \
+	$(EXPAT_LIBS) \
 	$(NODEUPDOWN_BACKEND_OTHER_FLAGS) 
+if !WITH_EXPAT
 nodeupdown_backend_ganglia_la_CFLAGS  = \
 	-I$(srcdir)/../libexpat
 nodeupdown_backend_ganglia_la_LIBADD = \
 	../libexpat/libexpat.la
+endif
 
 nodeupdown_backend_pingd_la_SOURCES = \
 	nodeupdown_backend_pingd.c \

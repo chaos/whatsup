@@ -2,6 +2,10 @@ This file describes changes in recent versions of whatsup. It
 primarily documents those changes that are of interest to users
 and admins.
 
+Changes in whatsup-1.12-1
+=========================
+ -- Link to libexpat if available.
+
 Changes in whatsup-1.11-1
 =========================
  -- Re-architect pingd daemon.

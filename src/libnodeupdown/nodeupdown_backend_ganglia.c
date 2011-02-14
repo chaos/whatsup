@@ -55,7 +55,11 @@
 #include "nodeupdown/nodeupdown_constants.h"
 #include "nodeupdown/nodeupdown_devel.h"
 
+#if HAVE_LIBEXPAT
+#include <expat.h>
+#else  /* !HAVE_LIBEXPAT */
 #include "xmlparse.h"
+#endif	/* !HAVE_LIBEXPAT */
 
 /* Used to pass multiple variables as one during XML parsing */
 struct parse_vars 

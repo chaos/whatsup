@@ -1,3 +1,9 @@
+2011-02-14  Albert Chu  <chu11@llnl.gov>
+
+	* src/libnodeupdown/nodeupdown_backend_ganglia.c,
+	src/libnodeupdown/Makefile.am, configure.ac: Link to libexpat if
+	the library is available.
+	
 2011-01-19  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown.h: Support C++ linking.

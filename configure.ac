@@ -72,6 +72,17 @@ AC_CHECK_HEADERS( \
 )
 
 #
+# Check for libs
+#
+AC_CHECK_LIB([expat], [XML_SetElementHandler], [have_expat=yes], [have_expat=no])
+if test "x${have_expat}" = "xyes" ; then
+   AC_DEFINE([HAVE_LIBEXPAT],[1],[Define if you have libexpat])
+   EXPAT_LIBS="-lexpat"
+fi
+AC_SUBST(EXPAT_LIBS)
+AM_CONDITIONAL(WITH_EXPAT, [test "$have_expat" = "yes"])
+
+#
 # Check for default paths
 #
 AC_NODEUPDOWN_CONF
