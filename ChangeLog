@@ -1,3 +1,7 @@
+2011-02-22  Albert Chu  <chu11@llnl.gov>
+
+	* tagged whatsup-1-12-1
+	
 2011-02-14  Albert Chu  <chu11@llnl.gov>
 
 	* src/libnodeupdown/nodeupdown_backend_ganglia.c,
