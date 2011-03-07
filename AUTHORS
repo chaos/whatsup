@@ -5,3 +5,9 @@ With the exception of:
 src/libcommon/*: By various LLNL Chaos development team members.
 
 src/libexpat: See README.expat for details
+
+Patches from:
+
+Ruben Kerkhof <ruben@rubenkerkhof.com>
+Mahmoud Hanafi <hanafim@users.sourceforge.net>
+Ira Weiny  <weiny2@llnl.gov>
