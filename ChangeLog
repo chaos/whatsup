@@ -1,5 +1,15 @@
 2011-02-22  Albert Chu  <chu11@llnl.gov>
 
+	* freeipmi.spec.in: Update for path change.
+
+2011-03-24  Ruben Kerkhof <ruben@rubenkerkhof.com>
+
+	* etc/whatsup-pingd: Fix typos.
+
+	* etc/Makefile.am: Fix paths.
+	
+2011-02-22  Albert Chu  <chu11@llnl.gov>
+
 	* tagged whatsup-1-12-1
 	
 2011-02-14  Albert Chu  <chu11@llnl.gov>

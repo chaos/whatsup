@@ -1,16 +1,16 @@
 #!/bin/sh
 # $Id: whatsup-pingd,v 1.1 2006-07-07 21:00:48 chu11 Exp $
 #
-# chkconfig: 2345 70 40
-# description: pingd startup script
+# chkconfig: - 70 40
+# description: whatsup-pingd startup script
 #
 ### BEGIN INIT INFO
-# Provides: pingd
+# Provides: whatsup-pingd
 # Required-Start: $network $remote_fs $syslog
 # Required-Stop:  $network $remote_fs $syslog
-# Default-Start:  3 5
 # Default-Stop:   0 1 2 6
-# Description:    Start pingd
+# Description:    Start whatsup-pingd
+# Short-Description: Start whatsup-pingd
 ### END INIT INFO
 
 PINGD=/usr/sbin/pingd
