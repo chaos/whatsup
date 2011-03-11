@@ -1,3 +1,9 @@
+2011-03-10  Albert Chu  <chu11@llnl.gov>
+
+        * Support --with-perl-site-arch and --with-perl-vendor-arch
+        configure options to support install in Perl site or vendor arch
+        directories.
+	
 2011-03-07  Albert Chu  <chu11@llnl.gov>
 
 	* freeipmi.spec.in: Update for path change.

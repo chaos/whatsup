@@ -99,6 +99,23 @@ AC_PERL_EXTENSIONS
 AM_CONDITIONAL(WITH_PERL_EXTENSIONS, [test "$ac_with_perl_extensions" = "yes"])
 
 #
+# Determine Perl Install Location
+#
+AC_PERL_SITE_ARCH
+AC_PERL_VENDOR_ARCH
+if test "$ac_with_perl_site_arch" = yes && \
+   test "$ac_with_perl_vendor_arch" = yes ; then
+   AC_MSG_ERROR([cannot specify both perl site arch and vendor arch])
+elif test "$ac_with_perl_site_arch" = yes; then
+   PERL_ARCH_INSTALL=site
+elif test "$ac_with_perl_vendor_arch" = yes; then
+   PERL_ARCH_INSTALL=vendor
+else
+   PERL_ARCH_INSTALL=site
+fi
+AC_SUBST(PERL_ARCH_INSTALL)
+
+#
 # Check for cerebro
 #
 AC_CEREBRO

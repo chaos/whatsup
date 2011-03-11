@@ -17,7 +17,7 @@ PERL_INC = "-I../../config -I$(srcdir)/../libcommon -I$(srcdir)/../libexpat -I$(
 
 PERL_LIBS = "-L../libnodeupdown/.libs -lnodeupdown"
 
-MAKEMAKERFLAGS = INSTALLDIRS=site \
+MAKEMAKERFLAGS = INSTALLDIRS=$(PERL_ARCH_INSTALL) \
 		 DESTDIR=$(PERL_DESTDIR) \
 		 PREFIX=$(prefix) \
 		 INC=$(PERL_INC) \
