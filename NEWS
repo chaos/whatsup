@@ -2,6 +2,11 @@ This file describes changes in recent versions of whatsup. It
 primarily documents those changes that are of interest to users
 and admins.
 
+Changes in whatsup-1.13-1
+=========================
+ -- Support --with-perl-vendor-arch and --with-perl-site-arch
+    configure options.
+
 Changes in whatsup-1.12-1
 =========================
  -- Link to libexpat if available.
