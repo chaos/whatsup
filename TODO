@@ -12,3 +12,6 @@
 - cleanup/fix conffile lib
   - list lens should be unsigned
   - uints instead of just ints
+- conffile
+  - use file streams (i.e. fread) to avoid constant syscalls to read()
+    when reading a line.
