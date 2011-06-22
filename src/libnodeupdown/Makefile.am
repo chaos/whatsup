@@ -56,7 +56,8 @@ libnodeupdown_la_SOURCES = nodeupdown.c \
 			   nodeupdown_module.c \
 			   nodeupdown_util.c
 
-libnodeupdown_la_LIBADD = ../libcommon/libcommon.la
+libnodeupdown_la_LIBADD = ../libcommon/libcommon.la \
+			  ../../libltdl/libltdlc.la
 
 libnodeupdown_la_LDFLAGS = -version-info @LIBNODEUPDOWN_VERSION_INFO@ \
 			   $(NODEUPDOWN_OTHER_FLAGS) \
@@ -113,14 +114,11 @@ nodeupdown_backend_ganglia_la_SOURCES = \
 	nodeupdown_backend_connect_util.c
 nodeupdown_backend_ganglia_la_LDFLAGS = \
 	$(MODULE_FLAGS) \
-	$(EXPAT_LIBS) \
 	$(NODEUPDOWN_BACKEND_OTHER_FLAGS) 
-if !WITH_EXPAT
 nodeupdown_backend_ganglia_la_CFLAGS  = \
 	-I$(srcdir)/../libexpat
 nodeupdown_backend_ganglia_la_LIBADD = \
 	../libexpat/libexpat.la
-endif
 
 nodeupdown_backend_pingd_la_SOURCES = \
 	nodeupdown_backend_pingd.c \
@@ -162,6 +160,9 @@ nodeupdown_clusterlist_hostsfile_la_CFLAGS  = \
 nodeupdown_clusterlist_hostsfile_la_LIBADD = \
 	../libcommon/libcommon.la
  
+../../libltdl/libltdlc.la : force-dependency-check
+	@cd `dirname $@` && make `basename $@`
+
 ../libcommon/libcommon.la: force-dependency-check
 	@cd `dirname $@` && make `basename $@`
 

@@ -21,7 +21,8 @@ whatsup_CFLAGS   = -DWHATSUP_MODULE_BUILDDIR=\"$(whatsup_module_builddir)\" \
 		   -I $(srcdir)/../libcommon
 
 whatsup_LDADD    = ../libcommon/libcommon.la \
-		   ../libnodeupdown/libnodeupdown.la
+		   ../libnodeupdown/libnodeupdown.la \
+		   ../../libltdl/libltdlc.la
 
 #
 # whatsup modules
@@ -42,6 +43,9 @@ whatsup_options_cerebro_monitor_la_LDFLAGS = $(MODULE_FLAGS) $(CEREBRO_LIBS)
 whatsup_options_cerebro_monitor_la_CFLAGS  = -I$(srcdir)/../libcommon
 whatsup_options_cerebro_monitor_la_LIBADD  = ../libcommon/libcommon.la
 
+../../libltdl/libltdlc.la : force-dependency-check
+	@cd `dirname $@` && make `basename $@`
+	
 ../libcommon/libcommon.la: force-dependency-check
 	@cd `dirname $@` && make `basename $@`
 

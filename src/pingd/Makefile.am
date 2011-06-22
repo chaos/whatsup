@@ -28,7 +28,8 @@ pingd_CFLAGS = \
 	-I$(srcdir)/../include \
 	-I$(srcdir)/../libcommon 
 
-pingd_LDADD = ../libcommon/libcommon.la
+pingd_LDADD = ../libcommon/libcommon.la \
+	      ../../libltdl/libltdlc.la
 
 #
 # modules
@@ -69,6 +70,9 @@ pingd_clusterlist_hostsfile_la_LDFLAGS = \
 	$(PINGD_CLUSTERLIST_OTHER_FLAGS)
 pingd_clusterlist_hostsfile_la_LIBADD = \
 	../libcommon/libcommon.la
+
+../../libltdl/libltdlc.la : force-dependency-check
+	@cd `dirname $@` && make `basename $@`
 
 ../libcommon/libcommon.la : force-dependency-check
 	@cd `dirname $@` && make `basename $@`

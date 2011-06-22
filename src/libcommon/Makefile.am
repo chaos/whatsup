@@ -11,7 +11,6 @@ noinst_HEADERS = conffile.h \
 		 hash.h \
 		 hostlist.h \
 		 list.h \
-		 ltdl.h \
 		 thread.h \
 		 timeval.h 
 
@@ -23,7 +22,6 @@ libcommon_la_SOURCES = conffile.c \
 		       hash.c \
 		       hostlist.c \
 		       list.c \
-		       ltdl.c \
 		       thread.c \
 		       timeval.c
 libcommon_la_CFLAGS = -I../../config
