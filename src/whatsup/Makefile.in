@@ -300,7 +300,8 @@ noinst_HEADERS = whatsup_options.h
 whatsup_SOURCES = whatsup.c
 whatsup_CFLAGS = -DWHATSUP_MODULE_BUILDDIR=\"$(whatsup_module_builddir)\" \
 		   -I $(srcdir)/../libnodeupdown \
-		   -I $(srcdir)/../libcommon
+		   -I $(srcdir)/../libcommon \
+		   -I $(srcdir)/../../libltdl
 
 whatsup_LDADD = ../libcommon/libcommon.la \
 		   ../libnodeupdown/libnodeupdown.la \

@@ -47,7 +47,8 @@ lib_LTLIBRARIES = libnodeupdown.la
 
 libnodeupdown_la_CFLAGS = -D_REENTRANT -I ../../config \
 			  -DNODEUPDOWN_MODULE_BUILDDIR=\"$(nodeupdown_module_builddir)\" \
-	                  -I $(srcdir)/../libcommon
+	                  -I $(srcdir)/../libcommon \
+			  -I $(srcdir)/../../libltdl
 
 libnodeupdown_la_SOURCES = nodeupdown.c \
 	 		   nodeupdown_clusterlist_default.c \

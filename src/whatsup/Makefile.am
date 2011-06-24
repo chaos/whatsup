@@ -18,7 +18,8 @@ whatsup_SOURCES  = whatsup.c
 
 whatsup_CFLAGS   = -DWHATSUP_MODULE_BUILDDIR=\"$(whatsup_module_builddir)\" \
 		   -I $(srcdir)/../libnodeupdown \
-		   -I $(srcdir)/../libcommon
+		   -I $(srcdir)/../libcommon \
+		   -I $(srcdir)/../../libltdl
 
 whatsup_LDADD    = ../libcommon/libcommon.la \
 		   ../libnodeupdown/libnodeupdown.la \
@@ -45,7 +46,7 @@ whatsup_options_cerebro_monitor_la_LIBADD  = ../libcommon/libcommon.la
 
 ../../libltdl/libltdlc.la : force-dependency-check
 	@cd `dirname $@` && make `basename $@`
-	
+
 ../libcommon/libcommon.la: force-dependency-check
 	@cd `dirname $@` && make `basename $@`
 
