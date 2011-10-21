@@ -1,5 +1,9 @@
 2011-10-21  Albert Chu  <chu11@llnl.gov>
 
+	* Update copyright years globally.
+	
+2011-10-21  Albert Chu  <chu11@llnl.gov>
+
 	* src/libcommon/conffile.c (_parseline): Check errno for correct
 	usage of strto functions.
 	
