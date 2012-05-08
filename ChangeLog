@@ -1,3 +1,7 @@
+2012-05-08  Albert Chu  <chu11@llnl.gov>
+
+	* etc/whatsup-pingd: Add default start run levels.
+	
 2011-10-21  Albert Chu  <chu11@llnl.gov>
 
 	* Update copyright years globally.
