@@ -1,3 +1,8 @@
+2012-06-05  Albert Chu  <chu11@llnl.gov>
+
+	* src/libcommon/conffile.c (conffile_errmsg): Fix
+	-Wformat-security warnings.
+	
 2012-05-08  Albert Chu  <chu11@llnl.gov>
 
 	* etc/whatsup-pingd: Add default start run levels.
