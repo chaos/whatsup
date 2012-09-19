@@ -180,6 +180,9 @@ _xml_parse_start(void *data, const char *e1, const char **attr)
 
       /* store as up or down */
       reported = atol(attr[5]);
+      /* With ganglia 3.2.0, attr[4] is actually TAGS, and we want the
+	 next pair.  */
+      if (!reported) reported = atol(attr[7]);
       if (abs(localtime - reported) < timeout_len)
 	nodeupdown_add_up_node(handle, attr[1]);
       else

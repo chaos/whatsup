@@ -1,3 +1,8 @@
+2012-09-19  Dave Love <d.love@liverpool.ac.uk>
+
+	* src/libnodeupdown/nodeupdown_backend_ganglia.c (_xml_parse_start):
+	Update XML parsing for newer Ganglias.
+	
 2012-06-26  Albert Chu  <chu11@llnl.gov>
 
 	* tagged whatsup-1-14-1
