@@ -2,6 +2,10 @@ This file describes changes in recent versions of whatsup. It
 primarily documents those changes that are of interest to users
 and admins.
 
+Changes in whatsup-1.15-1
+=========================
+ -- Update Ganglia backend to support newer Ganglia versions.
+
 Changes in whatsup-1.14-1
 =========================
  -- Various minor bug fixes.
