@@ -174,10 +174,10 @@ AC_FUNC_MALLOC
 AC_CHECK_FUNCS( \
   strcpy \
   strdup \
-  strchr \ 
-  strlen \ 
-  strcat \ 
-  strtok \ 
+  strchr \
+  strlen \
+  strcat \
+  strtok \
 )
 AC_CHECK_FUNCS([getopt_long])
 
