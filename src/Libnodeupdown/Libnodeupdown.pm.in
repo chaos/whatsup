@@ -110,7 +110,7 @@ Libnodeupdown - Perl extension for libnodeupdown
 =head1 DESCRIPTION
 
 This package provides an OO perl interface to the nodeupdown C API
-(see libnodeupdown(3)).  The perl interface is simliar to the
+(see libnodeupdown(3)).  The perl interface is similar to the
 nodeupdown C API, with some necessary changes due to the inherent
 differences between C and perl.  Please read the instructions below so
 to understand how to use the Libnodeupdown package.

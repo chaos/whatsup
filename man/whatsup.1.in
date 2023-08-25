@@ -57,7 +57,7 @@ depends on the options performed on the command line.  If the default
 succeeds without error.  If the --up option is used and no nodes are
 specified via the command line or standard input, the exit value will
 be 0 if all cluster nodes are up.  If nodes are specified via the
-command line or standard input, the exit value wil be 0 if all the
+command line or standard input, the exit value will be 0 if all the
 specified nodes are up.  The behavior is similar for the --down
 option.
 

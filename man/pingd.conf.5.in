@@ -54,7 +54,7 @@ Specify the alternate default port the pingd server should listen
 for requests off of.  Default is 9125.
 .TP 
 .I host string
-Specify a host the pingd daemon whould regularly ping.  Can be
+Specify a host the pingd daemon should regularly ping.  Can be
 specified as many times as necessary.
 .SH "FILES"
 @PINGD_CONF_FILE@
