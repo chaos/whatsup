@@ -7,7 +7,7 @@ AC_DEFUN([AC_PERL_DESTDIR],
 [
   AC_MSG_CHECKING(for --with-perl-destdir )
   AC_ARG_WITH(perl-destdir,
-     AC_HELP_STRING([--with-perl-destdir=path], 
+     AS_HELP_STRING([--with-perl-destdir=path], 
                     [define perl modules install prefix]),
      [ case "$withval" in
      yes)

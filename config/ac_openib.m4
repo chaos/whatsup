@@ -6,7 +6,7 @@ AC_DEFUN([AC_OPENIB],
 [
   AC_MSG_CHECKING([for whether to build openib modules])
   AC_ARG_WITH([openib],
-    AC_HELP_STRING([--with-openib], [Build openib modules]),
+    AS_HELP_STRING([--with-openib], [Build openib modules]),
     [ case "$withval" in
         no)  ac_openib_test=no ;;
         yes) ac_openib_test=yes ;;
