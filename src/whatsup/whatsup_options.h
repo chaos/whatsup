@@ -26,7 +26,7 @@
 
 #ifndef _WHATSUP_OPTIONS_H
 #define _WHATSUP_OPTIONS_H
- 
+
 #define WHATSUP_OPTION_TYPE_GET_NODENAMES     0
 #define WHATSUP_OPTION_TYPE_CONVERT_NODENAMES 1
 #define WHATSUP_OPTION_TYPE_MONITOR           2
@@ -62,7 +62,7 @@ typedef int (*Whatsup_options_setup)(void);
  */
 typedef int (*Whatsup_options_cleanup)(void);
 
-/*  
+/*
  * Whatsup_options_process_option
  *
  * Handle the option 'c' and possibly the option argument
@@ -72,7 +72,7 @@ typedef int (*Whatsup_options_cleanup)(void);
  */
 typedef int (*Whatsup_options_process_option)(char c, char *optarg);
 
-/* 
+/*
  * Whatsup_options_get_nodenames
  *
  * Retrieve nodenames specified by the user
@@ -81,7 +81,7 @@ typedef int (*Whatsup_options_process_option)(char c, char *optarg);
  */
 typedef int (*Whatsup_options_get_nodenames)(char *buf, int buflen);
 
-/* 
+/*
  * Whatsup_options_convert_nodenames
  *
  * Convert the nodes appropriately for the option module and store the
@@ -91,7 +91,7 @@ typedef int (*Whatsup_options_get_nodenames)(char *buf, int buflen);
  */
 typedef int (*Whatsup_options_convert_nodenames)(char *nodes, char *buf, int buflen);
 
-/* 
+/*
  * Whatsup_options_monitor
  *
  * Monitor up/down node status.
@@ -100,9 +100,9 @@ typedef int (*Whatsup_options_convert_nodenames)(char *nodes, char *buf, int buf
  */
 typedef int (*Whatsup_options_monitor)(const char *hostname, int port);
 
-/* 
+/*
  * struct whatsup_options_module_info
- * 
+ *
  * contains options module information and operations.  Required to be
  * defined in each options module.
  */

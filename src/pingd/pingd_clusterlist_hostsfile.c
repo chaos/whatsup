@@ -51,16 +51,16 @@
 #define HOSTSFILE_MODULE_NAME  "hostsfile"
 #define HOSTSFILE_PARSE_BUFLEN 4096
 
-/* 
+/*
  * hosts
  *
  * Store all of the hosts found in the hostsfile
  */
 static List hosts = NULL;
 
-/* 
+/*
  * _readline
- * 
+ *
  * read a line from the hostsfile.  Buffer guaranteed to be null
  * terminated.
  *
@@ -86,7 +86,7 @@ _readline(int fd, char *buf, unsigned int buflen)
       ERR_DEBUG(("fd_read_line: %s", strerror(errno)));
       return -1;
     }
-  
+
   /* buflen - 1 b/c fd_read_line guarantees null termination */
   if (len >= (buflen-1))
     {
@@ -97,7 +97,7 @@ _readline(int fd, char *buf, unsigned int buflen)
   return len;
 }
 
-/* 
+/*
  * _remove_comments
  *
  * remove comments from the buffer
@@ -145,7 +145,7 @@ _remove_comments(char *buf, int buflen)
   return lenleft;
 }
 
-/* 
+/*
  * _remove_trailing_whitespace
  *
  * remove trailing whitespace from the buffer
@@ -160,7 +160,7 @@ static int
 _remove_trailing_whitespace(char *buf, int buflen)
 {
   char *temp;
-  
+
   if (!buf)
     {
       ERR_DEBUG(("invalid parameters"));
@@ -168,7 +168,7 @@ _remove_trailing_whitespace(char *buf, int buflen)
     }
 
   temp = buf + buflen;
-  for (--temp; temp >= buf; temp--) 
+  for (--temp; temp >= buf; temp--)
     {
       if (isspace(*temp))
         *temp = '\0';
@@ -180,7 +180,7 @@ _remove_trailing_whitespace(char *buf, int buflen)
   return buflen;
 }
 
-/* 
+/*
  * _move_past_whitespace
  *
  * move past whitespace at the beginning of the buffer
@@ -205,13 +205,13 @@ _move_past_whitespace(char *buf)
   return buf;
 }
 
-/* 
+/*
  * hostsfile_setup
  *
  * hostsfile clusterlist module setup function.  Open hostsfile, read
  * each line of the hostsfile, and save hosts into hosts list.
  */
-static int 
+static int
 hostsfile_setup(void)
 {
   int len, fd = -1;
@@ -233,11 +233,11 @@ hostsfile_setup(void)
   if ((fd = open(PINGD_CLUSTERLIST_HOSTSFILE_DEFAULT, O_RDONLY)) < 0)
     {
       ERR_EXIT(("error opening hostsfile '%s': %s",
-		PINGD_CLUSTERLIST_HOSTSFILE_DEFAULT, 
+		PINGD_CLUSTERLIST_HOSTSFILE_DEFAULT,
 		strerror(errno)));
       goto cleanup;
     }
- 
+
   while ((len = _readline(fd, buf, HOSTSFILE_PARSE_BUFLEN)) > 0)
     {
       char *hostPtr;
@@ -272,7 +272,7 @@ hostsfile_setup(void)
           ERR_EXIT(("hostsfile node '%s' exceeds max length", hostPtr));
           goto cleanup;
         }
-      
+
       /* Shorten hostname if necessary */
       if ((p = strchr(hostPtr, '.')))
         *p = '\0';
@@ -289,7 +289,7 @@ hostsfile_setup(void)
           goto cleanup;
         }
     }
-  
+
   if (len < 0)
     goto cleanup;
 
@@ -343,7 +343,7 @@ hostsfile_get_nodes(char ***nodes)
     }
 
   if (!nodes)
-    {     
+    {
       ERR_DEBUG(("invalid parameters"));
       return -1;
     }

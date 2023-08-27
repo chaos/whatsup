@@ -6,20 +6,20 @@
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
  *  Written by Albert Chu <chu11@llnl.gov>
  *  UCRL-CODE-155699
- *  
+ *
  *  This file is part of Whatsup, tools and libraries for determining up and
  *  down nodes in a cluster. For details, see http://www.llnl.gov/linux/.
- *  
- *  Whatsup is free software; you can redistribute it and/or modify 
- *  it under the terms of the GNU General Public License as published by the 
- *  Free Software Foundation; either version 2 of the License, or (at your 
+ *
+ *  Whatsup is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by the
+ *  Free Software Foundation; either version 2 of the License, or (at your
  *  option) any later version.
- *  
- *  Whatsup is distributed in the hope that it will be useful, but 
- *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+ *
+ *  Whatsup is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  *  for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License along
  *  with Whatsup.  If not, see <http://www.gnu.org/licenses/>.
 \*****************************************************************************/
@@ -46,8 +46,8 @@
  *
  * default clusterlist module setup function
  */
-int 
-default_clusterlist_setup(nodeupdown_t handle) 
+int
+default_clusterlist_setup(nodeupdown_t handle)
 {
   return 0;
 }
@@ -57,8 +57,8 @@ default_clusterlist_setup(nodeupdown_t handle)
  *
  * default clusterlist module cleanup function
  */
-int 
-default_clusterlist_cleanup(nodeupdown_t handle) 
+int
+default_clusterlist_cleanup(nodeupdown_t handle)
 {
   return 0;
 }
@@ -68,11 +68,11 @@ default_clusterlist_cleanup(nodeupdown_t handle)
  *
  * default clusterlist module get_numnodes function
  */
-int 
-default_clusterlist_get_numnodes(nodeupdown_t handle) 
+int
+default_clusterlist_get_numnodes(nodeupdown_t handle)
 {
   int count = 0;
-  
+
   count += hostlist_count(handle->up_nodes);
   count += hostlist_count(handle->down_nodes);
 
@@ -84,8 +84,8 @@ default_clusterlist_get_numnodes(nodeupdown_t handle)
  *
  * default clusterlist module is_node_in_cluster function
  */
-int 
-default_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) 
+int
+default_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node)
 {
   /* Have to assume it is */
   return 1;
@@ -96,16 +96,16 @@ default_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node)
  *
  * default clusterlist module get_nodename function
  */
-int 
-default_clusterlist_get_nodename(nodeupdown_t handle, 
-				 const char *node, 
-				 char *buf, 
-				 unsigned int buflen) 
+int
+default_clusterlist_get_nodename(nodeupdown_t handle,
+				 const char *node,
+				 char *buf,
+				 unsigned int buflen)
 {
   int len;
-  
+
   len = strlen(node);
-  
+
   if ((len + 1) > buflen)
     {
 #ifndef NDEBUG
@@ -114,9 +114,9 @@ default_clusterlist_get_nodename(nodeupdown_t handle,
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
       return -1;
     }
-  
+
   strcpy(buf, node);
- 
+
   return 0;
 }
 
@@ -125,8 +125,8 @@ default_clusterlist_get_nodename(nodeupdown_t handle,
  *
  * default clusterlist module compare_to_clusterlist function
  */
-int 
-default_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
+int
+default_clusterlist_compare_to_clusterlist(nodeupdown_t handle)
 {
   return 0;
 }

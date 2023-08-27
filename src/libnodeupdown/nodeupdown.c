@@ -6,20 +6,20 @@
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
  *  Written by Albert Chu <chu11@llnl.gov>
  *  UCRL-CODE-155699
- *  
+ *
  *  This file is part of Whatsup, tools and libraries for determining up and
  *  down nodes in a cluster. For details, see http://www.llnl.gov/linux/.
- *  
- *  Whatsup is free software; you can redistribute it and/or modify 
- *  it under the terms of the GNU General Public License as published by the 
- *  Free Software Foundation; either version 2 of the License, or (at your 
+ *
+ *  Whatsup is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by the
+ *  Free Software Foundation; either version 2 of the License, or (at your
  *  option) any later version.
- *  
- *  Whatsup is distributed in the hope that it will be useful, but 
- *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+ *
+ *  Whatsup is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  *  for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License along
  *  with Whatsup.  If not, see <http://www.gnu.org/licenses/>.
 \*****************************************************************************/
@@ -52,12 +52,12 @@
 
 extern int clusterlist_module_found;
 
-/* 
+/*
  * nodeupdown_errmsg
- * 
+ *
  * error messages array
  */
-static char * nodeupdown_errmsg[] = 
+static char * nodeupdown_errmsg[] =
   {
     "success",
     "nodeupdown handle is null",
@@ -83,20 +83,20 @@ static char * nodeupdown_errmsg[] =
     "error number out of range",
   };
 
-/* 
+/*
  * _unloaded_handle_error_check
- * 
+ *
  * standard unloaded handle error checker
  *
  * Returns -1 on error, 0 on success
  */
-static int 
-_unloaded_handle_error_check(nodeupdown_t handle) 
+static int
+_unloaded_handle_error_check(nodeupdown_t handle)
 {
   if (_nodeupdown_handle_error_check(handle) < 0)
     return -1;
 
-  if (handle->load_state == NODEUPDOWN_LOAD_STATE_LOADED) 
+  if (handle->load_state == NODEUPDOWN_LOAD_STATE_LOADED)
     {
       handle->errnum = NODEUPDOWN_ERR_ISLOADED;
       return -1;
@@ -111,20 +111,20 @@ _unloaded_handle_error_check(nodeupdown_t handle)
   return 0;
 }
 
-/* 
+/*
  * _loaded_handle_error_check
- * 
+ *
  * standard loaded handle error checker
  *
  * Returns -1 on error, 0 on success
  */
-static int 
-_loaded_handle_error_check(nodeupdown_t handle) 
+static int
+_loaded_handle_error_check(nodeupdown_t handle)
 {
   if (_nodeupdown_handle_error_check(handle) < 0)
     return -1;
 
-  if (handle->load_state == NODEUPDOWN_LOAD_STATE_UNLOADED) 
+  if (handle->load_state == NODEUPDOWN_LOAD_STATE_UNLOADED)
     {
       handle->errnum = NODEUPDOWN_ERR_NOTLOADED;
       return -1;
@@ -139,13 +139,13 @@ _loaded_handle_error_check(nodeupdown_t handle)
   return 0;
 }
 
-/* 
+/*
  * _initialize_handle
  *
- * initialize nodeupdown handle 
+ * initialize nodeupdown handle
  */
-static void 
-_initialize_handle(nodeupdown_t handle) 
+static void
+_initialize_handle(nodeupdown_t handle)
 {
   handle->magic = NODEUPDOWN_MAGIC_NUM;
   handle->load_state = NODEUPDOWN_LOAD_STATE_UNLOADED;
@@ -155,26 +155,26 @@ _initialize_handle(nodeupdown_t handle)
   handle->last_up_times = NULL;
 }
 
-nodeupdown_t 
-nodeupdown_handle_create() 
+nodeupdown_t
+nodeupdown_handle_create()
 {
   nodeupdown_t handle;
 
   if (!(handle = (nodeupdown_t)malloc(sizeof(struct nodeupdown))))
     return NULL;
-  
+
   _initialize_handle(handle);
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return handle;
 }
 
-/* 
+/*
  * _free_handle_data
  *
  * free nodeupdown handle data
  */
-static void 
-_free_handle_data(nodeupdown_t handle) 
+static void
+_free_handle_data(nodeupdown_t handle)
 {
   backend_module_cleanup(handle);
   backend_module_unload(handle);
@@ -189,22 +189,22 @@ _free_handle_data(nodeupdown_t handle)
   lt_dlexit();
 }
 
-int 
-nodeupdown_handle_destroy(nodeupdown_t handle) 
+int
+nodeupdown_handle_destroy(nodeupdown_t handle)
 {
   if (_nodeupdown_handle_error_check(handle) < 0)
     return -1;
 
   _free_handle_data(handle);
 
-  /* "clean" magic number */ 
+  /* "clean" magic number */
   handle->magic = ~NODEUPDOWN_MAGIC_NUM;
 
   free(handle);
   return 0;
-}  
+}
 
-/* 
+/*
  * _destroy_last_up_time
  *
  * callback for hash_destroy to destroy last_up_time structure.
@@ -213,7 +213,7 @@ static void
 _destroy_last_up_time(void *x)
 {
   struct last_up_time *lut;
-  
+
   lut = (struct last_up_time *)x;
 
   if (lut->node)
@@ -221,17 +221,17 @@ _destroy_last_up_time(void *x)
   free(lut);
 }
 
-/* 
+/*
  * _cb_hostnames
  *
  * callback function for configuration parsing of hostnames option.
  *
  * Returns -1 on error, 0 on success
  */
-static int 
+static int
 _cb_hostnames(conffile_t cf, struct conffile_data *data, char *optionname,
               int option_type, void *option_ptr, int option_data,
-              void *app_ptr, int app_data) 
+              void *app_ptr, int app_data)
 {
   struct nodeupdown_config *conf = option_ptr;
   int i;
@@ -241,11 +241,11 @@ _cb_hostnames(conffile_t cf, struct conffile_data *data, char *optionname,
       conffile_seterrnum(cf, CONFFILE_ERR_PARAMETERS);
       return -1;
     }
-  
+
   if (data->stringlist_len > NODEUPDOWN_CONFIG_HOSTNAMES_MAX)
     return -1;
 
-  for (i = 0; i < data->stringlist_len; i++) 
+  for (i = 0; i < data->stringlist_len; i++)
     {
       if (strlen(data->stringlist[i]) > NODEUPDOWN_MAXHOSTNAMELEN)
         return -1;
@@ -255,50 +255,50 @@ _cb_hostnames(conffile_t cf, struct conffile_data *data, char *optionname,
   return 0;
 }
 
-/* 
+/*
  * _read_conffile
  *
  * read and parse the nodeupdown configuration file
  *
  * Returns 0 on success, -1 on error
  */
-static int 
-_read_conffile(nodeupdown_t handle, struct nodeupdown_config *conf) 
+static int
+_read_conffile(nodeupdown_t handle, struct nodeupdown_config *conf)
 {
-  struct conffile_option options[] = 
+  struct conffile_option options[] =
     {
-      /* 
+      /*
        * Current configuration options
        */
-      {"hostnames", CONFFILE_OPTION_LIST_STRING, -1, 
+      {"hostnames", CONFFILE_OPTION_LIST_STRING, -1,
        _cb_hostnames, 1, 0, &(conf->hostnames_flag),
        conf, 0},
-      {"port", CONFFILE_OPTION_INT, 0, 
-       conffile_int, 1, 0, &(conf->port_flag), 
+      {"port", CONFFILE_OPTION_INT, 0,
+       conffile_int, 1, 0, &(conf->port_flag),
        &(conf->port), 0},
-      {"timeout_len", CONFFILE_OPTION_INT, 0, 
-       conffile_int, 1, 0, &(conf->timeout_len_flag), 
+      {"timeout_len", CONFFILE_OPTION_INT, 0,
+       conffile_int, 1, 0, &(conf->timeout_len_flag),
        &(conf->timeout_len), 0},
-      /* 
+      /*
        * Older options to be ignored by conffile library
        */
-      {"gmond_hostname", CONFFILE_OPTION_IGNORE, 0, 
+      {"gmond_hostname", CONFFILE_OPTION_IGNORE, 0,
        conffile_empty, 0, 0, NULL, NULL, 0},
-      {"gmond_hostnames", CONFFILE_OPTION_IGNORE, 0, 
+      {"gmond_hostnames", CONFFILE_OPTION_IGNORE, 0,
        conffile_empty, 0, 0, NULL, NULL, 0},
-      {"gmond_ip", CONFFILE_OPTION_IGNORE, 0, 
+      {"gmond_ip", CONFFILE_OPTION_IGNORE, 0,
        conffile_empty, 0, 0, NULL, NULL, 0},
-      {"gmond_port", CONFFILE_OPTION_IGNORE, 0, 
+      {"gmond_port", CONFFILE_OPTION_IGNORE, 0,
        conffile_empty, 0, 0, NULL, NULL, 0},
-      {"hostsfile", CONFFILE_OPTION_IGNORE, 0, 
+      {"hostsfile", CONFFILE_OPTION_IGNORE, 0,
        conffile_empty, 0, 0, NULL, NULL, 0},
-      {"gendersfile", CONFFILE_OPTION_IGNORE, 0, 
+      {"gendersfile", CONFFILE_OPTION_IGNORE, 0,
        conffile_empty, 0, 0, NULL, NULL, 0},
     };
   conffile_t cf = NULL;
   int num, rv = -1;
-  
-  if (!(cf = conffile_handle_create())) 
+
+  if (!(cf = conffile_handle_create()))
     {
       handle->errnum = NODEUPDOWN_ERR_INTERNAL;
       goto cleanup;
@@ -306,7 +306,7 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_config *conf)
 
   /* NODEUPDOWN_CONF_FILE defined in config.h */
   num = sizeof(options)/sizeof(struct conffile_option);
-  if (conffile_parse(cf, NODEUPDOWN_CONF_FILE, options, num, NULL, 0, 0) < 0) 
+  if (conffile_parse(cf, NODEUPDOWN_CONF_FILE, options, num, NULL, 0, 0) < 0)
     {
       /* Not an error if the configuration file does not exist */
       if (conffile_errnum(cf) != CONFFILE_ERR_EXIST) {
@@ -327,11 +327,11 @@ _read_conffile(nodeupdown_t handle, struct nodeupdown_config *conf)
   return rv;
 }
 
-int 
-nodeupdown_load_data(nodeupdown_t handle, 
-                     const char *hostname, 
-                     int port, 
-                     int timeout_len, 
+int
+nodeupdown_load_data(nodeupdown_t handle,
+                     const char *hostname,
+                     int port,
+                     int timeout_len,
                      char *module)
 {
   struct nodeupdown_config conffile_config;
@@ -357,7 +357,7 @@ nodeupdown_load_data(nodeupdown_t handle,
   if (_read_conffile(handle, &conffile_config) < 0)
     goto cleanup;
 
-  /* 
+  /*
    * Load backend module
    */
   if (backend_module_load(handle, module) < 0)
@@ -368,16 +368,16 @@ nodeupdown_load_data(nodeupdown_t handle,
 
   preferred_clusterlist_module = backend_module_preferred_clusterlist_module(handle);
 
-  /* 
+  /*
    * Load clusterlist module
    */
   if (clusterlist_module_load(handle, preferred_clusterlist_module) < 0)
     goto cleanup;
-  
+
   if (clusterlist_module_setup(handle) < 0)
     goto cleanup;
 
-  /* 
+  /*
    * Load config module
    */
   if (config_module_load(handle) < 0)
@@ -389,13 +389,13 @@ nodeupdown_load_data(nodeupdown_t handle,
   if (config_module_load_config(handle, &module_config) < 0)
     goto cleanup;
 
-  if (!(handle->up_nodes = hostlist_create(NULL))) 
+  if (!(handle->up_nodes = hostlist_create(NULL)))
     {
       handle->errnum = NODEUPDOWN_ERR_OUTMEM;
       goto cleanup;
     }
 
-  if (!(handle->down_nodes = hostlist_create(NULL))) 
+  if (!(handle->down_nodes = hostlist_create(NULL)))
     {
       handle->errnum = NODEUPDOWN_ERR_OUTMEM;
       goto cleanup;
@@ -442,7 +442,7 @@ nodeupdown_load_data(nodeupdown_t handle,
 	  port = backend_module_default_port(handle);
 	}
     }
-  
+
   if (timeout_len <= 0)
     {
       if (conffile_config.timeout_len_flag)
@@ -476,9 +476,9 @@ nodeupdown_load_data(nodeupdown_t handle,
 
   if (hostname)
     {
-      if (backend_module_get_updown_data(handle, 
+      if (backend_module_get_updown_data(handle,
 					 hostname,
-					 port, 
+					 port,
 					 timeout_len,
 					 module) < 0)
         goto cleanup;
@@ -487,7 +487,7 @@ nodeupdown_load_data(nodeupdown_t handle,
     {
       char (*hostnames)[NODEUPDOWN_MAXHOSTNAMELEN+1];
       int i, hostnames_len;
-      
+
       if (conffile_config.hostnames_flag)
 	{
 	  hostnames = conffile_config.hostnames;
@@ -498,12 +498,12 @@ nodeupdown_load_data(nodeupdown_t handle,
 	  hostnames = module_config.hostnames;
 	  hostnames_len = module_config.hostnames_len;
 	}
-      
+
       for (i = 0; i < hostnames_len; i++)
         {
           if (strlen(hostnames[i]) > 0)
             {
-              if (backend_module_get_updown_data(handle, 
+              if (backend_module_get_updown_data(handle,
 						 hostnames[i],
 						 port,
 						 timeout_len,
@@ -513,7 +513,7 @@ nodeupdown_load_data(nodeupdown_t handle,
                 break;
             }
         }
-      
+
       if (i >= hostnames_len)
         {
           handle->errnum = NODEUPDOWN_ERR_CONNECT;
@@ -527,9 +527,9 @@ nodeupdown_load_data(nodeupdown_t handle,
       if (!(hostnamePtr = backend_module_default_hostname(handle)))
         goto cleanup;
 
-      if (backend_module_get_updown_data(handle, 
+      if (backend_module_get_updown_data(handle,
 					 hostnamePtr,
-					 port, 
+					 port,
 					 timeout_len,
 					 module) < 0)
         goto cleanup;
@@ -537,7 +537,7 @@ nodeupdown_load_data(nodeupdown_t handle,
 
   if (clusterlist_module_compare_to_clusterlist(handle) < 0)
     goto cleanup;
-  
+
   hostlist_sort(handle->up_nodes);
   hostlist_sort(handle->down_nodes);
 
@@ -555,8 +555,8 @@ nodeupdown_load_data(nodeupdown_t handle,
   return -1;
 }
 
-int 
-nodeupdown_errnum(nodeupdown_t handle) 
+int
+nodeupdown_errnum(nodeupdown_t handle)
 {
   if (!handle)
     return NODEUPDOWN_ERR_NULLHANDLE;
@@ -567,7 +567,7 @@ nodeupdown_errnum(nodeupdown_t handle)
 }
 
 char *
-nodeupdown_strerror(int errnum) 
+nodeupdown_strerror(int errnum)
 {
   if (errnum < NODEUPDOWN_ERR_SUCCESS || errnum > NODEUPDOWN_ERR_ERRNUMRANGE)
     return nodeupdown_errmsg[NODEUPDOWN_ERR_ERRNUMRANGE];
@@ -576,13 +576,13 @@ nodeupdown_strerror(int errnum)
 }
 
 char *
-nodeupdown_errormsg(nodeupdown_t handle) 
+nodeupdown_errormsg(nodeupdown_t handle)
 {
   return nodeupdown_strerror(nodeupdown_errnum(handle));
 }
 
-void 
-nodeupdown_perror(nodeupdown_t handle, const char *msg) 
+void
+nodeupdown_perror(nodeupdown_t handle, const char *msg)
 {
   char *errormsg = nodeupdown_strerror(nodeupdown_errnum(handle));
 
@@ -592,7 +592,7 @@ nodeupdown_perror(nodeupdown_t handle, const char *msg)
     fprintf(stderr, "%s: %s\n", msg, errormsg);
 }
 
-/* 
+/*
  * _get_nodes_string
  *
  * common function for nodeupdown_get_up_nodes_string and
@@ -600,26 +600,26 @@ nodeupdown_perror(nodeupdown_t handle, const char *msg)
  *
  * Returns 0 on success, -1 on error
  */
-static int 
-_get_nodes_string(nodeupdown_t handle, char *buf, int buflen, int up_or_down) 
+static int
+_get_nodes_string(nodeupdown_t handle, char *buf, int buflen, int up_or_down)
 {
   hostlist_t hl;
- 
+
   if (_loaded_handle_error_check(handle) < 0)
     return -1;
 
-  if (!buf || buflen <= 0) 
+  if (!buf || buflen <= 0)
     {
       handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
       return -1;
     }
-  
+
   if (up_or_down == NODEUPDOWN_UP_NODES)
     hl = handle->up_nodes;
   else
     hl = handle->down_nodes;
 
-  if (hostlist_ranged_string(hl, buflen, buf) < 0) 
+  if (hostlist_ranged_string(hl, buflen, buf) < 0)
     {
       handle->errnum = NODEUPDOWN_ERR_OVERFLOW;
       return -1;
@@ -629,19 +629,19 @@ _get_nodes_string(nodeupdown_t handle, char *buf, int buflen, int up_or_down)
   return 0;
 }
 
-int 
-nodeupdown_get_up_nodes_string(nodeupdown_t handle, char *buf, int buflen) 
+int
+nodeupdown_get_up_nodes_string(nodeupdown_t handle, char *buf, int buflen)
 {
   return _get_nodes_string(handle, buf, buflen, NODEUPDOWN_UP_NODES);
 }
 
-int 
-nodeupdown_get_down_nodes_string(nodeupdown_t handle, char *buf, int buflen) 
+int
+nodeupdown_get_down_nodes_string(nodeupdown_t handle, char *buf, int buflen)
 {
   return _get_nodes_string(handle, buf, buflen, NODEUPDOWN_DOWN_NODES);
 }
 
-/* 
+/*
  * _get_nodes_list
  *
  * common function for nodeupdown_get_up_nodes_list and
@@ -649,8 +649,8 @@ nodeupdown_get_down_nodes_string(nodeupdown_t handle, char *buf, int buflen)
  *
  * Returns number of items copied on success, -1 on error
  */
-static int 
-_get_nodes_list(nodeupdown_t handle, char **list, int len, int up_or_down) 
+static int
+_get_nodes_list(nodeupdown_t handle, char **list, int len, int up_or_down)
 {
   int count = 0;
   hostlist_t hl;
@@ -660,7 +660,7 @@ _get_nodes_list(nodeupdown_t handle, char **list, int len, int up_or_down)
   if (_loaded_handle_error_check(handle) < 0)
     return -1;
 
-  if (!list || len <= 0) 
+  if (!list || len <= 0)
     {
       handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
       return -1;
@@ -671,21 +671,21 @@ _get_nodes_list(nodeupdown_t handle, char **list, int len, int up_or_down)
   else
     hl = handle->down_nodes;
 
-  if (!(itr = hostlist_iterator_create(hl))) 
+  if (!(itr = hostlist_iterator_create(hl)))
     {
       handle->errnum = NODEUPDOWN_ERR_OUTMEM;
       return -1;
     }
 
-  while ((nodename = hostlist_next(itr)) != NULL) 
+  while ((nodename = hostlist_next(itr)) != NULL)
     {
-      if (count >= len) 
+      if (count >= len)
         {
           handle->errnum = NODEUPDOWN_ERR_OVERFLOW;
           goto cleanup;
         }
 
-      if (!list[count]) 
+      if (!list[count])
         {
           handle->errnum = NODEUPDOWN_ERR_NULLPTR;
           goto cleanup;
@@ -695,7 +695,7 @@ _get_nodes_list(nodeupdown_t handle, char **list, int len, int up_or_down)
       free(nodename);
       count++;
     }
-  
+
   hostlist_iterator_destroy(itr);
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return count;
@@ -706,19 +706,19 @@ _get_nodes_list(nodeupdown_t handle, char **list, int len, int up_or_down)
   return -1;
 }
 
-int 
-nodeupdown_get_up_nodes_list(nodeupdown_t handle, char **list, int len) 
+int
+nodeupdown_get_up_nodes_list(nodeupdown_t handle, char **list, int len)
 {
   return _get_nodes_list(handle, list, len, NODEUPDOWN_UP_NODES);
 }
 
-int 
-nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len) 
+int
+nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len)
 {
   return _get_nodes_list(handle, list, len, NODEUPDOWN_DOWN_NODES);
 }
 
-/* 
+/*
  * _is_node
  *
  * common function for nodeupdown_is_node_up and
@@ -726,9 +726,9 @@ nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len)
  *
  * Returns bool on success, -1 on error
  */
-static int 
-_is_node(nodeupdown_t handle, const char *node, int up_or_down) 
-{ 
+static int
+_is_node(nodeupdown_t handle, const char *node, int up_or_down)
+{
   char buffer[NODEUPDOWN_MAXNODENAMELEN+1];
   char *nodePtr;
   int temp, rv = -1;
@@ -736,7 +736,7 @@ _is_node(nodeupdown_t handle, const char *node, int up_or_down)
   if (_loaded_handle_error_check(handle) < 0)
     return -1;
 
-  if (!node) 
+  if (!node)
     {
       handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
       return -1;
@@ -747,15 +747,15 @@ _is_node(nodeupdown_t handle, const char *node, int up_or_down)
       if ((rv = clusterlist_module_is_node_in_cluster(handle, node)) < 0)
 	return -1;
 
-      if (!rv) 
+      if (!rv)
 	{
 	  handle->errnum = NODEUPDOWN_ERR_NOTFOUND;
 	  return -1;
 	}
-      
-      if (clusterlist_module_get_nodename(handle, 
-					  node, 
-					  buffer, 
+
+      if (clusterlist_module_get_nodename(handle,
+					  node,
+					  buffer,
 					  NODEUPDOWN_MAXNODENAMELEN+1) < 0)
 	return -1;
 
@@ -785,32 +785,32 @@ _is_node(nodeupdown_t handle, const char *node, int up_or_down)
     rv = 1;
   else
     rv = 0;
-  
+
   handle->errnum = NODEUPDOWN_ERR_SUCCESS;
   return rv;
 }
 
-int 
-nodeupdown_is_node_up(nodeupdown_t handle, const char *node) 
+int
+nodeupdown_is_node_up(nodeupdown_t handle, const char *node)
 {
   return _is_node(handle, node, NODEUPDOWN_UP_NODES);
 }
 
-int 
-nodeupdown_is_node_down(nodeupdown_t handle, const char *node) 
+int
+nodeupdown_is_node_down(nodeupdown_t handle, const char *node)
 {
   return _is_node(handle, node, NODEUPDOWN_DOWN_NODES);
 }
 
-/* 
+/*
  * _node_count
  *
  * common function for nodeupdown_up_count and nodeupdown_down_count
  *
  * Returns count on success, -1 on error
  */
-static int 
-_node_count(nodeupdown_t handle, int up_or_down) 
+static int
+_node_count(nodeupdown_t handle, int up_or_down)
 {
   int rv;
 
@@ -826,20 +826,20 @@ _node_count(nodeupdown_t handle, int up_or_down)
   return rv;
 }
 
-int 
-nodeupdown_up_count(nodeupdown_t handle) 
+int
+nodeupdown_up_count(nodeupdown_t handle)
 {
   return _node_count(handle, NODEUPDOWN_UP_NODES);
 }
 
-int 
-nodeupdown_down_count(nodeupdown_t handle) 
+int
+nodeupdown_down_count(nodeupdown_t handle)
 {
   return _node_count(handle, NODEUPDOWN_DOWN_NODES);
 }
 
-int 
-nodeupdown_last_up_time(nodeupdown_t handle, 
+int
+nodeupdown_last_up_time(nodeupdown_t handle,
                         const char *node,
                         unsigned int *last_up_time)
 {
@@ -847,8 +847,8 @@ nodeupdown_last_up_time(nodeupdown_t handle,
 
   if (_loaded_handle_error_check(handle) < 0)
     return -1;
-  
-  if (!node || !last_up_time) 
+
+  if (!node || !last_up_time)
     {
       handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
       return -1;
@@ -859,7 +859,7 @@ nodeupdown_last_up_time(nodeupdown_t handle,
       handle->errnum = NODEUPDOWN_ERR_NOTSUPPORTED;
       return -1;
     }
-  
+
   if (!(lut = hash_find(handle->last_up_times, node)))
     {
       handle->errnum = NODEUPDOWN_ERR_NOTFOUND;
@@ -871,35 +871,35 @@ nodeupdown_last_up_time(nodeupdown_t handle,
   return 0;
 }
 
-int 
-nodeupdown_nodelist_create(nodeupdown_t handle, char ***list) 
+int
+nodeupdown_nodelist_create(nodeupdown_t handle, char ***list)
 {
   int i, j;
   char **nodes;
-  
+
   if (_loaded_handle_error_check(handle) < 0)
     return -1;
 
-  if (!list) 
+  if (!list)
     {
       handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
       return -1;
     }
 
-  if (!(nodes = (char **)malloc(sizeof(char *) * handle->numnodes))) 
+  if (!(nodes = (char **)malloc(sizeof(char *) * handle->numnodes)))
     {
       handle->errnum = NODEUPDOWN_ERR_OUTMEM;
       return -1;
     }
 
-  for (i = 0; i < handle->numnodes; i++) 
+  for (i = 0; i < handle->numnodes; i++)
     {
-      if (!(nodes[i] = (char *)malloc(NODEUPDOWN_MAXNODENAMELEN+1))) 
+      if (!(nodes[i] = (char *)malloc(NODEUPDOWN_MAXNODENAMELEN+1)))
         {
-          for (j = 0; j < i; j++) 
+          for (j = 0; j < i; j++)
             free(nodes[j]);
           free(nodes);
-          
+
           handle->errnum = NODEUPDOWN_ERR_OUTMEM;
           return -1;
         }
@@ -912,23 +912,23 @@ nodeupdown_nodelist_create(nodeupdown_t handle, char ***list)
   return handle->numnodes;
 }
 
-int 
-nodeupdown_nodelist_clear(nodeupdown_t handle, char **list) 
+int
+nodeupdown_nodelist_clear(nodeupdown_t handle, char **list)
 {
   int i;
-  
+
   if (_loaded_handle_error_check(handle) < 0)
     return -1;
 
-  if (!list) 
+  if (!list)
     {
       handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
       return -1;
     }
 
-  for (i = 0; i < handle->numnodes; i++) 
+  for (i = 0; i < handle->numnodes; i++)
     {
-      if (!list[i]) 
+      if (!list[i])
         {
           handle->errnum = NODEUPDOWN_ERR_NULLPTR;
           return -1;
@@ -940,15 +940,15 @@ nodeupdown_nodelist_clear(nodeupdown_t handle, char **list)
   return 0;
 }
 
-int 
-nodeupdown_nodelist_destroy(nodeupdown_t handle, char **list) 
+int
+nodeupdown_nodelist_destroy(nodeupdown_t handle, char **list)
 {
   int i;
 
   if (_loaded_handle_error_check(handle) < 0)
     return -1;
 
-  if (!list) 
+  if (!list)
     {
       handle->errnum = NODEUPDOWN_ERR_PARAMETERS;
       return -1;

@@ -21,8 +21,8 @@ AC_DEFUN([AC_OPENIB],
      AC_CHECK_LIB([osmcomp], [complib_init], [ac_openib_osmcomp=yes], [], [-lopensm -losmvendor])
      AC_CHECK_LIB([osmvendor], [osm_vendor_new], [ac_openib_osmvendor=yes], [], [-lopensm -losmcomp])
   fi
-  
-  if (test "$ac_openib_opensm" = "yes") && 
+
+  if (test "$ac_openib_opensm" = "yes") &&
 	(test "$ac_openib_osmcomp" = "yes") &&
 	(test "$ac_openib_osmvendor" = "yes"); then
      OPENIB_LIBS="-lopensm -losmcomp -losmvendor"

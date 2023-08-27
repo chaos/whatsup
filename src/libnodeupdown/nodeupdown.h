@@ -6,20 +6,20 @@
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
  *  Written by Albert Chu <chu11@llnl.gov>
  *  UCRL-CODE-155699
- *  
+ *
  *  This file is part of Whatsup, tools and libraries for determining up and
  *  down nodes in a cluster. For details, see http://www.llnl.gov/linux/.
- *  
- *  Whatsup is free software; you can redistribute it and/or modify 
- *  it under the terms of the GNU General Public License as published by the 
- *  Free Software Foundation; either version 2 of the License, or (at your 
+ *
+ *  Whatsup is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by the
+ *  Free Software Foundation; either version 2 of the License, or (at your
  *  option) any later version.
- *  
- *  Whatsup is distributed in the hope that it will be useful, but 
- *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+ *
+ *  Whatsup is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  *  for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License along
  *  with Whatsup.  If not, see <http://www.gnu.org/licenses/>.
 \*****************************************************************************/
@@ -62,9 +62,9 @@ extern "C" {
 
 typedef struct nodeupdown *nodeupdown_t;
 
-/* 
+/*
  * nodeupdown_handle_create
- * 
+ *
  * Create a nodeupdown handle.
  *
  * Returns handle on success, NULL on error
@@ -79,7 +79,7 @@ nodeupdown_t nodeupdown_handle_create(void);
  */
 int nodeupdown_handle_destroy(nodeupdown_t handle);
 
-/* 
+/*
  * nodeupdown_load_data
  *
  * Loads data from the backend tool used to evaluate up and down
@@ -92,13 +92,13 @@ int nodeupdown_handle_destroy(nodeupdown_t handle);
  *
  * Returns 0 on success, -1 on error
  */
-int nodeupdown_load_data(nodeupdown_t handle, 
-                         const char *hostname, 
+int nodeupdown_load_data(nodeupdown_t handle,
+                         const char *hostname,
                          int port,
                          int timeout_len,
-                         char *module); 
+                         char *module);
 
-/* 
+/*
  * nodeupdown_errnum
  *
  * Return the most recent error number.
@@ -107,7 +107,7 @@ int nodeupdown_load_data(nodeupdown_t handle,
  */
 int nodeupdown_errnum(nodeupdown_t handle);
 
-/* 
+/*
  * nodeupdown_strerror
  *
  * Return a string message describing an error number.
@@ -116,45 +116,45 @@ int nodeupdown_errnum(nodeupdown_t handle);
  */
 char *nodeupdown_strerror(int errnum);
 
-/* 
+/*
  * nodeupdown_errormsg
- * 
+ *
  * Return a string message describing the most recent error.
  *
  * Returns pointer to message on success
  */
 char *nodeupdown_errormsg(nodeupdown_t handle);
 
-/* 
+/*
  * nodeupdown_perror
  *
- * Output a message to standard error 
+ * Output a message to standard error
  */
 void nodeupdown_perror(nodeupdown_t handle, const char *msg);
 
-/* 
+/*
  * nodeupdown_get_up_nodes_string
  *
  * Retrieve a ranged string of up nodes and store it in the buffer
  *
  * Returns 0 on success, -1 on error
  */
-int nodeupdown_get_up_nodes_string(nodeupdown_t handle, 
-                                   char *buf, 
+int nodeupdown_get_up_nodes_string(nodeupdown_t handle,
+                                   char *buf,
                                    int buflen);
 
-/* 
+/*
  * nodeupdown_get_down_nodes_string
  *
  * Retrieve a ranged string of down nodes and store it in the buffer
  *
  * Returns 0 on success, -1 on error
  */
-int nodeupdown_get_down_nodes_string(nodeupdown_t handle, 
-                                     char *buf, 
+int nodeupdown_get_down_nodes_string(nodeupdown_t handle,
+                                     char *buf,
                                      int buflen);
 
-/* 
+/*
  * nodeupdown_get_up_nodes_list
  *
  * Retrieve a list of up nodes and store them in the list
@@ -163,7 +163,7 @@ int nodeupdown_get_down_nodes_string(nodeupdown_t handle,
  */
 int nodeupdown_get_up_nodes_list(nodeupdown_t handle, char **list, int len);
 
-/* 
+/*
  * nodeupdown_get_down_nodes_list
  *
  * Retrieve a list of down nodes and store them in the list
@@ -172,7 +172,7 @@ int nodeupdown_get_up_nodes_list(nodeupdown_t handle, char **list, int len);
  */
 int nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len);
 
-/* 
+/*
  * nodeupdown_is_node_up
  *
  * Check if a node is up
@@ -181,7 +181,7 @@ int nodeupdown_get_down_nodes_list(nodeupdown_t handle, char **list, int len);
  */
 int nodeupdown_is_node_up(nodeupdown_t handle, const char *node);
 
-/* 
+/*
  * nodeupdown_is_node_down
  *
  * Check if a node is down
@@ -190,14 +190,14 @@ int nodeupdown_is_node_up(nodeupdown_t handle, const char *node);
  */
 int nodeupdown_is_node_down(nodeupdown_t handle, const char *node);
 
-/* 
+/*
  * nodeupdown_up_count
  *
  * Returns number of nodes that are up, -1 on error
  */
 int nodeupdown_up_count(nodeupdown_t handle);
 
-/* 
+/*
  * nodeupdown_down_count
  *
  * Returns number of nodes that are down, -1 on error
@@ -213,11 +213,11 @@ int nodeupdown_down_count(nodeupdown_t handle);
  *
  * Returns 0 on success, -1 on error
  */
-int nodeupdown_last_up_time(nodeupdown_t handle, 
+int nodeupdown_last_up_time(nodeupdown_t handle,
                             const char *node,
                             unsigned int *last_up_time);
 
-/* 
+/*
  * nodeupdown_nodelist_create
  *
  * Allocate an array to store node names in
@@ -226,7 +226,7 @@ int nodeupdown_last_up_time(nodeupdown_t handle,
  */
 int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list);
 
-/* 
+/*
  * nodeupdown_nodelist_clear
  *
  * Clear a previously allocated nodelist
@@ -235,7 +235,7 @@ int nodeupdown_nodelist_create(nodeupdown_t handle, char ***list);
  */
 int nodeupdown_nodelist_clear(nodeupdown_t handle, char **list);
 
-/* 
+/*
  * nodeupdown_nodelist_destroy
  *
  * Destroy a previously allocated nodelist

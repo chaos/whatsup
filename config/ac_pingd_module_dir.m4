@@ -16,8 +16,8 @@ AC_DEFUN([AC_PINGD_MODULE_DIR],
      PINGD_MODULE_DIR=${prefix}/$LIBDIRTYPE/pingd
   fi
 
-  AC_DEFINE_UNQUOTED([PINGD_MODULE_DIR], 
-                     ["$PINGD_MODULE_DIR"], 
+  AC_DEFINE_UNQUOTED([PINGD_MODULE_DIR],
+                     ["$PINGD_MODULE_DIR"],
                      [Define default pingd module dir])
   AC_SUBST(PINGD_MODULE_DIR)
 ])

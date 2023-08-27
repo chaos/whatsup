@@ -74,31 +74,31 @@ static int cerebro_monitor_option_M_registered = 0;
 #define CEREBRO_STATE_UP        "UP"
 #define CEREBRO_STATE_DOWN      "DOWN"
 
-/* 
+/*
  * cerebro_monitor_options_setup
- * 
+ *
  * cerebro_monitor setup func
  */
-int 
+int
 cerebro_monitor_options_setup(void)
 {
   return 0;
 }
 
-/* 
+/*
  * cerebro_monitor_options_cleanup
- * 
+ *
  * cerebro_monitor cleanup func
  */
-int 
+int
 cerebro_monitor_options_cleanup(void)
 {
   return 0;
 }
 
-/* 
+/*
  * cerebro_monitor_options_process_option
- * 
+ *
  * cerebro_monitor process_option func
  */
 int
@@ -113,9 +113,9 @@ cerebro_monitor_options_process_option(char c, char *optarg)
 }
 
 
-/* 
+/*
  * cerebro_monitor_options_monitor
- * 
+ *
  * cerebro_monitor monitor func
  */
 int
@@ -140,7 +140,7 @@ cerebro_monitor_options_monitor(const char *hostname, int port)
           exit(1);
         }
     }
-  
+
   if (port > 0)
     {
       if (cerebro_set_port(handle, port) < 0)
@@ -209,20 +209,20 @@ cerebro_monitor_options_monitor(const char *hostname, int port)
                   fprintf(stderr, "localtime");
                   exit(1);
                 }
-              
+
               strftime(tbuf, CEREBRO_MONITOR_BUFLEN, "%F %H:%M:%S", tm);
-              
+
               if (*stateptr)
                 statestr = CEREBRO_STATE_UP;
               else
                 statestr = CEREBRO_STATE_DOWN;
 
-              fprintf(stdout, 
-                      "%s (%s): %s\n", 
+              fprintf(stdout,
+                      "%s (%s): %s\n",
                       nodename,
-                      tbuf, 
+                      tbuf,
                       statestr);
-              
+
             }
 
           if (nodename)
@@ -235,7 +235,7 @@ cerebro_monitor_options_monitor(const char *hostname, int port)
   (void)cerebro_event_unregister(handle, fd);
 }
 
-struct whatsup_options_module_info whatsup_module_info = 
+struct whatsup_options_module_info whatsup_module_info =
   {
     "cerebro_monitor",
     &cerebro_monitor_options[0],

@@ -120,7 +120,7 @@ _fds_setup(void)
 
   if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     ERR_EXIT(("socket: %s", strerror(errno)));
-  
+
   /* For quick start/restart */
   optval = 1;
   optlen = sizeof(optval);
@@ -149,10 +149,10 @@ _nodes_setup(void)
   assert(!nodes);
   assert(nodes_count);
   assert(!nodes_index);
-  
+
   if (!(nodes = list_create((ListDelF)free)))
     ERR_EXIT(("list_create: %s", strerror(errno)));
-  
+
   if (!(nodes_index = hash_create(nodes_count,
                                   (hash_key_f)hash_key_string,
                                   (hash_cmp_f)strcmp,
@@ -168,21 +168,21 @@ _nodes_setup(void)
       struct hostent *h;
       char *tmpstr;
       char *ip;
-      
+
       if (!(info = (struct pingd_info *)malloc(sizeof(struct pingd_info))))
         ERR_EXIT(("malloc: %s", strerror(errno)));
       memset(info, '\0', sizeof(struct pingd_info));
 
       if (!(info->hostname = strdup(host)))
         ERR_EXIT(("strdup: %s", strerror(errno)));
-      
+
       if (!(h = gethostbyname(host)))
         ERR_EXIT(("gethostbyname: %s", hstrerror(h_errno)));
-        
+
       info->destaddr.sin_family = AF_INET;
       info->destaddr.sin_addr = *((struct in_addr *)h->h_addr);
       free(host);
-      
+
       if (!list_append(nodes, info))
         ERR_EXIT(("list_append: %s", strerror(errno)));
 
@@ -192,7 +192,7 @@ _nodes_setup(void)
       /* 'ip' memleaks, but we ignore it, let it last forever until process crashes */
       if (!(ip = strdup(tmpstr)))
         ERR_EXIT(("strdup: %s", strerror(errno)));
-        
+
       if (hash_find(nodes_index, ip))
         ERR_EXIT(("Duplicate host ip: %s", ip));
 
@@ -262,11 +262,11 @@ _icmp_ping_build(struct pingd_info *info, char *buf, unsigned int buflen)
   assert(buf);
   assert(buflen);
 
-  /* 
+  /*
    * ICMP Ping Packet
-   * 
+   *
    * ICMP Type - 1 byte - 8 for ICMP Ping Request, 0 for ICMP Ping Reply
-   * ICMP Code - 1 byte - 0 for ICMP ping 
+   * ICMP Code - 1 byte - 0 for ICMP ping
    * ICMP Checksum - 2 bytes - initialize to 0 for checksum calculation
    * ICMP Identifier - 2 bytes - unused in pingd
    * ICMP Sequence Number - 2 bytes - used appropriately
@@ -304,7 +304,7 @@ _pingd_send_pings(void)
 
   assert(nodes);
   assert(nodes_count);
-  
+
   if (!(itr = list_iterator_create(nodes)))
     ERR_EXIT(("list_iterator_create: %s", strerror(errno)));
 
@@ -358,7 +358,7 @@ _receive_ping(void)
 
   if (!(tmpstr = inet_ntoa(from.sin_addr)))
     ERR_EXIT(("inet_ntoa: %s", strerror(errno))); /* strerror? */
-  
+
   if ((info = hash_find(nodes_index, tmpstr)))
     {
       if (gettimeofday(&(info->last_received), NULL) < 0)
@@ -379,18 +379,18 @@ _send_ping_data(void)
   struct pingd_info *info;
   socklen_t rhost_len = sizeof(struct sockaddr_in);
   int rhost_fd;
-  
+
   assert(nodes);
   assert(nodes_count);
 
   if ((rhost_fd = accept(server_fd, (struct sockaddr *)&rhost, &rhost_len)) < 0)
     ERR_EXIT(("accept: %s", strerror(errno)));
-  
+
 #ifndef NDEBUG
   if (conf.debug)
     fprintf(stderr, "Received pingd server request\n");
 #endif /* NDEBUG */
-  
+
   if (!(itr = list_iterator_create(nodes)))
     ERR_EXIT(("list_iterator_create: %s", strerror(errno)));
 
@@ -420,7 +420,7 @@ _send_ping_data(void)
   close(rhost_fd);
 }
 
-void 
+void
 pingd_loop(void)
 {
   struct pollfd pfds[2];
@@ -455,7 +455,7 @@ pingd_loop(void)
 
       if ((num = poll(pfds, 2, timeout_ms)) < 0)
         ERR_EXIT(("poll: %s", strerror(errno)));
-      
+
       if (num)
         {
           if (pfds[0].revents & POLLIN)

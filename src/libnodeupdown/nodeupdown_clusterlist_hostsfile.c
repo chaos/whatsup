@@ -6,20 +6,20 @@
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
  *  Written by Albert Chu <chu11@llnl.gov>
  *  UCRL-CODE-155699
- *  
+ *
  *  This file is part of Whatsup, tools and libraries for determining up and
  *  down nodes in a cluster. For details, see http://www.llnl.gov/linux/.
- *  
- *  Whatsup is free software; you can redistribute it and/or modify 
- *  it under the terms of the GNU General Public License as published by the 
- *  Free Software Foundation; either version 2 of the License, or (at your 
+ *
+ *  Whatsup is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by the
+ *  Free Software Foundation; either version 2 of the License, or (at your
  *  option) any later version.
- *  
- *  Whatsup is distributed in the hope that it will be useful, but 
- *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+ *
+ *  Whatsup is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  *  for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License along
  *  with Whatsup.  If not, see <http://www.gnu.org/licenses/>.
 \*****************************************************************************/
@@ -49,7 +49,7 @@
 #include "fd.h"
 #include "list.h"
 
-/* 
+/*
  * hosts
  *
  * Stores list of all hostnames
@@ -72,8 +72,8 @@ static int
 _readline(nodeupdown_t handle, int fd, char *buf, int buflen)
 {
   int len;
-                                                                                     
-  if ((len = fd_read_line(fd, buf, buflen)) < 0) 
+
+  if ((len = fd_read_line(fd, buf, buflen)) < 0)
     {
 #ifndef NDEBUG
       fprintf(stderr, "fd_read_line: %s\n", strerror(errno));
@@ -81,9 +81,9 @@ _readline(nodeupdown_t handle, int fd, char *buf, int buflen)
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       return -1;
     }
-                                                                                     
+
   /* buflen - 1 b/c fd_read_line guarantees null termination */
-  if (len >= (buflen-1)) 
+  if (len >= (buflen-1))
     {
 #ifndef NDEBUG
       fprintf(stderr, "fd_read_line: buffer overflow\n");
@@ -91,7 +91,7 @@ _readline(nodeupdown_t handle, int fd, char *buf, int buflen)
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       return -1;
     }
-                                                                                     
+
   return len;
 }
 
@@ -109,10 +109,10 @@ static int
 _remove_comments(char *buf, int buflen)
 {
   int i, comment_flag, retlen;
-                                                                                     
+
   if (!strchr(buf, '#'))
     return buflen;
-                                                                                     
+
   i = 0;
   comment_flag = 0;
   retlen = buflen;
@@ -123,7 +123,7 @@ _remove_comments(char *buf, int buflen)
           buf[i] = '\0';
           retlen--;
         }
-                                                                                     
+
       if (buf[i] == '#')
         {
           buf[i] = '\0';
@@ -132,7 +132,7 @@ _remove_comments(char *buf, int buflen)
         }
       i++;
     }
-                                                                                     
+
   return retlen;
 }
 
@@ -150,7 +150,7 @@ static int
 _remove_trailing_whitespace(char *buf, int buflen)
 {
   char *temp;
-                                                                                     
+
   temp = buf + buflen;
   for (--temp; temp >= buf; temp--)
     {
@@ -160,7 +160,7 @@ _remove_trailing_whitespace(char *buf, int buflen)
         break;
       buflen--;
     }
-                                                                                     
+
   return buflen;
 }
 
@@ -178,10 +178,10 @@ _move_past_whitespace(char *buf)
 {
   while (*buf != '\0' && isspace(*buf))
     buf++;
-                                                                                     
+
   if (*buf == '\0')
     return NULL;
-                                                                                     
+
   return buf;
 }
 
@@ -190,8 +190,8 @@ _move_past_whitespace(char *buf)
  *
  * hostsfile clusterlist module setup function
  */
-static int 
-hostsfile_clusterlist_setup(nodeupdown_t handle) 
+static int
+hostsfile_clusterlist_setup(nodeupdown_t handle)
 {
   int fd = -1, len;
   char buf[NODEUPDOWN_BUFFERLEN];
@@ -205,7 +205,7 @@ hostsfile_clusterlist_setup(nodeupdown_t handle)
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_OUTMEM);
       goto cleanup;
     }
-                                                                                    
+
   if ((fd = open(NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT, O_RDONLY)) < 0)
     {
 #ifndef NDEBUG
@@ -219,24 +219,24 @@ hostsfile_clusterlist_setup(nodeupdown_t handle)
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       goto cleanup;
     }
-                                                                                     
+
   while ((len = _readline(handle, fd, buf, NODEUPDOWN_BUFFERLEN)) > 0)
     {
       char *hostPtr;
       char *str;
-                                                                                     
+
       if ((len = _remove_comments(buf, len)) == 0)
         continue;
-                                                                                     
+
       if ((len = _remove_trailing_whitespace(buf, len)) == 0)
         continue;
-                                                                                     
+
       if (!(hostPtr = _move_past_whitespace(buf)))
         continue;
-                                                                                     
+
       if (hostPtr[0] == '\0')
         continue;
-                                                                                     
+
       if (strchr(hostPtr, ' ') || strchr(hostPtr, '\t'))
         {
 #ifndef NDEBUG
@@ -245,7 +245,7 @@ hostsfile_clusterlist_setup(nodeupdown_t handle)
 	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
           goto cleanup;
         }
-                                                                                     
+
       if (strlen(hostPtr) > NODEUPDOWN_MAXHOSTNAMELEN)
         {
 #ifndef NDEBUG
@@ -254,11 +254,11 @@ hostsfile_clusterlist_setup(nodeupdown_t handle)
 	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
           goto cleanup;
         }
-          
+
       /* Shorten hostname if necessary */
       if ((p = strchr(hostPtr, '.')))
         *p = '\0';
-      
+
       if (!(str = strdup(hostPtr)))
         {
 	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_OUTMEM);
@@ -274,7 +274,7 @@ hostsfile_clusterlist_setup(nodeupdown_t handle)
           goto cleanup;
         }
     }
-                                                                                     
+
  out:
   /* ignore potential error, just return result */
   close(fd);
@@ -291,8 +291,8 @@ hostsfile_clusterlist_setup(nodeupdown_t handle)
  *
  * hostsfile clusterlist module cleanup function
  */
-static int 
-hostsfile_clusterlist_cleanup(nodeupdown_t handle) 
+static int
+hostsfile_clusterlist_cleanup(nodeupdown_t handle)
 {
   if (hosts)
     list_destroy(hosts);
@@ -305,8 +305,8 @@ hostsfile_clusterlist_cleanup(nodeupdown_t handle)
  *
  * hostsfile clusterlist module get_numnodes function
  */
-static int 
-hostsfile_clusterlist_get_numnodes(nodeupdown_t handle) 
+static int
+hostsfile_clusterlist_get_numnodes(nodeupdown_t handle)
 {
   return list_count(hosts);
 }
@@ -324,13 +324,13 @@ _find_str(void *x, void *key)
  *
  * hostsfile clusterlist module is_node_in_cluster function
  */
-static int 
-hostsfile_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node) 
+static int
+hostsfile_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node)
 {
   char nodebuf[NODEUPDOWN_MAXNODENAMELEN+1];
   char *nodePtr = NULL;
   void *ptr;
-  
+
   /* Have to assume it is */
   if (!list_count(hosts))
     return 1;
@@ -339,7 +339,7 @@ hostsfile_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node)
   if (strchr(node, '.'))
     {
       char *p;
- 
+
       memset(nodebuf, '\0', NODEUPDOWN_MAXNODENAMELEN+1);
       strncpy(nodebuf, node, NODEUPDOWN_MAXNODENAMELEN);
       p = strchr(nodebuf, '.');
@@ -361,11 +361,11 @@ hostsfile_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node)
  *
  * hostsfile clusterlist module get_nodename function
  */
-static int 
-hostsfile_clusterlist_get_nodename(nodeupdown_t handle, 
-                                   const char *node, 
-                                   char *buf, 
-                                   unsigned int buflen) 
+static int
+hostsfile_clusterlist_get_nodename(nodeupdown_t handle,
+                                   const char *node,
+                                   char *buf,
+                                   unsigned int buflen)
 {
   char nodebuf[NODEUPDOWN_MAXNODENAMELEN+1];
   char *nodePtr = NULL;
@@ -374,7 +374,7 @@ hostsfile_clusterlist_get_nodename(nodeupdown_t handle,
   if (strchr(node, '.'))
     {
       char *p;
- 
+
       memset(nodebuf, '\0', NODEUPDOWN_MAXNODENAMELEN+1);
       strncpy(nodebuf, node, NODEUPDOWN_MAXNODENAMELEN);
       p = strchr(nodebuf, '.');
@@ -386,19 +386,19 @@ hostsfile_clusterlist_get_nodename(nodeupdown_t handle,
 
   return _nodeupdown_clusterlist_copy_nodename(handle, nodePtr, buf, buflen);
 }
-    
+
 /*
  * hostsfile_clusterlist_compare_to_clusterlist
  *
  * hostsfile clusterlist module compare_to_clusterlist function
  */
-static int 
-hostsfile_clusterlist_compare_to_clusterlist(nodeupdown_t handle) 
+static int
+hostsfile_clusterlist_compare_to_clusterlist(nodeupdown_t handle)
 {
   ListIterator itr = NULL;
   char *nodename;
-                                                                                     
-  if (!(itr = list_iterator_create(hosts))) 
+
+  if (!(itr = list_iterator_create(hosts)))
     {
 #ifndef NDEBUG
       fprintf(stderr, "list_iterator_create: %s\n", strerror(errno));
@@ -406,16 +406,16 @@ hostsfile_clusterlist_compare_to_clusterlist(nodeupdown_t handle)
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
       return -1;
     }
-                                                                                     
+
   while ((nodename = list_next(itr)))
     {
       if (nodeupdown_not_discovered_check(handle, nodename) < 0)
 	goto cleanup;
     }
-  
+
   list_iterator_destroy(itr);
   return 0;
-  
+
  cleanup:
   list_iterator_destroy(itr);
   return -1;

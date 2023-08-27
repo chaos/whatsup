@@ -15,7 +15,7 @@ AC_DEFUN([AC_HOSTSFILE],
     ]
   )
   AC_MSG_RESULT([${ac_hostsfile_test=yes}])
- 
+
   if test "$ac_hostsfile_test" = "yes"; then
      MANPAGE_HOSTSFILE=1
      ac_with_hostsfile=yes
@@ -23,7 +23,7 @@ AC_DEFUN([AC_HOSTSFILE],
      MANPAGE_HOSTSFILE=0
      ac_with_hostsfile=no
   fi
-  
+
   AC_SUBST(MANPAGE_HOSTSFILE)
 ])
 
@@ -42,7 +42,7 @@ AC_DEFUN([AC_HOSTSFILE_PATH],
     ]
   )
   AC_MSG_RESULT([$CLUSTERLIST_HOSTSFILE_DEFAULT])
- 
+
   NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT=$CLUSTERLIST_HOSTSFILE_DEFAULT
 
   AC_DEFINE_UNQUOTED([NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT],

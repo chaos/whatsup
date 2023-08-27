@@ -15,7 +15,7 @@ AC_DEFUN([AC_GANGLIA],
     ]
   )
   AC_MSG_RESULT([${ac_ganglia_test=yes}])
-  
+
   if test "$ac_ganglia_test" = "yes"; then
      MANPAGE_GANGLIA=1
      ac_with_ganglia=yes
