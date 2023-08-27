@@ -6,7 +6,7 @@ AC_DEFUN([AC_CEREBRO],
 [
   AC_MSG_CHECKING([for whether to build cerebro modules])
   AC_ARG_WITH([cerebro],
-    AC_HELP_STRING([--with-cerebro], [Build cerebro modules]),
+    AS_HELP_STRING([--with-cerebro], [Build cerebro modules]),
     [ case "$withval" in
         no)  ac_cerebro_test=no ;;
         yes) ac_cerebro_test=yes ;;

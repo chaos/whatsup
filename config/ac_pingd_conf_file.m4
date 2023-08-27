@@ -8,7 +8,7 @@ AC_DEFUN([AC_PINGD_CONF],
 
   AC_MSG_CHECKING([for pingd config file default path])
   AC_ARG_WITH([pingd-config-file],
-    AC_HELP_STRING([--with-pingd-config-file=PATH], 
+    AS_HELP_STRING([--with-pingd-config-file=PATH], 
                    [Specify default pingd config file path]),
     [ case "$withval" in
         no)  ;;

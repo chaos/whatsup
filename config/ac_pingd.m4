@@ -6,7 +6,7 @@ AC_DEFUN([AC_PINGD],
 [
   AC_MSG_CHECKING([for whether to build pingd modules])
   AC_ARG_WITH([pingd],
-    AC_HELP_STRING([--with-pingd], [Build pingd modules]),
+    AS_HELP_STRING([--with-pingd], [Build pingd modules]),
     [ case "$withval" in
         no)  ac_pingd_test=no ;;
         yes) ac_pingd_test=yes ;;

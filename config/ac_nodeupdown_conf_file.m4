@@ -8,7 +8,7 @@ AC_DEFUN([AC_NODEUPDOWN_CONF],
 
   AC_MSG_CHECKING([for nodeupdown config file default path])
   AC_ARG_WITH([nodeupdown-config-file],
-    AC_HELP_STRING([--with-nodeupdown-config-file=PATH], 
+    AS_HELP_STRING([--with-nodeupdown-config-file=PATH], 
                    [Specify default nodeupdown config file path]),
     [ case "$withval" in
         no)  ;;

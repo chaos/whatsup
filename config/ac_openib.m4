@@ -6,7 +6,7 @@ AC_DEFUN([AC_OPENIB],
 [
   AC_MSG_CHECKING([for whether to build openib modules])
   AC_ARG_WITH([openib],
-    AC_HELP_STRING([--with-openib], [Build openib modules]),
+    AS_HELP_STRING([--with-openib], [Build openib modules]),
     [ case "$withval" in
         no)  ac_openib_test=no ;;
         yes) ac_openib_test=yes ;;
@@ -39,28 +39,28 @@ AC_DEFUN([AC_OPENIB],
     LIBS="$LIBS -lopensm -losmcomp -losmvendor"
     SAVE_CFLAGS=$CFLAGS
     CFLAGS="$CFLAGS -DOSM_VENDOR_INTF_OPENIB -I/usr/include/infiniband"
-    AC_TRY_LINK(
-    [
-        #include <opensm/osm_mad_pool.h>
-    ],
-    [
-        osm_mad_pool_t mad_pool;
-        osm_log_t log;
-        osm_mad_pool_init(&mad_pool, &log);
-    ],
-    [ac_osm_mad_pool_init=two], [
-        AC_TRY_LINK(
-        [
-            #include <opensm/osm_mad_pool.h>
-        ],
-        [
-            osm_mad_pool_t mad_pool;
-            osm_mad_pool_init(&mad_pool);
-        ],
-        [ac_osm_mad_pool_init=one],
-        [ac_osm_mad_pool_init=no])
-    ])
-
+    AC_LINK_IFELSE(
+      [AC_LANG_PROGRAM(
+       [[#include <opensm/osm_mad_pool.h>]],
+       [[
+          osm_mad_pool_t mad_pool;
+          osm_log_t log;
+          osm_mad_pool_init(&mad_pool, &log);
+       ]]
+      )],
+      [ac_osm_mad_pool_init=two],
+      [AC_LINK_IFELSE(
+         [AC_LANG_PROGRAM(
+          [[#include <opensm/osm_mad_pool.h>]],
+          [[
+              osm_mad_pool_t mad_pool;
+              osm_mad_pool_init(&mad_pool);
+          ]]
+         )],
+         [ac_osm_mad_pool_init=one],
+         [ac_osm_mad_pool_init=no]
+      )]
+    )
     if test "x${ac_osm_mad_pool_init}" = "xtwo"; then
        AC_DEFINE(HAVE_FUNC_OSM_MAD_POOL_INIT_2, [], [Define osm_mad_pool_init with 2 args])
     elif test "x${ac_osm_mad_pool_init}" = "xone"; then

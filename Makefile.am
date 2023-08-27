@@ -8,4 +8,4 @@ DISTCHECK_CONFIGURE_FLAGS = --with-perl-install-destdir=$$dc_install_base
 
 SUBDIRS = libltdl src man etc
 
-EXTRA_DIST = META DISCLAIMER DISCLAIMER.UC README.expat whatsup.spec
+EXTRA_DIST = DISCLAIMER DISCLAIMER.UC README.expat whatsup.spec

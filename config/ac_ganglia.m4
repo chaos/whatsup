@@ -6,7 +6,7 @@ AC_DEFUN([AC_GANGLIA],
 [
   AC_MSG_CHECKING([for whether to build ganglia modules])
   AC_ARG_WITH([ganglia],
-    AC_HELP_STRING([--with-ganglia], [Build ganglia modules]),
+    AS_HELP_STRING([--with-ganglia], [Build ganglia modules]),
     [ case "$withval" in
         no)  ac_ganglia_test=no ;;
         yes) ac_ganglia_test=yes ;;
