@@ -6,7 +6,7 @@
 .\"  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
 .\"  Written by Albert Chu <chu11@llnl.gov>
 .\"  UCRL-CODE-155699
-.\"  
+.\"
 .\"  This file is part of Whatsup, tools and libraries for determining up and
 .\"  down nodes in a cluster.  For details, see http://www.llnl.gov/linux/.
 .\"
@@ -14,12 +14,12 @@
 .\"  the terms of the GNU General Public License as published by the Free
 .\"  Software Foundation; either version 2 of the License, or (at your option)
 .\"  any later version.
-.\"  
-.\"  Whatsup is distributed in the hope that it will be useful, but WITHOUT 
-.\"  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-.\"  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+.\"
+.\"  Whatsup is distributed in the hope that it will be useful, but WITHOUT
+.\"  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+.\"  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 .\"  for more details.
-.\"  
+.\"
 .\"  You should have received a copy of the GNU General Public License along
 .\"  with Whatsup.  If not, see <http://www.gnu.org/licenses/>.
 .\"#############################################################################
@@ -27,13 +27,13 @@
 .SH "NAME"
 pingd.conf \- pingd configuration file
 .SH "DESCRIPTION"
-The 
+The
 .B pingd
-configuration file configures the 
+configuration file configures the
 .B pingd
 daemon.
 
-The default configuration file loaded is @PINGD_CONF_FILE@. 
+The default configuration file loaded is @PINGD_CONF_FILE@.
 
 The configuration options that can be specified in the configuration
 file are listed below.  Each configuration option must be listed on a
@@ -48,11 +48,11 @@ lines can be continued on the next using backslash ("\\").
 .I ping_period num
 Specify the period time in milliseconds that ICMP pings should be
 regularly sent out.  Default is 15000.
-.TP 
+.TP
 .I pingd_server_port port
 Specify the alternate default port the pingd server should listen
 for requests off of.  Default is 9125.
-.TP 
+.TP
 .I host string
 Specify a host the pingd daemon should regularly ping.  Can be
 specified as many times as necessary.

@@ -6,7 +6,7 @@
 .\"  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
 .\"  Written by Albert Chu <chu11@llnl.gov>
 .\"  UCRL-CODE-155699
-.\"  
+.\"
 .\"  This file is part of Whatsup, tools and libraries for determining up and
 .\"  down nodes in a cluster.  For details, see http://www.llnl.gov/linux/.
 .\"
@@ -14,12 +14,12 @@
 .\"  the terms of the GNU General Public License as published by the Free
 .\"  Software Foundation; either version 2 of the License, or (at your option)
 .\"  any later version.
-.\"  
-.\"  Whatsup is distributed in the hope that it will be useful, but WITHOUT 
-.\"  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-.\"  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+.\"
+.\"  Whatsup is distributed in the hope that it will be useful, but WITHOUT
+.\"  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+.\"  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 .\"  for more details.
-.\"  
+.\"
 .\"  You should have received a copy of the GNU General Public License along
 .\"  with Whatsup.  If not, see <http://www.gnu.org/licenses/>.
 .\"############################################################################
@@ -34,7 +34,7 @@ whatsup \- list up and/or down nodes in a cluster
 .B whatsup
 lists which nodes are currently up or down in a cluster.  It
 determines which nodes are up or down based on information provided
-by the 
+by the
 .B nodeupdown(3)
 library.  Configuration of backend components or clusterlists for the
 .B nodeupdown(3)
@@ -50,7 +50,7 @@ lists.  See the section below on HOST RANGES for instructions on how
 to list hosts in hostrange format.  The hostnames listed must be the
 shortened names of hostnames.
 
-The exit value of 
+The exit value of
 .B whatsup
 depends on the options performed on the command line.  If the default
 --updown option is used, the exit value will be 0 if the command
@@ -108,15 +108,15 @@ Output last known up time of nodes and their current up or down
 state. This option may not be available on some configurations.
 .TP
 .B \-l, \-\-log
-Enter 
+Enter
 .B whatsup
-logging mode.  
-.B Whatsup 
+logging mode.
+.B Whatsup
 will regularly poll the backend tool to calculate up-down state
 changes and output them to the appropriate output.
 .TP
 .B \-f, \-\-log-file
-Specify the log file 
+Specify the log file
 .B Whatsup
 should output logging information to.  If not specified, defaults to
 stdout.
@@ -148,7 +148,7 @@ or by the range foo[1,9].
 
 Some examples of range usage follow:
 
-List all nodes among foo01,foo02,...,foo05 that are up and down 
+List all nodes among foo01,foo02,...,foo05 that are up and down
     whatsup foo[01-05]
 
 List all nodes among foo7,foo9,foo10 that are up and down
@@ -179,7 +179,7 @@ List all nodes that are up and down by their alternate names
 List all nodes among foo[5-25] that are up by their alternate names
      whatsup -u -a foo[5-25]
 .LP
-List all nodes that are up in comma separated lists.	
+List all nodes that are up in comma separated lists.
      whatsup -u -c
 .LP
 List all nodes that are up among the nodes foo2, foo4, and foo8

@@ -6,7 +6,7 @@
 .\"  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
 .\"  Written by Albert Chu <chu11@llnl.gov>
 .\"  UCRL-CODE-155699
-.\"  
+.\"
 .\"  This file is part of Whatsup, tools and libraries for determining up and
 .\"  down nodes in a cluster.  For details, see http://www.llnl.gov/linux/.
 .\"
@@ -14,12 +14,12 @@
 .\"  the terms of the GNU General Public License as published by the Free
 .\"  Software Foundation; either version 2 of the License, or (at your option)
 .\"  any later version.
-.\"  
-.\"  Whatsup is distributed in the hope that it will be useful, but WITHOUT 
-.\"  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-.\"  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+.\"
+.\"  Whatsup is distributed in the hope that it will be useful, but WITHOUT
+.\"  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+.\"  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 .\"  for more details.
-.\"  
+.\"
 .\"  You should have received a copy of the GNU General Public License along
 .\"  with Whatsup.  If not, see <http://www.gnu.org/licenses/>.
 .\"############################################################################
@@ -53,7 +53,7 @@ the error stored in \fIhandle\fR.  It is logically equivalent to:
 
 char *nodeupdown_strerror(nodeupdown_errnum(nodeupdown_t handle));
 
-\fBnodeupdown_perror()\fR is similar to 
+\fBnodeupdown_perror()\fR is similar to
 .BR perror (3).
 It produces a message on standard error output, describing the error
 stored in \fIhandle\fR.  If \fImsg\fR is not NULL, the string pointed
