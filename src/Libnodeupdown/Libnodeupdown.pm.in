@@ -6,20 +6,20 @@
 #  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
 #  Written by Albert Chu <chu11@llnl.gov>
 #  UCRL-CODE-155699
-#  
+#
 #  This file is part of Whatsup, tools and libraries for determining up and
 #  down nodes in a cluster. For details, see http://www.llnl.gov/linux/.
-#  
-#  Whatsup is free software; you can redistribute it and/or modify 
-#  it under the terms of the GNU General Public License as published by the 
-#  Free Software Foundation; either version 2 of the License, or (at your 
+#
+#  Whatsup is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by the
+#  Free Software Foundation; either version 2 of the License, or (at your
 #  option) any later version.
-#  
-#  Whatsup is distributed in the hope that it will be useful, but 
-#  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-#  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+#
+#  Whatsup is distributed in the hope that it will be useful, but
+#  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+#  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 #  for more details.
-#  
+#
 #  You should have received a copy of the GNU General Public License along
 #  with Whatsup.  If not, see <http://www.gnu.org/licenses/>.
 #############################################################################
@@ -40,7 +40,7 @@ our $VERSION = '@PERLNODEUPDOWN_VERSION@';
 
 bootstrap Libnodeupdown $VERSION;
 
-# Fix so nodeupdown modules can find symbols 
+# Fix so nodeupdown modules can find symbols
 # in libnodeupdown.so
 # See DynaLoader perldoc
 sub dl_load_flags { 0x01 };
@@ -51,7 +51,7 @@ __END__
 
 # Below is stub documentation for your module. You better edit it!
 # Okie Dokie Dookee
- 
+
 =head1 NAME
 
 Libnodeupdown - Perl extension for libnodeupdown
@@ -148,7 +148,7 @@ Returns the error code most recently set.
 
 =item B<$handle-E<gt>nodeupdown_strerror($errnum)>
 
-Returns a string describing the error code $errnum.  
+Returns a string describing the error code $errnum.
 
 =item B<$handle-E<gt>nodeupdown_errormsg()>
 
@@ -176,11 +176,11 @@ Returns a ranged string of nodes that are down.  Returns undef on error.
 
 =item B<$handle-E<gt>nodeupdown_get_up_nodes_list()>
 
-Returns a list of nodes that are up.  Returns undef on error. 
+Returns a list of nodes that are up.  Returns undef on error.
 
 =item B<$handle-E<gt>nodeupdown_get_down_nodes_list()>
 
-Returns a list of nodes that are up.  Returns undef on error. 
+Returns a list of nodes that are up.  Returns undef on error.
 
 =item B<$handle-E<gt>nodeupdown_is_node_up($node)>
 
@@ -203,7 +203,7 @@ Returns the number of down nodes, -1 on error.
 =head2 Error Codes/Constants
 
 The same error codes and constants listed in /usr/include/nodeupdown.h
-can be accessed through the following functions: 
+can be accessed through the following functions:
 
  Libnodeupdown::NODEUPDOWN_ERR_SUCCESS
  Libnodeupdown::NODEUPDOWN_ERR_NULLHANDLE
