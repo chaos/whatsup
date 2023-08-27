@@ -11,13 +11,13 @@ AC_INIT([whatsup])
 AC_META
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_SRCDIR([README])
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_TARGET
 
 ##
 # Automake support.
 ##
 AM_INIT_AUTOMAKE($PROJECT, $VERSION)
-AM_CONFIG_HEADER([config/config.h])
+AC_CONFIG_HEADERS([config/config.h])
 AM_MAINTAINER_MODE
 
 # Update this information before a public release only!
