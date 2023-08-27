@@ -21,11 +21,11 @@ AM_CONFIG_HEADER([config/config.h])
 AM_MAINTAINER_MODE
 
 # Update this information before a public release only!
-  
+
 # libnodeupdown versioning
 #
 # If the library source code has changed at all since the last update,
-# then increment c:r: c:r+1:).                                                                                     
+# then increment c:r: c:r+1:).
 #
 # If any interfaces have been added, removed, or changed since the
 # last update, increment current, and set revision to 0.
@@ -33,15 +33,15 @@ AM_MAINTAINER_MODE
 # If any interfaces have been added since the last public release,
 # then increment age.
 #
-# If any interfaces have been removed or changed since the last public                                                
+# If any interfaces have been removed or changed since the last public
 # release, then set age to 0.
-#                                               
+#
 LIBNODEUPDOWN_CURRENT=1
 LIBNODEUPDOWN_REVISION=0
 LIBNODEUPDOWN_AGE=1
 LIBNODEUPDOWN_VERSION_INFO=$LIBNODEUPDOWN_CURRENT:$LIBNODEUPDOWN_REVISION:$LIBNODEUPDOWN_AGE
 AC_SUBST([LIBNODEUPDOWN_VERSION_INFO])
-  
+
 # Libnodeupdown and Nodeupdown versioning
 PERLNODEUPDOWN_MAJOR=0
 PERLNODEUPDOWN_MINOR=01
@@ -148,7 +148,7 @@ AC_OPENIB
 AM_CONDITIONAL(WITH_OPENIB, [test "$ac_with_openib" = "yes"])
 
 #
-# Check for hostsfile 
+# Check for hostsfile
 #
 AC_HOSTSFILE
 AC_HOSTSFILE_PATH
@@ -174,10 +174,10 @@ AC_FUNC_MALLOC
 AC_CHECK_FUNCS( \
   strcpy \
   strdup \
-  strchr \ 
-  strlen \ 
-  strcat \ 
-  strtok \ 
+  strchr \
+  strlen \
+  strcat \
+  strtok \
 )
 AC_CHECK_FUNCS([getopt_long])
 
