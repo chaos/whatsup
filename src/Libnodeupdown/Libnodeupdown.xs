@@ -6,20 +6,20 @@
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
  *  Written by Albert Chu <chu11@llnl.gov>
  *  UCRL-CODE-155699
- *  
+ *
  *  This file is part of Whatsup, tools and libraries for determining up and
  *  down nodes in a cluster. For details, see http://www.llnl.gov/linux/.
- *  
- *  Whatsup is free software; you can redistribute it and/or modify 
- *  it under the terms of the GNU General Public License as published by the 
- *  Free Software Foundation; either version 2 of the License, or (at your 
+ *
+ *  Whatsup is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by the
+ *  Free Software Foundation; either version 2 of the License, or (at your
  *  option) any later version.
- *  
- *  Whatsup is distributed in the hope that it will be useful, but 
- *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+ *
+ *  Whatsup is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  *  for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License along
  *  with Whatsup.  If not, see <http://www.gnu.org/licenses/>.
 \*****************************************************************************/
@@ -32,182 +32,182 @@
 #include "nodeupdown/nodeupdown_devel.h"
 
 #define LIBNODEUPDOWN_BUFLEN 4096
- 
+
 MODULE = Libnodeupdown             PACKAGE = Libnodeupdown
 
 PROTOTYPES: ENABLE
 
 int
 NODEUPDOWN_ERR_SUCCESS (sv=&PL_sv_undef)
-    SV *sv    
+    SV *sv
     CODE:
         RETVAL = NODEUPDOWN_ERR_SUCCESS;
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 int
 NODEUPDOWN_ERR_NULLHANDLE (sv=&PL_sv_undef)
-    SV *sv    
+    SV *sv
     CODE:
         RETVAL = NODEUPDOWN_ERR_NULLHANDLE;
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 int
 NODEUPDOWN_ERR_CONNECT (sv=&PL_sv_undef)
-    SV *sv    
+    SV *sv
     CODE:
         RETVAL = NODEUPDOWN_ERR_CONNECT;
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 int
 NODEUPDOWN_ERR_CONNECT_TIMEOUT (sv=&PL_sv_undef)
-    SV *sv    
+    SV *sv
     CODE:
         RETVAL = NODEUPDOWN_ERR_CONNECT_TIMEOUT;
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 int
 NODEUPDOWN_ERR_HOSTNAME (sv=&PL_sv_undef)
-    SV *sv    
+    SV *sv
     CODE:
         RETVAL = NODEUPDOWN_ERR_HOSTNAME;
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 int
 NODEUPDOWN_ERR_ISLOADED (sv=&PL_sv_undef)
-    SV *sv    
+    SV *sv
     CODE:
         RETVAL = NODEUPDOWN_ERR_ISLOADED;
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 int
 NODEUPDOWN_ERR_NOTLOADED (sv=&PL_sv_undef)
-    SV *sv    
+    SV *sv
     CODE:
         RETVAL = NODEUPDOWN_ERR_NOTLOADED;
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 int
 NODEUPDOWN_ERR_OVERFLOW (sv=&PL_sv_undef)
-    SV *sv    
+    SV *sv
     CODE:
         RETVAL = NODEUPDOWN_ERR_OVERFLOW;
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 int
 NODEUPDOWN_ERR_PARAMETERS (sv=&PL_sv_undef)
-    SV *sv    
+    SV *sv
     CODE:
         RETVAL = NODEUPDOWN_ERR_PARAMETERS;
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 int
 NODEUPDOWN_ERR_NULLPTR (sv=&PL_sv_undef)
-    SV *sv    
+    SV *sv
     CODE:
         RETVAL = NODEUPDOWN_ERR_NULLPTR;
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 int
 NODEUPDOWN_ERR_OUTMEM (sv=&PL_sv_undef)
-    SV *sv    
+    SV *sv
     CODE:
         RETVAL = NODEUPDOWN_ERR_OUTMEM;
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 int
 NODEUPDOWN_ERR_NOTFOUND (sv=&PL_sv_undef)
-    SV *sv    
+    SV *sv
     CODE:
         RETVAL = NODEUPDOWN_ERR_NOTFOUND;
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 int
 NODEUPDOWN_ERR_CLUSTERLIST_MODULE (sv=&PL_sv_undef)
-    SV *sv    
+    SV *sv
     CODE:
         RETVAL = NODEUPDOWN_ERR_CLUSTERLIST_MODULE;
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 int
 NODEUPDOWN_ERR_BACKEND_MODULE (sv=&PL_sv_undef)
-    SV *sv    
+    SV *sv
     CODE:
         RETVAL = NODEUPDOWN_ERR_BACKEND_MODULE;
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 int
 NODEUPDOWN_ERR_CONFIG_MODULE (sv=&PL_sv_undef)
-    SV *sv    
+    SV *sv
     CODE:
         RETVAL = NODEUPDOWN_ERR_CONFIG_MODULE;
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 int
 NODEUPDOWN_ERR_CONF_PARSE (sv=&PL_sv_undef)
-    SV *sv    
+    SV *sv
     CODE:
         RETVAL = NODEUPDOWN_ERR_CONF_PARSE;
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 int
 NODEUPDOWN_ERR_CONF_INPUT (sv=&PL_sv_undef)
-    SV *sv    
+    SV *sv
     CODE:
         RETVAL = NODEUPDOWN_ERR_CONF_INPUT;
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 int
 NODEUPDOWN_ERR_CONF_INTERNAL (sv=&PL_sv_undef)
-    SV *sv    
+    SV *sv
     CODE:
         RETVAL = NODEUPDOWN_ERR_CONF_INTERNAL;
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 int
 NODEUPDOWN_ERR_MAGIC (sv=&PL_sv_undef)
-    SV *sv    
+    SV *sv
     CODE:
         RETVAL = NODEUPDOWN_ERR_MAGIC;
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 int
 NODEUPDOWN_ERR_INTERNAL (sv=&PL_sv_undef)
-    SV *sv    
+    SV *sv
     CODE:
         RETVAL = NODEUPDOWN_ERR_INTERNAL;
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 int
 NODEUPDOWN_ERR_ERRNUMRANGE (sv=&PL_sv_undef)
-    SV *sv    
+    SV *sv
     CODE:
         RETVAL = NODEUPDOWN_ERR_ERRNUMRANGE;
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 void
 DESTROY(handle)
-    nodeupdown_t handle    
+    nodeupdown_t handle
     CODE:
        (void)nodeupdown_handle_destroy(handle);
 
@@ -228,8 +228,8 @@ nodeupdown_load_data(handle, hostname=NULL, port=0, timeout_len=0, reserved=NULL
     int timeout_len
     CODE:
         RETVAL = nodeupdown_load_data(handle,
-                                      hostname, 
-                                      port, 
+                                      hostname,
+                                      port,
                                       timeout_len,
                                       reserved);
     OUTPUT:
@@ -245,7 +245,7 @@ nodeupdown_errnum(handle)
 
 char *
 nodeupdown_strerror(handle, errnum)
-    nodeupdown_t handle    
+    nodeupdown_t handle
     int errnum
     CODE:
         RETVAL = nodeupdown_strerror(errnum);
@@ -278,7 +278,7 @@ nodeupdown_get_up_nodes_string(handle)
         len = 0;
         while (1) {
             len += LIBNODEUPDOWN_BUFLEN;
-            if ((buf = (char *)malloc(len+1)) == NULL) 
+            if ((buf = (char *)malloc(len+1)) == NULL)
                 goto handle_error;
 
             memset(buf, '\0', len+1);
@@ -302,7 +302,7 @@ nodeupdown_get_up_nodes_string(handle)
 
             free(buf);
             XSRETURN_UNDEF;
-        
+
         the_end:
     OUTPUT:
         RETVAL
@@ -318,7 +318,7 @@ nodeupdown_get_down_nodes_string(handle)
         len = 0;
         while (1) {
             len += LIBNODEUPDOWN_BUFLEN;
-            if ((buf = (char *)malloc(len+1)) == NULL) 
+            if ((buf = (char *)malloc(len+1)) == NULL)
                 goto handle_error;
 
             memset(buf, '\0', len+1);
@@ -342,19 +342,19 @@ nodeupdown_get_down_nodes_string(handle)
 
             free(buf);
             XSRETURN_UNDEF;
-        
+
         the_end:
     OUTPUT:
         RETVAL
 
 AV *
-nodeupdown_get_up_nodes_list(handle) 
+nodeupdown_get_up_nodes_list(handle)
     nodeupdown_t handle
     PREINIT:
         int len, num, errnum, i;
-        char **nlist = NULL; 
+        char **nlist = NULL;
     CODE:
-        if ((len = nodeupdown_nodelist_create(handle, &nlist)) == -1) 
+        if ((len = nodeupdown_nodelist_create(handle, &nlist)) == -1)
             goto handle_error;
 
         if ((num = nodeupdown_get_up_nodes_list(handle, nlist, len)) == -1)
@@ -363,7 +363,7 @@ nodeupdown_get_up_nodes_list(handle)
         RETVAL = newAV();
         for (i = 0; i < num; i++)
             av_push(RETVAL, newSVpv(nlist[i], 0));
-        
+
         if (nodeupdown_nodelist_destroy(handle, nlist) == -1)
             goto handle_error;
 
@@ -381,16 +381,16 @@ nodeupdown_get_up_nodes_list(handle)
 
         the_end:
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 AV *
-nodeupdown_get_down_nodes_list(handle) 
+nodeupdown_get_down_nodes_list(handle)
     nodeupdown_t handle
     PREINIT:
         int len, num, errnum, i;
-        char **nlist = NULL; 
+        char **nlist = NULL;
     CODE:
-        if ((len = nodeupdown_nodelist_create(handle, &nlist)) == -1) 
+        if ((len = nodeupdown_nodelist_create(handle, &nlist)) == -1)
             goto handle_error;
 
         if ((num = nodeupdown_get_down_nodes_list(handle, nlist, len)) == -1)
@@ -399,7 +399,7 @@ nodeupdown_get_down_nodes_list(handle)
         RETVAL = newAV();
         for (i = 0; i < num; i++)
             av_push(RETVAL, newSVpv(nlist[i], 0));
-        
+
         if (nodeupdown_nodelist_destroy(handle, nlist) == -1)
             goto handle_error;
 
@@ -417,7 +417,7 @@ nodeupdown_get_down_nodes_list(handle)
 
         the_end:
     OUTPUT:
-        RETVAL    
+        RETVAL
 
 int
 nodeupdown_is_node_up(handle, node)
@@ -426,7 +426,7 @@ nodeupdown_is_node_up(handle, node)
     CODE:
         RETVAL = nodeupdown_is_node_up(handle, node);
     OUTPUT:
-        RETVAL      
+        RETVAL
 
 int
 nodeupdown_is_node_down(handle, node)
