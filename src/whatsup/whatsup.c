@@ -83,7 +83,7 @@ extern int optind, opterr, optopt;
 #define WHATSUP_FORMATLEN         64
 #define WHATSUP_OPTIONS_LEN       64
 #define WHATSUP_LONG_OPTIONS_LEN  32
-#define WHATSUP_MAXPATHLEN        256
+#define WHATSUP_MAXPATHLEN        1024
 
 #define WHATSUP_MODULE_SIGNATURE  "whatsup_options_"
 #define WHATSUP_MODULE_INFO_SYM   "whatsup_module_info"
@@ -560,10 +560,7 @@ _cmdline_parse(int argc, char **argv)
                   strncat(soptions, &opt, 1);
 
                   if (optionsPtr->option_arg)
-                    {
-                      opt = ':';
-                      strncat(soptions, &opt, 1);
-                    }
+                    strcat(soptions, ":");
 
 #if HAVE_GETOPT_LONG
                   if (optionsPtr->option_long)
@@ -929,7 +926,7 @@ _output_last_up_time_nodes(char *nodebuf, int up_or_down)
       unsigned int last_up_time;
       time_t t;
       struct tm *tm;
-      int errnum;
+      int errnum = 0;
 
       if (nodeupdown_last_up_time(handle,
                                   node,
@@ -1163,7 +1160,7 @@ _output_mode(void)
 int
 _log_mode(void)
 {
-  hostlist_t upnodes, downnodes;
+  hostlist_t upnodes = NULL, downnodes = NULL;
   char upnodesbuf[WHATSUP_BUFFERLEN];
   char downnodesbuf[WHATSUP_BUFFERLEN];
   int nodes_init = 0;
