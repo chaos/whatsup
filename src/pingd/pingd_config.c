@@ -58,7 +58,7 @@ struct pingd_config conf;
 #define CLUSTERLIST_MODULE_SIGNATURE "pingd_clusterlist"
 #define CLUSTERLIST_MODULE_SYMBOL    "module_info"
 
-static char *clusterlist_modules[] = 
+static char *clusterlist_modules[] =
   {
     "pingd_clusterlist_genders.so",
     "pingd_clusterlist_hostsfile.so",
@@ -88,9 +88,9 @@ _usage(void)
           "-h    --help          Output Help\n"
           "-v    --version       Output Version\n");
 #ifndef NDEBUG
-  fprintf(stderr, 
+  fprintf(stderr,
 	  "-c    --config_file   Specify alternate config file\n"
-          "-d    --debug         Turn on debugging and run daemon in foreground\n"); 
+          "-d    --debug         Turn on debugging and run daemon in foreground\n");
 #endif /* NDEBUG */
   exit(0);
 }
@@ -104,7 +104,7 @@ _version(void)
 
 static void
 _cmdline_parse(int argc, char **argv)
-{ 
+{
   char options[100];
   int c;
 
@@ -157,7 +157,7 @@ _cmdline_parse(int argc, char **argv)
         case '?':
         default:
           ERR_EXIT(("unknown command line option '%c'", optopt));
-        }          
+        }
     }
 }
 
@@ -178,7 +178,7 @@ _cb_host(conffile_t cf,
   /* Shorten hostname if necessary */
   if ((ptr = strchr(data->string, '.')))
     *ptr = '\0';
-  
+
   if (!hostlist_push(conf.hosts, data->string))
     ERR_EXIT(("hostlist_push: %s", strerror(errno)));
   return 0;
@@ -187,10 +187,10 @@ _cb_host(conffile_t cf,
 static void
 _config_file_parse(void)
 {
-  int ping_period_flag, 
+  int ping_period_flag,
     pingd_server_port_flag,
     host_flag;
-  
+
   struct conffile_option options[] =
     {
       {
@@ -279,7 +279,7 @@ _load_nodes(struct pingd_clusterlist_module_info *module_info)
 
   if ((numnodes = ((*(module_info->get_nodes))(&nodes))) < 0)
     goto cleanup;
-  
+
   for (i = 0; i < numnodes; i++)
     {
       if (!hostlist_push(conf.hosts, nodes[i]))
@@ -322,7 +322,7 @@ _load_module(char *filename)
       ERR_DEBUG(("lt_dlopen: filename=%s; %s", filename, strerror(errno)));
       goto cleanup;
     }
-  
+
   /* clear lt_dlerror */
   lt_dlerror();
 
@@ -331,7 +331,7 @@ _load_module(char *filename)
       ERR_DEBUG(("lt_dlsym: filename=%s; %s", filename, strerror(errno)));
       goto cleanup;
     }
-      
+
   if (_load_nodes(module_info) < 0)
     goto cleanup;
 
@@ -358,7 +358,7 @@ _load_builddir_modules(void)
 
       if ((rv = _load_module(filebuf)) < 0)
         goto continue_loop;
-      
+
       if (!rv)
         break;
 
@@ -434,7 +434,7 @@ _load_unknown_modules(void)
  cleanup:
   if (dir)
     closedir(dir);
-  return rv; 
+  return rv;
 }
 
 static void
@@ -460,7 +460,7 @@ _module_load(void)
   if (!_load_unknown_modules())
     goto cleanup;
 
- cleanup: 
+ cleanup:
   lt_dlexit();
 }
 

@@ -15,7 +15,7 @@ AC_DEFUN([AC_CEREBRO],
     ]
   )
   AC_MSG_RESULT([${ac_cerebro_test=yes}])
-  
+
   if test "$ac_cerebro_test" = "yes"; then
      AC_CHECK_LIB([cerebro], [cerebro_handle_create], [ac_have_cerebro=yes], [])
      AC_CHECK_LIB([cerebro], [cerebro_event_register], [ac_have_cerebro_event=yes], [])
@@ -31,7 +31,7 @@ AC_DEFUN([AC_CEREBRO],
         ac_with_cerebro_event=yes
         MANPAGE_CEREBRO_EVENT=1
      fi
-  else 
+  else
      MANPAGE_CEREBRO=0
      ac_with_cerebro=no
   fi

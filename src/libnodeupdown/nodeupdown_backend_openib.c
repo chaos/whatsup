@@ -6,20 +6,20 @@
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
  *  Written by Albert Chu <chu11@llnl.gov>
  *  UCRL-CODE-155699
- *  
+ *
  *  This file is part of Whatsup, tools and libraries for determining up and
  *  down nodes in a cluster. For details, see http://www.llnl.gov/linux/.
- *  
- *  Whatsup is free software; you can redistribute it and/or modify 
- *  it under the terms of the GNU General Public License as published by the 
- *  Free Software Foundation; either version 2 of the License, or (at your 
+ *
+ *  Whatsup is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by the
+ *  Free Software Foundation; either version 2 of the License, or (at your
  *  option) any later version.
- *  
- *  Whatsup is distributed in the hope that it will be useful, but 
- *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+ *
+ *  Whatsup is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  *  for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License along
  *  with Whatsup.  If not, see <http://www.gnu.org/licenses/>.
 \*****************************************************************************/
@@ -48,7 +48,7 @@
 
 #define OPENIB_BACKEND_DEFAULT_PORT        10
 #define OPENIB_BACKEND_DEFAULT_TIMEOUT_LEN 60
-#define OPENIB_BACKEND_CONNECT_LEN         5 
+#define OPENIB_BACKEND_CONNECT_LEN         5
 #define OPENIB_BACKEND_BUFLEN              1024
 
 #define OPENIB_MAX_PORTS                   (8)
@@ -72,7 +72,7 @@ openib_backend_default_hostname(nodeupdown_t handle)
  *
  * openib backend module default_port function
  */
-static int 
+static int
 openib_backend_default_port(nodeupdown_t handle)
 {
   return OPENIB_BACKEND_DEFAULT_PORT;
@@ -83,13 +83,13 @@ openib_backend_default_port(nodeupdown_t handle)
  *
  * openib backend module default_timeout_len function
  */
-static int 
+static int
 openib_backend_default_timeout_len(nodeupdown_t handle)
 {
   return OPENIB_BACKEND_DEFAULT_TIMEOUT_LEN;
 }
 
-/* 
+/*
  * openib_backend_preferred_clusterlist_module
  *
  * openib backend preferred_clusterlist_module function
@@ -105,7 +105,7 @@ openib_backend_preferred_clusterlist_module(nodeupdown_t handle)
  *
  * openib backend module setup function
  */
-static int 
+static int
 openib_backend_setup(nodeupdown_t handle)
 {
   if (getuid() != 0)
@@ -294,12 +294,12 @@ _return_mad(void)
  *
  * openib backend module get_updown_data function
  */
-static int 
-openib_backend_get_updown_data(nodeupdown_t nodeupdown_handle, 
+static int
+openib_backend_get_updown_data(nodeupdown_t nodeupdown_handle,
 			       const char *hostname,
 			       unsigned int port,
 			       unsigned int timeout_len,
-			       char *reserved) 
+			       char *reserved)
 {
 	osm_bind_handle_t bind_handle;
 	ib_node_record_t *node_record = NULL;
@@ -328,7 +328,7 @@ openib_backend_get_updown_data(nodeupdown_t nodeupdown_handle,
 	return (0);
 }
 
-struct nodeupdown_backend_module_info backend_module_info = 
+struct nodeupdown_backend_module_info backend_module_info =
 {
     "openib",
     &openib_backend_default_hostname,

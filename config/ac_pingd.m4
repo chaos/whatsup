@@ -15,7 +15,7 @@ AC_DEFUN([AC_PINGD],
     ]
   )
   AC_MSG_RESULT([${ac_pingd_test=yes}])
-  
+
   if test "$ac_pingd_test" = "yes"; then
      MANPAGE_PINGD=1
      ac_with_pingd=yes

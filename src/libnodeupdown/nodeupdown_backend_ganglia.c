@@ -6,20 +6,20 @@
  *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
  *  Written by Albert Chu <chu11@llnl.gov>
  *  UCRL-CODE-155699
- *  
+ *
  *  This file is part of Whatsup, tools and libraries for determining up and
  *  down nodes in a cluster. For details, see http://www.llnl.gov/linux/.
- *  
- *  Whatsup is free software; you can redistribute it and/or modify 
- *  it under the terms of the GNU General Public License as published by the 
- *  Free Software Foundation; either version 2 of the License, or (at your 
+ *
+ *  Whatsup is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by the
+ *  Free Software Foundation; either version 2 of the License, or (at your
  *  option) any later version.
- *  
- *  Whatsup is distributed in the hope that it will be useful, but 
- *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+ *
+ *  Whatsup is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  *  for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License along
  *  with Whatsup.  If not, see <http://www.gnu.org/licenses/>.
 \*****************************************************************************/
@@ -62,7 +62,7 @@
 #endif	/* !HAVE_LIBEXPAT */
 
 /* Used to pass multiple variables as one during XML parsing */
-struct parse_vars 
+struct parse_vars
 {
   nodeupdown_t handle;
   int timeout_len;
@@ -71,7 +71,7 @@ struct parse_vars
 
 #define GANGLIA_BACKEND_DEFAULT_PORT        8649
 #define GANGLIA_BACKEND_DEFAULT_TIMEOUT_LEN 60
-#define GANGLIA_BACKEND_CONNECT_LEN         5 
+#define GANGLIA_BACKEND_CONNECT_LEN         5
 
 char ganglia_default_hostname[NODEUPDOWN_MAXHOSTNAMELEN+1];
 
@@ -100,7 +100,7 @@ ganglia_backend_default_hostname(nodeupdown_t handle)
  *
  * ganglia backend module default_port function
  */
-static int 
+static int
 ganglia_backend_default_port(nodeupdown_t handle)
 {
   return GANGLIA_BACKEND_DEFAULT_PORT;
@@ -111,13 +111,13 @@ ganglia_backend_default_port(nodeupdown_t handle)
  *
  * ganglia backend module default_timeout_len function
  */
-static int 
+static int
 ganglia_backend_default_timeout_len(nodeupdown_t handle)
 {
   return GANGLIA_BACKEND_DEFAULT_TIMEOUT_LEN;
 }
 
-/* 
+/*
  * ganglia_backend_preferred_clusterlist_module
  *
  * ganglia backend preferred_clusterlist_module function
@@ -133,7 +133,7 @@ ganglia_backend_preferred_clusterlist_module(nodeupdown_t handle)
  *
  * ganglia backend module setup function
  */
-static int 
+static int
 ganglia_backend_setup(nodeupdown_t handle)
 {
   /* nothing to do */
@@ -152,21 +152,21 @@ ganglia_backend_cleanup(nodeupdown_t handle)
   return 0;
 }
 
-/* 
+/*
  * _xml_start
  *
  * Callback for xml parser.  Parses beginning tags like <FOO attr1=X
  * attr2=Y>
  */
-static void 
-_xml_parse_start(void *data, const char *e1, const char **attr) 
+static void
+_xml_parse_start(void *data, const char *e1, const char **attr)
 {
   nodeupdown_t handle = ((struct parse_vars *)data)->handle;
   int timeout_len = ((struct parse_vars *)data)->timeout_len;
   unsigned long localtime = ((struct parse_vars *)data)->localtime;
   unsigned long reported;
 
-  if (strcmp("HOST", e1) == 0) 
+  if (strcmp("HOST", e1) == 0)
     {
       /* attributes of XML HOST tag
        * attr[0] - "NAME"
@@ -175,7 +175,7 @@ _xml_parse_start(void *data, const char *e1, const char **attr)
        * attr[3] - ip address of host
        * attr[4] - "REPORTED"
        * attr[5] - time gmond received a multicast message from the host
-       * - remaining attributes aren't needed 
+       * - remaining attributes aren't needed
        */
 
       /* store as up or down */
@@ -190,13 +190,13 @@ _xml_parse_start(void *data, const char *e1, const char **attr)
     }
 }
 
-/* 
+/*
  * _xml_start
  *
  * Callback for xml parser.  Parses end tags like </FOO>
  */
-static void 
-_xml_parse_end(void *data, const char *e1) 
+static void
+_xml_parse_end(void *data, const char *e1)
 {
   /* nothing to parse at this time */
 }
@@ -206,12 +206,12 @@ _xml_parse_end(void *data, const char *e1)
  *
  * ganglia backend module get_updown_data function
  */
-static int 
-ganglia_backend_get_updown_data(nodeupdown_t handle, 
+static int
+ganglia_backend_get_updown_data(nodeupdown_t handle,
                                 const char *hostname,
                                 unsigned int port,
                                 unsigned int timeout_len,
-                                char *reserved) 
+                                char *reserved)
 {
   XML_Parser xml_parser = NULL;
   struct parse_vars pv;
@@ -229,14 +229,14 @@ ganglia_backend_get_updown_data(nodeupdown_t handle,
   pv.timeout_len = timeout_len;
 
   /* Call gettimeofday at the latest point right before XML stuff. */
-  if (gettimeofday(&tv, NULL) < 0) 
+  if (gettimeofday(&tv, NULL) < 0)
     {
 #ifndef NDEBUG
       fprintf(stderr, "gettimeofday: %s\n", strerror(errno));
 #endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
       goto cleanup;
-    } 
+    }
   pv.localtime = tv.tv_sec;
 
   /* Following XML parsing loop more or less ripped from libganglia by
@@ -247,12 +247,12 @@ ganglia_backend_get_updown_data(nodeupdown_t handle,
   XML_SetElementHandler(xml_parser, _xml_parse_start, _xml_parse_end);
   XML_SetUserData(xml_parser, (void *)&pv);
 
-  while (1) 
+  while (1)
     {
       int bytes_read;
       void *buff;
-      
-      if (!(buff = XML_GetBuffer(xml_parser, BUFSIZ))) 
+
+      if (!(buff = XML_GetBuffer(xml_parser, BUFSIZ)))
         {
 #ifndef NDEBUG
 	  fprintf(stderr, "XML_GetBuffer: %s\n", strerror(errno));
@@ -261,7 +261,7 @@ ganglia_backend_get_updown_data(nodeupdown_t handle,
           goto cleanup;
         }
 
-      if ((bytes_read = read(fd, buff, BUFSIZ)) < 0) 
+      if ((bytes_read = read(fd, buff, BUFSIZ)) < 0)
         {
 #ifndef NDEBUG
 	  fprintf(stderr, "read: %s\n", strerror(errno));
@@ -270,7 +270,7 @@ ganglia_backend_get_updown_data(nodeupdown_t handle,
           goto cleanup;
         }
 
-      if (!XML_ParseBuffer(xml_parser, bytes_read, bytes_read == 0)) 
+      if (!XML_ParseBuffer(xml_parser, bytes_read, bytes_read == 0))
         {
 #ifndef NDEBUG
 	  fprintf(stderr, "XML_ParseBuffer: %s\n", strerror(errno));
@@ -278,11 +278,11 @@ ganglia_backend_get_updown_data(nodeupdown_t handle,
 	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
           goto cleanup;
         }
-      
+
       if (bytes_read == 0)
         break;
     }
-  
+
   rv = 0;
 
  cleanup:
@@ -293,7 +293,7 @@ ganglia_backend_get_updown_data(nodeupdown_t handle,
   return rv;
 }
 
-struct nodeupdown_backend_module_info backend_module_info = 
+struct nodeupdown_backend_module_info backend_module_info =
   {
     "ganglia",
     &ganglia_backend_default_hostname,

@@ -16,8 +16,8 @@ AC_DEFUN([AC_WHATSUP_MODULE_DIR],
      WHATSUP_MODULE_DIR=${prefix}/$LIBDIRTYPE/whatsup
   fi
 
-  AC_DEFINE_UNQUOTED([WHATSUP_MODULE_DIR], 
-                     ["$WHATSUP_MODULE_DIR"], 
+  AC_DEFINE_UNQUOTED([WHATSUP_MODULE_DIR],
+                     ["$WHATSUP_MODULE_DIR"],
                      [Define default whatsup module dir])
   AC_SUBST(WHATSUP_MODULE_DIR)
 ])

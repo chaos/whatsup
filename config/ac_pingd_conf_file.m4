@@ -8,19 +8,19 @@ AC_DEFUN([AC_PINGD_CONF],
 
   AC_MSG_CHECKING([for pingd config file default path])
   AC_ARG_WITH([pingd-config-file],
-    AS_HELP_STRING([--with-pingd-config-file=PATH], 
+    AS_HELP_STRING([--with-pingd-config-file=PATH],
                    [Specify default pingd config file path]),
     [ case "$withval" in
         no)  ;;
         yes) ;;
-        *)   PINGD_CONF_FILE=$withval 
+        *)   PINGD_CONF_FILE=$withval
       esac
     ]
   )
   AC_MSG_RESULT($PINGD_CONF_FILE)
 
-  AC_DEFINE_UNQUOTED([PINGD_CONF_FILE], 
-                     ["$PINGD_CONF_FILE"], 
+  AC_DEFINE_UNQUOTED([PINGD_CONF_FILE],
+                     ["$PINGD_CONF_FILE"],
                      [Define default pingd config_file.])
   AC_SUBST(PINGD_CONF_FILE)
 ])

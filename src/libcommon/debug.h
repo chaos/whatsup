@@ -119,7 +119,7 @@ char *_debug_msg_create(const char *fmt, ...);
       DEBUG_MSG_CREATE(__msg) \
       err_exit(__err); \
     } while(0)
-   
+
 #else /* NDEBUG */
 
 #define ERR_DEBUG(__msg)

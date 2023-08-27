@@ -61,25 +61,25 @@ _daemon_init(void)
 
   if ((pid = fork()) < 0)
     ERR_EXIT(("fork: %s", strerror(errno)));
-  
+
   if (pid != 0)                 /* Terminate Parent */
     exit(0);
-  
+
   setsid();
-  
+
   if (signal(SIGHUP, SIG_IGN) == SIG_ERR)
     ERR_EXIT(("signal: %s", strerror(errno)));
-  
+
   if ((pid = fork()) < 0)
     ERR_EXIT(("fork: %s", strerror(errno)));
 
   if (pid != 0)                 /* Terminate 1st Child */
     exit(0);
-  
+
   chdir("/");
-  
+
   umask(0);
-  
+
   for (i = 0; i < 64; i++)
     close(i);
 }

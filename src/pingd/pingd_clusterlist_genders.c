@@ -137,23 +137,23 @@ genders_get_nodes(char ***nodes)
       ERR_DEBUG(("invalid parameters"));
       return -1;
     }
-  
+
   if ((nodelistlen = genders_nodelist_create(gh, &nodelist)) < 0)
     {
       ERR_DEBUG(("genders_nodelist_create: %s", genders_errormsg(gh)));
       goto cleanup;
     }
-  
-  if ((numnodes = genders_getnodes(gh, 
-                                   nodelist, 
-                                   nodelistlen, 
+
+  if ((numnodes = genders_getnodes(gh,
+                                   nodelist,
+                                   nodelistlen,
                                    NULL,
                                    NULL)) < 0)
     {
       ERR_DEBUG(("genders_getnodes: %s", genders_errormsg(gh)));
       goto cleanup;
     }
-  
+
   *nodes = nodelist;
   return numnodes;
 

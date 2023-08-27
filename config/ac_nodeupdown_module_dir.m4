@@ -16,8 +16,8 @@ AC_DEFUN([AC_NODEUPDOWN_MODULE_DIR],
      NODEUPDOWN_MODULE_DIR=${prefix}/$LIBDIRTYPE/nodeupdown
   fi
 
-  AC_DEFINE_UNQUOTED([NODEUPDOWN_MODULE_DIR], 
-                     ["$NODEUPDOWN_MODULE_DIR"], 
+  AC_DEFINE_UNQUOTED([NODEUPDOWN_MODULE_DIR],
+                     ["$NODEUPDOWN_MODULE_DIR"],
                      [Define default nodeupdown module dir])
   AC_SUBST(NODEUPDOWN_MODULE_DIR)
 ])
