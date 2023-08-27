@@ -6,7 +6,7 @@
 .\"  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
 .\"  Written by Albert Chu <chu11@llnl.gov>
 .\"  UCRL-CODE-155699
-.\"  
+.\"
 .\"  This file is part of Whatsup, tools and libraries for determining up and
 .\"  down nodes in a cluster.  For details, see http://www.llnl.gov/linux/.
 .\"
@@ -14,18 +14,18 @@
 .\"  the terms of the GNU General Public License as published by the Free
 .\"  Software Foundation; either version 2 of the License, or (at your option)
 .\"  any later version.
-.\"  
-.\"  Whatsup is distributed in the hope that it will be useful, but WITHOUT 
-.\"  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-.\"  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+.\"
+.\"  Whatsup is distributed in the hope that it will be useful, but WITHOUT
+.\"  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+.\"  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 .\"  for more details.
-.\"  
+.\"
 .\"  You should have received a copy of the GNU General Public License along
 .\"  with Whatsup.  If not, see <http://www.gnu.org/licenses/>.
 .\"############################################################################
 .TH NODEUPDOWN_LOAD_DATA 3 "November 2003" "LLNL" "LIBNODEUPDOWN"
 .SH NAME
-nodeupdown_load_data \- load data 
+nodeupdown_load_data \- load data
 .SH SYNOPSIS
 .B #include <nodeupdown.h>
 .sp
@@ -38,7 +38,7 @@ properly return information about up and down nodes.
 
 \fIhandle\fR is a nodeupdown
 handle created by
-.BR nodeupdown_handle_create (3).  
+.BR nodeupdown_handle_create (3).
 
 \fIhostname\fR should indicate the location of the server.  If
 \fIhostname\fR is NULL, nodeupdown assumes the backend tool's default
@@ -51,7 +51,7 @@ running on the backend tool's default port.
 \fItimeout_len\fR should indicate the timeout length in seconds that
 determines if a node is up or down.  If \fItimeout_len\fR is less than
 or equal to 0, nodeupdown assumes the backend tool's default timeout.
- 
+
 \fImodule\fR may be used to specify a specific backend module for
 up-down calculations.  If \fImodule\fR is NULL, nodeupdown will search
 for the appropriate module itself.
@@ -70,7 +70,7 @@ On success, 0 is returned.  On error, -1 is returned, and an error
 code is returned in \fIhandle\fR.  The error code can be retrieved via
 .BR nodeupdown_errnum (3)
 , and a description of the error code can be retrieved via
-.BR nodeupdown_strerror (3).  
+.BR nodeupdown_strerror (3).
 Error codes are defined in nodeupdown.h.
 .br
 .SH ERRORS
@@ -83,7 +83,7 @@ with
 .B NODEUPDOWN_ERR_OPEN
 A clusterlist database could not be opened.
 .TP
-.B NODEUPDOWN_ERR_CONNECT	
+.B NODEUPDOWN_ERR_CONNECT
 Error connecting to server specified by \fIhostname\fR and \fIgmond_port\fR.
 .TP
 .B NODEUPDOWN_ERR_CONNECT_TIMEOUT
@@ -93,8 +93,8 @@ Connection to server timed out.
 Incorrect hostname specified by \fIhostname\fR.
 .TP
 .B NODEUPDOWN_ERR_ISLOADED
-.BR nodeupdown_load_data (3) 
-has already been called with \fIhandle\fR.  
+.BR nodeupdown_load_data (3)
+has already been called with \fIhandle\fR.
 .TP
 .B NODEUPDOWN_ERR_PARAMETERS
 An incorrect parameter has been passed in.
@@ -121,13 +121,13 @@ Error with input in the nodeupdown conf file.
 .B NODEUPDOWN_ERR_CONF_INTERNAL
 Internal error with the nodeupdown configuration file.
 .TP
-.B NODEUPDOWN_ERR_MAGIC 
+.B NODEUPDOWN_ERR_MAGIC
 \fIhandle\fR has an incorrect magic number.  \fIhandle\fR does not
 point to a nodeupdown handle or \fIhandle\fR has been destroyed by
 .BR nodeupdown_handle_destroy (3).
 .TP
 .B NODEUPDOWN_ERR_INTERNAL
-An internal system error has occurred.  
+An internal system error has occurred.
 .br
 .SH FILES
 /usr/include/nodeupdown.h

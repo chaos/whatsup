@@ -6,7 +6,7 @@
 .\"  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
 .\"  Written by Albert Chu <chu11@llnl.gov>
 .\"  UCRL-CODE-155699
-.\"  
+.\"
 .\"  This file is part of Whatsup, tools and libraries for determining up and
 .\"  down nodes in a cluster.  For details, see http://www.llnl.gov/linux/.
 .\"
@@ -14,12 +14,12 @@
 .\"  the terms of the GNU General Public License as published by the Free
 .\"  Software Foundation; either version 2 of the License, or (at your option)
 .\"  any later version.
-.\"  
-.\"  Whatsup is distributed in the hope that it will be useful, but WITHOUT 
-.\"  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-.\"  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+.\"
+.\"  Whatsup is distributed in the hope that it will be useful, but WITHOUT
+.\"  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+.\"  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 .\"  for more details.
-.\"  
+.\"
 .\"  You should have received a copy of the GNU General Public License along
 .\"  with Whatsup.  If not, see <http://www.gnu.org/licenses/>.
 .\"############################################################################
@@ -110,7 +110,7 @@ searched for by nodeupdown in the following order:
 
 genders - Uses a genders database and the genders library to determine
 all nodes in the cluster.  See http://genders.sourceforge.net.
-   
+
 hostsfile - Uses a file that lists the hostname of every node in the
 cluster on a separate line.  The default hostsfile is
 @NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT@.
@@ -122,7 +122,7 @@ default behavior will be implemented by the nodeupdown library.
 .SH CONFIG MODULES
 
 The nodeupdown library optionally loads a configuration module, which
-can be used to define the default values used in 
+can be used to define the default values used in
 .B nodeupdown_load_data(3).
 The configuration module is primarily used for ease of configuring a
 large cluster of nodes, rather than writing and distributing multiple
@@ -147,7 +147,7 @@ nodeupdown_get_up_nodes_string(3),
 nodeupdown_get_down_nodes_string(3), nodeupdown_get_up_nodes_list(3),
 nodeupdown_get_down_nodes_list(3), nodeupdown_is_node_up(3),
 nodeupdown_is_node_down(3), nodeupdown_up_count(3),
-nodeupdown_down_count(3), 
+nodeupdown_down_count(3),
 nodeupdown_last_up_time(3),
 nodeupdown_nodelist_create(3),
 nodeupdown_nodelist_clear(3), nodeupdown_nodelist_destroy(3),

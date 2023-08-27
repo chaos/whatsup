@@ -6,7 +6,7 @@
 .\"  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
 .\"  Written by Albert Chu <chu11@llnl.gov>
 .\"  UCRL-CODE-155699
-.\"  
+.\"
 .\"  This file is part of Whatsup, tools and libraries for determining up and
 .\"  down nodes in a cluster.  For details, see http://www.llnl.gov/linux/.
 .\"
@@ -14,12 +14,12 @@
 .\"  the terms of the GNU General Public License as published by the Free
 .\"  Software Foundation; either version 2 of the License, or (at your option)
 .\"  any later version.
-.\"  
-.\"  Whatsup is distributed in the hope that it will be useful, but WITHOUT 
-.\"  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-.\"  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
+.\"
+.\"  Whatsup is distributed in the hope that it will be useful, but WITHOUT
+.\"  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+.\"  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 .\"  for more details.
-.\"  
+.\"
 .\"  You should have received a copy of the GNU General Public License along
 .\"  with Whatsup.  If not, see <http://www.gnu.org/licenses/>.
 .\"############################################################################
@@ -54,7 +54,7 @@ On error, -1 is returned, and an error code is returned in
 \fIhandle\fR.  The error code can be retrieved via
 .BR nodeupdown_errnum (3)
 , and a description of the error code can be retrieved via
-.BR nodeupdown_strerror (3).  
+.BR nodeupdown_strerror (3).
 Error codes are defined in nodeupdown.h.
 .br
 .SH ERRORS
@@ -69,7 +69,7 @@ with
 has not been called and no data has been retrieved.
 .TP
 .B NODEUPDOWN_ERR_PARAMETERS
-An incorrect parameter has been passed in.  
+An incorrect parameter has been passed in.
 .TP
 .B NODEUPDOWN_ERR_NULLPTR
 A null pointer has been found in the list passed in.
@@ -88,7 +88,7 @@ Internal error with the clusterlist module
 .B NODEUPDOWN_ERR_HOSTLIST
 Hostlist API has failed internally.
 .TP
-.B NODEUPDOWN_ERR_MAGIC 
+.B NODEUPDOWN_ERR_MAGIC
 \fIhandle\fR has an incorrect magic number.  \fIhandle\fR does not
 point to a nodeupdown handle or \fIhandle\fR has been destroyed by
 .BR nodeupdown_handle_destroy (3).
