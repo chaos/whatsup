@@ -1,12 +1,12 @@
-Name:    @PROJECT@
+Name:    @PACKAGE@
 Version: @VERSION@
-Release: @RELEASE@
+Release: 1
 Summary: whatsup node up/down detection utility
 Group: Applications/Communications
 License: GPL
-Source: @PROJECT@-@VERSION@.tar.gz
+Source: @PACKAGE@-@VERSION@.tar.gz
 BuildRequires: perl(ExtUtils::MakeMaker)
-BuildRoot: %{_tmppath}/@PROJECT@-@VERSION@
+BuildRoot: %{_tmppath}/@PACKAGE@-@VERSION@
 
 %description
 Whatsup is a cluster node up/down detection utility.
