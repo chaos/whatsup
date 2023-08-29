@@ -8,7 +8,7 @@
  *  UCRL-CODE-155699
  *
  *  This file is part of Whatsup, tools and libraries for determining up and
- *  down nodes in a cluster. For details, see http://www.llnl.gov/linux/.
+ *  down nodes in a cluster. For details, see https://github.com/chaos/whatsup.
  *
  *  The code in this file began with the code in the Cerebro project.
  *  See below for original copyright information.
