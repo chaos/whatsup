@@ -82,10 +82,6 @@ if WITH_PINGD
 PINGD_BACKEND_MODULE           = nodeupdown_backend_pingd.la
 endif
 
-if WITH_OPENIB
-OPENIB_BACKEND_MODULE           = nodeupdown_backend_openib.la
-endif
-
 if WITH_GENDERS
 GENDERS_CLUSTERLIST_MODULE     = nodeupdown_clusterlist_genders.la
 endif
@@ -99,7 +95,6 @@ nodeupdownmodulelib_LTLIBRARIES = \
 	$(CEREBRO_BACKEND_MODULE) \
 	$(GANGLIA_BACKEND_MODULE) \
 	$(PINGD_BACKEND_MODULE) \
-	$(OPENIB_BACKEND_MODULE) \
 	$(GENDERS_CLUSTERLIST_MODULE) \
 	$(HOSTSFILE_CLUSTERLIST_MODULE)
 
@@ -131,14 +126,6 @@ nodeupdown_backend_pingd_la_CFLAGS  = \
 	-I$(srcdir)/../libcommon
 nodeupdown_backend_pingd_la_LIBADD = \
 	../libcommon/libcommon.la
-
-nodeupdown_backend_openib_la_SOURCES = \
-	nodeupdown_backend_openib.c
-nodeupdown_backend_openib_la_LDFLAGS = \
-	$(MODULE_FLAGS) \
-	$(NODEUPDOWN_BACKEND_OTHER_FLAGS) 
-nodeupdown_backend_openib_la_CFLAGS  = $(OPENIB_CFLAGS)
-nodeupdown_backend_openib_la_LIBADD  = $(OPENIB_LIBS)
 
 nodeupdown_clusterlist_genders_la_SOURCES = \
 	nodeupdown_clusterlist_genders.c \
