@@ -104,7 +104,6 @@ am__aclocal_m4_deps = $(top_srcdir)/config/ac_cerebro.m4 \
 	$(top_srcdir)/config/ac_hostsfile.m4 \
 	$(top_srcdir)/config/ac_nodeupdown_conf_file.m4 \
 	$(top_srcdir)/config/ac_nodeupdown_module_dir.m4 \
-	$(top_srcdir)/config/ac_openib.m4 \
 	$(top_srcdir)/config/ac_perl_destdir.m4 \
 	$(top_srcdir)/config/ac_perl_extensions.m4 \
 	$(top_srcdir)/config/ac_perl_site_arch.m4 \
@@ -209,7 +208,6 @@ MANPAGE_DEBUG = @MANPAGE_DEBUG@
 MANPAGE_GANGLIA = @MANPAGE_GANGLIA@
 MANPAGE_GENDERS = @MANPAGE_GENDERS@
 MANPAGE_HOSTSFILE = @MANPAGE_HOSTSFILE@
-MANPAGE_OPENIB = @MANPAGE_OPENIB@
 MANPAGE_PINGD = @MANPAGE_PINGD@
 MKDIR_P = @MKDIR_P@
 NM = @NM@
@@ -219,8 +217,6 @@ NODEUPDOWN_CONF_FILE = @NODEUPDOWN_CONF_FILE@
 NODEUPDOWN_MODULE_DIR = @NODEUPDOWN_MODULE_DIR@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
-OPENIB_CFLAGS = @OPENIB_CFLAGS@
-OPENIB_LIBS = @OPENIB_LIBS@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@

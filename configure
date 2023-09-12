@@ -646,11 +646,6 @@ WITH_HOSTSFILE_TRUE
 PINGD_CLUSTERLIST_HOSTSFILE_DEFAULT
 NODEUPDOWN_CLUSTERLIST_HOSTSFILE_DEFAULT
 MANPAGE_HOSTSFILE
-WITH_OPENIB_FALSE
-WITH_OPENIB_TRUE
-OPENIB_CFLAGS
-OPENIB_LIBS
-MANPAGE_OPENIB
 WITH_GENDERS_FALSE
 WITH_GENDERS_TRUE
 MANPAGE_GENDERS
@@ -855,7 +850,6 @@ with_cerebro
 with_ganglia
 with_pingd
 with_genders
-with_openib
 with_hostsfile
 with_hostsfile_path
 '
@@ -1535,7 +1529,6 @@ Optional Packages:
   --with-ganglia          Build ganglia modules
   --with-pingd            Build pingd modules
   --with-genders          Build genders modules
-  --with-openib           Build openib modules
   --with-hostsfile        Build hostsfile modules
   --with-hostsfile-path=PATH
                           Specify default hostsfile clusterlist path
@@ -14422,239 +14415,6 @@ fi
 
 
 #
-# Check for openib build
-#
-
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for whether to build openib modules" >&5
-$as_echo_n "checking for whether to build openib modules... " >&6; }
-
-# Check whether --with-openib was given.
-if test "${with_openib+set}" = set; then :
-  withval=$with_openib;  case "$withval" in
-        no)  ac_openib_test=no ;;
-        yes) ac_openib_test=yes ;;
-        *)   as_fn_error $? "bad value \"$withval\" for --with-openib" "$LINENO" 5 ;;
-      esac
-
-
-fi
-
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${ac_openib_test=yes}" >&5
-$as_echo "${ac_openib_test=yes}" >&6; }
-
-  if test "$ac_openib_test" = "yes"; then
-     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for osm_mad_pool_init in -lopensm" >&5
-$as_echo_n "checking for osm_mad_pool_init in -lopensm... " >&6; }
-if ${ac_cv_lib_opensm_osm_mad_pool_init+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lopensm -losmcomp -losmvendor $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char osm_mad_pool_init ();
-int
-main ()
-{
-return osm_mad_pool_init ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_opensm_osm_mad_pool_init=yes
-else
-  ac_cv_lib_opensm_osm_mad_pool_init=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_opensm_osm_mad_pool_init" >&5
-$as_echo "$ac_cv_lib_opensm_osm_mad_pool_init" >&6; }
-if test "x$ac_cv_lib_opensm_osm_mad_pool_init" = xyes; then :
-  ac_openib_opensm=yes
-fi
-
-     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for complib_init in -losmcomp" >&5
-$as_echo_n "checking for complib_init in -losmcomp... " >&6; }
-if ${ac_cv_lib_osmcomp_complib_init+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-losmcomp -lopensm -losmvendor $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char complib_init ();
-int
-main ()
-{
-return complib_init ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_osmcomp_complib_init=yes
-else
-  ac_cv_lib_osmcomp_complib_init=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_osmcomp_complib_init" >&5
-$as_echo "$ac_cv_lib_osmcomp_complib_init" >&6; }
-if test "x$ac_cv_lib_osmcomp_complib_init" = xyes; then :
-  ac_openib_osmcomp=yes
-fi
-
-     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for osm_vendor_new in -losmvendor" >&5
-$as_echo_n "checking for osm_vendor_new in -losmvendor... " >&6; }
-if ${ac_cv_lib_osmvendor_osm_vendor_new+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-losmvendor -lopensm -losmcomp $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char osm_vendor_new ();
-int
-main ()
-{
-return osm_vendor_new ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_osmvendor_osm_vendor_new=yes
-else
-  ac_cv_lib_osmvendor_osm_vendor_new=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_osmvendor_osm_vendor_new" >&5
-$as_echo "$ac_cv_lib_osmvendor_osm_vendor_new" >&6; }
-if test "x$ac_cv_lib_osmvendor_osm_vendor_new" = xyes; then :
-  ac_openib_osmvendor=yes
-fi
-
-  fi
-
-  if (test "$ac_openib_opensm" = "yes") &&
-	(test "$ac_openib_osmcomp" = "yes") &&
-	(test "$ac_openib_osmvendor" = "yes"); then
-     OPENIB_LIBS="-lopensm -losmcomp -losmvendor"
-     OPENIB_CFLAGS="-DOSM_VENDOR_INTF_OPENIB -I/usr/include/infiniband"
-     MANPAGE_OPENIB=1
-     ac_with_openib=yes
-  else
-     MANPAGE_OPENIB=0
-     ac_with_openib=no
-  fi
-
-  if test "$ac_with_openib" = "yes"; then
-    SAVE_LIBS=$LIBS
-    LIBS="$LIBS -lopensm -losmcomp -losmvendor"
-    SAVE_CFLAGS=$CFLAGS
-    CFLAGS="$CFLAGS -DOSM_VENDOR_INTF_OPENIB -I/usr/include/infiniband"
-    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <opensm/osm_mad_pool.h>
-int
-main ()
-{
-
-          osm_mad_pool_t mad_pool;
-          osm_log_t log;
-          osm_mad_pool_init(&mad_pool, &log);
-
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_osm_mad_pool_init=two
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <opensm/osm_mad_pool.h>
-int
-main ()
-{
-
-              osm_mad_pool_t mad_pool;
-              osm_mad_pool_init(&mad_pool);
-
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_osm_mad_pool_init=one
-else
-  ac_osm_mad_pool_init=no
-
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-    if test "x${ac_osm_mad_pool_init}" = "xtwo"; then
-
-$as_echo "#define HAVE_FUNC_OSM_MAD_POOL_INIT_2 /**/" >>confdefs.h
-
-    elif test "x${ac_osm_mad_pool_init}" = "xone"; then
-
-$as_echo "#define HAVE_FUNC_OSM_MAD_POOL_INIT_1 /**/" >>confdefs.h
-
-    fi
-    LIBS=$SAVE_LIBS
-    CFLAGS=$SAVE_CFLAGS
-  fi
-
-
-
-
-
- if test "$ac_with_openib" = "yes"; then
-  WITH_OPENIB_TRUE=
-  WITH_OPENIB_FALSE='#'
-else
-  WITH_OPENIB_TRUE='#'
-  WITH_OPENIB_FALSE=
-fi
-
-
-#
 # Check for hostsfile
 #
 
@@ -15375,10 +15135,6 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${WITH_GENDERS_TRUE}" && test -z "${WITH_GENDERS_FALSE}"; then
   as_fn_error $? "conditional \"WITH_GENDERS\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${WITH_OPENIB_TRUE}" && test -z "${WITH_OPENIB_FALSE}"; then
-  as_fn_error $? "conditional \"WITH_OPENIB\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${WITH_HOSTSFILE_TRUE}" && test -z "${WITH_HOSTSFILE_FALSE}"; then
