@@ -56,7 +56,6 @@ static char *backend_modules[] = {
   "nodeupdown_backend_cerebro.so",
   "nodeupdown_backend_ganglia.so",
   "nodeupdown_backend_pingd.so",
-  "nodeupdown_backend_openib.so",
   NULL
 };
 

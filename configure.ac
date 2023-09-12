@@ -141,12 +141,6 @@ AC_GENDERS
 AM_CONDITIONAL(WITH_GENDERS, [test "$ac_with_genders" = "yes"])
 
 #
-# Check for openib build
-#
-AC_OPENIB
-AM_CONDITIONAL(WITH_OPENIB, [test "$ac_with_openib" = "yes"])
-
-#
 # Check for hostsfile
 #
 AC_HOSTSFILE

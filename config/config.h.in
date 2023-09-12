@@ -61,12 +61,6 @@
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
-/* Define osm_mad_pool_init with 1 args */
-#undef HAVE_FUNC_OSM_MAD_POOL_INIT_1
-
-/* Define osm_mad_pool_init with 2 args */
-#undef HAVE_FUNC_OSM_MAD_POOL_INIT_2
-
 /* Define to 1 if you have the <getopt.h> header file. */
 #undef HAVE_GETOPT_H
 

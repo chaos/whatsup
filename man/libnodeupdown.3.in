@@ -96,8 +96,6 @@ ganglia - See http://ganglia.sourceforge.net for more information.
 pingd - Simple pingd daemon.  See
 .B pingd(8)
 
-openib - See http://openib.org/
-
 If none of the above are found, the nodeupdown library will search for
 a backend module in @NODEUPDOWN_MODULE_DIR@ until one is found.
 

@@ -99,7 +99,6 @@ am__aclocal_m4_deps = $(top_srcdir)/config/ac_cerebro.m4 \
 	$(top_srcdir)/config/ac_hostsfile.m4 \
 	$(top_srcdir)/config/ac_nodeupdown_conf_file.m4 \
 	$(top_srcdir)/config/ac_nodeupdown_module_dir.m4 \
-	$(top_srcdir)/config/ac_openib.m4 \
 	$(top_srcdir)/config/ac_perl_destdir.m4 \
 	$(top_srcdir)/config/ac_perl_extensions.m4 \
 	$(top_srcdir)/config/ac_perl_site_arch.m4 \
@@ -188,18 +187,6 @@ nodeupdown_backend_ganglia_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(nodeupdown_backend_ganglia_la_LDFLAGS) $(LDFLAGS) -o $@
 @WITH_GANGLIA_TRUE@am_nodeupdown_backend_ganglia_la_rpath = -rpath \
 @WITH_GANGLIA_TRUE@	$(nodeupdownmodulelibdir)
-am__DEPENDENCIES_1 =
-nodeupdown_backend_openib_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
-am_nodeupdown_backend_openib_la_OBJECTS =  \
-	nodeupdown_backend_openib_la-nodeupdown_backend_openib.lo
-nodeupdown_backend_openib_la_OBJECTS =  \
-	$(am_nodeupdown_backend_openib_la_OBJECTS)
-nodeupdown_backend_openib_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
-	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
-	$(nodeupdown_backend_openib_la_CFLAGS) $(CFLAGS) \
-	$(nodeupdown_backend_openib_la_LDFLAGS) $(LDFLAGS) -o $@
-@WITH_OPENIB_TRUE@am_nodeupdown_backend_openib_la_rpath = -rpath \
-@WITH_OPENIB_TRUE@	$(nodeupdownmodulelibdir)
 nodeupdown_backend_pingd_la_DEPENDENCIES = ../libcommon/libcommon.la
 am_nodeupdown_backend_pingd_la_OBJECTS =  \
 	nodeupdown_backend_pingd_la-nodeupdown_backend_pingd.lo \
@@ -262,7 +249,6 @@ am__depfiles_remade = ./$(DEPDIR)/libnodeupdown_la-nodeupdown.Plo \
 	./$(DEPDIR)/nodeupdown_backend_cerebro.Plo \
 	./$(DEPDIR)/nodeupdown_backend_ganglia_la-nodeupdown_backend_connect_util.Plo \
 	./$(DEPDIR)/nodeupdown_backend_ganglia_la-nodeupdown_backend_ganglia.Plo \
-	./$(DEPDIR)/nodeupdown_backend_openib_la-nodeupdown_backend_openib.Plo \
 	./$(DEPDIR)/nodeupdown_backend_pingd_la-nodeupdown_backend_connect_util.Plo \
 	./$(DEPDIR)/nodeupdown_backend_pingd_la-nodeupdown_backend_pingd.Plo \
 	./$(DEPDIR)/nodeupdown_clusterlist_genders.Plo \
@@ -293,14 +279,12 @@ am__v_CCLD_1 =
 SOURCES = $(libnodeupdown_la_SOURCES) \
 	$(nodeupdown_backend_cerebro_la_SOURCES) \
 	$(nodeupdown_backend_ganglia_la_SOURCES) \
-	$(nodeupdown_backend_openib_la_SOURCES) \
 	$(nodeupdown_backend_pingd_la_SOURCES) \
 	$(nodeupdown_clusterlist_genders_la_SOURCES) \
 	$(nodeupdown_clusterlist_hostsfile_la_SOURCES)
 DIST_SOURCES = $(libnodeupdown_la_SOURCES) \
 	$(nodeupdown_backend_cerebro_la_SOURCES) \
 	$(nodeupdown_backend_ganglia_la_SOURCES) \
-	$(nodeupdown_backend_openib_la_SOURCES) \
 	$(nodeupdown_backend_pingd_la_SOURCES) \
 	$(nodeupdown_clusterlist_genders_la_SOURCES) \
 	$(nodeupdown_clusterlist_hostsfile_la_SOURCES)
@@ -398,7 +382,6 @@ MANPAGE_DEBUG = @MANPAGE_DEBUG@
 MANPAGE_GANGLIA = @MANPAGE_GANGLIA@
 MANPAGE_GENDERS = @MANPAGE_GENDERS@
 MANPAGE_HOSTSFILE = @MANPAGE_HOSTSFILE@
-MANPAGE_OPENIB = @MANPAGE_OPENIB@
 MANPAGE_PINGD = @MANPAGE_PINGD@
 MKDIR_P = @MKDIR_P@
 NM = @NM@
@@ -408,8 +391,6 @@ NODEUPDOWN_CONF_FILE = @NODEUPDOWN_CONF_FILE@
 NODEUPDOWN_MODULE_DIR = @NODEUPDOWN_MODULE_DIR@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
-OPENIB_CFLAGS = @OPENIB_CFLAGS@
-OPENIB_LIBS = @OPENIB_LIBS@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -554,7 +535,6 @@ MODULE_FLAGS = -module -avoid-version
 @WITH_CEREBRO_TRUE@CEREBRO_BACKEND_MODULE = nodeupdown_backend_cerebro.la
 @WITH_GANGLIA_TRUE@GANGLIA_BACKEND_MODULE = nodeupdown_backend_ganglia.la
 @WITH_PINGD_TRUE@PINGD_BACKEND_MODULE = nodeupdown_backend_pingd.la
-@WITH_OPENIB_TRUE@OPENIB_BACKEND_MODULE = nodeupdown_backend_openib.la
 @WITH_GENDERS_TRUE@GENDERS_CLUSTERLIST_MODULE = nodeupdown_clusterlist_genders.la
 @WITH_HOSTSFILE_TRUE@HOSTSFILE_CLUSTERLIST_MODULE = nodeupdown_clusterlist_hostsfile.la
 nodeupdownmodulelibdir = $(NODEUPDOWN_MODULE_DIR)
@@ -562,7 +542,6 @@ nodeupdownmodulelib_LTLIBRARIES = \
 	$(CEREBRO_BACKEND_MODULE) \
 	$(GANGLIA_BACKEND_MODULE) \
 	$(PINGD_BACKEND_MODULE) \
-	$(OPENIB_BACKEND_MODULE) \
 	$(GENDERS_CLUSTERLIST_MODULE) \
 	$(HOSTSFILE_CLUSTERLIST_MODULE)
 
@@ -602,15 +581,6 @@ nodeupdown_backend_pingd_la_CFLAGS = \
 nodeupdown_backend_pingd_la_LIBADD = \
 	../libcommon/libcommon.la
 
-nodeupdown_backend_openib_la_SOURCES = \
-	nodeupdown_backend_openib.c
-
-nodeupdown_backend_openib_la_LDFLAGS = \
-	$(MODULE_FLAGS) \
-	$(NODEUPDOWN_BACKEND_OTHER_FLAGS) 
-
-nodeupdown_backend_openib_la_CFLAGS = $(OPENIB_CFLAGS)
-nodeupdown_backend_openib_la_LIBADD = $(OPENIB_LIBS)
 nodeupdown_clusterlist_genders_la_SOURCES = \
 	nodeupdown_clusterlist_genders.c \
 	nodeupdown_clusterlist_genders_util.c \
@@ -754,9 +724,6 @@ nodeupdown_backend_cerebro.la: $(nodeupdown_backend_cerebro_la_OBJECTS) $(nodeup
 nodeupdown_backend_ganglia.la: $(nodeupdown_backend_ganglia_la_OBJECTS) $(nodeupdown_backend_ganglia_la_DEPENDENCIES) $(EXTRA_nodeupdown_backend_ganglia_la_DEPENDENCIES) 
 	$(AM_V_CCLD)$(nodeupdown_backend_ganglia_la_LINK) $(am_nodeupdown_backend_ganglia_la_rpath) $(nodeupdown_backend_ganglia_la_OBJECTS) $(nodeupdown_backend_ganglia_la_LIBADD) $(LIBS)
 
-nodeupdown_backend_openib.la: $(nodeupdown_backend_openib_la_OBJECTS) $(nodeupdown_backend_openib_la_DEPENDENCIES) $(EXTRA_nodeupdown_backend_openib_la_DEPENDENCIES) 
-	$(AM_V_CCLD)$(nodeupdown_backend_openib_la_LINK) $(am_nodeupdown_backend_openib_la_rpath) $(nodeupdown_backend_openib_la_OBJECTS) $(nodeupdown_backend_openib_la_LIBADD) $(LIBS)
-
 nodeupdown_backend_pingd.la: $(nodeupdown_backend_pingd_la_OBJECTS) $(nodeupdown_backend_pingd_la_DEPENDENCIES) $(EXTRA_nodeupdown_backend_pingd_la_DEPENDENCIES) 
 	$(AM_V_CCLD)$(nodeupdown_backend_pingd_la_LINK) $(am_nodeupdown_backend_pingd_la_rpath) $(nodeupdown_backend_pingd_la_OBJECTS) $(nodeupdown_backend_pingd_la_LIBADD) $(LIBS)
 
@@ -781,7 +748,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nodeupdown_backend_cerebro.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nodeupdown_backend_ganglia_la-nodeupdown_backend_connect_util.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nodeupdown_backend_ganglia_la-nodeupdown_backend_ganglia.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nodeupdown_backend_openib_la-nodeupdown_backend_openib.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nodeupdown_backend_pingd_la-nodeupdown_backend_connect_util.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nodeupdown_backend_pingd_la-nodeupdown_backend_pingd.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nodeupdown_clusterlist_genders.Plo@am__quote@ # am--include-marker
@@ -876,13 +842,6 @@ nodeupdown_backend_ganglia_la-nodeupdown_backend_connect_util.lo: nodeupdown_bac
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='nodeupdown_backend_connect_util.c' object='nodeupdown_backend_ganglia_la-nodeupdown_backend_connect_util.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(nodeupdown_backend_ganglia_la_CFLAGS) $(CFLAGS) -c -o nodeupdown_backend_ganglia_la-nodeupdown_backend_connect_util.lo `test -f 'nodeupdown_backend_connect_util.c' || echo '$(srcdir)/'`nodeupdown_backend_connect_util.c
-
-nodeupdown_backend_openib_la-nodeupdown_backend_openib.lo: nodeupdown_backend_openib.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(nodeupdown_backend_openib_la_CFLAGS) $(CFLAGS) -MT nodeupdown_backend_openib_la-nodeupdown_backend_openib.lo -MD -MP -MF $(DEPDIR)/nodeupdown_backend_openib_la-nodeupdown_backend_openib.Tpo -c -o nodeupdown_backend_openib_la-nodeupdown_backend_openib.lo `test -f 'nodeupdown_backend_openib.c' || echo '$(srcdir)/'`nodeupdown_backend_openib.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/nodeupdown_backend_openib_la-nodeupdown_backend_openib.Tpo $(DEPDIR)/nodeupdown_backend_openib_la-nodeupdown_backend_openib.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='nodeupdown_backend_openib.c' object='nodeupdown_backend_openib_la-nodeupdown_backend_openib.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(nodeupdown_backend_openib_la_CFLAGS) $(CFLAGS) -c -o nodeupdown_backend_openib_la-nodeupdown_backend_openib.lo `test -f 'nodeupdown_backend_openib.c' || echo '$(srcdir)/'`nodeupdown_backend_openib.c
 
 nodeupdown_backend_pingd_la-nodeupdown_backend_pingd.lo: nodeupdown_backend_pingd.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(nodeupdown_backend_pingd_la_CFLAGS) $(CFLAGS) -MT nodeupdown_backend_pingd_la-nodeupdown_backend_pingd.lo -MD -MP -MF $(DEPDIR)/nodeupdown_backend_pingd_la-nodeupdown_backend_pingd.Tpo -c -o nodeupdown_backend_pingd_la-nodeupdown_backend_pingd.lo `test -f 'nodeupdown_backend_pingd.c' || echo '$(srcdir)/'`nodeupdown_backend_pingd.c
@@ -1100,7 +1059,6 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/nodeupdown_backend_cerebro.Plo
 	-rm -f ./$(DEPDIR)/nodeupdown_backend_ganglia_la-nodeupdown_backend_connect_util.Plo
 	-rm -f ./$(DEPDIR)/nodeupdown_backend_ganglia_la-nodeupdown_backend_ganglia.Plo
-	-rm -f ./$(DEPDIR)/nodeupdown_backend_openib_la-nodeupdown_backend_openib.Plo
 	-rm -f ./$(DEPDIR)/nodeupdown_backend_pingd_la-nodeupdown_backend_connect_util.Plo
 	-rm -f ./$(DEPDIR)/nodeupdown_backend_pingd_la-nodeupdown_backend_pingd.Plo
 	-rm -f ./$(DEPDIR)/nodeupdown_clusterlist_genders.Plo
@@ -1164,7 +1122,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/nodeupdown_backend_cerebro.Plo
 	-rm -f ./$(DEPDIR)/nodeupdown_backend_ganglia_la-nodeupdown_backend_connect_util.Plo
 	-rm -f ./$(DEPDIR)/nodeupdown_backend_ganglia_la-nodeupdown_backend_ganglia.Plo
-	-rm -f ./$(DEPDIR)/nodeupdown_backend_openib_la-nodeupdown_backend_openib.Plo
 	-rm -f ./$(DEPDIR)/nodeupdown_backend_pingd_la-nodeupdown_backend_connect_util.Plo
 	-rm -f ./$(DEPDIR)/nodeupdown_backend_pingd_la-nodeupdown_backend_pingd.Plo
 	-rm -f ./$(DEPDIR)/nodeupdown_clusterlist_genders.Plo
