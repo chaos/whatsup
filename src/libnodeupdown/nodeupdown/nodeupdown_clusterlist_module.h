@@ -65,7 +65,7 @@ typedef int (*Nodeupdown_clusterlist_get_numnodes)(nodeupdown_t);
  * Returns 1 is node is in the cluster, 0 if not, -1 on error
  */
 typedef int (*Nodeupdown_clusterlist_is_node_in_cluster)(nodeupdown_t,
-							 const char *);
+                                                         const char *);
 
 /*
  * Nodeupdown_clusterlist_get_nodename
@@ -78,9 +78,9 @@ typedef int (*Nodeupdown_clusterlist_is_node_in_cluster)(nodeupdown_t,
  * Returns nodename in buffer, 0 on success, -1 on error
  */
 typedef int (*Nodeupdown_clusterlist_get_nodename)(nodeupdown_t,
-						   const char *,
-						   char *,
-						   unsigned int);
+                                                   const char *,
+                                                   char *,
+                                                   unsigned int);
 
 /*
  * Nodeupdown_clusterlist_compare_to_clusterlist

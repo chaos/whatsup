@@ -168,9 +168,9 @@ int clusterlist_module_is_node_in_cluster(nodeupdown_t handle, const char *node)
  * call clusterlist module get_nodename function
  */
 int clusterlist_module_get_nodename(nodeupdown_t handle,
-				    const char *node,
-				    char *buffer,
-				    unsigned int buflen);
+                                    const char *node,
+                                    char *buffer,
+                                    unsigned int buflen);
 
 /*
  * clusterlist_module_compare_to_clusterlist
@@ -225,6 +225,6 @@ int config_module_cleanup(nodeupdown_t handle);
  * call config module load_config function
  */
 int config_module_load_config(nodeupdown_t handle,
-			      struct nodeupdown_config *conf);
+                              struct nodeupdown_config *conf);
 
 #endif /* _NODEUPDOWN_MODULE_H */

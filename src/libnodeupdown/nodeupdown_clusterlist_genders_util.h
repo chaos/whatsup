@@ -35,7 +35,7 @@
  * common genders clusterlist get_numnodes function
  */
 int genders_util_clusterlist_get_numnodes(nodeupdown_t handle,
-					  genders_t genders_handle);
+                                          genders_t genders_handle);
 
 /*
  * genders_util_clusterlist_compare_to_clusterlist

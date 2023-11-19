@@ -183,7 +183,7 @@ pingd_backend_get_updown_data(nodeupdown_t handle,
       if ((len = fd_read_line(fd, buf, PINGD_BACKEND_BUFLEN)) < 0)
         {
 #ifndef NDEBUG
-	  fprintf(stderr, "fd_read_line: %s\n", strerror(errno));
+          fprintf(stderr, "fd_read_line: %s\n", strerror(errno));
 #endif /* NDEBUG */
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
           goto cleanup;
@@ -196,7 +196,7 @@ pingd_backend_get_updown_data(nodeupdown_t handle,
       if (num != 2)
         {
 #ifndef NDEBUG
-	  fprintf(stderr, "sscanf: parse error\n");
+          fprintf(stderr, "sscanf: parse error\n");
 #endif /* NDEBUG */
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
           goto cleanup;

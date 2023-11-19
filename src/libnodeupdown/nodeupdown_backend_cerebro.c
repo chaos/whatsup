@@ -148,7 +148,7 @@ cerebro_backend_cleanup(nodeupdown_t handle)
     {
 #ifndef NDEBUG
       fprintf(stderr, "cerebro_handle_destroy: %s\n",
-	      cerebro_strerror(cerebro_errnum(cerebro_handle)));
+              cerebro_strerror(cerebro_errnum(cerebro_handle)));
 #endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
       return -1;
@@ -177,7 +177,7 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
     {
 #ifndef NDEBUG
       fprintf(stderr, "cerebro_set_hostname: %s\n",
-	      cerebro_strerror(cerebro_errnum(cerebro_handle)));
+              cerebro_strerror(cerebro_errnum(cerebro_handle)));
 #endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
       return -1;
@@ -187,7 +187,7 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
     {
 #ifndef NDEBUG
       fprintf(stderr, "cerebro_set_port: %s\n",
-	      cerebro_strerror(cerebro_errnum(cerebro_handle)));
+              cerebro_strerror(cerebro_errnum(cerebro_handle)));
 #endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
       return -1;
@@ -197,7 +197,7 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
     {
 #ifndef NDEBUG
       fprintf(stderr, "cerebro_set_timeout_len: %s\n",
-	      cerebro_strerror(cerebro_errnum(cerebro_handle)));
+              cerebro_strerror(cerebro_errnum(cerebro_handle)));
 #endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
       return -1;
@@ -208,7 +208,7 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
     {
 #ifndef NDEBUG
       fprintf(stderr, "cerebro_get_metric_data: %s\n",
-	      cerebro_strerror(cerebro_errnum(cerebro_handle)));
+              cerebro_strerror(cerebro_errnum(cerebro_handle)));
 #endif /* NDEBUG */
       if (cerebro_errnum(cerebro_handle) == CEREBRO_ERR_CONNECT)
         nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CONNECT);
@@ -225,7 +225,7 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
     {
 #ifndef NDEBUG
       fprintf(stderr, "cerebro_nodelist_iterator_create: %s\n",
-	      cerebro_strerror(cerebro_errnum(cerebro_handle)));
+              cerebro_strerror(cerebro_errnum(cerebro_handle)));
 #endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
       goto cleanup;
@@ -241,8 +241,8 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
       if (cerebro_nodelist_iterator_nodename(itr, &nodename) < 0)
         {
 #ifndef NDEBUG
-	  fprintf(stderr, "cerebro_nodelist_iterator_nodename: %s\n",
-		  cerebro_strerror(cerebro_errnum(cerebro_handle)));
+          fprintf(stderr, "cerebro_nodelist_iterator_nodename: %s\n",
+                  cerebro_strerror(cerebro_errnum(cerebro_handle)));
 #endif /* NDEBUG */
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
           goto cleanup;
@@ -251,7 +251,7 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
       if (!nodename)
         {
 #ifndef NDEBUG
-	  fprintf(stderr, "cerebro_nodelist_iterator_create: null nodename\n");
+          fprintf(stderr, "cerebro_nodelist_iterator_create: null nodename\n");
 #endif /* NDEBUG */
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
           goto cleanup;
@@ -264,8 +264,8 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
                                                  &mvalue) < 0)
         {
 #ifndef NDEBUG
-	  fprintf(stderr, "cerebro_nodelist_iterator_metric_value: %s\n",
-		  cerebro_strerror(cerebro_errnum(cerebro_handle)));
+          fprintf(stderr, "cerebro_nodelist_iterator_metric_value: %s\n",
+                  cerebro_strerror(cerebro_errnum(cerebro_handle)));
 #endif /* NDEBUG */
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
           goto cleanup;
@@ -278,7 +278,7 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
 #endif /* !CEREBRO_METRIC_VALUE_TYPE_U_INT32 */
         {
 #ifndef NDEBUG
-	  fprintf(stderr, "cerebro_nodelist_iterator_metric_value: invalid mtype: %u\n", mtype);
+          fprintf(stderr, "cerebro_nodelist_iterator_metric_value: invalid mtype: %u\n", mtype);
 #endif /* NDEBUG */
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
           goto cleanup;
@@ -287,7 +287,7 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
       if (mlen != sizeof(u_int32_t))
         {
 #ifndef NDEBUG
-	  fprintf(stderr, "cerebro_nodelist_iterator_metric_value: invalid mlen: %u\n", mlen);
+          fprintf(stderr, "cerebro_nodelist_iterator_metric_value: invalid mlen: %u\n", mlen);
 #endif /* NDEBUG */
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
           goto cleanup;
@@ -312,8 +312,8 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
       if (cerebro_nodelist_iterator_next(itr) < 0)
         {
 #ifndef NDEBUG
-	  fprintf(stderr, "cerebro_nodelist_iterator_next: %s\n",
-		  cerebro_strerror(cerebro_errnum(cerebro_handle)));
+          fprintf(stderr, "cerebro_nodelist_iterator_next: %s\n",
+                  cerebro_strerror(cerebro_errnum(cerebro_handle)));
 #endif /* NDEBUG */
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
           goto cleanup;
@@ -324,7 +324,7 @@ cerebro_backend_get_updown_data(nodeupdown_t handle,
     {
 #ifndef NDEBUG
       fprintf(stderr, "cerebro_nodelist_iterator_at_end: %s\n",
-	      cerebro_strerror(cerebro_errnum(cerebro_handle)));
+              cerebro_strerror(cerebro_errnum(cerebro_handle)));
 #endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_BACKEND_MODULE);
       goto cleanup;

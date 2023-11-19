@@ -88,7 +88,7 @@ genders_util_clusterlist_compare_to_clusterlist(nodeupdown_t handle,
   for (i = 0; i < num; i++)
     {
       if (nodeupdown_not_discovered_check(handle, nlist[i]) < 0)
-	goto cleanup;
+        goto cleanup;
     }
 
   if (genders_nodelist_destroy(genders_handle, nlist) < 0)
