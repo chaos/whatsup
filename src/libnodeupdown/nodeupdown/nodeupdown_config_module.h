@@ -56,7 +56,7 @@ typedef int (*Nodeupdown_config_cleanup)(nodeupdown_t);
  * Returns 0 on success, -1 on error
  */
 typedef int (*Nodeupdown_config_load_config)(nodeupdown_t,
-					      struct nodeupdown_config *);
+                                              struct nodeupdown_config *);
 
 /*
  * struct nodeupdown_config_module_info

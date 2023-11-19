@@ -128,9 +128,9 @@ genders_clusterlist_is_node_in_cluster(nodeupdown_t handle, const char *node)
  */
 static int
 genders_clusterlist_get_nodename(nodeupdown_t handle,
-				 const char *node,
-				 char *buf,
-				 unsigned int buflen)
+                                 const char *node,
+                                 char *buf,
+                                 unsigned int buflen)
 {
   char nodebuf[NODEUPDOWN_MAXNODENAMELEN+1];
   char *nodePtr = NULL;

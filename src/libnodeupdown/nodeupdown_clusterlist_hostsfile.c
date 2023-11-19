@@ -240,18 +240,18 @@ hostsfile_clusterlist_setup(nodeupdown_t handle)
       if (strchr(hostPtr, ' ') || strchr(hostPtr, '\t'))
         {
 #ifndef NDEBUG
-	  fprintf(stderr, "parse error\n");
+          fprintf(stderr, "parse error\n");
 #endif /* NDEBUG */
-	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
+          nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
           goto cleanup;
         }
 
       if (strlen(hostPtr) > NODEUPDOWN_MAXHOSTNAMELEN)
         {
 #ifndef NDEBUG
-	  fprintf(stderr, "parse error\n");
+          fprintf(stderr, "parse error\n");
 #endif /* NDEBUG */
-	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
+          nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
           goto cleanup;
         }
 
@@ -261,16 +261,16 @@ hostsfile_clusterlist_setup(nodeupdown_t handle)
 
       if (!(str = strdup(hostPtr)))
         {
-	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_OUTMEM);
+          nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_OUTMEM);
           goto cleanup;
         }
 
       if (!list_append(hosts, str))
         {
 #ifndef NDEBUG
-	  fprintf(stderr, "list_append: %s\n", strerror(errno));
+          fprintf(stderr, "list_append: %s\n", strerror(errno));
 #endif /* NDEBUG */
-	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
+          nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_CLUSTERLIST_MODULE);
           goto cleanup;
         }
     }
@@ -410,7 +410,7 @@ hostsfile_clusterlist_compare_to_clusterlist(nodeupdown_t handle)
   while ((nodename = list_next(itr)))
     {
       if (nodeupdown_not_discovered_check(handle, nodename) < 0)
-	goto cleanup;
+        goto cleanup;
     }
 
   list_iterator_destroy(itr);

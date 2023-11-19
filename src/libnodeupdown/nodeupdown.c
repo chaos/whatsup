@@ -415,72 +415,72 @@ nodeupdown_load_data(nodeupdown_t handle,
   if (port <= 0)
     {
       if (conffile_config.port_flag)
-	{
-	  if (conffile_config.port <= 0)
-	    {
-	      handle->errnum = NODEUPDOWN_ERR_CONF_INPUT;
-	      goto cleanup;
-	    }
-	  port = conffile_config.port;
-	}
+        {
+          if (conffile_config.port <= 0)
+            {
+              handle->errnum = NODEUPDOWN_ERR_CONF_INPUT;
+              goto cleanup;
+            }
+          port = conffile_config.port;
+        }
       else if (module_config.port_flag)
-	{
-	  if (module_config.port <= 0)
-	    {
-	      handle->errnum = NODEUPDOWN_ERR_CONFIG_MODULE;
-	      goto cleanup;
-	    }
-	  port = module_config.port;
-	}
+        {
+          if (module_config.port <= 0)
+            {
+              handle->errnum = NODEUPDOWN_ERR_CONFIG_MODULE;
+              goto cleanup;
+            }
+          port = module_config.port;
+        }
       else
-	{
-	  if (backend_module_default_port(handle) <= 0)
-	    {
-	      handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
-	      goto cleanup;
-	    }
-	  port = backend_module_default_port(handle);
-	}
+        {
+          if (backend_module_default_port(handle) <= 0)
+            {
+              handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
+              goto cleanup;
+            }
+          port = backend_module_default_port(handle);
+        }
     }
 
   if (timeout_len <= 0)
     {
       if (conffile_config.timeout_len_flag)
-	{
-	  if (conffile_config.timeout_len <= 0)
-	    {
-	      handle->errnum = NODEUPDOWN_ERR_CONF_INPUT;
-	      goto cleanup;
-	    }
-	  timeout_len = conffile_config.timeout_len;
-	}
+        {
+          if (conffile_config.timeout_len <= 0)
+            {
+              handle->errnum = NODEUPDOWN_ERR_CONF_INPUT;
+              goto cleanup;
+            }
+          timeout_len = conffile_config.timeout_len;
+        }
       else if (module_config.timeout_len_flag)
-	{
-	  if (module_config.timeout_len <= 0)
-	    {
-	      handle->errnum = NODEUPDOWN_ERR_CONFIG_MODULE;
-	      goto cleanup;
-	    }
-	  timeout_len = module_config.timeout_len;
-	}
+        {
+          if (module_config.timeout_len <= 0)
+            {
+              handle->errnum = NODEUPDOWN_ERR_CONFIG_MODULE;
+              goto cleanup;
+            }
+          timeout_len = module_config.timeout_len;
+        }
       else
-	{
-	  if (backend_module_default_timeout_len(handle) < 0)
-	    {
-	      handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
-	      goto cleanup;
-	    }
-	  timeout_len = backend_module_default_timeout_len(handle);
-	}
+        {
+          if (backend_module_default_timeout_len(handle) < 0)
+            {
+              handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
+              goto cleanup;
+            }
+          timeout_len = backend_module_default_timeout_len(handle);
+        }
     }
 
   if (hostname)
     {
       if (backend_module_get_updown_data(handle,
-					 hostname,
-					 port,
-					 timeout_len,
-					 module) < 0)
+                                         hostname,
+                                         port,
+                                         timeout_len,
+                                         module) < 0)
         goto cleanup;
     }
   else if (conffile_config.hostnames_flag || module_config.hostnames_flag)
@@ -489,25 +489,25 @@ nodeupdown_load_data(nodeupdown_t handle,
       int i, hostnames_len;
 
       if (conffile_config.hostnames_flag)
-	{
-	  hostnames = conffile_config.hostnames;
-	  hostnames_len = conffile_config.hostnames_len;
-	}
+        {
+          hostnames = conffile_config.hostnames;
+          hostnames_len = conffile_config.hostnames_len;
+        }
       else
-	{
-	  hostnames = module_config.hostnames;
-	  hostnames_len = module_config.hostnames_len;
-	}
+        {
+          hostnames = module_config.hostnames;
+          hostnames_len = module_config.hostnames_len;
+        }
 
       for (i = 0; i < hostnames_len; i++)
         {
           if (strlen(hostnames[i]) > 0)
             {
               if (backend_module_get_updown_data(handle,
-						 hostnames[i],
-						 port,
-						 timeout_len,
-						 module) < 0)
+                                                 hostnames[i],
+                                                 port,
+                                                 timeout_len,
+                                                 module) < 0)
                 continue;
               else
                 break;
@@ -528,10 +528,10 @@ nodeupdown_load_data(nodeupdown_t handle,
         goto cleanup;
 
       if (backend_module_get_updown_data(handle,
-					 hostnamePtr,
-					 port,
-					 timeout_len,
-					 module) < 0)
+                                         hostnamePtr,
+                                         port,
+                                         timeout_len,
+                                         module) < 0)
         goto cleanup;
     }
 
@@ -745,19 +745,19 @@ _is_node(nodeupdown_t handle, const char *node, int up_or_down)
   if (clusterlist_module_found)
     {
       if ((rv = clusterlist_module_is_node_in_cluster(handle, node)) < 0)
-	return -1;
+        return -1;
 
       if (!rv)
-	{
-	  handle->errnum = NODEUPDOWN_ERR_NOTFOUND;
-	  return -1;
-	}
+        {
+          handle->errnum = NODEUPDOWN_ERR_NOTFOUND;
+          return -1;
+        }
 
       if (clusterlist_module_get_nodename(handle,
-					  node,
-					  buffer,
-					  NODEUPDOWN_MAXNODENAMELEN+1) < 0)
-	return -1;
+                                          node,
+                                          buffer,
+                                          NODEUPDOWN_MAXNODENAMELEN+1) < 0)
+        return -1;
 
       nodePtr = buffer;
     }
@@ -767,11 +767,11 @@ _is_node(nodeupdown_t handle, const char *node, int up_or_down)
        * loaded.
        */
       if (hostlist_find(handle->up_nodes, node) < 0
-	  && hostlist_find(handle->down_nodes, node) < 0)
-	{
-	  handle->errnum = NODEUPDOWN_ERR_NOTFOUND;
-	  return -1;
-	}
+          && hostlist_find(handle->down_nodes, node) < 0)
+        {
+          handle->errnum = NODEUPDOWN_ERR_NOTFOUND;
+          return -1;
+        }
 
       nodePtr = (char *)node;
     }

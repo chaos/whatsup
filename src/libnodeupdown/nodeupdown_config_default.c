@@ -67,7 +67,7 @@ default_config_cleanup(nodeupdown_t handle)
  */
 int
 default_config_load_default(nodeupdown_t handle,
-			    struct nodeupdown_config *conf)
+                            struct nodeupdown_config *conf)
 {
   return 0;
 }

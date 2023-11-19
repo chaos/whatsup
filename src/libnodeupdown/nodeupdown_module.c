@@ -503,10 +503,10 @@ backend_module_cleanup(nodeupdown_t handle)
 
 int
 backend_module_get_updown_data(nodeupdown_t handle,
-			       const char *hostname,
-			       unsigned int port,
-			       unsigned int timeout_len,
-			       char *reserved)
+                               const char *hostname,
+                               unsigned int port,
+                               unsigned int timeout_len,
+                               char *reserved)
 {
   if (!backend_module_info)
     {
@@ -699,9 +699,9 @@ clusterlist_module_is_node_in_cluster(nodeupdown_t handle, const char *node)
 
 int
 clusterlist_module_get_nodename(nodeupdown_t handle,
-				const char *node,
-				char *buffer,
-				unsigned int buflen)
+                                const char *node,
+                                char *buffer,
+                                unsigned int buflen)
 {
   if (!clusterlist_module_info)
     {

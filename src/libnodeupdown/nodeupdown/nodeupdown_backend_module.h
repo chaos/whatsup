@@ -83,10 +83,10 @@ typedef int (*Nodeupdown_backend_cleanup)(nodeupdown_t);
  * Returns 0 on success, -1 on error
  */
 typedef int (*Nodeupdown_backend_get_updown_data)(nodeupdown_t,
-						  const char *,
-						  unsigned int,
-						  unsigned int,
-						  char *);
+                                                  const char *,
+                                                  unsigned int,
+                                                  unsigned int,
+                                                  char *);
 
 /*
  * struct nodeupdown_backend_module_info

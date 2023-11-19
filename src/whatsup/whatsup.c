@@ -284,7 +284,7 @@ _load_options_modules_in_dir(char *search_dir)
           memset(filebuf, '\0', WHATSUP_MAXPATHLEN+1);
           snprintf(filebuf, WHATSUP_MAXPATHLEN, "%s/%s", search_dir, filename);
 
-	  _load_options_module(filebuf);
+          _load_options_module(filebuf);
         }
     }
 
@@ -354,19 +354,19 @@ static void
 _usage(void)
 {
   fprintf(stderr,
-	  "Usage: whatsup [OPTIONS]... [NODES]...\n"
-	  "  -h         --help              Print help and exit\n"
-	  "  -v         --version           Print version and exit\n"
-	  "  -o STRING  --hostname=STRING   Server hostname\n"
-	  "  -p INT     --port=INT          Server port\n"
-	  "  -b         --updown            Output up and down nodes\n"
-	  "  -u         --up                Output only up nodes\n"
-	  "  -d         --down              Output only down nodes\n"
-	  "  -t         --count             Output only node counts\n"
-	  "  -q         --hostrange         Output in hostrange format\n"
-	  "  -c         --comma             Output in comma separated list\n"
-	  "  -n         --newline           Output in newline separated list\n"
-	  "  -s         --space             Output in space separated list\n"
+          "Usage: whatsup [OPTIONS]... [NODES]...\n"
+          "  -h         --help              Print help and exit\n"
+          "  -v         --version           Print version and exit\n"
+          "  -o STRING  --hostname=STRING   Server hostname\n"
+          "  -p INT     --port=INT          Server port\n"
+          "  -b         --updown            Output up and down nodes\n"
+          "  -u         --up                Output only up nodes\n"
+          "  -d         --down              Output only down nodes\n"
+          "  -t         --count             Output only node counts\n"
+          "  -q         --hostrange         Output in hostrange format\n"
+          "  -c         --comma             Output in comma separated list\n"
+          "  -n         --newline           Output in newline separated list\n"
+          "  -s         --space             Output in space separated list\n"
           "  -m         --module            Specify backend module\n"
           "  -r         --last-up-time      Output last known up time of nodes\n"
           "  -l         --log               Output up/down state log\n"
@@ -1178,25 +1178,25 @@ _log_mode(void)
   while (1)
     {
       if (!(handle = nodeupdown_handle_create()))
-	err_exit("%s: nodeupdown_handle_create()", __FUNCTION__);
+        err_exit("%s: nodeupdown_handle_create()", __FUNCTION__);
 
       if (nodeupdown_load_data(handle, hostname, port, 0, module) < 0)
-	{
-	  int errnum = nodeupdown_errnum(handle);
-	  char *msg = nodeupdown_errormsg(handle);
+        {
+          int errnum = nodeupdown_errnum(handle);
+          char *msg = nodeupdown_errormsg(handle);
 
-	  /* Check for "legit" errors and output appropriate message */
-	  if (errnum == NODEUPDOWN_ERR_CONF_PARSE)
-	    err_exit("Parse error in conf file");
-	  else if (errnum == NODEUPDOWN_ERR_CONNECT)
-	    err_exit("Cannot connect to server");
-	  else if (errnum == NODEUPDOWN_ERR_CONNECT_TIMEOUT)
-	    err_exit("Timeout connecting to server");
-	  else if (errnum == NODEUPDOWN_ERR_HOSTNAME)
-	    err_exit("Invalid hostname");
-	  else
-	    err_exit("%s: nodeupdown_load_data(): %s", __FUNCTION__, msg);
-	}
+          /* Check for "legit" errors and output appropriate message */
+          if (errnum == NODEUPDOWN_ERR_CONF_PARSE)
+            err_exit("Parse error in conf file");
+          else if (errnum == NODEUPDOWN_ERR_CONNECT)
+            err_exit("Cannot connect to server");
+          else if (errnum == NODEUPDOWN_ERR_CONNECT_TIMEOUT)
+            err_exit("Timeout connecting to server");
+          else if (errnum == NODEUPDOWN_ERR_HOSTNAME)
+            err_exit("Invalid hostname");
+          else
+            err_exit("%s: nodeupdown_load_data(): %s", __FUNCTION__, msg);
+        }
 
       memset(upnodesbuf, '\0', WHATSUP_BUFFERLEN);
       memset(downnodesbuf, '\0', WHATSUP_BUFFERLEN);
@@ -1209,36 +1209,36 @@ _log_mode(void)
 
       /* Don't output the first time through */
       if (nodes_init)
-	{
-	  hostlist_t newupnodes, newdownnodes;
-	  hostlist_iterator_t upitr, downitr;
-	  char *node;
+        {
+          hostlist_t newupnodes, newdownnodes;
+          hostlist_iterator_t upitr, downitr;
+          char *node;
 
-	  if (!(newupnodes = hostlist_create(upnodesbuf)))
-	    err_exit("%s: hostlist_create()", __FUNCTION__);
+          if (!(newupnodes = hostlist_create(upnodesbuf)))
+            err_exit("%s: hostlist_create()", __FUNCTION__);
 
-	  if (!(newdownnodes = hostlist_create(downnodesbuf)))
-	    err_exit("%s: hostlist_create()", __FUNCTION__);
+          if (!(newdownnodes = hostlist_create(downnodesbuf)))
+            err_exit("%s: hostlist_create()", __FUNCTION__);
 
-	  if (!(upitr = hostlist_iterator_create(newupnodes)))
-	    err_exit("%s: hostlist_iterator_create()", __FUNCTION__);
+          if (!(upitr = hostlist_iterator_create(newupnodes)))
+            err_exit("%s: hostlist_iterator_create()", __FUNCTION__);
 
-	  if (!(downitr = hostlist_iterator_create(newdownnodes)))
-	    err_exit("%s: hostlist_iterator_create()", __FUNCTION__);
+          if (!(downitr = hostlist_iterator_create(newdownnodes)))
+            err_exit("%s: hostlist_iterator_create()", __FUNCTION__);
 
-	  while ((node = hostlist_next(upitr)))
-	    {
-	      if (hostlist_find(upnodes, node) < 0)
-		{
-		  time_t t;
-		  struct tm *tt;
-		  char timebuf[WHATSUP_BUFFERLEN];
+          while ((node = hostlist_next(upitr)))
+            {
+              if (hostlist_find(upnodes, node) < 0)
+                {
+                  time_t t;
+                  struct tm *tt;
+                  char timebuf[WHATSUP_BUFFERLEN];
                   char writebuf[WHATSUP_BUFFERLEN];
                   int write_len;
 
-		  t = time(NULL);
-		  tt = localtime(&t);
-		  strftime(timebuf, WHATSUP_BUFFERLEN, "%Y/%m/%d %T", tt);
+                  t = time(NULL);
+                  tt = localtime(&t);
+                  strftime(timebuf, WHATSUP_BUFFERLEN, "%Y/%m/%d %T", tt);
                   if ((write_len = snprintf(writebuf,
                                             WHATSUP_BUFFERLEN,
                                             "%s %s UP\n",
@@ -1258,23 +1258,23 @@ _log_mode(void)
                       printf("%s", writebuf);
                       fflush(stdout);
                     }
-		}
-	      free(node);
-	    }
+                }
+              free(node);
+            }
 
-	  while ((node = hostlist_next(downitr)))
-	    {
-	      if (hostlist_find(downnodes, node) < 0)
-		{
-		  time_t t;
-		  struct tm *tt;
-		  char timebuf[WHATSUP_BUFFERLEN];
+          while ((node = hostlist_next(downitr)))
+            {
+              if (hostlist_find(downnodes, node) < 0)
+                {
+                  time_t t;
+                  struct tm *tt;
+                  char timebuf[WHATSUP_BUFFERLEN];
                   char writebuf[WHATSUP_BUFFERLEN];
                   int write_len;
 
-		  t = time(NULL);
-		  tt = localtime(&t);
-		  strftime(timebuf, WHATSUP_BUFFERLEN, "%Y/%m/%d %T", tt);
+                  t = time(NULL);
+                  tt = localtime(&t);
+                  strftime(timebuf, WHATSUP_BUFFERLEN, "%Y/%m/%d %T", tt);
                   if ((write_len = snprintf(writebuf,
                                             WHATSUP_BUFFERLEN,
                                             "%s %s DOWN\n",
@@ -1294,26 +1294,26 @@ _log_mode(void)
                       printf("%s", writebuf);
                       fflush(stdout);
                     }
-		}
-	      free(node);
-	    }
+                }
+              free(node);
+            }
 
 
-	  hostlist_destroy(upnodes);
-	  hostlist_destroy(downnodes);
-	  upnodes = newupnodes;
-	  downnodes = newdownnodes;
-	}
+          hostlist_destroy(upnodes);
+          hostlist_destroy(downnodes);
+          upnodes = newupnodes;
+          downnodes = newdownnodes;
+        }
       else
-	{
-	  if (!(upnodes = hostlist_create(upnodesbuf)))
-	    err_exit("%s: hostlist_create()", __FUNCTION__);
+        {
+          if (!(upnodes = hostlist_create(upnodesbuf)))
+            err_exit("%s: hostlist_create()", __FUNCTION__);
 
-	  if (!(downnodes = hostlist_create(downnodesbuf)))
-	    err_exit("%s: hostlist_create()", __FUNCTION__);
+          if (!(downnodes = hostlist_create(downnodesbuf)))
+            err_exit("%s: hostlist_create()", __FUNCTION__);
 
-	  nodes_init++;
-	}
+          nodes_init++;
+        }
 
       (void)nodeupdown_handle_destroy(handle);
       sleep(log_poll);

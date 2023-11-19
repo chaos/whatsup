@@ -59,7 +59,7 @@
 #include <expat.h>
 #else  /* !HAVE_LIBEXPAT */
 #include "xmlparse.h"
-#endif	/* !HAVE_LIBEXPAT */
+#endif  /* !HAVE_LIBEXPAT */
 
 /* Used to pass multiple variables as one during XML parsing */
 struct parse_vars
@@ -181,12 +181,12 @@ _xml_parse_start(void *data, const char *e1, const char **attr)
       /* store as up or down */
       reported = atol(attr[5]);
       /* With ganglia 3.2.0, attr[4] is actually TAGS, and we want the
-	 next pair.  */
+         next pair.  */
       if (!reported) reported = atol(attr[7]);
       if (abs(localtime - reported) < timeout_len)
-	nodeupdown_add_up_node(handle, attr[1]);
+        nodeupdown_add_up_node(handle, attr[1]);
       else
-	nodeupdown_add_down_node(handle, attr[1]);
+        nodeupdown_add_down_node(handle, attr[1]);
     }
 }
 
@@ -255,27 +255,27 @@ ganglia_backend_get_updown_data(nodeupdown_t handle,
       if (!(buff = XML_GetBuffer(xml_parser, BUFSIZ)))
         {
 #ifndef NDEBUG
-	  fprintf(stderr, "XML_GetBuffer: %s\n", strerror(errno));
+          fprintf(stderr, "XML_GetBuffer: %s\n", strerror(errno));
 #endif /* NDEBUG */
-	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
+          nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
           goto cleanup;
         }
 
       if ((bytes_read = read(fd, buff, BUFSIZ)) < 0)
         {
 #ifndef NDEBUG
-	  fprintf(stderr, "read: %s\n", strerror(errno));
+          fprintf(stderr, "read: %s\n", strerror(errno));
 #endif /* NDEBUG */
-	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
+          nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
           goto cleanup;
         }
 
       if (!XML_ParseBuffer(xml_parser, bytes_read, bytes_read == 0))
         {
 #ifndef NDEBUG
-	  fprintf(stderr, "XML_ParseBuffer: %s\n", strerror(errno));
+          fprintf(stderr, "XML_ParseBuffer: %s\n", strerror(errno));
 #endif /* NDEBUG */
-	  nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
+          nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
           goto cleanup;
         }
 

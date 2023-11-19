@@ -127,7 +127,7 @@ _low_timeout_connect(nodeupdown_t handle,
       if ((rv = select(fd+1, &rset, &wset, NULL, &tval)) < 0)
         {
 #ifndef NDEBUG
-	  fprintf(stderr, "select: %s\n", strerror(errno));
+          fprintf(stderr, "select: %s\n", strerror(errno));
 #endif /* NDEBUG */
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
           goto cleanup;
@@ -150,7 +150,7 @@ _low_timeout_connect(nodeupdown_t handle,
               if (getsockopt(fd, SOL_SOCKET, SO_ERROR, &error, &len) < 0)
                 {
 #ifndef NDEBUG
-		  fprintf(stderr, "getsockopt: %s\n", strerror(errno));
+                  fprintf(stderr, "getsockopt: %s\n", strerror(errno));
 #endif /* NDEBUG */
                   nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
                   goto cleanup;
@@ -171,7 +171,7 @@ _low_timeout_connect(nodeupdown_t handle,
           else
             {
 #ifndef NDEBUG
-	      fprintf(stderr, "select: invalid state\n");
+              fprintf(stderr, "select: invalid state\n");
 #endif /* NDEBUG */
               nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
               goto cleanup;
