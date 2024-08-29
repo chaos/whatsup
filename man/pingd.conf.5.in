@@ -53,6 +53,11 @@ regularly sent out.  Default is 15000.
 Specify the alternate default port the pingd server should listen
 for requests off of.  Default is 9125.
 .TP
+.I ping_socket_receive_buffer bytecount
+Specify size of the socket receive buffer in bytes.  This may be
+necessary on larger clusters where the default buffer cannot hold
+all ping responses.  System default used if set to <= 0.
+.TP
 .I host string
 Specify a host the pingd daemon should regularly ping.  Can be
 specified as many times as necessary.

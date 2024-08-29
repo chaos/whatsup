@@ -109,6 +109,16 @@ _fds_setup(void)
   if ((ping_fd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0)
     ERR_EXIT(("socket: %s", strerror(errno)));
 
+  if (conf.ping_socket_receive_buffer > 0)
+    {
+      if (setsockopt(ping_fd,
+                     SOL_SOCKET,
+                     SO_RCVBUF,
+                     &conf.ping_socket_receive_buffer,
+                     sizeof(conf.ping_socket_receive_buffer)) < 0)
+        ERR_EXIT(("setsockopt: %s", strerror(errno)));
+    }
+
   memset(&addr, '\0', sizeof(struct sockaddr_in));
   addr.sin_family = AF_INET;
   addr.sin_port = htons(0);
