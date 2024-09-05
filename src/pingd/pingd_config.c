@@ -76,6 +76,7 @@ _config_default(void)
   conf.config_file = PINGD_CONF_FILE;
   conf.ping_period = PINGD_PING_PERIOD_DEFAULT;
   conf.pingd_server_port = PINGD_SERVER_PORT_DEFAULT;
+  conf.ping_socket_receive_buffer = PINGD_PING_SOCKET_RECEIVE_BUFFER;
 
   if (!(conf.hosts = hostlist_create(NULL)))
     ERR_EXIT(("hostlist_create: %s", strerror(errno)));
@@ -189,6 +190,7 @@ _config_file_parse(void)
 {
   int ping_period_flag,
     pingd_server_port_flag,
+    ping_socket_receive_buffer_flag,
     host_flag;
 
   struct conffile_option options[] =
@@ -214,6 +216,17 @@ _config_file_parse(void)
         &(pingd_server_port_flag),
         &(conf.pingd_server_port),
         0,
+      },
+      {
+        "ping_socket_receive_buffer",
+        CONFFILE_OPTION_INT,
+        -1,
+        conffile_int,
+        1,
+        0,
+        &(ping_socket_receive_buffer_flag),
+        &(conf.ping_socket_receive_buffer),
+        0
       },
       {
 	"host",
@@ -486,6 +499,8 @@ pingd_config_setup(int argc, char **argv)
       fprintf(stderr, "conf.debug = %d\n", conf.debug);
       fprintf(stderr, "conf.ping_period = %d\n", conf.ping_period);
       fprintf(stderr, "conf.pingd_server_port = %d\n", conf.pingd_server_port);
+      fprintf(stderr, "conf.ping_socket_receive_buffer = %d\n",
+              conf.ping_socket_receive_buffer);
       hostlist_ranged_string(conf.hosts, 1024, hbuf);
       fprintf(stderr, "conf.hosts = %s\n", hbuf);
     }

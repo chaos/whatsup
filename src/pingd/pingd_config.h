@@ -33,9 +33,10 @@
 
 #include "hostlist.h"
 
-#define PINGD_DEBUG_DEFAULT           0
-#define PINGD_PING_PERIOD_DEFAULT     15000
-#define PINGD_SERVER_PORT_DEFAULT     9125
+#define PINGD_DEBUG_DEFAULT              0
+#define PINGD_PING_PERIOD_DEFAULT        15000
+#define PINGD_SERVER_PORT_DEFAULT        9125
+#define PINGD_PING_SOCKET_RECEIVE_BUFFER 0
 
 struct pingd_config
 {
@@ -46,6 +47,7 @@ struct pingd_config
 
   int ping_period;
   int pingd_server_port;
+  int ping_socket_receive_buffer;
   hostlist_t hosts;
 };
 
