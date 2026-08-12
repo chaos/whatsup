@@ -421,6 +421,11 @@ _parse_args(conffile_t cf,
          if ((linebuf = _move_past_whitespace(cf, linebuf)) == NULL)
             break;
 
+        if (numargs >= CONFFILE_MAX_ARGS) {
+            cf->errnum = CONFFILE_ERR_PARSE_ARG_TOOMANY;
+            return -1;
+        }
+
         quote_flag = 0;
         memset(args[numargs], '\0', CONFFILE_MAX_ARGLEN);
         while (*linebuf != '\0'
@@ -520,7 +525,7 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
 
     if (option == NULL) {
         if (cf->flags & CONFFILE_FLAG_OPTION_IGNORE_UNKNOWN)
-	    return 0;
+            return 0;
         cf->errnum = CONFFILE_ERR_PARSE_OPTION_UNKNOWN;
         return -1;
     }
@@ -639,7 +644,7 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
     else if (option->option_type == CONFFILE_OPTION_LIST_INT) {
         int i;
         for (i = 0; i < numargs; i++) {
-	    errno = 0;
+            errno = 0;
             data.intlist[i] = strtol(args[i], &ptr, 0);
             if (errno || (args[i] + strlen(args[i])) != ptr) {
                 cf->errnum = CONFFILE_ERR_PARSE_ARG_INVALID;
@@ -651,7 +656,7 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
     else if (option->option_type == CONFFILE_OPTION_LIST_DOUBLE) {
         int i;
         for (i = 0; i < numargs; i++) {
-	    errno = 0;
+            errno = 0;
             data.doublelist[i] = strtod(args[i], &ptr);
             if (errno || (args[i] + strlen(args[i])) != ptr) {
                 cf->errnum = CONFFILE_ERR_PARSE_ARG_INVALID;
