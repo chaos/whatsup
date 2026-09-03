@@ -67,6 +67,7 @@ struct parse_vars
   nodeupdown_t handle;
   int timeout_len;
   unsigned long localtime;
+  int parse_error;
 };
 
 #define GANGLIA_BACKEND_DEFAULT_PORT        8649
@@ -161,13 +162,26 @@ ganglia_backend_cleanup(nodeupdown_t handle)
 static void
 _xml_parse_start(void *data, const char *e1, const char **attr)
 {
-  nodeupdown_t handle = ((struct parse_vars *)data)->handle;
-  int timeout_len = ((struct parse_vars *)data)->timeout_len;
-  unsigned long localtime = ((struct parse_vars *)data)->localtime;
+  struct parse_vars *pv = data;
   unsigned long reported;
+
+  if (pv->parse_error)
+    return;
 
   if (strcmp("HOST", e1) == 0)
     {
+      int attr_count = 0;
+
+      while (attr[attr_count * 2] && attr[(attr_count * 2) + 1])
+        attr_count++;
+
+      if (attr[attr_count * 2] || attr_count < 3)
+        {
+          nodeupdown_set_errnum(pv->handle, NODEUPDOWN_ERR_BACKEND_MODULE);
+          pv->parse_error++;
+          return;
+        }
+
       /* attributes of XML HOST tag
        * attr[0] - "NAME"
        * attr[1] - hostname
@@ -182,11 +196,21 @@ _xml_parse_start(void *data, const char *e1, const char **attr)
       reported = atol(attr[5]);
       /* With ganglia 3.2.0, attr[4] is actually TAGS, and we want the
          next pair.  */
-      if (!reported) reported = atol(attr[7]);
-      if (abs(localtime - reported) < timeout_len)
-        nodeupdown_add_up_node(handle, attr[1]);
+      if (!reported)
+        {
+          if (attr_count < 4)
+            {
+              nodeupdown_set_errnum(pv->handle,
+                                    NODEUPDOWN_ERR_BACKEND_MODULE);
+              pv->parse_error++;
+              return;
+            }
+          reported = atol(attr[7]);
+        }
+      if (abs(pv->localtime - reported) < pv->timeout_len)
+        nodeupdown_add_up_node(pv->handle, attr[1]);
       else
-        nodeupdown_add_down_node(handle, attr[1]);
+        nodeupdown_add_down_node(pv->handle, attr[1]);
     }
 }
 
@@ -227,6 +251,7 @@ ganglia_backend_get_updown_data(nodeupdown_t handle,
   /* Setup parse vars to pass to _xml_parse_start */
   pv.handle = handle;
   pv.timeout_len = timeout_len;
+  pv.parse_error = 0;
 
   /* Call gettimeofday at the latest point right before XML stuff. */
   if (gettimeofday(&tv, NULL) < 0)
@@ -278,6 +303,9 @@ ganglia_backend_get_updown_data(nodeupdown_t handle,
           nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_INTERNAL);
           goto cleanup;
         }
+
+      if (pv.parse_error)
+        goto cleanup;
 
       if (bytes_read == 0)
         break;

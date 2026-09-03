@@ -460,7 +460,7 @@ _push_inputted_nodes(char *nodes)
 static void
 _read_nodes_from_stdin(void)
 {
-  char buf[WHATSUP_BUFFERLEN];
+  char buf[WHATSUP_BUFFERLEN+1];
   int n;
 
   if ((n = fd_read_n(STDIN_FILENO, buf, WHATSUP_BUFFERLEN)) < 0)
@@ -468,6 +468,8 @@ _read_nodes_from_stdin(void)
 
   if (n == WHATSUP_BUFFERLEN)
     err_exit("overflow in standard input buffer");
+
+  buf[n] = '\0';
 
   if (n > 0)
     {
@@ -1169,7 +1171,9 @@ _log_mode(void)
 
   if (log_file)
     {
-      if ((log_file_fd = open (log_file, O_WRONLY | O_CREAT, 600)) < 0)
+      if ((log_file_fd = open(log_file,
+                              O_WRONLY | O_CREAT | O_APPEND,
+                              0600)) < 0)
         err_exit("error opening log_file = %s: %s", log_file, strerror(errno));
     }
   else
