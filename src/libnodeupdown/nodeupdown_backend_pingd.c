@@ -192,7 +192,7 @@ pingd_backend_get_updown_data(nodeupdown_t handle,
       if (!len)
         break;
 
-      num = sscanf(buf, "%s %lu\n", hostname, &localtime);
+      num = sscanf(buf, "%64s %lu\n", hostname, &localtime);
       if (num != 2)
         {
 #ifndef NDEBUG
