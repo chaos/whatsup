@@ -273,6 +273,15 @@ _config_file_parse(void)
         ERR_EXIT(("conffile_parse: %s", buf));
     }
 
+  if (conf.ping_period <= 0)
+    ERR_EXIT(("ping_period must be > 0"));
+
+  if (conf.pingd_server_port <= 0 || conf.pingd_server_port > 65535)
+    ERR_EXIT(("pingd_server_port must be between 1 and 65535"));
+
+  if (conf.ping_socket_receive_buffer < 0)
+    ERR_EXIT(("ping_socket_receive_buffer must be >= 0"));
+
  cleanup:
   conffile_handle_destroy(cf);
 }
