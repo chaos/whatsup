@@ -431,7 +431,9 @@ _send_ping_data(void)
       char buf[PINGD_BUFLEN];
       int len, n;
 
-      len = snprintf(buf, PINGD_BUFLEN, "%s %lu\n", info->hostname, info->last_received.tv_sec);
+      len = snprintf(buf, PINGD_BUFLEN, "%s %lu\n",
+                     info->hostname,
+                     (unsigned long)info->last_received.tv_sec);
       if (len >= PINGD_BUFLEN)
         ERR_EXIT(("len=%d", len));
 
