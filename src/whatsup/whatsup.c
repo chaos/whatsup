@@ -609,7 +609,10 @@ _cmdline_parse(int argc, char **argv)
             break;
           case 'p':
             port = strtol(optarg, &ptr, 10);
-            if (ptr != (optarg + strlen(optarg)))
+            if (ptr == optarg
+                || ptr != (optarg + strlen(optarg))
+                || port <= 0
+                || port > 65535)
               err_exit("invalid port specified");
             break;
           case 'b':
