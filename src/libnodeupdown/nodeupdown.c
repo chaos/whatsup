@@ -697,7 +697,14 @@ _get_nodes_list(nodeupdown_t handle, char **list, int len, int up_or_down)
           goto cleanup;
         }
 
-      strcpy(list[count], nodename);
+      if (strlen(nodename) > NODEUPDOWN_MAXNODENAMELEN)
+        {
+          handle->errnum = NODEUPDOWN_ERR_OVERFLOW;
+          goto cleanup;
+        }
+
+      strncpy(list[count], nodename, NODEUPDOWN_MAXNODENAMELEN);
+      list[count][NODEUPDOWN_MAXNODENAMELEN] = '\0';
       free(nodename);
       count++;
     }
