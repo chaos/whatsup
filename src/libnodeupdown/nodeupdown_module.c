@@ -135,10 +135,15 @@ _load_module(nodeupdown_t handle,
   if (stat(filebuf, &buf) < 0)
     return 0;
 
+  /* An unloadable module (e.g. missing dependent library) should not
+   * prevent other candidates from being tried.
+   */
   if (!(dl_handle = lt_dlopen(filebuf)))
     {
-      handle->errnum = NODEUPDOWN_ERR_INTERNAL;
-      goto cleanup;
+#ifndef NDEBUG
+      fprintf(stderr, "lt_dlopen: %s: %s\n", filebuf, lt_dlerror());
+#endif /* NDEBUG */
+      return 0;
     }
 
   if (!(module_info = lt_dlsym(dl_handle, module_info_sym)))

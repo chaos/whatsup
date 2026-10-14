@@ -60,7 +60,9 @@ all ping responses.  System default used if set to <= 0.
 .TP
 .I host string
 Specify a host the pingd daemon should regularly ping.  Can be
-specified as many times as necessary.
+specified as many times as necessary.  Hostnames are shortened to
+their first component (e.g. "node1.example.com" becomes "node1")
+and reported to clients in that form; IP addresses are used as is.
 .SH "FILES"
 @PINGD_CONF_FILE@
 .SH "SEE ALSO"

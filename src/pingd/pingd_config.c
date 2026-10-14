@@ -42,6 +42,9 @@
 #include <unistd.h>
 #endif /* HAVE_UNISTD_H */
 #include <dirent.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <assert.h>
 #include <errno.h>
 
@@ -90,7 +93,7 @@ _usage(void)
           "-v    --version       Output Version\n");
 #ifndef NDEBUG
   fprintf(stderr,
-	  "-c    --config_file   Specify alternate config file\n"
+	  "-c    --config-file   Specify alternate config file\n"
           "-d    --debug         Turn on debugging and run daemon in foreground\n");
 #endif /* NDEBUG */
   exit(0);
@@ -118,6 +121,7 @@ _cmdline_parse(int argc, char **argv)
       {"config-file",         1, NULL, 'c'},
       {"debug",               0, NULL, 'd'},
 #endif /* NDEBUG */
+      {0, 0, 0, 0},
     };
 #endif /* HAVE_GETOPT_LONG */
 
@@ -172,12 +176,16 @@ _cb_host(conffile_t cf,
 	 void *app_ptr,
 	 int app_data)
 {
+  struct in_addr addr;
   char *ptr;
 
   assert(data);
 
-  /* Shorten hostname if necessary */
-  if ((ptr = strchr(data->string, '.')))
+  /* Shorten hostname if necessary, but leave dotted-quad addresses
+   * alone.
+   */
+  if (!inet_aton(data->string, &addr)
+      && (ptr = strchr(data->string, '.')))
     *ptr = '\0';
 
   if (!hostlist_push(conf.hosts, data->string))
@@ -265,6 +273,15 @@ _config_file_parse(void)
         ERR_EXIT(("conffile_parse: %s", buf));
     }
 
+  if (conf.ping_period <= 0)
+    ERR_EXIT(("ping_period must be > 0"));
+
+  if (conf.pingd_server_port <= 0 || conf.pingd_server_port > 65535)
+    ERR_EXIT(("pingd_server_port must be between 1 and 65535"));
+
+  if (conf.ping_socket_receive_buffer < 0)
+    ERR_EXIT(("ping_socket_receive_buffer must be >= 0"));
+
  cleanup:
   conffile_handle_destroy(cf);
 }
@@ -332,7 +349,7 @@ _load_module(char *filename)
 
   if (!(dl_handle = lt_dlopen(filename)))
     {
-      ERR_DEBUG(("lt_dlopen: filename=%s; %s", filename, strerror(errno)));
+      ERR_DEBUG(("lt_dlopen: filename=%s; %s", filename, lt_dlerror()));
       goto cleanup;
     }
 
@@ -341,7 +358,7 @@ _load_module(char *filename)
 
   if (!(module_info = lt_dlsym(dl_handle, CLUSTERLIST_MODULE_SYMBOL)))
     {
-      ERR_DEBUG(("lt_dlsym: filename=%s; %s", filename, strerror(errno)));
+      ERR_DEBUG(("lt_dlsym: filename=%s; %s", filename, lt_dlerror()));
       goto cleanup;
     }
 
@@ -458,7 +475,7 @@ _module_load(void)
 
   if (lt_dlinit() != 0)
     {
-      ERR_OUTPUT(("lt_dlinit: %s", strerror(errno)));
+      ERR_OUTPUT(("lt_dlinit: %s", lt_dlerror()));
       goto cleanup;
     }
 

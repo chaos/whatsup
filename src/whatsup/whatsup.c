@@ -28,6 +28,7 @@
 #include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #if STDC_HEADERS
@@ -35,7 +36,6 @@
 #include <stdarg.h>
 #endif /* STDC_HEADERS */
 
-#define _GNU_SOURCE
 #if HAVE_GETOPT_H
 #include <getopt.h>
 #endif /* HAVE_GETOPT_H */
@@ -241,6 +241,7 @@ _load_options_module(char *module_path)
     {
       if (loadinfo->handle)
         lt_dlclose(loadinfo->handle);
+      free(loadinfo);
     }
   if (itr)
     list_iterator_destroy(itr);
@@ -303,6 +304,7 @@ _delete_whatsup_module_loadinfo(void *x)
 
   (*info->module_info->cleanup)();
   lt_dlclose(info->handle);
+  free(info);
 }
 
 
@@ -609,7 +611,10 @@ _cmdline_parse(int argc, char **argv)
             break;
           case 'p':
             port = strtol(optarg, &ptr, 10);
-            if (ptr != (optarg + strlen(optarg)))
+            if (ptr == optarg
+                || ptr != (optarg + strlen(optarg))
+                || port <= 0
+                || port > 65535)
               err_exit("invalid port specified");
             break;
           case 'b':

@@ -61,6 +61,7 @@ struct nodeupdown {
   int magic;
   int errnum;
   int load_state;
+  int ltdl_initialized;
   hostlist_t up_nodes;
   hostlist_t down_nodes;
   hash_t last_up_times;

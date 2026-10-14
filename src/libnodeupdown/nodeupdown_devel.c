@@ -164,7 +164,10 @@ nodeupdown_add_last_up_time(nodeupdown_t handle,
                    lut->node,
                    lut))
     {
-      handle->errnum = NODEUPDOWN_ERR_OUTMEM;
+      if (errno == EEXIST)
+        handle->errnum = NODEUPDOWN_ERR_BACKEND_MODULE;
+      else
+        handle->errnum = NODEUPDOWN_ERR_OUTMEM;
       goto cleanup;
     }
 

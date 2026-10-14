@@ -1,5 +1,5 @@
 /*****************************************************************************\
- *  $Id: conffile.h,v 1.24 2010-02-02 00:01:53 chu11 Exp $
+ *  $Id: conffile.h,v 1.5 2010-02-03 00:43:13 chu11 Exp $
  *****************************************************************************
  *  Copyright (C) 2007-2015 Lawrence Livermore National Security, LLC.
  *  Copyright (C) 2003-2007 The Regents of the University of California.
@@ -24,8 +24,8 @@
  *  with Whatsup.  If not, see <http://www.gnu.org/licenses/>.
 \*****************************************************************************/
 
-#ifndef _CONFFILE_H
-#define _CONFFILE_H 1
+#ifndef CONFFILE_H
+#define CONFFILE_H 1
 
 /*
  * This is a generic configuration file parsing library.  Some library
@@ -116,10 +116,9 @@
  * Callback functions are required for all of the above option types
  * except for IGNORE and FLAG
  *
- * If an argument is missing a PARSE_NO_ARG error is returned.  If the
- * incorrect number of arguments is listed, PARSE_NUM_ARGS is
- * returned.  If an invalid argument is listed, PARSE_INVALID_ARG is
- * returned.
+ * If an argument is missing a PARSE_ARG_MISSING error is returned.  If
+ * too many arguments are listed, PARSE_ARG_TOOMANY is returned.  If an
+ * invalid argument is listed, PARSE_ARG_INVALID is returned.
  *
  */
 #define CONFFILE_OPTION_IGNORE                 0x00
@@ -138,10 +137,10 @@
  * the conffile parser.
  */
 
-#define CONFFILE_MAX_LINELEN                  32778
+#define CONFFILE_MAX_LINELEN                  32768
 #define CONFFILE_MAX_OPTIONNAMELEN              256
 #define CONFFILE_MAX_ARGS                        64
-#define CONFFILE_MAX_ARGLEN                     512
+#define CONFFILE_MAX_ARGLEN                    1024
 #define CONFFILE_MAX_ERRMSGLEN                 1024
 
 /* ERROR CODES
@@ -287,7 +286,7 @@ typedef int (*conffile_option_func)(conffile_t cf,
  * An array of this structure specifies the options to be searched for
  * in the configuration file.
  *
- * 'optionname' is the option name that should be searched for.
+ * 'optionname' is the option name that should be serached for.
  * 'option_type' is the option type specified in conffile.  See
  *      OPTION TYPES above.
  * 'option_type_arg' argument for the option type.  See OPTION TYPES above.
@@ -419,4 +418,4 @@ CONFFILE_OPTION_FUNC(conffile_double);
  */
 CONFFILE_OPTION_FUNC(conffile_string);
 
-#endif /* _CONFFILE_H */
+#endif /* CONFFILE_H */

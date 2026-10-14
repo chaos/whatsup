@@ -65,7 +65,7 @@ _low_timeout_connect(nodeupdown_t handle,
   if (!(hptr = gethostbyname(hostname)))
     {
 #ifndef NDEBUG
-      fprintf(stderr, "gethostbyname: %s\n", strerror(errno));
+      fprintf(stderr, "gethostbyname: %s\n", hstrerror(h_errno));
 #endif /* NDEBUG */
       nodeupdown_set_errnum(handle, NODEUPDOWN_ERR_HOSTNAME);
       return -1;

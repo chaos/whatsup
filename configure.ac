@@ -173,6 +173,8 @@ AC_CHECK_FUNCS( \
   strtok \
 )
 AC_CHECK_FUNCS([getopt_long])
+# clock_gettime lives in librt on older glibc
+AC_SEARCH_LIBS([clock_gettime], [rt])
 
 ##
 # Epilogue.

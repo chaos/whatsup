@@ -149,6 +149,7 @@ _initialize_handle(nodeupdown_t handle)
 {
   handle->magic = NODEUPDOWN_MAGIC_NUM;
   handle->load_state = NODEUPDOWN_LOAD_STATE_UNLOADED;
+  handle->ltdl_initialized = 0;
   handle->up_nodes = NULL;
   handle->down_nodes = NULL;
   handle->numnodes = 0;
@@ -185,8 +186,12 @@ _free_handle_data(nodeupdown_t handle)
   hostlist_destroy(handle->up_nodes);
   hostlist_destroy(handle->down_nodes);
   hash_destroy(handle->last_up_times);
+  /* lt_dlinit/lt_dlexit are refcounted process-wide; an unmatched
+   * lt_dlexit can unload modules belonging to the application.
+   */
+  if (handle->ltdl_initialized)
+    lt_dlexit();
   _initialize_handle(handle);
-  lt_dlexit();
 }
 
 int
@@ -349,6 +354,7 @@ nodeupdown_load_data(nodeupdown_t handle,
       handle->errnum = NODEUPDOWN_ERR_INTERNAL;
       goto cleanup;
     }
+  handle->ltdl_initialized = 1;
 
   /* Read configuration before loading a potential backend or
    * clusterlist module to use. The configuration file may indicate
@@ -691,7 +697,14 @@ _get_nodes_list(nodeupdown_t handle, char **list, int len, int up_or_down)
           goto cleanup;
         }
 
-      strcpy(list[count], nodename);
+      if (strlen(nodename) > NODEUPDOWN_MAXNODENAMELEN)
+        {
+          handle->errnum = NODEUPDOWN_ERR_OVERFLOW;
+          goto cleanup;
+        }
+
+      strncpy(list[count], nodename, NODEUPDOWN_MAXNODENAMELEN);
+      list[count][NODEUPDOWN_MAXNODENAMELEN] = '\0';
       free(nodename);
       count++;
     }

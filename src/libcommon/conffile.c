@@ -308,7 +308,6 @@ static int
 _readline(conffile_t cf, char *linebuf, int linebuflen)
 {
     int ret, len = 0;
-    int continuation = 0;
     char buf[CONFFILE_MAX_LINELEN];
 
     if (linebuflen < CONFFILE_MAX_LINELEN) {
@@ -346,6 +345,11 @@ _readline(conffile_t cf, char *linebuf, int linebuflen)
         cf->line_count++;
         memcpy(linebuf + len, buf, ret);
         len += ret;
+        /* The final line of a file may end at EOF without a newline;
+         * the trailing whitespace pass below is not guaranteed to
+         * write a terminator in that case.
+         */
+        linebuf[len] = '\0';
 
         len = _remove_trailing_whitespace(cf, linebuf, len);
         if (len == 0) {
@@ -374,7 +378,6 @@ _readline(conffile_t cf, char *linebuf, int linebuflen)
         }
 
         if (linebuf[len-1] == '\\') {
-            continuation++;
             linebuf[len-1] = '\0';
             len--;
             continue;
@@ -398,7 +401,7 @@ _move_past_whitespace(conffile_t cf, char *linebuf)
     return linebuf;
 }
 
-int
+static int
 _parse_args(conffile_t cf,
             char *linebuf,
             char args[CONFFILE_MAX_ARGS][CONFFILE_MAX_ARGLEN])
@@ -511,7 +514,6 @@ _parseline(conffile_t cf, char *linebuf, int linebuflen)
     }
 
     for (i = 0; i < cf->options_len; i++) {
-        int rv;
         if (cf->flags & CONFFILE_FLAG_OPTION_CASESENSITIVE)
             rv = strcmp(cf->options[i].optionname, cf->optionname);
         else
@@ -773,8 +775,11 @@ conffile_parse(conffile_t cf,
     retval = 0;
 
  cleanup:
-    /* ignore potential error, just return result to user */
-    close(cf->fd);
+    if (cf->fd >= 0) {
+        /* ignore potential error, just return result to user */
+        close(cf->fd);
+        cf->fd = -1;
+    }
     return retval;
 }
 
