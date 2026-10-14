@@ -28,6 +28,7 @@
 #include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #if STDC_HEADERS
@@ -35,7 +36,6 @@
 #include <stdarg.h>
 #endif /* STDC_HEADERS */
 
-#define _GNU_SOURCE
 #if HAVE_GETOPT_H
 #include <getopt.h>
 #endif /* HAVE_GETOPT_H */
