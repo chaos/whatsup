@@ -42,6 +42,9 @@
 #include <unistd.h>
 #endif /* HAVE_UNISTD_H */
 #include <dirent.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <assert.h>
 #include <errno.h>
 
@@ -173,12 +176,16 @@ _cb_host(conffile_t cf,
 	 void *app_ptr,
 	 int app_data)
 {
+  struct in_addr addr;
   char *ptr;
 
   assert(data);
 
-  /* Shorten hostname if necessary */
-  if ((ptr = strchr(data->string, '.')))
+  /* Shorten hostname if necessary, but leave dotted-quad addresses
+   * alone.
+   */
+  if (!inet_aton(data->string, &addr)
+      && (ptr = strchr(data->string, '.')))
     *ptr = '\0';
 
   if (!hostlist_push(conf.hosts, data->string))
