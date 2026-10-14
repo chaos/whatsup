@@ -90,7 +90,7 @@ _usage(void)
           "-v    --version       Output Version\n");
 #ifndef NDEBUG
   fprintf(stderr,
-	  "-c    --config_file   Specify alternate config file\n"
+	  "-c    --config-file   Specify alternate config file\n"
           "-d    --debug         Turn on debugging and run daemon in foreground\n");
 #endif /* NDEBUG */
   exit(0);
@@ -118,6 +118,7 @@ _cmdline_parse(int argc, char **argv)
       {"config-file",         1, NULL, 'c'},
       {"debug",               0, NULL, 'd'},
 #endif /* NDEBUG */
+      {0, 0, 0, 0},
     };
 #endif /* HAVE_GETOPT_LONG */
 
