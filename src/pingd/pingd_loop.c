@@ -336,6 +336,28 @@ _pingd_send_pings(void)
   list_iterator_destroy(itr);
 }
 
+/*
+ * _monotonic_now
+ *
+ * Read a clock that is not affected by wall-clock adjustments (NTP
+ * steps, manual date changes) for ping scheduling.  Wall-clock time
+ * is still used for last_received since that is what clients compare
+ * against.
+ */
+static void
+_monotonic_now(struct timeval *tv)
+{
+  struct timespec ts;
+
+  assert(tv);
+
+  if (clock_gettime(CLOCK_MONOTONIC, &ts) < 0)
+    ERR_EXIT(("clock_gettime: %s", strerror(errno)));
+
+  tv->tv_sec = ts.tv_sec;
+  tv->tv_usec = ts.tv_nsec / 1000;
+}
+
 static void
 _setup_pfds(struct pollfd *pfds)
 {
@@ -445,15 +467,13 @@ pingd_loop(void)
       unsigned int timeout_ms;
       int num;
 
-      if (gettimeofday(&now, NULL) < 0)
-        ERR_EXIT(("gettimeofday: %s", strerror(errno)));
+      _monotonic_now(&now);
 
       if (timeval_gt(&now, &pingd_next_send))
         {
           _pingd_send_pings();
 
-          if (gettimeofday(&now, NULL) < 0)
-            ERR_EXIT(("gettimeofday: %s", strerror(errno)));
+          _monotonic_now(&now);
 
           timeval_add_ms(&now, conf.ping_period, &pingd_next_send);
         }
