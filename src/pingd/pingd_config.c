@@ -349,7 +349,7 @@ _load_module(char *filename)
 
   if (!(dl_handle = lt_dlopen(filename)))
     {
-      ERR_DEBUG(("lt_dlopen: filename=%s; %s", filename, strerror(errno)));
+      ERR_DEBUG(("lt_dlopen: filename=%s; %s", filename, lt_dlerror()));
       goto cleanup;
     }
 
@@ -358,7 +358,7 @@ _load_module(char *filename)
 
   if (!(module_info = lt_dlsym(dl_handle, CLUSTERLIST_MODULE_SYMBOL)))
     {
-      ERR_DEBUG(("lt_dlsym: filename=%s; %s", filename, strerror(errno)));
+      ERR_DEBUG(("lt_dlsym: filename=%s; %s", filename, lt_dlerror()));
       goto cleanup;
     }
 
@@ -475,7 +475,7 @@ _module_load(void)
 
   if (lt_dlinit() != 0)
     {
-      ERR_OUTPUT(("lt_dlinit: %s", strerror(errno)));
+      ERR_OUTPUT(("lt_dlinit: %s", lt_dlerror()));
       goto cleanup;
     }
 
