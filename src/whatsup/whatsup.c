@@ -241,6 +241,7 @@ _load_options_module(char *module_path)
     {
       if (loadinfo->handle)
         lt_dlclose(loadinfo->handle);
+      free(loadinfo);
     }
   if (itr)
     list_iterator_destroy(itr);
@@ -303,6 +304,7 @@ _delete_whatsup_module_loadinfo(void *x)
 
   (*info->module_info->cleanup)();
   lt_dlclose(info->handle);
+  free(info);
 }
 
 
